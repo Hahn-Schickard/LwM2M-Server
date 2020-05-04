@@ -1,0 +1,5 @@
+add_subdirectory(LwM2M_Model)
+add_subdirectory(XMLParser)
+add_subdirectory(Server)
+add_subdirectory(Client)
+add_subdirectory(Runner)

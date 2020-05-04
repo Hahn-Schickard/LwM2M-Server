@@ -1,0 +1,13 @@
+[requires]
+gtest/1.8.1@bincrafters/stable 
+asio/1.16.0
+HaSLL/[~=0.1.47]@dg1024/testing
+nlohmann_json/3.7.3
+pugixml/1.10@bincrafters/stable 
+
+[generators]
+cmake_paths
+cmake_find_package
+
+[imports]
+., Find*.cmake -> ./
