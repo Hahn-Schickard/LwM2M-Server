@@ -1,5 +1,7 @@
 add_subdirectory(LwM2M_Model)
 add_subdirectory(XMLParser)
+add_subdirectory(CoAP)
+add_subdirectory(Threadsafe_Queue)
 add_subdirectory(Server)
 add_subdirectory(Client)
 add_subdirectory(Runner)

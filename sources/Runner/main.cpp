@@ -1,7 +1,7 @@
+#include "CoAP_Server.hpp"
 #include "LoggerRepository.hpp"
 #include "LwM2M_Object.hpp"
 #include "UDPClient.hpp"
-#include "UDPServer.hpp"
 #include "XmlParser.hpp"
 
 #include <iostream>
@@ -130,7 +130,7 @@ int main() {
   thread server_thread;
 
   try {
-    LwM2M_Server::UDPConnection server(false, 13251, 1);
+    LwM2M_Server::CoAP_Server server(false, 13251, 1);
     server_thread = thread([&]() { server.run(); });
     this_thread::sleep_for(chrono::seconds(1));
     string buffer = LwM2M_Client::receive(false, "127.0.0.1", 13251);

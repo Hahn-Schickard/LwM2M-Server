@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Server)
+set(THIS CoAP)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/Server
+            ${INCLUDES_DIR}/CoAP
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -17,17 +17,8 @@ target_sources(${THIS} PRIVATE
                        ${sources_list}
 )
 
-target_link_libraries(${THIS} PUBLIC
-                              CoAP
-                              HaSLL::HaSLL
-                              Threadsafe_Queue
-                              PRIVATE 
-                              asio::asio
-                              XML_Parser
-)
-
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/Server>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/CoAP>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
