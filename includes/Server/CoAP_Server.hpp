@@ -36,8 +36,8 @@ private:
   unsigned int task_execution_period_;
   std::promise<void> exitSignal_;
   std::future<void> exitFuture_;
-  ThreadsafeQueue<CoAP::CoAP_Message> incominng_messages_;
-  ThreadsafeQueue<CoAP::CoAP_Message> outgoing_messages_;
+  std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>> incominng_messages_;
+  std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>> outgoing_messages_;
   std::shared_ptr<HaSLL::Logger> logger_;
 };
 } // namespace LwM2M_Server

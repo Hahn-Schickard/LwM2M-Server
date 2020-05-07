@@ -17,9 +17,8 @@ target_sources(${THIS} PRIVATE
                        ${sources_list}
 )
 
-target_link_libraries(${THIS} PUBLIC
-                              HaSLL::HaSLL
-                              PRIVATE 
+target_link_libraries(${THIS} PUBLIC 
+                              CoAP
                               asio::asio
 )
 

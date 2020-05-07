@@ -57,8 +57,10 @@ class CoAP_Header {
 public:
   CoAP_Header();
   CoAP_Header(std::vector<char> data);
+  CoAP_Header(MessageType type, uint8_t message_length, CodeType code_type,
+              uint16_t message_id);
 
-  std::vector<char> toPacket() const;
+  std::vector<char> toPacket();
   MessageType getMesageType();
   uint8_t getTokenLenght();
   CodeType getCodeType();
@@ -66,18 +68,20 @@ public:
 };
 
 class CoAP_Message {
-  std::string receiver_;
+  std::string receiver_ip_;
+  unsigned int receiver_port_;
   CoAP_Header header_;
   std::vector<char> body_;
 
 public:
   CoAP_Message();
-  CoAP_Message(std::string receiver_ip, CoAP_Header header_data,
-               std::vector<char> body_data);
+  CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
+               CoAP_Header header_data, std::vector<char> body_data);
 
   std::vector<char> toPacket();
-  std::string getReceiver();
-  CoAP_Header getHeader();
+  std::string getReceiverIP();
+  unsigned int getReceiverPort();
+  CoAP_Header &getHeader();
   std::vector<char> getBody();
 };
 } // namespace CoAP

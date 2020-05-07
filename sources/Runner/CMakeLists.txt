@@ -11,9 +11,8 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PRIVATE
-                              Server
                               Client
-                              XML_Parser
+                              Server
                               HaSLL::HaSLL
                               Threads::Threads
 )

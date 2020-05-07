@@ -1,9 +1,9 @@
 #include "CoAP_Message.hpp"
 
 using namespace std;
-using namespace CoAP;
+namespace CoAP {
 
-string CoAP::toString(MessageType type) {
+string toString(MessageType type) {
   switch (type) {
   case MessageType::CONFIRMABLE: {
     return "Confirmable";
@@ -19,7 +19,7 @@ string CoAP::toString(MessageType type) {
   }
 }
 
-string CoAP::toString(CodeType type) {
+string toString(CodeType type) {
   switch (type) {
   case CodeType::GET: {
     return "001 Request: Get";
@@ -90,18 +90,32 @@ string CoAP::toString(CodeType type) {
 
 CoAP_Header::CoAP_Header() : CoAP_Header(vector<char>(4, 0)) {}
 
-CoAP_Header::CoAP_Header(vector<char> data)
-    : type_(static_cast<MessageType>((0x30 & data[0]) >> 4)),
-      token_length_((0x0F & data[0]) >> 0),
-      code_(static_cast<CodeType>(((data[1] >> 5) & 0x07) |
-                                  ((data[1] >> 0) & 0x1F))),
-      message_id_((data[2] << 8) | (data[3])) {
-  if (((0xC0 & data[0]) >> 6 != 1) || data.size() != 4) {
-    throw Network_IO_Exception("Malformated header!");
+CoAP_Header::CoAP_Header(vector<char> data) {
+  int coap_ver = (0xC0 & data[0]) >> 6;
+  if ((coap_ver != 1)) {
+    string error_msg = "Malformated header: CoAP version " +
+                       to_string(coap_ver) + " is not supported.";
+    throw Network_IO_Exception(error_msg);
+  } else if (data.size() != 4) {
+    string error_msg =
+        "Malformated header: Expected a 4 byte header, received: " +
+        to_string(data.size());
+    throw Network_IO_Exception(error_msg);
   }
+
+  type_ = static_cast<MessageType>((0x30 & data[0]) >> 4);
+  token_length_ = (0x0F & data[0]) >> 0;
+  code_ =
+      static_cast<CodeType>(((data[1] >> 5) & 0x07) | ((data[1] >> 0) & 0x1F));
+  message_id_ = (data[2] << 8) | (data[3]);
 }
 
-vector<char> CoAP_Header::toPacket() const {
+CoAP_Header::CoAP_Header(MessageType type, uint8_t message_length,
+                         CodeType code_type, uint16_t message_id)
+    : type_(type), token_length_(message_length), code_(code_type),
+      message_id_(message_id) {}
+
+vector<char> CoAP_Header::toPacket() {
   vector<char> result(4);
   result[0] = 0x40;                               // set CoAP version to 1
   result[0] = result[0] & (0xC0 | type_);         // set message type;
@@ -122,12 +136,12 @@ CodeType CoAP_Header::getCodeType() { return code_; }
 uint16_t CoAP_Header::getMessageID() { return message_id_; }
 
 CoAP_Message::CoAP_Message()
-    : CoAP_Message(string(), CoAP_Header(), vector<char>()) {}
+    : CoAP_Message(string(), 0, CoAP_Header(), vector<char>()) {}
 
-CoAP_Message::CoAP_Message(string receiver_ip, CoAP_Header header_data,
-                           vector<char> body_data)
-    : receiver_(receiver_ip), header_(move(header_data)),
-      body_(move(body_data)) {}
+CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
+                           CoAP_Header header_data, vector<char> body_data)
+    : receiver_ip_(receiver_ip), receiver_port_(receiver_port),
+      header_(move(header_data)), body_(move(body_data)) {}
 
 vector<char> CoAP_Message::toPacket() {
   auto result = header_.toPacket();
@@ -135,8 +149,11 @@ vector<char> CoAP_Message::toPacket() {
   return result;
 }
 
-string CoAP_Message::getReceiver() { return receiver_; }
+string CoAP_Message::getReceiverIP() { return receiver_ip_; }
 
-CoAP_Header CoAP_Message::getHeader() { return header_; }
+unsigned int CoAP_Message::getReceiverPort() { return receiver_port_; }
+
+CoAP_Header &CoAP_Message::getHeader() { return header_; }
 
 vector<char> CoAP_Message::getBody() { return body_; }
+} // namespace CoAP
