@@ -13,7 +13,7 @@ using namespace CoAP;
 using namespace std;
 
 void printCoAPHeader(CoAP_Header header) {
-  cout << toString(header.getMesageType()) << " Message type for"
+  cout << toString(header.getMesageType()) << " Message type with "
        << toString(header.getCodeType()) << endl;
   cout << "Message id is: " << header.getMessageID() << endl;
 }
@@ -43,11 +43,11 @@ int main() {
     client_thread = thread([&]() {
       int message_id = 0;
       do {
-        client.sendMessage(
-            CoAP_Message("127.0.0.1", 16833,
-                         CoAP_Header(MessageType::NON_CONFIRMABLE, 0,
-                                     CodeType::GET, message_id),
-                         vector<char>()));
+        client.sendMessage(CoAP_Message(
+            "127.0.0.1", 16833,
+            CoAP_Header(MessageType::CONFIRMABLE, 0, CodeType::GET, message_id),
+            vector<char>()));
+        message_id++;
       } while (!server.stopRequested());
     });
 
