@@ -39,6 +39,9 @@ string toString(CodeType type) {
   case CodeType::iPATCH: {
     return "007 Request: iPatch";
   }
+  case CodeType::OK: {
+    return "200 Response: OK";
+  }
   case CodeType::CREATED: {
     return "201 Response: Created";
   }
@@ -105,8 +108,7 @@ CoAP_Header::CoAP_Header(vector<char> data) {
 
   type_ = static_cast<MessageType>((0x30 & data[0]) >> 4);
   token_length_ = (0x0F & data[0]) >> 0;
-  code_ =
-      static_cast<CodeType>(((data[1] >> 5) & 0x07) | ((data[1] >> 0) & 0x1F));
+  code_ = static_cast<CodeType>(data[1]);
   message_id_ = (data[2] << 8) | (data[3]);
 }
 
@@ -117,9 +119,9 @@ CoAP_Header::CoAP_Header(MessageType type, uint8_t message_length,
 
 vector<char> CoAP_Header::toPacket() {
   vector<char> result(4);
-  result[0] = 0x40;                               // set CoAP version to 1
-  result[0] = result[0] & (0xC0 | type_);         // set message type;
-  result[0] = result[0] & (0xF0 | token_length_); // set token length
+  result[0] = 0x40;                      // set CoAP version to 1
+  result[0] = result[0] | (type_ << 4);  // set message type;
+  result[0] = result[0] | token_length_; // set token length
   result[1] = code_;
   result[2] = message_id_ >> 8;   // set id MSB
   result[3] = message_id_ & 0xFF; // set id LSB
