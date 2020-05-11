@@ -31,6 +31,14 @@ void handleReturnCode(string failure_message, asio::error_code return_code) {
   }
 }
 
+shared_ptr<CoAP_Message> makeAcknowledgementMessage(udp::endpoint receiver,
+                                                    uint16_t message_id) {
+  return make_shared<CoAP_Message>(
+      receiver.address().to_string(), receiver.port(),
+      CoAP_Header(MessageType::ACKNOWLEDGMENT, 0, CodeType::OK, message_id),
+      vector<char>());
+}
+
 class CoAP_Port {
   ip::udp::socket socket_;
   shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages_;
@@ -54,17 +62,18 @@ class CoAP_Port {
                              remote_endpoint, 0, return_code);
         handleReturnCode("Could not receive packet body due to error:",
                          return_code);
-        // send ack if confirmable here
+      }
+      if (coap_header.getMesageType() == MessageType::CONFIRMABLE) {
+        send(makeAcknowledgementMessage(remote_endpoint,
+                                        coap_header.getMessageID()));
       }
       incominng_messages_->push(
           CoAP_Message(remote_endpoint.address().to_string(),
                        remote_endpoint.port(), move(coap_header), body));
     }
-    run();
   }
 
-  void send() {
-    auto message = outgoing_messages_->wait_and_pop();
+  void send(shared_ptr<CoAP_Message> message) {
     asio::error_code return_code;
     socket_.send_to(
         asio::buffer(message->toPacket()),
@@ -77,7 +86,6 @@ class CoAP_Port {
                          message->getReceiverIP() + ":" +
                          to_string(message->getReceiverPort()),
                      return_code);
-    run();
   }
 
 public:
@@ -90,8 +98,9 @@ public:
         outgoing_messages_(outgoing_messages) {}
 
   void run() {
-    if (!outgoing_messages_->empty()) {
-      send();
+    shared_ptr<CoAP_Message> message = outgoing_messages_->try_pop();
+    if (message) {
+      send(move(message));
     } else {
       receive();
     }
@@ -103,6 +112,8 @@ CoAP_Server::CoAP_Server(bool ip_v6_handler, unsigned int port_id,
     : ip_v6_handler_(ip_v6_handler), port_id_(port_id),
       task_execution_period_(task_execution_period),
       exitFuture_(exitSignal_.get_future()),
+      incominng_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
+      outgoing_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)){};
 
 CoAP_Server::~CoAP_Server() {
