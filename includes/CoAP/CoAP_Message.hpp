@@ -28,6 +28,7 @@ typedef enum CodeTypeEnum {
   DELETE = 0x04,
   FETCH = 0x05,
   iPATCH = 0x07,
+  OK = 0x40,
   CREATED = 0x41,
   DELETED = 0x42,
   CHANGED = 0x44,
