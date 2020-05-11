@@ -1,5 +1,6 @@
 #include "DummyClient.hpp"
 
+#include <iostream>
 #include <string>
 
 using namespace std;
@@ -14,6 +15,32 @@ udp selectClientProtocol(bool ip_v6) {
   }
 }
 
+void printCoAPHeader(CoAP_Header header) {
+  cout << toString(header.getMesageType()) << " Message type with "
+       << toString(header.getCodeType()) << endl;
+  cout << "Message id is: " << header.getMessageID() << endl;
+}
+
+void printOutgoing(CoAP_Message message) {
+  cout << "Sending a message to: " << message.getReceiverIP() << ":"
+       << message.getReceiverPort() << endl;
+  printCoAPHeader(message.getHeader());
+  for (const auto &byte : message.getBody()) {
+    cout << byte << " ";
+  }
+  cout << endl;
+}
+
+void printIncoming(CoAP_Message message) {
+  cout << "Received a message from: " << message.getReceiverIP() << ":"
+       << message.getReceiverPort() << endl;
+  printCoAPHeader(message.getHeader());
+  for (const auto &byte : message.getBody()) {
+    cout << byte << " ";
+  }
+  cout << endl;
+}
+
 DummyClient::DummyClient(bool ip_v6_handler, const std::string &ip_address,
                          unsigned int port)
     : receiver_endpoint(
@@ -22,10 +49,21 @@ DummyClient::DummyClient(bool ip_v6_handler, const std::string &ip_address,
              udp::endpoint(selectClientProtocol(ip_v6_handler), 0)) {}
 
 void DummyClient::sendMessage(CoAP_Message message) {
+  printOutgoing(message);
   socket.send_to(asio::buffer(message.toPacket()), receiver_endpoint);
-  char reply[4];
+
+  std::vector<char> header(4);
   udp::endpoint sender_endpoint;
-  size_t reply_length =
-      socket.receive_from(asio::buffer(reply, 4), sender_endpoint);
+  socket.receive_from(asio::buffer(header, 4), sender_endpoint);
+  CoAP_Header coap_header(move(header));
+
+  std::vector<char> body(coap_header.getTokenLenght());
+  if (coap_header.getTokenLenght() > 0) {
+    socket.receive_from(asio::buffer(body, coap_header.getTokenLenght()),
+                        sender_endpoint);
+  }
+
+  printIncoming(CoAP_Message(sender_endpoint.address().to_string(),
+                             sender_endpoint.port(), move(coap_header), body));
 }
 } // namespace LwM2M_Client
