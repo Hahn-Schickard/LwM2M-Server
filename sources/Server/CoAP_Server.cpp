@@ -1,11 +1,11 @@
 #include "CoAP_Server.hpp"
 #include "LoggerRepository.hpp"
 
-#include <array>
 #include <asio.hpp>
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 
 #define HEADER_SIZE 4
 
@@ -41,31 +41,27 @@ shared_ptr<CoAP_Message> makeAcknowledgementMessage(udp::endpoint receiver,
 
 class CoAP_Port {
   ip::udp::socket socket_;
+  unsigned int task_execution_period_;
   shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages_;
   shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages_;
+  shared_ptr<Logger> logger_;
 
   void receive() {
-    std::vector<char> header(HEADER_SIZE);
+    vector<char> header(HEADER_SIZE);
     udp::endpoint remote_endpoint;
-    asio::error_code return_code;
 
-    socket_.receive_from(asio::buffer(header, HEADER_SIZE), remote_endpoint, 0,
-                         return_code);
-    handleReturnCode("Could not receive packet header due to error:",
-                     return_code);
+    future<size_t> header_future = socket_.async_receive_from(
+        asio::buffer(header, HEADER_SIZE), remote_endpoint, asio::use_future);
 
-    if (header[0] != 0) {
+    if (header_future.wait_for(asio::chrono::seconds(task_execution_period_)) ==
+        future_status::ready) {
       CoAP_Header coap_header(move(header));
-      std::vector<char> body(coap_header.getTokenLenght());
+      vector<char> body(coap_header.getTokenLenght());
       if (coap_header.getTokenLenght() > 0) {
-        socket_.receive_from(asio::buffer(body, coap_header.getTokenLenght()),
-                             remote_endpoint, 0, return_code);
-        handleReturnCode("Could not receive packet body due to error:",
-                         return_code);
-      }
-      if (coap_header.getMesageType() == MessageType::CONFIRMABLE) {
-        send(makeAcknowledgementMessage(remote_endpoint,
-                                        coap_header.getMessageID()));
+        future<size_t> body_future = socket_.async_receive_from(
+            asio::buffer(body, coap_header.getTokenLenght()), remote_endpoint,
+            asio::use_future);
+        body_future.wait_for(asio::chrono::seconds(task_execution_period_));
       }
       incominng_messages_->push(
           CoAP_Message(remote_endpoint.address().to_string(),
@@ -90,12 +86,19 @@ class CoAP_Port {
 
 public:
   CoAP_Port(bool ip_v6_handler, unsigned int port_id, io_context &io_context,
+            unsigned int task_execution_period,
             shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages,
             shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages)
       : socket_(io_context,
                 udp::endpoint(selectProtocol(ip_v6_handler), port_id)),
+        task_execution_period_(task_execution_period),
         incominng_messages_(incominng_messages),
-        outgoing_messages_(outgoing_messages) {}
+        outgoing_messages_(outgoing_messages),
+        logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+
+  ~CoAP_Port() {
+    LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+  }
 
   void run() {
     shared_ptr<CoAP_Message> message = outgoing_messages_->try_pop();
@@ -122,8 +125,8 @@ CoAP_Server::~CoAP_Server() {
 
 void CoAP_Server::run() {
   io_context io_context;
-  CoAP_Port port(ip_v6_handler_, port_id_, io_context, incominng_messages_,
-                 outgoing_messages_);
+  CoAP_Port port(ip_v6_handler_, port_id_, io_context, task_execution_period_,
+                 incominng_messages_, outgoing_messages_);
   do {
     try {
       port.run();
@@ -140,5 +143,15 @@ shared_ptr<CoAP_Message> CoAP_Server::pullRequest() {
 
 void CoAP_Server::pushResponse(CoAP_Message &message) {
   outgoing_messages_->push(move(message));
+}
+
+shared_ptr<ThreadsafeQueue<CoAP_Message>>
+CoAP_Server::getIncomingMessagesQueue() {
+  return incominng_messages_;
+}
+
+shared_ptr<ThreadsafeQueue<CoAP_Message>>
+CoAP_Server::getOutgoingMessagesQueue() {
+  return outgoing_messages_;
 }
 } // namespace LwM2M_Server
