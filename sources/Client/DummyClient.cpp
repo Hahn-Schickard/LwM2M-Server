@@ -51,19 +51,5 @@ DummyClient::DummyClient(bool ip_v6_handler, const std::string &ip_address,
 void DummyClient::sendMessage(CoAP_Message message) {
   printOutgoing(message);
   socket.send_to(asio::buffer(message.toPacket()), receiver_endpoint);
-
-  std::vector<char> header(4);
-  udp::endpoint sender_endpoint;
-  socket.receive_from(asio::buffer(header, 4), sender_endpoint);
-  CoAP_Header coap_header(move(header));
-
-  std::vector<char> body(coap_header.getTokenLenght());
-  if (coap_header.getTokenLenght() > 0) {
-    socket.receive_from(asio::buffer(body, coap_header.getTokenLenght()),
-                        sender_endpoint);
-  }
-
-  printIncoming(CoAP_Message(sender_endpoint.address().to_string(),
-                             sender_endpoint.port(), move(coap_header), body));
 }
 } // namespace LwM2M_Client
