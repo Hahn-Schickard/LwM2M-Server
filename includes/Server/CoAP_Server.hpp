@@ -30,6 +30,11 @@ struct CoAP_Server {
   std::shared_ptr<CoAP::CoAP_Message> pullRequest();
   void pushResponse(CoAP::CoAP_Message &message);
 
+  std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>>
+  getIncomingMessagesQueue();
+  std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>>
+  getOutgoingMessagesQueue();
+
 private:
   bool ip_v6_handler_;
   unsigned int port_id_;
