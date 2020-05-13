@@ -100,7 +100,7 @@ public:
     LoggerRepository::getInstance().deregisterLoger(logger_->getName());
   }
 
-  void run() {
+  void listen() {
     shared_ptr<CoAP_Message> message = outgoing_messages_->try_pop();
     if (message) {
       send(move(message));
@@ -114,7 +114,6 @@ CoAP_Server::CoAP_Server(bool ip_v6_handler, unsigned int port_id,
                          unsigned int task_execution_period)
     : ip_v6_handler_(ip_v6_handler), port_id_(port_id),
       task_execution_period_(task_execution_period),
-      exitFuture_(exitSignal_.get_future()),
       incominng_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
       outgoing_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)){};
@@ -129,10 +128,10 @@ void CoAP_Server::run() {
                  incominng_messages_, outgoing_messages_);
   do {
     try {
-      port.run();
+      port.listen();
     } catch (Network_IO_Exception &ex) {
       logger_->log(SeverityLevel::ERROR, ex.what());
-      port.run();
+      port.listen();
     }
   } while (!stopRequested());
 }
