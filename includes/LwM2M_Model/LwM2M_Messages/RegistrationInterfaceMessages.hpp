@@ -1,0 +1,55 @@
+#ifndef __LWM2M_MODEL_REGISTRATION_INTERFACE_MESSAGES_HPP
+#define __LWM2M_MODEL_REGISTRATION_INTERFACE_MESSAGES_HPP
+
+#include "LwM2M_Message.hpp"
+
+#include <optional>
+#include <string>
+#include <unordered_map>
+
+namespace LwM2M_Model {
+typedef enum LwM2M_VersionEnum { V1_0, V1_1 } LwM2M_Version;
+
+typedef enum BindingTypeEnum { UDP, TCP, SMS, NON_IP } BindingType;
+
+class Register_Request {
+  std::string endpoint_name_;
+  size_t life_time_;
+  LwM2M_Version version_;
+  BindingType binding_;
+  bool queue_mode_;
+  std::optional<size_t> sms_number_;
+  std::unordered_map<unsigned int, unsigned int> object_instances_map_;
+
+public:
+  Register_Request(
+      std::string endpoint_name, size_t life_time, LwM2M_Version version,
+      BindingType binding, bool queue_mode, std::optional<size_t> sms_number,
+      std::unordered_map<unsigned int, unsigned int> object_instances_map);
+};
+
+class Update_Request {
+  std::string location_;
+  std::optional<size_t> lifetime_;
+  std::optional<BindingType> binding_;
+  std::optional<size_t> sms_number_;
+  std::optional<std::unordered_map<unsigned int, unsigned int>>
+      object_instances_map_;
+
+public:
+  Update_Request(std::string location, std::optional<size_t> lifetime,
+                 std::optional<BindingType> binding,
+                 std::optional<size_t> sms_number,
+                 std::optional<std::unordered_map<unsigned int, unsigned int>>
+                     object_instances_map);
+};
+
+class Deregister_Request {
+  std::string location_;
+
+public:
+  Deregister_Request(std::string location);
+};
+}; // namespace LwM2M_Model
+
+#endif //__LWM2M_MODEL_REGISTRATION_INTERFACE_MESSAGES_HPP
