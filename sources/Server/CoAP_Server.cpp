@@ -2,6 +2,7 @@
 #include "LoggerRepository.hpp"
 
 #include <asio.hpp>
+#include <deque>
 #include <functional>
 #include <memory>
 #include <string>

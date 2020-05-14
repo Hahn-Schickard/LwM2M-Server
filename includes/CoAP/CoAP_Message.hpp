@@ -2,6 +2,8 @@
 #define __COAP_MESSAGE_DEFINITION_HPP
 
 #include <cstdint>
+#include <deque>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -68,10 +70,46 @@ public:
   uint16_t getMessageID();
 };
 
+typedef enum OptionNumberEnum {
+  RESERVED = 0,
+  IF_MATCH = 1,
+  URI_HOST = 3,
+  ETAG = 4,
+  IF_NONE_MATCH = 5,
+  URI_PORT = 7,
+  LOCATION_PATH = 8,
+  URI_PATH = 11,
+  CONTENT_FORMAT = 12,
+  MAX_AGE = 14,
+  URI_QUERY = 15,
+  ACCEPT = 17,
+  LOCATION_QUERY = 20,
+  PROXY_URI = 35,
+  PROXY_SCHEME = 39,
+  SIZE_1 = 60
+} OptionNumber;
+
+class CoAP_Option {
+  unsigned int option_number_;
+  std::string value_;
+  size_t option_size_;
+
+public:
+  CoAP_Option();
+  CoAP_Option(std::optional<CoAP_Option> previous, std::deque<char> options);
+
+  size_t size();
+
+  unsigned int getOptionNumber();
+  std::string getValue();
+};
+
 class CoAP_Message {
   std::string receiver_ip_;
   unsigned int receiver_port_;
   CoAP_Header header_;
+  std::optional<std::vector<char>> token_;
+  std::optional<std::vector<CoAP_Option>> options_;
   std::vector<char> body_;
 
 public:
@@ -83,6 +121,8 @@ public:
   std::string getReceiverIP();
   unsigned int getReceiverPort();
   CoAP_Header &getHeader();
+  std::optional<std::vector<char>> getToken();
+  std::optional<std::vector<CoAP_Option>> getOptions();
   std::vector<char> getBody();
 };
 } // namespace CoAP

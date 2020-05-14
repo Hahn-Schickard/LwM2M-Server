@@ -28,6 +28,14 @@ void printCoAPMessage(shared_ptr<CoAP_Message> message) {
   cout << endl;
 }
 
+CoAP_Message makeDummyMessage(const string &receiver_address, unsigned int port,
+                              int message_id) {
+  return CoAP_Message(
+      receiver_address, port,
+      CoAP_Header(MessageType::CONFIRMABLE, 0, CodeType::GET, message_id),
+      vector<char>{0xF});
+}
+
 int main() {
 
   auto logger = LoggerRepository::getInstance().registerLoger("Example_Runner");
@@ -39,14 +47,10 @@ int main() {
   LwM2M_Client::DummyClient client(false, "127.0.0.1", 16833);
   try {
     server_thread = thread([&]() { server.run(); });
-    this_thread::sleep_for(chrono::seconds(1));
     client_thread = thread([&]() {
       int message_id = 0;
       do {
-        client.sendMessage(CoAP_Message(
-            "127.0.0.1", 16833,
-            CoAP_Header(MessageType::CONFIRMABLE, 0, CodeType::GET, message_id),
-            vector<char>()));
+        client.sendMessage(makeDummyMessage("127.0.0.1", 16833, message_id));
         message_id++;
       } while (!server.stopRequested());
     });

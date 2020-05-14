@@ -1,7 +1,22 @@
 #include "CoAP_Message.hpp"
 
+#include <exception>
+
+#define BYTE_MSB_MASK 0xF0
+#define BYTE_LSB_MASK 0xF
+#define BYTE_LONG 0xD
+#define BYTE_LONG_OFFSET 0xD
+#define SHORT_LONG 0xE
+#define SHORT_LONG_OFFSET 0x10D
+#define PAYLOAD_DELTA 0xF
+#define PAYLOAD_MARKER 0xF
+
 using namespace std;
 namespace CoAP {
+
+struct PayloadMarkerDetected : public exception {
+  const char *what() const throw() { return "Payload Marker Detected"; }
+};
 
 string toString(MessageType type) {
   switch (type) {
@@ -91,6 +106,17 @@ string toString(CodeType type) {
   }
 }
 
+string toHexString(deque<char> data_set) {
+  char const hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                              '8', '9', 'A', 'B', 'C', 'D', 'F'};
+  string hex;
+  for (auto byte : data_set) {
+    hex += hex_chars[(byte & BYTE_MSB_MASK) >> 4];
+    hex += hex_chars[(byte & BYTE_LSB_MASK)];
+  }
+  return hex;
+}
+
 CoAP_Header::CoAP_Header() : CoAP_Header(vector<char>(4, 0)) {}
 
 CoAP_Header::CoAP_Header(vector<char> data) {
@@ -137,13 +163,126 @@ CodeType CoAP_Header::getCodeType() { return code_; }
 
 uint16_t CoAP_Header::getMessageID() { return message_id_; }
 
+CoAP_Option::CoAP_Option() : CoAP_Option(nullopt, deque<char>()) {}
+
+CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
+                         deque<char> option)
+    : option_number_(0), value_(string()), option_size_(0) {
+  unsigned short delta;
+  unsigned short lentgth;
+
+  if (!option.empty()) {
+    if (option[0] != PAYLOAD_MARKER) {
+      uint8_t value_offset = 0;
+      option_size_ = 1;
+
+      uint8_t msb = option[0] & BYTE_MSB_MASK;
+      switch (msb) {
+      case BYTE_LONG: {
+        delta = option[1] + BYTE_LONG_OFFSET;
+        value_offset++;
+        option_size_++;
+        break;
+      }
+      case SHORT_LONG: {
+        delta = option[1] + option[2] + SHORT_LONG_OFFSET;
+        value_offset += 2;
+        option_size_ += 2;
+        break;
+      }
+      case PAYLOAD_DELTA: {
+        string error_msg =
+            "Malformated CoAP option: Delta set to 0xF, but the byte " +
+            toHexString(option) + " is not equal to 0xFF";
+        throw Network_IO_Exception(error_msg);
+      }
+      default: {
+        delta = msb;
+        break;
+      }
+      }
+
+      uint8_t lsb = option[0] & BYTE_LSB_MASK;
+      switch (lsb) {
+      case BYTE_LONG: {
+        lentgth = option[1] + BYTE_LONG_OFFSET;
+        value_offset++;
+        option_size_++;
+        break;
+      }
+      case SHORT_LONG: {
+        lentgth = option[1] + option[2] + SHORT_LONG_OFFSET;
+        value_offset += 2;
+        option_size_ += 2;
+        break;
+      }
+      case PAYLOAD_DELTA: {
+        string error_msg = "Malformated CoAP option length";
+        throw Network_IO_Exception(error_msg);
+      }
+      default: {
+        lentgth = lsb;
+        break;
+      }
+      }
+
+      if (previous) {
+        option_number_ = delta + previous->getOptionNumber();
+      } else {
+        option_number_ = delta;
+      }
+      if (lentgth != 0) {
+        value_ = string(&option[value_offset], lentgth);
+        option_size_ += lentgth;
+      }
+    } else {
+      throw PayloadMarkerDetected();
+    }
+  }
+}
+
+size_t CoAP_Option::size() { return option_size_; }
+
+unsigned int CoAP_Option::getOptionNumber() { return option_number_; }
+
+std::string CoAP_Option::getValue() { return value_; }
+
 CoAP_Message::CoAP_Message()
     : CoAP_Message(string(), 0, CoAP_Header(), vector<char>()) {}
 
 CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
                            CoAP_Header header_data, vector<char> body_data)
     : receiver_ip_(receiver_ip), receiver_port_(receiver_port),
-      header_(move(header_data)), body_(move(body_data)) {}
+      header_(move(header_data)) {
+  deque<char> payload(body_data.begin(), body_data.end());
+
+  if (header_.getTokenLenght() != 0) {
+    uint8_t index = header_.getTokenLenght();
+    while (index != 0) {
+      token_->push_back(payload.front());
+      payload.pop_front();
+      index--;
+    }
+  } else {
+    token_ = nullopt;
+  }
+
+  optional<CoAP_Option> previous = nullopt;
+  optional<CoAP_Option> current;
+  bool continue_flag = true;
+  do {
+    try {
+      current = CoAP_Option(previous, payload);
+      options_->push_back(current.value());
+      previous = current;
+      payload.erase(payload.begin(), payload.begin() + current->size());
+    } catch (PayloadMarkerDetected &exp) {
+      continue_flag = false;
+    }
+  } while (continue_flag);
+
+  body_ = vector<char>(payload.begin(), payload.end());
+}
 
 vector<char> CoAP_Message::toPacket() {
   auto result = header_.toPacket();
@@ -156,6 +295,12 @@ string CoAP_Message::getReceiverIP() { return receiver_ip_; }
 unsigned int CoAP_Message::getReceiverPort() { return receiver_port_; }
 
 CoAP_Header &CoAP_Message::getHeader() { return header_; }
+
+std::optional<std::vector<char>> CoAP_Message::getToken() { return token_; }
+
+std::optional<std::vector<CoAP_Option>> CoAP_Message::getOptions() {
+  return options_;
+}
 
 vector<char> CoAP_Message::getBody() { return body_; }
 } // namespace CoAP
