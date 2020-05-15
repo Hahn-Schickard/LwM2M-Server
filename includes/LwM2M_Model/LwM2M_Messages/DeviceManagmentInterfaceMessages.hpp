@@ -8,7 +8,13 @@
 #include <unordered_map>
 
 namespace LwM2M_Model {
-class Read_Request {
+class DeviceManagment_Interface_Message : public LwM2M_Message {
+public:
+  DeviceManagment_Interface_Message(MessageType message_type)
+      : LwM2M_Message(InterfaceType::DEVICE_MANAGMENT, message_type) {}
+};
+
+class Read_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
@@ -21,7 +27,7 @@ public:
                std::optional<unsigned int> resoruce_instance_id);
 };
 
-class Discover_Request {
+class Discover_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
@@ -32,7 +38,7 @@ public:
                    std::optional<unsigned int> resource_id);
 };
 
-class Write_Request {
+class Write_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   unsigned int object_instance_id_;
   std::optional<unsigned int> resource_id_;
@@ -46,33 +52,22 @@ public:
                 std::string value);
 };
 
-class Write_Attributes_Request {
+class Write_Attributes_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
   std::optional<unsigned int> resoruce_instance_id_;
-  std::optional<unsigned int> minimum_period_;
-  std::optional<unsigned int> maximum_period_;
-  std::optional<unsigned int> greater_than_;
-  std::optional<unsigned int> less_than_;
-  std::optional<unsigned int> step_;
-  std::optional<unsigned int> minimum_evaluation_period_;
-  std::optional<unsigned int> maximum_evaluation_period_;
+  std::optional<Notify_Attripube> notify_attribute_;
 
 public:
-  Write_Attributes_Request(
-      unsigned int object_id, std::optional<unsigned int> object_instance_id,
-      std::optional<unsigned int> resource_id,
-      std::optional<unsigned int> resoruce_instance_id,
-      std::optional<unsigned> int minimum_period,
-      std::optional<unsigned> int maximum_period,
-      std::optional<unsigned> int greater_than,
-      std::optional<unsigned int> less_than, std::optional<unsigned> int step,
-      std::optional<unsigned> int minimum_evaluation_period,
-      std::optional<unsigned> int maximum_evaluation_period);
+  Write_Attributes_Request(unsigned int object_id,
+                           std::optional<unsigned int> object_instance_id,
+                           std::optional<unsigned int> resource_id,
+                           std::optional<unsigned int> resoruce_instance_id,
+                           std::optional<Notify_Attripube> notify_attribute);
 };
 
-class Execute_Request {
+class Execute_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   unsigned int object_instance_id_;
   unsigned int resource_id_;
@@ -85,7 +80,7 @@ public:
                   std::optional<std::string> arguments);
 };
 
-class Create_Request {
+class Create_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::string value_;
 
@@ -93,7 +88,7 @@ public:
   Create_Request(unsigned int object_id, std::string value);
 };
 
-class Delete_Request {
+class Delete_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   unsigned int object_instance_id_;
 
@@ -101,18 +96,14 @@ public:
   Delete_Request(unsigned int object_id, unsigned int object_instance_id);
 };
 
-class ReadComoposite_Request {
+class ReadComoposite_Request : public DeviceManagment_Interface_Message {
 public:
-  ReadComoposite_Request() {
-    throw UnsupportedOperation("Read-Composite operation is not supported!");
-  }
+  ReadComoposite_Request();
 };
 
-class WriteComoposite_Request {
+class WriteComoposite_Request : public DeviceManagment_Interface_Message {
 public:
-  WriteComoposite_Request() {
-    throw UnsupportedOperation("Write-Composite operation is not supported!");
-  }
+  WriteComoposite_Request();
 };
 } // namespace LwM2M_Model
 

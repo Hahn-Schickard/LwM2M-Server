@@ -12,7 +12,13 @@ typedef enum LwM2M_VersionEnum { V1_0, V1_1 } LwM2M_Version;
 
 typedef enum BindingTypeEnum { UDP, TCP, SMS, NON_IP } BindingType;
 
-class Register_Request {
+class Regirstration_Interface_Message : public LwM2M_Message {
+public:
+  Regirstration_Interface_Message(MessageType message_type)
+      : LwM2M_Message(InterfaceType::REGISTRATION, message_type) {}
+};
+
+class Register_Request : public Regirstration_Interface_Message {
   std::string endpoint_name_;
   size_t life_time_;
   LwM2M_Version version_;
@@ -28,7 +34,7 @@ public:
       std::unordered_map<unsigned int, unsigned int> object_instances_map);
 };
 
-class Update_Request {
+class Update_Request : public Regirstration_Interface_Message {
   std::string location_;
   std::optional<size_t> lifetime_;
   std::optional<BindingType> binding_;
@@ -44,7 +50,7 @@ public:
                      object_instances_map);
 };
 
-class Deregister_Request {
+class Deregister_Request : public Regirstration_Interface_Message {
   std::string location_;
 
 public:

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace LwM2M_Model {
 
-std::string toString(InterfaceType type) {
+string toString(InterfaceType type) {
   switch (type) {
   case InterfaceType::REGISTRATION: {
     return "Registration Interface";
@@ -23,7 +23,7 @@ std::string toString(InterfaceType type) {
   }
 }
 
-std::string toString(MessageType type) {
+string toString(MessageType type) {
   switch (type) {
   case MessageType::REGISTER: {
     return "Registration";
@@ -77,21 +77,30 @@ std::string toString(MessageType type) {
   }
 }
 
+Notify_Attripube::Notify_Attripube(
+    optional<unsigned int> minimum_period,
+    optional<unsigned int> maximum_period, optional<unsigned int> greater_than,
+    optional<unsigned int> less_than, optional<unsigned int> step,
+    optional<unsigned int> minimum_evaluation_period,
+    optional<unsigned int> maximum_evaluation_period)
+    : minimum_period_(move(minimum_period)),
+      maximum_period_(move(maximum_period)), greater_than_(move(greater_than)),
+      less_than_(move(less_than)), step_(move(step)),
+      minimum_evaluation_period_(move(minimum_evaluation_period)),
+      maximum_evaluation_period_(move(maximum_evaluation_period)) {}
+
 LwM2M_Message::LwM2M_Message(InterfaceType interface_type,
-                             MessageType message_type, std::string message)
-    : interface_type_(interface_type), message_type_(message_type),
-      message_(message) {
+                             MessageType message_type)
+    : interface_type_(interface_type), message_type_(message_type) {
   if (interface_type_ != (message_type_ & INTERFACE_MASK)) {
-    std::string error_msg = toString(interface_type_) + "does not supprot " +
-                            toString(message_type_) + " message type";
-    throw std::logic_error(error_msg);
+    string error_msg = toString(interface_type_) + "does not supprot " +
+                       toString(message_type_) + " message type";
+    throw logic_error(error_msg);
   }
 }
 
 InterfaceType LwM2M_Message::getInterfaceType() { return interface_type_; }
 
 MessageType LwM2M_Message::getMessageType() { return message_type_; }
-
-std::string LwM2M_Message::getMessage() { return message_; }
 
 } // namespace LwM2M_Model

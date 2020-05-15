@@ -7,8 +7,14 @@
 #include <string>
 #include <unordered_map>
 
-namespace LwM2M {
-class Observe_Request {
+namespace LwM2M_Model {
+class InformationReporting_Interface_Message : public LwM2M_Message {
+public:
+  InformationReporting_Interface_Message(MessageType message_type)
+      : LwM2M_Message(InterfaceType::INFORMATION_REPORTING, message_type) {}
+};
+
+class Observe_Request : public InformationReporting_Interface_Message {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
@@ -21,7 +27,7 @@ public:
                   std::optional<unsigned int> resoruce_instance_id);
 };
 
-class Notify_Request {
+class Notify_Request : public InformationReporting_Interface_Message {
   std::string token_;
   std::string value_;
 
@@ -29,34 +35,29 @@ public:
   Notify_Request(std::string token, std::string value);
 };
 
-class CancelObservation_Request {
+class CancelObservation_Request
+    : public InformationReporting_Interface_Message {
   std::string location_;
 
 public:
   CancelObservation_Request(std::string location);
 };
 
-class ObserveComposite_Request {
+class ObserveComposite_Request : public InformationReporting_Interface_Message {
 public:
-  ObserveComposite_Request() {
-    throw UnsupportedOperation("Observe-Composite operation is not supported!");
-  }
+  ObserveComposite_Request();
 };
 
-class CancelObserveComposite_Request {
+class CancelObserveComposite_Request
+    : public InformationReporting_Interface_Message {
 public:
-  CancelObserveComposite_Request() {
-    throw UnsupportedOperation(
-        "Cancel Observe-Composite operation is not supported!");
-  }
+  CancelObserveComposite_Request();
 };
 
-class Send_Request {
+class Send_Request : public InformationReporting_Interface_Message {
 public:
-  Send_Request() {
-    throw UnsupportedOperation("Send operation is not supported!");
-  }
+  Send_Request();
 };
-} // namespace LwM2M
+} // namespace LwM2M_Model
 
 #endif //__LWM2M_MODEL_INFORMATION_REPORTING_INTERFACE_MESSAGES_HPP

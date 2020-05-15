@@ -4,10 +4,13 @@
 #include "CoAP_Message.hpp"
 #include "LwM2M_Message.hpp"
 
+#include <memory>
+
 namespace LwM2M_Model {
 
-LwM2M_Message &convert(CoAP::CoAP_Message input);
-CoAP::CoAP_Message &convert(LwM2M_Message input);
+std::unique_ptr<LwM2M_Message>
+convert(std::shared_ptr<CoAP::CoAP_Message> input);
+CoAP::CoAP_Message &convert(std::unique_ptr<LwM2M_Message> input);
 
 } // namespace LwM2M_Model
 
