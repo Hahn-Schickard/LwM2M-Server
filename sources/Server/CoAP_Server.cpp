@@ -37,7 +37,7 @@ shared_ptr<CoAP_Message> makeAcknowledgementMessage(udp::endpoint receiver,
   return make_shared<CoAP_Message>(
       receiver.address().to_string(), receiver.port(),
       CoAP_Header(MessageType::ACKNOWLEDGMENT, 0, CodeType::OK, message_id),
-      vector<char>());
+      vector<uint8_t>());
 }
 
 class CoAP_Port {
@@ -48,7 +48,7 @@ class CoAP_Port {
   shared_ptr<Logger> logger_;
 
   void receive() {
-    vector<char> header(HEADER_SIZE);
+    vector<uint8_t> header(HEADER_SIZE);
     udp::endpoint remote_endpoint;
 
     future<size_t> header_future = socket_.async_receive_from(
@@ -57,7 +57,7 @@ class CoAP_Port {
     if (header_future.wait_for(asio::chrono::seconds(task_execution_period_)) ==
         future_status::ready) {
       CoAP_Header coap_header(move(header));
-      vector<char> body(coap_header.getTokenLenght());
+      vector<uint8_t> body(coap_header.getTokenLenght());
       if (coap_header.getTokenLenght() > 0) {
         future<size_t> body_future = socket_.async_receive_from(
             asio::buffer(body, coap_header.getTokenLenght()), remote_endpoint,

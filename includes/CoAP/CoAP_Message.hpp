@@ -59,11 +59,11 @@ class CoAP_Header {
 
 public:
   CoAP_Header();
-  CoAP_Header(std::vector<char> data);
+  CoAP_Header(std::vector<uint8_t> data);
   CoAP_Header(MessageType type, uint8_t message_length, CodeType code_type,
               uint16_t message_id);
 
-  std::vector<char> toPacket();
+  std::vector<uint8_t> toPacket();
   MessageType getMesageType();
   uint8_t getTokenLenght();
   CodeType getCodeType();
@@ -96,7 +96,7 @@ class CoAP_Option {
 
 public:
   CoAP_Option();
-  CoAP_Option(std::optional<CoAP_Option> previous, std::deque<char> options);
+  CoAP_Option(std::optional<CoAP_Option> previous, std::deque<uint8_t> options);
 
   size_t size();
 
@@ -108,22 +108,22 @@ class CoAP_Message {
   std::string receiver_ip_;
   unsigned int receiver_port_;
   CoAP_Header header_;
-  std::optional<std::vector<char>> token_;
+  std::optional<std::vector<uint8_t>> token_;
   std::optional<std::vector<CoAP_Option>> options_;
-  std::vector<char> body_;
+  std::vector<uint8_t> body_;
 
 public:
   CoAP_Message();
   CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
-               CoAP_Header header_data, std::vector<char> body_data);
+               CoAP_Header header_data, std::vector<uint8_t> body_data);
 
-  std::vector<char> toPacket();
+  std::vector<uint8_t> toPacket();
   std::string getReceiverIP();
   unsigned int getReceiverPort();
   CoAP_Header &getHeader();
-  std::optional<std::vector<char>> getToken();
+  std::optional<std::vector<uint8_t>> getToken();
   std::optional<std::vector<CoAP_Option>> getOptions();
-  std::vector<char> getBody();
+  std::vector<uint8_t> getBody();
 };
 } // namespace CoAP
 #endif //__COAP_MESSAGE_DEFINITION_HPP

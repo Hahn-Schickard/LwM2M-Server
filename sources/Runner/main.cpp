@@ -33,7 +33,7 @@ CoAP_Message makeDummyMessage(const string &receiver_address, unsigned int port,
   return CoAP_Message(
       receiver_address, port,
       CoAP_Header(MessageType::CONFIRMABLE, 0, CodeType::GET, message_id),
-      vector<char>{0xF});
+      vector<uint8_t>{0xFF});
 }
 
 int main() {
