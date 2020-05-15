@@ -173,20 +173,17 @@ CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
 
   if (!option.empty()) {
     if (option[0] != PAYLOAD_MARKER) {
-      uint8_t value_offset = 0;
       option_size_ = 1;
 
       uint8_t msb = option[0] & BYTE_MSB_MASK;
       switch (msb) {
       case BYTE_LONG: {
         delta = option[1] + BYTE_LONG_OFFSET;
-        value_offset++;
         option_size_++;
         break;
       }
       case SHORT_LONG: {
         delta = option[1] + option[2] + SHORT_LONG_OFFSET;
-        value_offset += 2;
         option_size_ += 2;
         break;
       }
@@ -206,13 +203,11 @@ CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
       switch (lsb) {
       case BYTE_LONG: {
         lentgth = option[1] + BYTE_LONG_OFFSET;
-        value_offset++;
         option_size_++;
         break;
       }
       case SHORT_LONG: {
         lentgth = option[1] + option[2] + SHORT_LONG_OFFSET;
-        value_offset += 2;
         option_size_ += 2;
         break;
       }
@@ -232,7 +227,7 @@ CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
         option_number_ = delta;
       }
       if (lentgth != 0) {
-        value_ = string(&option[value_offset], lentgth);
+        value_ = string(&option[option_size_ - 1], lentgth);
         option_size_ += lentgth;
       }
     } else {
@@ -269,17 +264,21 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
 
   optional<CoAP_Option> previous = nullopt;
   optional<CoAP_Option> current;
-  bool continue_flag = true;
   do {
     try {
-      current = CoAP_Option(previous, payload);
-      options_->push_back(current.value());
-      previous = current;
-      payload.erase(payload.begin(), payload.begin() + current->size());
+      if (!payload.empty()) {
+        current = CoAP_Option(previous, payload);
+        options_->push_back(current.value());
+        previous = current;
+        payload.erase(payload.begin(), payload.begin() + current->size());
+      } else {
+        throw Network_IO_Exception(
+            "Received a CoAP message without payload marker.");
+      }
     } catch (PayloadMarkerDetected &exp) {
-      continue_flag = false;
+      break;
     }
-  } while (continue_flag);
+  } while (true);
 
   body_ = vector<char>(payload.begin(), payload.end());
 }
