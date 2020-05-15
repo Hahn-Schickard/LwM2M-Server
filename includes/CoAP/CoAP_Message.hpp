@@ -90,7 +90,7 @@ typedef enum OptionNumberEnum {
 } OptionNumber;
 
 class CoAP_Option {
-  unsigned int option_number_;
+  OptionNumber option_number_;
   std::string value_;
   size_t option_size_;
 
@@ -100,7 +100,7 @@ public:
 
   size_t size();
 
-  unsigned int getOptionNumber();
+  OptionNumber getOptionNumber();
   std::string getValue();
 };
 

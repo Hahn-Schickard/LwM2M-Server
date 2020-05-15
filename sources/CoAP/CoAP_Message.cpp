@@ -163,11 +163,49 @@ CodeType CoAP_Header::getCodeType() { return code_; }
 
 uint16_t CoAP_Header::getMessageID() { return message_id_; }
 
+OptionNumber makeOptionNumber(unsigned int number) {
+  switch (number) {
+  case 1:
+    return OptionNumber::IF_MATCH;
+  case 3:
+    return OptionNumber::URI_HOST;
+  case 4:
+    return OptionNumber::ETAG;
+  case 5:
+    return OptionNumber::IF_NONE_MATCH;
+  case 7:
+    return OptionNumber::URI_PORT;
+  case 8:
+    return OptionNumber::LOCATION_PATH;
+  case 11:
+    return OptionNumber::URI_PATH;
+  case 12:
+    return OptionNumber::CONTENT_FORMAT;
+  case 15:
+    return OptionNumber::MAX_AGE;
+  case 17:
+    return OptionNumber::ACCEPT;
+  case 20:
+    return OptionNumber::LOCATION_QUERY;
+  case 35:
+    return OptionNumber::PROXY_URI;
+  case 39:
+    return OptionNumber::PROXY_SCHEME;
+  case 60:
+    return OptionNumber::SIZE_1;
+  default: {
+    string error_msg = "Received an unhandled CoAP option: " + number;
+    throw Network_IO_Exception(error_msg);
+  }
+  }
+}
+
 CoAP_Option::CoAP_Option() : CoAP_Option(nullopt, deque<char>()) {}
 
 CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
                          deque<char> option)
-    : option_number_(0), value_(string()), option_size_(0) {
+    : option_number_(OptionNumber::RESERVED), value_(string()),
+      option_size_(0) {
   unsigned short delta;
   unsigned short lentgth;
 
@@ -222,10 +260,11 @@ CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
       }
 
       if (previous) {
-        option_number_ = delta + previous->getOptionNumber();
+        option_number_ = makeOptionNumber(delta + previous->getOptionNumber());
       } else {
-        option_number_ = delta;
+        option_number_ = makeOptionNumber(delta);
       }
+
       if (lentgth != 0) {
         value_ = string(&option[option_size_ - 1], lentgth);
         option_size_ += lentgth;
@@ -238,7 +277,7 @@ CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
 
 size_t CoAP_Option::size() { return option_size_; }
 
-unsigned int CoAP_Option::getOptionNumber() { return option_number_; }
+OptionNumber CoAP_Option::getOptionNumber() { return option_number_; }
 
 std::string CoAP_Option::getValue() { return value_; }
 
