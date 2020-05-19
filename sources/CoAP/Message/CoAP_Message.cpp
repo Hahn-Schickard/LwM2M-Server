@@ -1,23 +1,12 @@
 #include "CoAP_Message.hpp"
+#include "Option_Builder.hpp"
 
 #include <exception>
 
-#define BYTE_MSB_MASK 0xF0
-#define BYTE_LSB_MASK 0xF
-#define BYTE_LONG 0xD
-#define BYTE_LONG_OFFSET 0xD
-#define SHORT_LONG 0xE
-#define SHORT_LONG_OFFSET 0x10D
-#define PAYLOAD_DELTA 0xF
-#define PAYLOAD_MARKER 0xFF
 #define PAYLOAD_MARKER_SIZE 1
 
 using namespace std;
 namespace CoAP {
-
-struct PayloadMarkerDetected : public exception {
-  const char *what() const throw() { return "Payload Marker Detected"; }
-};
 
 string toString(MessageType type) {
   switch (type) {
@@ -107,17 +96,6 @@ string toString(CodeType type) {
   }
 }
 
-string toHexString(deque<uint8_t> bytes, size_t ammount) {
-  char const hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7',
-                              '8', '9', 'A', 'B', 'C', 'D', 'F'};
-  string hex;
-  for (size_t i = 0; i < ammount; i++) {
-    hex += hex_chars[(bytes[i] & BYTE_MSB_MASK) >> 4];
-    hex += hex_chars[(bytes[i] & BYTE_LSB_MASK)];
-  }
-  return hex;
-}
-
 CoAP_Header::CoAP_Header() : CoAP_Header(vector<uint8_t>(4, 0)) {}
 
 CoAP_Header::CoAP_Header(vector<uint8_t> data) {
@@ -164,126 +142,6 @@ CodeType CoAP_Header::getCodeType() { return code_; }
 
 uint16_t CoAP_Header::getMessageID() { return message_id_; }
 
-OptionNumber makeOptionNumber(unsigned int number) {
-  switch (number) {
-  case 1:
-    return OptionNumber::IF_MATCH;
-  case 3:
-    return OptionNumber::URI_HOST;
-  case 4:
-    return OptionNumber::ETAG;
-  case 5:
-    return OptionNumber::IF_NONE_MATCH;
-  case 7:
-    return OptionNumber::URI_PORT;
-  case 8:
-    return OptionNumber::LOCATION_PATH;
-  case 11:
-    return OptionNumber::URI_PATH;
-  case 12:
-    return OptionNumber::CONTENT_FORMAT;
-  case 15:
-    return OptionNumber::MAX_AGE;
-  case 17:
-    return OptionNumber::ACCEPT;
-  case 20:
-    return OptionNumber::LOCATION_QUERY;
-  case 35:
-    return OptionNumber::PROXY_URI;
-  case 39:
-    return OptionNumber::PROXY_SCHEME;
-  case 60:
-    return OptionNumber::SIZE_1;
-  default: {
-    string error_msg = "Received an unhandled CoAP option: " + number;
-    throw Network_IO_Exception(error_msg);
-  }
-  }
-}
-
-CoAP_Option::CoAP_Option() : CoAP_Option(nullopt, deque<uint8_t>()) {}
-
-CoAP_Option::CoAP_Option(std::optional<CoAP_Option> previous,
-                         deque<uint8_t> option)
-    : option_number_(OptionNumber::RESERVED), value_(string()),
-      option_size_(0) {
-  unsigned short delta;
-  unsigned short lentgth;
-
-  if (!option.empty()) {
-    if (option[0] != PAYLOAD_MARKER) {
-      option_size_ = 1;
-
-      uint8_t msb = option[0] & BYTE_MSB_MASK;
-      switch (msb) {
-      case BYTE_LONG: {
-        delta = option[1] + BYTE_LONG_OFFSET;
-        option_size_++;
-        break;
-      }
-      case SHORT_LONG: {
-        delta = option[1] + option[2] + SHORT_LONG_OFFSET;
-        option_size_ += 2;
-        break;
-      }
-      case PAYLOAD_DELTA: {
-        string error_msg =
-            "Malformated CoAP option: Delta set to 0xF, but the byte " +
-            toHexString(option, 2) + " is not equal to 0xFF";
-        throw Network_IO_Exception(error_msg);
-      }
-      default: {
-        delta = msb;
-        break;
-      }
-      }
-
-      uint8_t lsb = option[0] & BYTE_LSB_MASK;
-      switch (lsb) {
-      case BYTE_LONG: {
-        lentgth = option[1] + BYTE_LONG_OFFSET;
-        option_size_++;
-        break;
-      }
-      case SHORT_LONG: {
-        lentgth = option[1] + option[2] + SHORT_LONG_OFFSET;
-        option_size_ += 2;
-        break;
-      }
-      case PAYLOAD_DELTA: {
-        string error_msg =
-            "Malformated CoAP option: Lenght is set to 0xF, but the byte " +
-            toHexString(option, 2) + " is not equal to 0xFF";
-        throw Network_IO_Exception(error_msg);
-      }
-      default: {
-        lentgth = lsb;
-        break;
-      }
-      }
-
-      if (previous) {
-        option_number_ = makeOptionNumber(delta + previous->getOptionNumber());
-      } else {
-        option_number_ = makeOptionNumber(delta);
-      }
-
-      if (lentgth != 0) {
-        value_ = string(option.begin(), option.begin() + lentgth);
-        option_size_ += lentgth;
-      }
-    } else {
-      throw PayloadMarkerDetected();
-    }
-  }
-}
-
-size_t CoAP_Option::size() { return option_size_; }
-
-OptionNumber CoAP_Option::getOptionNumber() { return option_number_; }
-
-std::string CoAP_Option::getValue() { return value_; }
-
 CoAP_Message::CoAP_Message()
     : CoAP_Message(string(), 0, CoAP_Header(), vector<uint8_t>()) {}
 
@@ -304,18 +162,17 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
     token_ = nullopt;
   }
 
-  optional<CoAP_Option> previous = nullopt;
-  optional<CoAP_Option> current;
+  auto previous = shared_ptr<CoAP_Option>();
+  shared_ptr<CoAP_Option> current;
   do {
     try {
       if (!payload.empty()) {
-        current = CoAP_Option(previous, payload);
-        options_->push_back(current.value());
+        current = build(previous, payload);
+        options_.push_back(current);
         previous = current;
         payload.erase(payload.begin(), payload.begin() + current->size());
       } else {
-        throw Network_IO_Exception(
-            "Received a CoAP message without payload marker.");
+        break; // received a message without a payload
       }
     } catch (PayloadMarkerDetected &exp) {
       payload.erase(payload.begin(), payload.begin() + PAYLOAD_MARKER_SIZE);
@@ -323,7 +180,11 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
     }
   } while (true);
 
-  body_ = vector<uint8_t>(payload.begin(), payload.end());
+  if (!payload.empty()) {
+    body_ = vector<uint8_t>(payload.begin(), payload.end());
+  } else {
+    body_ = vector<uint8_t>(0);
+  }
 }
 
 vector<uint8_t> CoAP_Message::toPacket() {
@@ -338,11 +199,9 @@ unsigned int CoAP_Message::getReceiverPort() { return receiver_port_; }
 
 CoAP_Header &CoAP_Message::getHeader() { return header_; }
 
-std::optional<std::vector<uint8_t>> CoAP_Message::getToken() { return token_; }
+optional<vector<uint8_t>> CoAP_Message::getToken() { return token_; }
 
-std::optional<std::vector<CoAP_Option>> CoAP_Message::getOptions() {
-  return options_;
-}
+vector<shared_ptr<CoAP_Option>> CoAP_Message::getOptions() { return options_; }
 
 vector<uint8_t> CoAP_Message::getBody() { return body_; }
 } // namespace CoAP
