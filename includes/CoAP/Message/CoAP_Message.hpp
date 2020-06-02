@@ -77,7 +77,7 @@ class CoAP_Message {
   std::string receiver_ip_;
   unsigned int receiver_port_;
   CoAP_Header header_;
-  std::optional<std::vector<uint8_t>> token_;
+  std::vector<uint8_t> token_;
   std::vector<std::shared_ptr<CoAP_Option>> options_;
   std::vector<uint8_t> body_;
 
@@ -90,7 +90,7 @@ public:
   std::string getReceiverIP();
   unsigned int getReceiverPort();
   CoAP_Header &getHeader();
-  std::optional<std::vector<uint8_t>> getToken();
+  std::vector<uint8_t> getToken();
   std::vector<std::shared_ptr<CoAP_Option>> getOptions();
   std::vector<uint8_t> getBody();
 };

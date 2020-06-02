@@ -154,12 +154,10 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
   if (header_.getTokenLenght() != 0) {
     uint8_t index = header_.getTokenLenght();
     while (index != 0) {
-      token_->push_back(payload.front());
+      token_.push_back(payload.front());
       payload.pop_front();
       index--;
     }
-  } else {
-    token_ = nullopt;
   }
 
   auto previous = shared_ptr<CoAP_Option>();
@@ -199,7 +197,7 @@ unsigned int CoAP_Message::getReceiverPort() { return receiver_port_; }
 
 CoAP_Header &CoAP_Message::getHeader() { return header_; }
 
-optional<vector<uint8_t>> CoAP_Message::getToken() { return token_; }
+vector<uint8_t> CoAP_Message::getToken() { return token_; }
 
 vector<shared_ptr<CoAP_Option>> CoAP_Message::getOptions() { return options_; }
 
