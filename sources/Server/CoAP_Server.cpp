@@ -157,7 +157,6 @@ void CoAP_Server::run() {
       port.listen();
     } catch (Network_IO_Exception &ex) {
       logger_->log(SeverityLevel::ERROR, ex.what());
-      port.listen();
     }
   } while (!stopRequested());
 }
