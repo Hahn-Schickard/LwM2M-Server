@@ -37,20 +37,21 @@ CoAP_Message makeDummyMessage(const string &receiver_address, unsigned int port,
 }
 
 int main() {
-
-  auto logger = LoggerRepository::getInstance().registerLoger("Example_Runner");
+  auto logger = LoggerRepository::getInstance("./loggerConfig.json")
+                    .registerLoger("Example_Runner");
   LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
   thread server_thread;
-  LwM2M_Server::CoAP_Server server(false, 16833, 1);
+  logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
+  LwM2M_Server::CoAP_Server server(false, 16833, 10);
   thread client_thread;
-  LwM2M_Client::DummyClient client(false, "127.0.0.1", 16833);
+  LwM2M_Client::DummyClient client(false, 16835);
   try {
     server_thread = thread([&]() { server.run(); });
     client_thread = thread([&]() {
       int message_id = 0;
       do {
-        client.sendMessage(makeDummyMessage("127.0.0.1", 16833, message_id));
+        client.sendMessage(makeDummyMessage("0.0.0.0", 16833, message_id));
         message_id++;
       } while (!server.stopRequested());
     });
