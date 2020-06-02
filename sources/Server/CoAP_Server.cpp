@@ -41,7 +41,8 @@ shared_ptr<CoAP_Message> makeAcknowledgementMessage(udp::endpoint receiver,
 }
 
 class CoAP_Port {
-  ip::udp::socket socket_;
+  io_context io_context_;
+  udp::socket socket_;
   unsigned int task_execution_period_;
   shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages_;
   shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages_;
@@ -52,7 +53,8 @@ class CoAP_Port {
     udp::endpoint remote_endpoint;
 
     future<size_t> header_future = socket_.async_receive_from(
-        asio::buffer(header, HEADER_SIZE), remote_endpoint, asio::use_future);
+        asio::buffer(header), remote_endpoint, asio::use_future);
+    run();
 
     if (header_future.wait_for(asio::chrono::seconds(task_execution_period_)) ==
         future_status::ready) {
@@ -62,6 +64,7 @@ class CoAP_Port {
         future<size_t> body_future = socket_.async_receive_from(
             asio::buffer(body, coap_header.getTokenLenght()), remote_endpoint,
             asio::use_future);
+        run();
         body_future.wait_for(asio::chrono::seconds(task_execution_period_));
       }
       incominng_messages_->push(
@@ -85,19 +88,37 @@ class CoAP_Port {
                      return_code);
   }
 
+  void run() {
+    io_context_.restart();
+    if (!io_context_.stopped()) {
+      socket_.cancel();
+      io_context_.run();
+    }
+  }
+
 public:
-  CoAP_Port(bool ip_v6_handler, unsigned int port_id, io_context &io_context,
+  CoAP_Port(bool ip_v6_handler, unsigned int port_id,
             unsigned int task_execution_period,
             shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages,
             shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages)
-      : socket_(io_context,
+      : io_context_(),
+        socket_(io_context_,
                 udp::endpoint(selectProtocol(ip_v6_handler), port_id)),
         task_execution_period_(task_execution_period),
         incominng_messages_(incominng_messages),
         outgoing_messages_(outgoing_messages),
-        logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+        logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+    logger_->log(SeverityLevel::TRACE,
+                 "CoAP_Port::CoAP_Port({},{},{}, incominng_messages_buffer, "
+                 "outgoing_messages_buffer)",
+                 ip_v6_handler, port_id, task_execution_period);
+    logger_->log(SeverityLevel::INFO, "Opening a {} port on {}",
+                 socket_.local_endpoint().port(),
+                 socket_.local_endpoint().address().to_string());
+  }
 
   ~CoAP_Port() {
+    logger_->log(SeverityLevel::TRACE, "~CoAP_Port::CoAP_Port()");
     LoggerRepository::getInstance().deregisterLoger(logger_->getName());
   }
 
@@ -109,7 +130,7 @@ public:
       receive();
     }
   }
-};
+}; // namespace LwM2M_Server
 
 CoAP_Server::CoAP_Server(bool ip_v6_handler, unsigned int port_id,
                          unsigned int task_execution_period)
@@ -117,15 +138,19 @@ CoAP_Server::CoAP_Server(bool ip_v6_handler, unsigned int port_id,
       task_execution_period_(task_execution_period),
       incominng_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
       outgoing_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)){};
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+  logger_->log(SeverityLevel::TRACE, "CoAP_Server::CoAP_Server({},{},{})",
+               ip_v6_handler, port_id, task_execution_period);
+};
 
 CoAP_Server::~CoAP_Server() {
+  logger_->log(SeverityLevel::TRACE, "~CoAP_Server::CoAP_Server()");
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
 void CoAP_Server::run() {
-  io_context io_context;
-  CoAP_Port port(ip_v6_handler_, port_id_, io_context, task_execution_period_,
+  logger_->log(SeverityLevel::TRACE, "CoAP_Server::run()");
+  CoAP_Port port(ip_v6_handler_, port_id_, task_execution_period_,
                  incominng_messages_, outgoing_messages_);
   do {
     try {
@@ -138,20 +163,24 @@ void CoAP_Server::run() {
 }
 
 shared_ptr<CoAP_Message> CoAP_Server::pullRequest() {
+  logger_->log(SeverityLevel::TRACE, "CoAP_Server::pullRequest()");
   return incominng_messages_->wait_and_pop();
 }
 
 void CoAP_Server::pushResponse(CoAP_Message &message) {
+  logger_->log(SeverityLevel::TRACE, "CoAP_Server::pushResponse()");
   outgoing_messages_->push(move(message));
 }
 
 shared_ptr<ThreadsafeQueue<CoAP_Message>>
 CoAP_Server::getIncomingMessagesQueue() {
+  logger_->log(SeverityLevel::TRACE, "CoAP_Server::getIncomingMessagesQueue()");
   return incominng_messages_;
 }
 
 shared_ptr<ThreadsafeQueue<CoAP_Message>>
 CoAP_Server::getOutgoingMessagesQueue() {
+  logger_->log(SeverityLevel::TRACE, "CoAP_Server::getOutgoingMessagesQueue()");
   return outgoing_messages_;
 }
 } // namespace LwM2M_Server
