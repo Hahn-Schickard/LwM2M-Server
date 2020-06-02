@@ -1,6 +1,6 @@
 {
     "log_to_standard_output": false,
-    "logfile_name": "logfile.log",
+    "logfile_name": "lwm2m_server.log",
     "logfile_path": "./log",
     "logging_level": "debug",
     "item_queue_size": 8192,
