@@ -9,12 +9,10 @@
 namespace LwM2M_Client {
 class DummyClient {
   asio::io_context io_context;
-  asio::ip::udp::endpoint receiver_endpoint;
   asio::ip::udp::socket socket;
 
 public:
-  DummyClient(bool ip_v6_handler, const std::string &ip_address,
-              unsigned int port);
+  DummyClient(bool ip_v6_handler, unsigned int port);
 
   void sendMessage(CoAP::CoAP_Message message);
 };

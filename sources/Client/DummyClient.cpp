@@ -41,15 +41,15 @@ void printIncoming(CoAP_Message message) {
   cout << endl;
 }
 
-DummyClient::DummyClient(bool ip_v6_handler, const std::string &ip_address,
-                         unsigned int port)
-    : receiver_endpoint(
-          udp::endpoint(asio::ip::address::from_string(ip_address), port)),
-      socket(io_context,
-             udp::endpoint(selectClientProtocol(ip_v6_handler), 0)) {}
+DummyClient::DummyClient(bool ip_v6_handler, unsigned int port)
+    : socket(io_context,
+             udp::endpoint(selectClientProtocol(ip_v6_handler), port)) {}
 
 void DummyClient::sendMessage(CoAP_Message message) {
-  printOutgoing(message);
-  socket.send_to(asio::buffer(message.toPacket()), receiver_endpoint);
+  // printOutgoing(message);
+  socket.send_to(
+      asio::buffer(message.toPacket()),
+      udp::endpoint(asio::ip::address::from_string(message.getReceiverIP()),
+                    message.getReceiverPort()));
 }
 } // namespace LwM2M_Client
