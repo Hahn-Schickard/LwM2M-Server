@@ -62,40 +62,70 @@ vector<uint8_t> makeAsInt(deque<uint8_t> bytes, unsigned short lenght) {
 }
 
 OptionNumber makeOptionNumber(unsigned int number) {
+  OptionNumber option_number = OptionNumber::RESERVED;
   switch (number) {
-  case 1:
-    return OptionNumber::IF_MATCH;
-  case 3:
-    return OptionNumber::URI_HOST;
-  case 4:
-    return OptionNumber::ETAG;
-  case 5:
-    return OptionNumber::IF_NONE_MATCH;
-  case 7:
-    return OptionNumber::URI_PORT;
-  case 8:
-    return OptionNumber::LOCATION_PATH;
-  case 11:
-    return OptionNumber::URI_PATH;
-  case 12:
-    return OptionNumber::CONTENT_FORMAT;
-  case 15:
-    return OptionNumber::MAX_AGE;
-  case 17:
-    return OptionNumber::ACCEPT;
-  case 20:
-    return OptionNumber::LOCATION_QUERY;
-  case 35:
-    return OptionNumber::PROXY_URI;
-  case 39:
-    return OptionNumber::PROXY_SCHEME;
-  case 60:
-    return OptionNumber::SIZE_1;
+  case 1: {
+    option_number = OptionNumber::IF_MATCH;
+    break;
+  }
+  case 3: {
+    option_number = OptionNumber::URI_HOST;
+    break;
+  }
+  case 4: {
+    option_number = OptionNumber::ETAG;
+    break;
+  }
+  case 5: {
+    option_number = OptionNumber::IF_NONE_MATCH;
+    break;
+  }
+  case 7: {
+    option_number = OptionNumber::URI_PORT;
+    break;
+  }
+  case 8: {
+    option_number = OptionNumber::LOCATION_PATH;
+    break;
+  }
+  case 11: {
+    option_number = OptionNumber::URI_PATH;
+    break;
+  }
+  case 12: {
+    option_number = OptionNumber::CONTENT_FORMAT;
+    break;
+  }
+  case 15: {
+    option_number = OptionNumber::MAX_AGE;
+    break;
+  }
+  case 17: {
+    option_number = OptionNumber::ACCEPT;
+    break;
+  }
+  case 20: {
+    option_number = OptionNumber::LOCATION_QUERY;
+    break;
+  }
+  case 35: {
+    option_number = OptionNumber::PROXY_URI;
+    break;
+  }
+  case 39: {
+    option_number = OptionNumber::PROXY_SCHEME;
+    break;
+  }
+  case 60: {
+    option_number = OptionNumber::SIZE_1;
+    break;
+  }
   default: {
     string error_msg = "Received an unhandled CoAP option: " + number;
     throw domain_error(error_msg);
   }
   }
+  return option_number;
 }
 
 shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,

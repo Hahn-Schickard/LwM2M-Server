@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              CoAP_Option_Core
+                              CoAP_Core
 )
 
 target_include_directories(${THIS} INTERFACE

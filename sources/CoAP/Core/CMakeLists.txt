@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS CoAP_Option_Core)
+set(THIS CoAP_Core)
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/CoAP/Core

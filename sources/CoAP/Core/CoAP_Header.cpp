@@ -1,0 +1,178 @@
+#include "CoAP_Header.hpp"
+
+using namespace std;
+namespace CoAP {
+
+string toString(MessageType type) {
+  string result;
+  switch (type) {
+  case MessageType::CONFIRMABLE: {
+    result = "Confirmable";
+    break;
+  }
+  case MessageType::NON_CONFIRMABLE: {
+    result = "Non Confirmable";
+    break;
+  }
+  case MessageType::ACKNOWLEDGMENT: {
+    result = "Acknowledgment";
+    break;
+  }
+  case MessageType::RESET: {
+    result = "Reset";
+    break;
+  }
+  default: {
+    result = "Malformated";
+    break;
+  }
+  }
+  return result;
+}
+
+string toString(CodeType type) {
+  string result;
+  switch (type) {
+  case CodeType::GET: {
+    result = "001 Request: Get";
+    break;
+  }
+  case CodeType::POST: {
+    result = "002 Request: Post";
+    break;
+  }
+  case CodeType::PUT: {
+    result = "003 Request: Put";
+    break;
+  }
+  case CodeType::DELETE: {
+    result = "004 Request: Delete";
+    break;
+  }
+  case CodeType::FETCH: {
+    result = "005 Request: Fetch";
+    break;
+  }
+  case CodeType::iPATCH: {
+    result = "007 Request: iPatch";
+    break;
+  }
+  case CodeType::OK: {
+    result = "200 Response: OK";
+    break;
+  }
+  case CodeType::CREATED: {
+    result = "201 Response: Created";
+    break;
+  }
+  case CodeType::DELETED: {
+    result = "202 Response: Deleted";
+    break;
+  }
+  case CodeType::CHANGED: {
+    result = "204 Response: Changed";
+    break;
+  }
+  case CodeType::CONTENT: {
+    result = "205 Response: Content";
+    break;
+  }
+  case CodeType::CONTINUE: {
+    result = "231 Response: Continue";
+    break;
+  }
+  case CodeType::BAD_REQUEST: {
+    result = "400 Response: Bad Request";
+    break;
+  }
+  case CodeType::UNAUTHORIZED: {
+    result = "401 Response: Unauthorized";
+    break;
+  }
+  case CodeType::FORBIDDEN: {
+    result = "403 Response: Forbidden";
+    break;
+  }
+  case CodeType::NOT_FOUND: {
+    result = "404 Response: Not Found";
+    break;
+  }
+  case CodeType::METHOD_NOT_ALLOWED: {
+    result = "405 Response: Method Not Allowed";
+    break;
+  }
+  case CodeType::NOT_ACCEPTABLE: {
+    result = "406 Response: Not Acceptable";
+    break;
+  }
+  case CodeType::REQUEST_ENTITY_INCOMPLETE: {
+    result = "408 Response: Request Entity Incomplete";
+    break;
+  }
+  case CodeType::PRECOGNITION_FAILED: {
+    result = "412 Response: Precognition Failed";
+    break;
+  }
+  case CodeType::REQUEST_ENTITY_TOO_LARGE: {
+    result = "413 Response: Request Entity Too Large";
+    break;
+  }
+  case CodeType::UNSUPPORTED_CONTENT_FORMAT: {
+    result = "415 Response: Unssuported Content";
+    break;
+  }
+  default: {
+    result = "Unhandeled Response";
+    break;
+  }
+  }
+  return result;
+}
+
+CoAP_Header::CoAP_Header() : CoAP_Header(vector<uint8_t>(4, 0)) {}
+
+CoAP_Header::CoAP_Header(vector<uint8_t> data) {
+  int coap_ver = (0xC0 & data[0]) >> 6;
+  if ((coap_ver != 1)) {
+    string error_msg = "Malformated header: CoAP version " +
+                       to_string(coap_ver) + " is not supported.";
+    throw Network_IO_Exception(error_msg);
+  } else if (data.size() != 4) {
+    string error_msg =
+        "Malformated header: Expected a 4 byte header, received: " +
+        to_string(data.size());
+    throw Network_IO_Exception(error_msg);
+  }
+
+  type_ = static_cast<MessageType>((0x30 & data[0]) >> 4);
+  token_length_ = (0x0F & data[0]) >> 0;
+  code_ = static_cast<CodeType>(data[1]);
+  message_id_ = (data[2] << 8) | (data[3]);
+}
+
+CoAP_Header::CoAP_Header(MessageType type, uint8_t message_length,
+                         CodeType code_type, uint16_t message_id)
+    : type_(type), token_length_(message_length), code_(code_type),
+      message_id_(message_id) {}
+
+vector<uint8_t> CoAP_Header::toPacket() {
+  vector<uint8_t> result(4);
+  result[0] = 0x40;                      // set CoAP version to 1
+  result[0] = result[0] | (type_ << 4);  // set message type;
+  result[0] = result[0] | token_length_; // set token length
+  result[1] = code_;
+  result[2] = message_id_ >> 8;   // set id MSB
+  result[3] = message_id_ & 0xFF; // set id LSB
+
+  return result;
+}
+
+MessageType CoAP_Header::getMesageType() { return type_; }
+
+uint8_t CoAP_Header::getTokenLenght() { return token_length_; }
+
+CodeType CoAP_Header::getCodeType() { return code_; }
+
+uint16_t CoAP_Header::getMessageID() { return message_id_; }
+
+} // namespace CoAP
