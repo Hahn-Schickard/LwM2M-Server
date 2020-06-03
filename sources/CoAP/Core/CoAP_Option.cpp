@@ -4,6 +4,81 @@
 
 using namespace std;
 namespace CoAP {
+string toString(OptionNumber option) {
+  string result;
+  switch (option) {
+  case OptionNumber::RESERVED: {
+    result = "Reserved";
+    break;
+  }
+  case OptionNumber::IF_MATCH: {
+    result = "If Match";
+    break;
+  }
+  case OptionNumber::URI_HOST: {
+    result = "URI Host";
+    break;
+  }
+  case OptionNumber::ETAG: {
+    result = "ETag";
+    break;
+  }
+  case OptionNumber::IF_NONE_MATCH: {
+    result = "If None Match";
+    break;
+  }
+  case OptionNumber::URI_PORT: {
+    result = "URI Port";
+    break;
+  }
+  case OptionNumber::LOCATION_PATH: {
+    result = "Location Path";
+    break;
+  }
+  case OptionNumber::URI_PATH: {
+    result = "URI Path";
+    break;
+  }
+  case OptionNumber::CONTENT_FORMAT: {
+    result = "Content Format";
+    break;
+  }
+  case OptionNumber::MAX_AGE: {
+    result = "Max Age";
+    break;
+  }
+  case OptionNumber::URI_QUERY: {
+    result = "URI Query";
+    break;
+  }
+  case OptionNumber::ACCEPT: {
+    result = "Accept";
+    break;
+  }
+  case OptionNumber::LOCATION_QUERY: {
+    result = "Location Query";
+    break;
+  }
+  case OptionNumber::PROXY_URI: {
+    result = "Proxy URI";
+    break;
+  }
+  case OptionNumber::PROXY_SCHEME: {
+    result = "Proxy Scheme";
+    break;
+  }
+  case OptionNumber::SIZE_1: {
+    result = "Size 1";
+    break;
+  }
+  default: {
+    result = "Malformated Option";
+    break;
+  }
+  }
+  return result;
+}
+
 CoAP_Option::CoAP_Option()
     : CoAP_Option(OptionNumber::RESERVED, 0, false, false, false, 0) {}
 

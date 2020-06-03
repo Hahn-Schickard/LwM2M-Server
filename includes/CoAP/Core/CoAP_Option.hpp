@@ -25,6 +25,8 @@ typedef enum OptionNumberEnum {
   SIZE_1 = 60
 } OptionNumber;
 
+std::string toString(OptionNumber option);
+
 class CoAP_Option {
   OptionNumber option_number_;
   size_t option_size_;
