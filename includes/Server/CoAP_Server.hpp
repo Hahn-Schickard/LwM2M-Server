@@ -18,7 +18,7 @@ struct CoAP_Server : public Stoppable {
   void run();
 
   std::shared_ptr<CoAP::CoAP_Message> pullRequest();
-  void pushResponse(CoAP::CoAP_Message &message);
+  void pushResponse(CoAP::CoAP_Message message);
 
   std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>>
   getIncomingMessagesQueue();
