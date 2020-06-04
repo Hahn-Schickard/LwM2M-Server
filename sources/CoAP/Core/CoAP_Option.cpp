@@ -27,12 +27,20 @@ string toString(OptionNumber option) {
     result = "If None Match";
     break;
   }
+  case OptionNumber::OBSERVE: {
+    result = "Observe";
+    break;
+  }
   case OptionNumber::URI_PORT: {
     result = "URI Port";
     break;
   }
   case OptionNumber::LOCATION_PATH: {
     result = "Location Path";
+    break;
+  }
+  case OptionNumber::OSCORE: {
+    result = "Oscore";
     break;
   }
   case OptionNumber::URI_PATH: {
@@ -59,6 +67,18 @@ string toString(OptionNumber option) {
     result = "Location Query";
     break;
   }
+  case OptionNumber::BLOCK_2: {
+    result = "Block 2";
+    break;
+  }
+  case OptionNumber::BLOCK_1: {
+    result = "Block 1";
+    break;
+  }
+  case OptionNumber::SIZE_2: {
+    result = "Size 2";
+    break;
+  }
   case OptionNumber::PROXY_URI: {
     result = "Proxy URI";
     break;
@@ -69,6 +89,10 @@ string toString(OptionNumber option) {
   }
   case OptionNumber::SIZE_1: {
     result = "Size 1";
+    break;
+  }
+  case OptionNumber::NO_RESPONSE: {
+    result = "No Response";
     break;
   }
   default: {
@@ -88,7 +112,7 @@ CoAP_Option::CoAP_Option(OptionNumber option_number, size_t option_size,
     : option_number_(option_number), option_size_(option_size),
       critical_(critical), repeatable_(repeatable), unsafe_(unsafe),
       max_size_(max_size) {
-  if (max_size_ > option_size_) {
+  if (max_size_ < option_size_) {
     string error_msg = "Given option exceeds maximum lenght value of " +
                        to_string(max_size_) + " bytes";
     throw out_of_range(error_msg);

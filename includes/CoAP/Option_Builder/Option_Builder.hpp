@@ -14,7 +14,7 @@ struct PayloadMarkerDetected : public std::exception {
 };
 
 std::shared_ptr<CoAP_Option> build(std::shared_ptr<CoAP_Option> previous,
-                                   std::deque<uint8_t> options);
+                                   std::deque<uint8_t> &options);
 } // namespace CoAP
 
 #endif //__COAP_OPTION_BUILDER_HPP

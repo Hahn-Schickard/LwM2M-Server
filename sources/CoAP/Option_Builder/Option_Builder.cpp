@@ -80,12 +80,20 @@ OptionNumber makeOptionNumber(unsigned int number) {
     option_number = OptionNumber::IF_NONE_MATCH;
     break;
   }
+  case 6: {
+    option_number = OptionNumber::OBSERVE;
+    break;
+  }
   case 7: {
     option_number = OptionNumber::URI_PORT;
     break;
   }
   case 8: {
     option_number = OptionNumber::LOCATION_PATH;
+    break;
+  }
+  case 9: {
+    option_number = OptionNumber::OSCORE;
     break;
   }
   case 11: {
@@ -108,6 +116,18 @@ OptionNumber makeOptionNumber(unsigned int number) {
     option_number = OptionNumber::LOCATION_QUERY;
     break;
   }
+  case 23: {
+    option_number = OptionNumber::BLOCK_2;
+    break;
+  }
+  case 27: {
+    option_number = OptionNumber::BLOCK_1;
+    break;
+  }
+  case 28: {
+    option_number = OptionNumber::SIZE_2;
+    break;
+  }
   case 35: {
     option_number = OptionNumber::PROXY_URI;
     break;
@@ -120,6 +140,10 @@ OptionNumber makeOptionNumber(unsigned int number) {
     option_number = OptionNumber::SIZE_1;
     break;
   }
+  case 258: {
+    option_number = OptionNumber::NO_RESPONSE;
+    break;
+  }
   default: {
     string error_msg = "Received an unhandled CoAP option: " + number;
     throw domain_error(error_msg);
@@ -129,7 +153,7 @@ OptionNumber makeOptionNumber(unsigned int number) {
 }
 
 shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
-                              deque<uint8_t> option) {
+                              deque<uint8_t> &option) {
   unsigned short delta;
   unsigned short lenght;
   size_t option_size;
@@ -139,7 +163,7 @@ shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
     if (option[0] != PAYLOAD_MARKER) {
       option_size = 1;
 
-      uint8_t msb = option[0] & BYTE_MSB_MASK;
+      uint8_t msb = option[0] >> 4;
       switch (msb) {
       case BYTE_LONG: {
         delta = option[1] + BYTE_LONG_OFFSET;
@@ -286,6 +310,8 @@ shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
       case OptionNumber::RESERVED:
       default: { throw runtime_error("Option number was not set"); }
       }
+      option.erase(option.begin(),
+                   option.begin() + option_size + result->size());
       return result;
     } else {
       throw PayloadMarkerDetected();

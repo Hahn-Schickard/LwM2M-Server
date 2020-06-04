@@ -121,6 +121,26 @@ string toString(CodeType type) {
     result = "415 Response: Unssuported Content";
     break;
   }
+  case CodeType::CSM: {
+    result = "701 Signaling Code: CSM";
+    break;
+  }
+  case CodeType::PING: {
+    result = "702 Signaling Code: Ping";
+    break;
+  }
+  case CodeType::PONG: {
+    result = "703 Signaling Code: Pong";
+    break;
+  }
+  case CodeType::RELEASE: {
+    result = "704 Signaling Code: Reakeas";
+    break;
+  }
+  case CodeType::ABORT: {
+    result = "705 Signaling Code: Abort";
+    break;
+  }
   default: {
     result = "Unhandeled Response";
     break;
@@ -129,25 +149,27 @@ string toString(CodeType type) {
   return result;
 }
 
-CoAP_Header::CoAP_Header() : CoAP_Header(vector<uint8_t>(4, 0)) {}
+CoAP_Header::CoAP_Header() {}
 
 CoAP_Header::CoAP_Header(vector<uint8_t> data) {
-  int coap_ver = (0xC0 & data[0]) >> 6;
-  if ((coap_ver != 1)) {
-    string error_msg = "Malformated header: CoAP version " +
-                       to_string(coap_ver) + " is not supported.";
-    throw Network_IO_Exception(error_msg);
-  } else if (data.size() != 4) {
-    string error_msg =
-        "Malformated header: Expected a 4 byte header, received: " +
-        to_string(data.size());
-    throw Network_IO_Exception(error_msg);
-  }
+  if (!data.empty()) {
+    int coap_ver = (0xC0 & data[0]) >> 6;
+    if ((coap_ver != 1)) {
+      string error_msg = "Malformated header: CoAP version " +
+                         to_string(coap_ver) + " is not supported.";
+      throw Network_IO_Exception(error_msg);
+    } else if (data.size() != 4) {
+      string error_msg =
+          "Malformated header: Expected a 4 byte header, received: " +
+          to_string(data.size());
+      throw Network_IO_Exception(error_msg);
+    }
 
-  type_ = static_cast<MessageType>((0x30 & data[0]) >> 4);
-  token_length_ = 0x0F & data[0];
-  code_ = static_cast<CodeType>(data[1]);
-  message_id_ = (data[2] << 8) | (data[3]);
+    type_ = static_cast<MessageType>((0x30 & data[0]) >> 4);
+    token_length_ = 0x0F & data[0];
+    code_ = static_cast<CodeType>(data[1]);
+    message_id_ = (data[2] << 8) | (data[3]);
+  }
 }
 
 CoAP_Header::CoAP_Header(MessageType type, uint8_t message_length,

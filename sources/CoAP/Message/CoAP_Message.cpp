@@ -3,21 +3,30 @@
 
 #include <deque>
 
+#define HEADER_SIZE 4
+#define PAYLOAD_MARKER 0xFF
 #define PAYLOAD_MARKER_SIZE 1
 
 using namespace std;
 namespace CoAP {
 
-CoAP_Message::CoAP_Message()
-    : CoAP_Message(string(), 0, CoAP_Header(), vector<uint8_t>(),
-                   vector<uint8_t>()) {}
+vector<uint8_t> removeSubvector(vector<uint8_t> &parent, size_t end_index,
+                                size_t start_index = 0) {
+  vector<uint8_t> result(parent.begin() + start_index,
+                         parent.begin() + end_index);
+  parent.erase(parent.begin() + start_index, parent.begin() + end_index);
+  return result;
+}
 
-CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
-                           CoAP_Header header_data, vector<uint8_t> token,
-                           vector<uint8_t> body_data)
-    : receiver_ip_(receiver_ip), receiver_port_(receiver_port),
-      header_(move(header_data)), token_(token) {
-  deque<uint8_t> payload(body_data.begin(), body_data.end());
+void CoAP_Message::processToken(vector<uint8_t> &udp_datagram) {
+  uint8_t token_lenght = header_.getTokenLenght();
+  if (token_lenght > 0) {
+    token_ = removeSubvector(udp_datagram, token_lenght);
+  }
+}
+
+void CoAP_Message::processOptionsAndPayload(vector<uint8_t> &udp_datagram) {
+  deque<uint8_t> payload(udp_datagram.begin(), udp_datagram.end());
 
   auto previous = shared_ptr<CoAP_Option>();
   shared_ptr<CoAP_Option> current;
@@ -27,7 +36,6 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
         current = build(previous, payload);
         options_.push_back(current);
         previous = current;
-        payload.erase(payload.begin(), payload.begin() + current->size());
       } else {
         break; // received a message without a payload
       }
@@ -42,6 +50,17 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
   } else {
     body_ = vector<uint8_t>(0);
   }
+}
+
+CoAP_Message::CoAP_Message() : CoAP_Message(string(), 0, vector<uint8_t>()) {}
+
+CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
+                           vector<uint8_t> udp_datagram)
+    : receiver_ip_(receiver_ip), receiver_port_(receiver_port) {
+  vector<uint8_t> bytestream = move(udp_datagram);
+  header_ = CoAP_Header(removeSubvector(bytestream, HEADER_SIZE));
+  processToken(bytestream);
+  processOptionsAndPayload(bytestream);
 }
 
 CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,

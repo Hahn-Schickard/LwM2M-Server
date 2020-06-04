@@ -19,11 +19,13 @@ class CoAP_Message {
   std::vector<std::shared_ptr<CoAP_Option>> options_;
   std::vector<uint8_t> body_;
 
+  void processToken(std::vector<uint8_t> &udp_datagram);
+  void processOptionsAndPayload(std::vector<uint8_t> &udp_datagram);
+
 public:
   CoAP_Message();
   CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
-               CoAP_Header header_data, std::vector<uint8_t> token,
-               std::vector<uint8_t> body_data);
+               std::vector<uint8_t> udp_datagram);
   CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
                CoAP_Header header_data, std::vector<uint8_t> token,
                std::vector<std::shared_ptr<CoAP_Option>> options,

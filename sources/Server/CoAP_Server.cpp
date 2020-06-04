@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#define HEADER_SIZE 4
-#define PAYLOAD_MARKER 0xFF
 #define PACKET_SIZE_UPPER_BOUND 1024
 
 using namespace std;
@@ -43,51 +41,25 @@ class CoAP_Port {
   shared_ptr<Logger> logger_;
 
   void receive() {
-    vector<uint8_t> header(HEADER_SIZE);
+    vector<uint8_t> udp_datagram(PACKET_SIZE_UPPER_BOUND);
     udp::endpoint remote_endpoint;
+    asio::error_code return_code;
 
     io_context_.restart();
-    future<size_t> header_future = socket_.async_receive_from(
-        asio::buffer(header), remote_endpoint, asio::use_future);
-    run();
+    future<size_t> datagram_future = socket_.async_receive_from(
+        asio::buffer(udp_datagram, PACKET_SIZE_UPPER_BOUND), remote_endpoint,
+        asio::use_future);
+    if (!io_context_.stopped()) {
+      io_context_.run();
 
-    if (header_future.wait_for(asio::chrono::seconds(task_execution_period_)) ==
-        future_status::ready) {
-      CoAP_Header coap_header(move(header));
+      if (datagram_future.wait_for(asio::chrono::seconds(
+              task_execution_period_)) == future_status::ready &&
+          !udp_datagram.empty()) {
 
-      uint8_t token_lenght = coap_header.getTokenLenght();
-      vector<uint8_t> token(token_lenght);
-      if (token_lenght > 0) {
-        io_context_.restart();
-        future<size_t> token_future =
-            socket_.async_receive_from(asio::buffer(token, token_lenght),
-                                       remote_endpoint, asio::use_future);
-        run();
-        if (token_future.wait_for(asio::chrono::seconds(
-                task_execution_period_)) != future_status::ready) {
-          throw Network_IO_Exception("Time out occured during token reception");
-        }
+        CoAP_Message message(remote_endpoint.address().to_string(),
+                             remote_endpoint.port(), move(udp_datagram));
+        incominng_messages_->push(message);
       }
-
-      uint8_t body_chunk[1];
-      vector<uint8_t> body(PACKET_SIZE_UPPER_BOUND);
-      do {
-        io_context_.restart();
-        body_chunk[0] = 0;
-        future<size_t> body_future = socket_.async_receive_from(
-            asio::buffer(body_chunk, 1), remote_endpoint, asio::use_future);
-        run();
-        if (body_future.wait_for(asio::chrono::seconds(
-                task_execution_period_)) == future_status::ready) {
-          body.push_back(body_chunk[0]);
-        } else {
-          throw Network_IO_Exception("Time out occured during body reception");
-        }
-      } while (body_chunk[0] != PAYLOAD_MARKER);
-
-      incominng_messages_->push(CoAP_Message(
-          remote_endpoint.address().to_string(), remote_endpoint.port(),
-          move(coap_header), move(token), move(body)));
     }
   }
 
@@ -104,13 +76,6 @@ class CoAP_Port {
                          message->getReceiverIP() + ":" +
                          to_string(message->getReceiverPort()),
                      return_code);
-  }
-
-  void run() {
-    if (!io_context_.stopped()) {
-      // socket_.cancel();
-      io_context_.run();
-    }
   }
 
 public:
