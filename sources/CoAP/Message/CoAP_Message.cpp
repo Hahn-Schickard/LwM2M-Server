@@ -9,22 +9,15 @@ using namespace std;
 namespace CoAP {
 
 CoAP_Message::CoAP_Message()
-    : CoAP_Message(string(), 0, CoAP_Header(), vector<uint8_t>()) {}
+    : CoAP_Message(string(), 0, CoAP_Header(), vector<uint8_t>(),
+                   vector<uint8_t>()) {}
 
 CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
-                           CoAP_Header header_data, vector<uint8_t> body_data)
+                           CoAP_Header header_data, vector<uint8_t> token,
+                           vector<uint8_t> body_data)
     : receiver_ip_(receiver_ip), receiver_port_(receiver_port),
-      header_(move(header_data)) {
+      header_(move(header_data)), token_(token) {
   deque<uint8_t> payload(body_data.begin(), body_data.end());
-
-  if (header_.getTokenLenght() != 0) {
-    uint8_t index = header_.getTokenLenght();
-    while (index != 0) {
-      token_.push_back(payload.front());
-      payload.pop_front();
-      index--;
-    }
-  }
 
   auto previous = shared_ptr<CoAP_Option>();
   shared_ptr<CoAP_Option> current;
@@ -50,6 +43,14 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
     body_ = vector<uint8_t>(0);
   }
 }
+
+CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
+                           CoAP_Header header_data, vector<uint8_t> token,
+                           vector<shared_ptr<CoAP_Option>> options,
+                           vector<uint8_t> body)
+    : receiver_ip_(receiver_ip), receiver_port_(receiver_port),
+      header_(move(header_data)), token_(move(token)), options_(move(options)),
+      body_(move(body)) {}
 
 vector<uint8_t> CoAP_Message::toPacket() {
   auto result = header_.toPacket();

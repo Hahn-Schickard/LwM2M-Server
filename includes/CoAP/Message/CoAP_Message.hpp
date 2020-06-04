@@ -22,7 +22,12 @@ class CoAP_Message {
 public:
   CoAP_Message();
   CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
-               CoAP_Header header_data, std::vector<uint8_t> body_data);
+               CoAP_Header header_data, std::vector<uint8_t> token,
+               std::vector<uint8_t> body_data);
+  CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
+               CoAP_Header header_data, std::vector<uint8_t> token,
+               std::vector<std::shared_ptr<CoAP_Option>> options,
+               std::vector<uint8_t> body);
 
   std::vector<uint8_t> toPacket();
   std::string getReceiverIP();
