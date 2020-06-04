@@ -14,10 +14,10 @@ Accept::Accept(vector<uint8_t> value)
     : CoAP_Option(OptionNumber::ACCEPT, value.size(), true, false, false, 2) {
   if (!value.empty()) {
     uint16_t concat_value = 0;
-    uint8_t offset = value.size() * 8;
+    uint8_t offset = 0;
     for (auto byte : value) {
       concat_value = concat_value | byte << offset;
-      offset -= 8;
+      offset = 8;
     }
     value_ = toContentFormatType(concat_value);
   }

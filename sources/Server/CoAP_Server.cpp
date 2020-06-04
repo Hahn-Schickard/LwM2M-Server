@@ -55,10 +55,13 @@ class CoAP_Port {
       if (datagram_future.wait_for(asio::chrono::seconds(
               task_execution_period_)) == future_status::ready &&
           !udp_datagram.empty()) {
-
-        CoAP_Message message(remote_endpoint.address().to_string(),
-                             remote_endpoint.port(), move(udp_datagram));
-        incominng_messages_->push(message);
+        try {
+          CoAP_Message message(remote_endpoint.address().to_string(),
+                               remote_endpoint.port(), move(udp_datagram));
+          incominng_messages_->push(message);
+        } catch (exception &ex) {
+          logger_->log(SeverityLevel::ERROR, ex.what());
+        }
       }
     }
   }
