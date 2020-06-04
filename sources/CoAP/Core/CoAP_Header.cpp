@@ -145,7 +145,7 @@ CoAP_Header::CoAP_Header(vector<uint8_t> data) {
   }
 
   type_ = static_cast<MessageType>((0x30 & data[0]) >> 4);
-  token_length_ = (0x0F & data[0]) >> 0;
+  token_length_ = 0x0F & data[0];
   code_ = static_cast<CodeType>(data[1]);
   message_id_ = (data[2] << 8) | (data[3]);
 }
