@@ -63,12 +63,13 @@ void printCoAPMessage(shared_ptr<CoAP_Message> message) {
   }
 }
 
-CoAP_Message makeDummyMessage(const string &receiver_address, unsigned int port,
-                              int message_id) {
-  return CoAP_Message(
-      receiver_address, port,
-      CoAP_Header(MessageType::CONFIRMABLE, 0, CodeType::GET, message_id),
-      vector<uint8_t>{0xFF});
+CoAP_Message makeResponse(shared_ptr<CoAP_Message> message) {
+  CoAP_Header header(MessageType::ACKNOWLEDGMENT,
+                     message->getHeader().getTokenLenght(), CodeType::OK,
+                     message->getHeader().getMessageID() + 1);
+  return CoAP_Message(message->getReceiverIP(), message->getReceiverPort(),
+                      header, message->getToken(),
+                      vector<shared_ptr<CoAP_Option>>(), vector<uint8_t>());
 }
 
 int main() {
@@ -78,21 +79,14 @@ int main() {
 
   thread server_thread;
   logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
-  LwM2M_Server::CoAP_Server server(false, 16833, 10);
-  // thread client_thread;
-  // LwM2M_Client::DummyClient client(false, 16835);
+  LwM2M_Server::CoAP_Server server(false, 5683, 10);
   try {
     server_thread = thread([&]() { server.run(); });
-    // client_thread = thread([&]() {
-    //   int message_id = 0;
-    //   do {
-    //     client.sendMessage(makeDummyMessage("0.0.0.0", 16833, message_id));
-    //     message_id++;
-    //   } while (!server.stopRequested());
-    //});
 
     do {
-      printCoAPMessage(server.pullRequest());
+      auto message = server.pullRequest();
+      printCoAPMessage(message);
+      server.pushResponse(makeResponse(move(message)));
     } while (!server.stopRequested());
 
   } catch (exception &e) {
@@ -102,6 +96,5 @@ int main() {
   }
 
   server_thread.join();
-  // client_thread.join();
   exit(EXIT_SUCCESS);
 }
