@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#define PACKET_SIZE_UPPER_BOUND 1024
+#define PACKET_SIZE_UPPER_BOUND 65536
 
 using namespace std;
 using namespace HaSLL;
@@ -46,16 +46,16 @@ class CoAP_Port {
     asio::error_code return_code;
 
     io_context_.restart();
-    future<size_t> datagram_future = socket_.async_receive_from(
-        asio::buffer(udp_datagram, PACKET_SIZE_UPPER_BOUND), remote_endpoint,
-        asio::use_future);
+    future<size_t> bytes_read = socket_.async_receive_from(
+        asio::buffer(udp_datagram), remote_endpoint, asio::use_future);
     if (!io_context_.stopped()) {
       io_context_.run();
 
-      if (datagram_future.wait_for(asio::chrono::seconds(
-              task_execution_period_)) == future_status::ready &&
+      if (bytes_read.wait_for(asio::chrono::seconds(task_execution_period_)) ==
+              future_status::ready &&
           !udp_datagram.empty()) {
         try {
+          udp_datagram.resize(bytes_read.get());
           CoAP_Message message(remote_endpoint.address().to_string(),
                                remote_endpoint.port(), move(udp_datagram));
           incominng_messages_->push(message);
