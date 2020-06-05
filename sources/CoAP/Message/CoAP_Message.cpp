@@ -32,18 +32,14 @@ void CoAP_Message::processOptionsAndPayload(vector<uint8_t> &udp_datagram) {
   shared_ptr<CoAP_Option> current;
   do {
     try {
-      if (!payload.empty()) {
-        current = build(previous, payload);
-        options_.push_back(current);
-        previous = current;
-      } else {
-        break; // received a message without a payload
-      }
+      current = build(previous, payload);
+      options_.push_back(current);
+      previous = current;
     } catch (PayloadMarkerDetected &exp) {
       payload.erase(payload.begin(), payload.begin() + PAYLOAD_MARKER_SIZE);
       break;
     }
-  } while (true);
+  } while (!payload.empty());
 
   if (!payload.empty()) {
     body_ = vector<uint8_t>(payload.begin(), payload.end());
