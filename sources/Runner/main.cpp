@@ -29,11 +29,12 @@ void printCoAPToken(vector<uint8_t> token) {
 void printCoAPOptions(vector<shared_ptr<CoAP_Option>> options) {
   cout << "With " << options.size() << " Options" << endl;
   for (auto option : options) {
-    cout << (option->isCritical() ? "Critical" : "Non-critical");
-    cout << (option->isRepeatable() ? "Repeatable" : "Non-repeatabe");
-    cout << (option->isUnsafe() ? "Unsafe" : "Safe");
-    cout << option->size() << "Byte long option: ";
-    cout << toString(option->getOptionNumber()) << endl;
+    cout << (option->isCritical() ? "Critical" : "Non-critical") << "; ";
+    cout << (option->isRepeatable() ? "Repeatable" : "Non-repeatabe") << "; ";
+    cout << (option->isUnsafe() ? "Unsafe" : "Safe") << "; ";
+    cout << option->size() << " Byte long option: ";
+    cout << toString(option->getOptionNumber()) << "; ";
+    cout << "With value: " << option->getValue() << endl;
   }
 }
 
