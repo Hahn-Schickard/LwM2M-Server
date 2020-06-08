@@ -32,7 +32,6 @@ public:
   ContentFormat(std::vector<uint8_t> value);
 
   std::string getValue() override;
-  std::string getString();
   uint16_t getValueAsInt();
   ContentFormatType getContentFormatType();
 };

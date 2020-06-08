@@ -43,7 +43,7 @@ string toString(ContentFormatType type) {
     return "Plain Text";
   }
   case ContentFormatType::CORE_LINK: {
-    return "CoRE Link";
+    return "Constrained RESTful Environments (CoRE) Link Format";
   }
   case ContentFormatType::OPAQUE: {
     return "Opaque";
@@ -88,9 +88,7 @@ ContentFormat::ContentFormat(vector<uint8_t> value)
   }
 }
 
-string ContentFormat::getValue() { return to_string(value_); }
-
-string ContentFormat::getString() { return toString(value_); }
+string ContentFormat::getValue() { return toString(value_); }
 
 uint16_t ContentFormat::getValueAsInt() { return value_; }
 
