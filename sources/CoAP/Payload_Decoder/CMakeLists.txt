@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS CoAP)
+set(THIS CoAP_Payload_Decoder)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/CoAP/Message
+            ${INCLUDES_DIR}/CoAP/Payload_Decoder
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -18,12 +18,11 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              CoAP_Option_Builder
-                              CoAP_Payload_Decoder
+                              CoAP_Options
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/CoAP/Message>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/CoAP/Payload_Decoder>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

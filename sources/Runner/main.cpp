@@ -52,10 +52,10 @@ void printCoAPOptions(vector<shared_ptr<CoAP_Option>> options) {
        << endl;
 }
 
-void printCoAPPayload(vector<uint8_t> payload) {
+void printCoAPPayload(vector<string> payload) {
   cout << "With Data:" << endl;
-  for (uint8_t byte : payload) {
-    cout << to_string(byte) << " ";
+  for (string thing : payload) {
+    cout << thing << " ";
   }
   cout << endl;
 }
@@ -84,7 +84,7 @@ CoAP_Message makeResponse(shared_ptr<CoAP_Message> message) {
                      message->getHeader().getMessageID() + 1);
   return CoAP_Message(message->getReceiverIP(), message->getReceiverPort(),
                       header, message->getToken(),
-                      vector<shared_ptr<CoAP_Option>>(), vector<uint8_t>());
+                      vector<shared_ptr<CoAP_Option>>(), vector<string>());
 }
 
 int main() {
