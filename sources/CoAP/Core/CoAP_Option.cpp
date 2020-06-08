@@ -96,7 +96,7 @@ string toString(OptionNumber option) {
     break;
   }
   default: {
-    result = "Malformated Option";
+    result = "Malformated";
     break;
   }
   }
