@@ -3,6 +3,7 @@
 #include "DummyClient.hpp"
 #include "LoggerRepository.hpp"
 
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -28,14 +29,27 @@ void printCoAPToken(vector<uint8_t> token) {
 
 void printCoAPOptions(vector<shared_ptr<CoAP_Option>> options) {
   cout << "With " << options.size() << " Options" << endl;
+  cout << "Option Number   | Size | Critical | Repeatable | Unsafe | Value "
+       << endl;
+  cout << "================|======|==========|============|========|======="
+       << endl;
   for (auto option : options) {
-    cout << (option->isCritical() ? "Critical" : "Non-critical") << "; ";
-    cout << (option->isRepeatable() ? "Repeatable" : "Non-repeatabe") << "; ";
-    cout << (option->isUnsafe() ? "Unsafe" : "Safe") << "; ";
-    cout << option->size() << " Byte long option: ";
-    cout << toString(option->getOptionNumber()) << "; ";
-    cout << "With value: " << option->getValue() << endl;
+    string name = toString(option->getOptionNumber());
+    cout << name << setw(18 - name.size()) << setfill(' ') << "| ";
+    string option_size = to_string(option->size());
+    cout << option_size << setw(7 - option_size.size()) << setfill(' ') << "| ";
+    string is_critical = (option->isCritical() ? " Yes" : " No");
+    cout << is_critical << setw(11 - is_critical.size()) << setfill(' ')
+         << "| ";
+    string is_repeatable = (option->isRepeatable() ? " Yes" : " No");
+    cout << is_repeatable << setw(13 - is_repeatable.size()) << setfill(' ')
+         << "| ";
+    string is_unsafe = (option->isUnsafe() ? " Yes" : " No");
+    cout << is_unsafe << setw(9 - is_unsafe.size()) << setfill(' ') << "| ";
+    cout << option->getValue() << endl;
   }
+  cout << "================|======|==========|============|========|======="
+       << endl;
 }
 
 void printCoAPPayload(vector<uint8_t> payload) {
