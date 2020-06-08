@@ -41,6 +41,7 @@ void CoAP_Message::processOptions(vector<uint8_t> &udp_datagram) {
       break;
     }
   } while (!payload.empty());
+  udp_datagram = vector<uint8_t>(payload.begin(), payload.end());
 }
 
 void CoAP_Message::processPayload(vector<uint8_t> &udp_datagram) {
@@ -70,7 +71,7 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
 CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
                            CoAP_Header header_data, vector<uint8_t> token,
                            vector<shared_ptr<CoAP_Option>> options,
-                           vector<string> body)
+                           shared_ptr<PayloadFormat> body)
     : receiver_ip_(receiver_ip), receiver_port_(receiver_port),
       header_(move(header_data)), token_(move(token)), options_(move(options)),
       body_(move(body)) {}
@@ -78,16 +79,9 @@ CoAP_Message::CoAP_Message(string receiver_ip, unsigned int receiver_port,
 vector<uint8_t> CoAP_Message::toPacket() {
   auto result = header_.toPacket();
 
-  shared_ptr<ContentFormat> content_format;
-  for (auto &option : options_) {
-    if (option->getOptionNumber() == OptionNumber::CONTENT_FORMAT) {
-      content_format = static_pointer_cast<ContentFormat>(option);
-    }
-  }
-
   vector<uint8_t> payload;
-  if (!body_.empty() && content_format) {
-    payload = encode(content_format, body_);
+  if (!body_) {
+    payload = encode(body_);
   }
 
   result.insert(result.end(), payload.begin(), payload.end());
@@ -104,5 +98,5 @@ vector<uint8_t> CoAP_Message::getToken() { return token_; }
 
 vector<shared_ptr<CoAP_Option>> CoAP_Message::getOptions() { return options_; }
 
-vector<string> CoAP_Message::getBody() { return body_; }
+shared_ptr<PayloadFormat> CoAP_Message::getBody() { return body_; }
 } // namespace CoAP

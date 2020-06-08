@@ -11,7 +11,6 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PRIVATE
-                              Client
                               Server
                               HaSLL::HaSLL
                               Threads::Threads

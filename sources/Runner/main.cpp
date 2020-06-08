@@ -1,6 +1,5 @@
 #include "CoAP_Message.hpp"
 #include "CoAP_Server.hpp"
-#include "DummyClient.hpp"
 #include "LoggerRepository.hpp"
 
 #include <iomanip>
@@ -52,12 +51,9 @@ void printCoAPOptions(vector<shared_ptr<CoAP_Option>> options) {
        << endl;
 }
 
-void printCoAPPayload(vector<string> payload) {
+void printCoAPPayload(shared_ptr<PayloadFormat> payload) {
   cout << "With Data:" << endl;
-  for (string thing : payload) {
-    cout << thing << " ";
-  }
-  cout << endl;
+  cout << payload->toString() << endl;
 }
 
 void printCoAPMessage(shared_ptr<CoAP_Message> message) {
@@ -73,9 +69,10 @@ void printCoAPMessage(shared_ptr<CoAP_Message> message) {
     printCoAPOptions(message->getOptions());
   }
 
-  if (!message->getBody().empty()) {
+  if (message->getBody()) {
     printCoAPPayload(message->getBody());
   }
+  cout << string(80, '~') << endl;
 }
 
 CoAP_Message makeResponse(shared_ptr<CoAP_Message> message) {
@@ -84,7 +81,8 @@ CoAP_Message makeResponse(shared_ptr<CoAP_Message> message) {
                      message->getHeader().getMessageID() + 1);
   return CoAP_Message(message->getReceiverIP(), message->getReceiverPort(),
                       header, message->getToken(),
-                      vector<shared_ptr<CoAP_Option>>(), vector<string>());
+                      vector<shared_ptr<CoAP_Option>>(),
+                      shared_ptr<PayloadFormat>());
 }
 
 int main() {
@@ -101,7 +99,7 @@ int main() {
     do {
       auto message = server.pullRequest();
       printCoAPMessage(message);
-      server.pushResponse(makeResponse(move(message)));
+      // server.pushResponse(makeResponse(move(message)));
     } while (!server.stopRequested());
 
   } catch (exception &e) {

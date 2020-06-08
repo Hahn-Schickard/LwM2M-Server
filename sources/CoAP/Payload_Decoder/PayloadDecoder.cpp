@@ -1,6 +1,7 @@
 #include "PayloadDecoder.hpp"
-
-#include <stdexcept>
+#include "CoRE_Link.hpp"
+#include "PlainText.hpp"
+#include "StringSpliter.hpp"
 
 using namespace std;
 
@@ -12,34 +13,42 @@ void throwCodingError(string code_format, bool decoding) {
   throw domain_error(error_msg);
 }
 
-vector<string> decodePlainText(vector<uint8_t> payload) {
-  throwCodingError("Plain Text", true);
+string decodeUTF_8(vector<uint8_t> payload) {
+  string result;
+  for (auto byte : payload) {
+    result.push_back(byte);
+  }
+  return result;
 }
-vector<string> decodeCoRELink(vector<uint8_t> payload) {
-  throwCodingError("CoRE Link", true);
+
+shared_ptr<PayloadFormat> decodePlainText(vector<uint8_t> payload) {
+  return make_shared<PlainText>(decodeUTF_8(payload));
 }
-vector<string> decodeOpaque(vector<uint8_t> payload) {
+shared_ptr<PayloadFormat> decodeCoRELink(vector<uint8_t> payload) {
+  return make_shared<CoRE_Links>(decodeUTF_8(payload));
+}
+shared_ptr<PayloadFormat> decodeOpaque(vector<uint8_t> payload) {
   throwCodingError("Opaque", true);
 }
-vector<string> decodeCBOR(vector<uint8_t> payload) {
+shared_ptr<PayloadFormat> decodeCBOR(vector<uint8_t> payload) {
   throwCodingError("CBOR", true);
 }
-vector<string> decodeSenMLJSON(vector<uint8_t> payload) {
+shared_ptr<PayloadFormat> decodeSenMLJSON(vector<uint8_t> payload) {
   throwCodingError("SehML JSON", true);
 }
-vector<string> decodeSenMLCBOR(vector<uint8_t> payload) {
+shared_ptr<PayloadFormat> decodeSenMLCBOR(vector<uint8_t> payload) {
   throwCodingError("SenML CBOR", true);
 }
-vector<string> decodeTLV(vector<uint8_t> payload) {
+shared_ptr<PayloadFormat> decodeTLV(vector<uint8_t> payload) {
   throwCodingError("TLV", true);
 }
-vector<string> decodeJSON(vector<uint8_t> payload) {
+shared_ptr<PayloadFormat> decodeJSON(vector<uint8_t> payload) {
   throwCodingError("JSON", true);
 }
 
-vector<string> decode(shared_ptr<ContentFormat> format,
-                      vector<uint8_t> payload) {
-  vector<string> result;
+shared_ptr<PayloadFormat> decode(shared_ptr<ContentFormat> format,
+                                 vector<uint8_t> payload) {
+  shared_ptr<PayloadFormat> result;
   switch (format->getContentFormatType()) {
   case ContentFormatType::PLAIN_TEXT: {
     result = decodePlainText(payload);
@@ -79,65 +88,58 @@ vector<string> decode(shared_ptr<ContentFormat> format,
   }
 }
 
-vector<uint8_t> encodePlainText(vector<string> payload) {
+vector<uint8_t> encodePlainText(string payload) {
   throwCodingError("Plain Text", false);
 }
-vector<uint8_t> encodeCoRELink(vector<string> payload) {
+vector<uint8_t> encodeCoRELink(string payload) {
   throwCodingError("CoRE Link", false);
 }
-vector<uint8_t> encodeOpaque(vector<string> payload) {
+vector<uint8_t> encodeOpaque(string payload) {
   throwCodingError("Opaque", false);
 }
-vector<uint8_t> encodeCBOR(vector<string> payload) {
-  throwCodingError("CBOR", false);
-}
-vector<uint8_t> encodeSenMLJSON(vector<string> payload) {
+vector<uint8_t> encodeCBOR(string payload) { throwCodingError("CBOR", false); }
+vector<uint8_t> encodeSenMLJSON(string payload) {
   throwCodingError("SehML JSON", false);
 }
-vector<uint8_t> encodeSenMLCBOR(vector<string> payload) {
+vector<uint8_t> encodeSenMLCBOR(string payload) {
   throwCodingError("SenML CBOR", false);
 }
-vector<uint8_t> encodeTLV(vector<string> payload) {
-  throwCodingError("TLV", false);
-}
-vector<uint8_t> encodeJSON(vector<string> payload) {
-  throwCodingError("JSON", false);
-}
+vector<uint8_t> encodeTLV(string payload) { throwCodingError("TLV", false); }
+vector<uint8_t> encodeJSON(string payload) { throwCodingError("JSON", false); }
 
-vector<uint8_t> encode(shared_ptr<ContentFormat> format,
-                       vector<string> payload) {
+vector<uint8_t> encode(shared_ptr<PayloadFormat> format) {
   vector<uint8_t> result;
   switch (format->getContentFormatType()) {
   case ContentFormatType::PLAIN_TEXT: {
-    result = encodePlainText(payload);
+    result = encodePlainText(format->toString());
     break;
   }
   case ContentFormatType::CORE_LINK: {
-    result = encodeCoRELink(payload);
+    result = encodeCoRELink(format->toString());
     break;
   }
   case ContentFormatType::OPAQUE: {
-    result = encodeOpaque(payload);
+    result = encodeOpaque(format->toString());
     break;
   }
   case ContentFormatType::CBOR: {
-    result = encodeCBOR(payload);
+    result = encodeCBOR(format->toString());
     break;
   }
   case ContentFormatType::SENML_JSON: {
-    result = encodeSenMLJSON(payload);
+    result = encodeSenMLJSON(format->toString());
     break;
   }
   case ContentFormatType::SENML_CBOR: {
-    result = encodeSenMLCBOR(payload);
+    result = encodeSenMLCBOR(format->toString());
     break;
   }
   case ContentFormatType::TLV: {
-    result = encodeTLV(payload);
+    result = encodeTLV(format->toString());
     break;
   }
   case ContentFormatType::JSON: {
-    result = encodeJSON(payload);
+    result = encodeJSON(format->toString());
     break;
   }
   case ContentFormatType::UNRECOGNIZED:

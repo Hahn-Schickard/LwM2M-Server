@@ -3,6 +3,7 @@
 
 #include "CoAP_Header.hpp"
 #include "CoAP_Option.hpp"
+#include "PayloadFormat.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -17,7 +18,7 @@ class CoAP_Message {
   CoAP_Header header_;
   std::vector<uint8_t> token_;
   std::vector<std::shared_ptr<CoAP_Option>> options_;
-  std::vector<std::string> body_;
+  std::shared_ptr<PayloadFormat> body_;
 
   void processToken(std::vector<uint8_t> &udp_datagram);
   void processOptions(std::vector<uint8_t> &udp_datagram);
@@ -30,7 +31,7 @@ public:
   CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
                CoAP_Header header_data, std::vector<uint8_t> token,
                std::vector<std::shared_ptr<CoAP_Option>> options,
-               std::vector<std::string> body);
+               std::shared_ptr<PayloadFormat> body);
 
   std::vector<uint8_t> toPacket();
   std::string getReceiverIP();
@@ -38,7 +39,7 @@ public:
   CoAP_Header &getHeader();
   std::vector<uint8_t> getToken();
   std::vector<std::shared_ptr<CoAP_Option>> getOptions();
-  std::vector<std::string> getBody();
+  std::shared_ptr<PayloadFormat> getBody();
 };
 } // namespace CoAP
 #endif //__COAP_MESSAGE_DEFINITION_HPP
