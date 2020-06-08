@@ -104,8 +104,12 @@ OptionNumber makeOptionNumber(unsigned int number) {
     option_number = OptionNumber::CONTENT_FORMAT;
     break;
   }
-  case 15: {
+  case 14: {
     option_number = OptionNumber::MAX_AGE;
+    break;
+  }
+  case 15: {
+    option_number = OptionNumber::URI_QUERY;
     break;
   }
   case 17: {
@@ -146,7 +150,7 @@ OptionNumber makeOptionNumber(unsigned int number) {
   }
   default: {
     string error_msg = "Received an unhandled CoAP option: " + number;
-    throw domain_error(error_msg);
+    throw domain_error(move(error_msg));
   }
   }
   return option_number;
@@ -179,7 +183,7 @@ shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
         string error_msg =
             "Malformated CoAP option: Delta set to 0xF, but the byte " +
             toHexString(option, 2) + " is not equal to 0xFF";
-        throw domain_error(error_msg);
+        throw domain_error(move(error_msg));
       }
       default: {
         delta = msb;
@@ -203,7 +207,7 @@ shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
         string error_msg =
             "Malformated CoAP option: Lenght is set to 0xF, but the byte " +
             toHexString(option, 2) + " is not equal to 0xFF";
-        throw domain_error(error_msg);
+        throw domain_error(move(error_msg));
       }
       default: {
         lenght = lsb;

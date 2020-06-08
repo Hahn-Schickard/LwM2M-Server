@@ -32,7 +32,7 @@ ContentFormatType toContentFormatType(uint16_t value) {
   }
   default: {
     string error_msg = "Unsupported content format type: " + to_string(value);
-    throw domain_error(error_msg);
+    throw domain_error(move(error_msg));
   }
   }
 }
