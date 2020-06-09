@@ -37,6 +37,13 @@ CoRE_Link::CoRE_Link(string utf_8_string) {
       link_values.erase(it);
     }
 
+    size_t content_type_index = value.find("ct=");
+    if (content_type_index != std::string::npos) {
+      string content_type = value.substr(content_type_index + 3);
+      attributes_.emplace(CoRELinkAttribute::CONTENT_TYPE, content_type);
+      link_values.erase(it);
+    }
+
     size_t target_index = value.find("</");
     if (target_index != std::string::npos) {
       target_ = value.substr(target_index + 2);

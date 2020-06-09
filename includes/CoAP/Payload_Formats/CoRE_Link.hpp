@@ -12,6 +12,7 @@ typedef enum CoRELinkAttributeEnum {
   RESOURCE_TYPE,
   INTERFACE_DESCRIPTION,
   MAXIMUM_SIZE,
+  CONTENT_TYPE,
   UNDEFINED
 } CoRELinkAttribute;
 
