@@ -8,9 +8,9 @@
 #include <unordered_map>
 
 namespace LwM2M_Model {
-typedef enum LwM2M_VersionEnum { V1_0, V1_1 } LwM2M_Version;
+typedef enum LwM2M_VersionEnum { V1_0, V1_1, UNRECOGNIZED } LwM2M_Version;
 
-typedef enum BindingTypeEnum { UDP, TCP, SMS, NON_IP } BindingType;
+typedef enum BindingTypeEnum { UDP, TCP, SMS, NON_IP, MALFORMED } BindingType;
 
 class Regirstration_Interface_Message : public LwM2M_Message {
 public:
@@ -20,17 +20,21 @@ public:
 
 class Register_Request : public Regirstration_Interface_Message {
   std::string endpoint_name_;
+  std::string endpoint_address_;
+  unsigned int endpoint_port_;
   size_t life_time_;
   LwM2M_Version version_;
   BindingType binding_;
   bool queue_mode_;
-  std::optional<size_t> sms_number_;
+  std::optional<std::string> sms_number_;
   std::unordered_map<unsigned int, unsigned int> object_instances_map_;
 
 public:
   Register_Request(
-      std::string endpoint_name, size_t life_time, LwM2M_Version version,
-      BindingType binding, bool queue_mode, std::optional<size_t> sms_number,
+      std::string endpoint_name, std::string endpoint_address,
+      unsigned int endpoint_port, size_t life_time, LwM2M_Version version,
+      BindingType binding, bool queue_mode,
+      std::optional<std::string> sms_number,
       std::unordered_map<unsigned int, unsigned int> object_instances_map);
 };
 
@@ -38,14 +42,14 @@ class Update_Request : public Regirstration_Interface_Message {
   std::string location_;
   std::optional<size_t> lifetime_;
   std::optional<BindingType> binding_;
-  std::optional<size_t> sms_number_;
+  std::optional<std::string> sms_number_;
   std::optional<std::unordered_map<unsigned int, unsigned int>>
       object_instances_map_;
 
 public:
   Update_Request(std::string location, std::optional<size_t> lifetime,
                  std::optional<BindingType> binding,
-                 std::optional<size_t> sms_number,
+                 std::optional<std::string> sms_number,
                  std::optional<std::unordered_map<unsigned int, unsigned int>>
                      object_instances_map);
 };

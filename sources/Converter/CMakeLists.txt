@@ -20,6 +20,7 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC
                               CoAP
                               LwM2M_Model
+                              CoAP_Payload_Formats
 )
 
 target_include_directories(${THIS} INTERFACE
