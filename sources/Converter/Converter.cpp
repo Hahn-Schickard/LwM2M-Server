@@ -1,11 +1,12 @@
 #include "Converter.hpp"
-#include "RegistrationInterfaceMessages.hpp"
-
 #include "CoRE_Link.hpp"
 #include "PlainText.hpp"
+#include "RegistrationInterfaceMessages.hpp"
+#include "StringSpliter.hpp"
 
 #include <cctype>
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 using namespace std;
@@ -16,33 +17,29 @@ unordered_map<unsigned int, unsigned int>
 getObjectList(shared_ptr<PayloadFormat> payload) {
   unordered_map<unsigned int, unsigned int> result;
   switch (payload->getContentFormatType()) {
-  case ContentFormatType::PLAIN_TEXT: {
-    static_pointer_cast<PlainText>(payload);
-    break;
-  }
   case ContentFormatType::CORE_LINK: {
+    shared_ptr<CoRE_Links> core_links =
+        static_pointer_cast<CoRE_Links>(payload);
+    for (auto link : core_links->getLinks()) {
+      // ignore contet type attribute
+      if (link.getTarget() != "/") {
+        vector<string> object_instance_pair =
+            utility::split(link.getTarget(), '/');
+        if (object_instance_pair.size() == 2) {
+          result.emplace(atoi(object_instance_pair.at(0).c_str()),
+                         atoi(object_instance_pair.at(1).c_str()));
+        }
+      }
+    }
     break;
   }
-  case ContentFormatType::OPAQUE: {
-    break;
+  default: {
+    string error_msg =
+        "Registration request must use " +
+        toString(ContentFormatType::CORE_LINK) + " fortmat type, not " +
+        toString(payload->getContentFormatType()) + " fortmat type.";
+    throw domain_error(move(error_msg));
   }
-  case ContentFormatType::CBOR: {
-    break;
-  }
-  case ContentFormatType::JSON: {
-    break;
-  }
-  case ContentFormatType::SENML_CBOR: {
-    break;
-  }
-  case ContentFormatType::SENML_JSON: {
-    break;
-  }
-  case ContentFormatType::TLV: {
-    break;
-  }
-  case ContentFormatType::UNRECOGNIZED:
-  default: { break; }
   }
   return result;
 }
