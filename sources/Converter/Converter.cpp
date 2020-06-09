@@ -21,7 +21,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
     shared_ptr<CoRE_Links> core_links =
         static_pointer_cast<CoRE_Links>(payload);
     for (auto link : core_links->getLinks()) {
-      // ignore contet type attribute
+      // ignore contet attributes
       if (link.getTarget() != "/") {
         vector<string> object_instance_pair =
             utility::split(link.getTarget(), '/');
