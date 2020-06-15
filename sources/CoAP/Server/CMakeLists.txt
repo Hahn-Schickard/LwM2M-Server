@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 set(THIS Server)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/Server
+            ${INCLUDES_DIR}/CoAP/Server
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -28,7 +28,7 @@ target_link_libraries(${THIS} PUBLIC
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/Server>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/CoAP/Server>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

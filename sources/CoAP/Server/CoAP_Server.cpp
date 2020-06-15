@@ -12,10 +12,9 @@
 
 using namespace std;
 using namespace HaSLL;
-using namespace CoAP;
 using namespace asio;
 using asio::ip::udp;
-namespace LwM2M_Server {
+namespace CoAP {
 
 udp selectProtocol(bool ip_v6) {
   if (ip_v6) {
@@ -167,4 +166,4 @@ CoAP_Server::getOutgoingMessagesQueue() {
   logger_->log(SeverityLevel::TRACE, "CoAP_Server::getOutgoingMessagesQueue()");
   return outgoing_messages_;
 }
-} // namespace LwM2M_Server
+} // namespace CoAP
