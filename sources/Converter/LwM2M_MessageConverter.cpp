@@ -1,13 +1,13 @@
-#include "Converter.hpp"
+#include "LwM2M_MessageConverter.hpp"
 #include "CoRE_Link.hpp"
 #include "PlainText.hpp"
 #include "RegistrationInterfaceMessages.hpp"
 #include "StringSpliter.hpp"
 
 #include <cctype>
-#include <optional>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 using namespace CoAP;
@@ -21,7 +21,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
     shared_ptr<CoRE_Links> core_links =
         static_pointer_cast<CoRE_Links>(payload);
     for (auto link : core_links->getLinks()) {
-      // ignore contet attributes
+      // ignore content attributes
       if (link.getTarget() != "/") {
         vector<string> object_instance_pair =
             utility::split(link.getTarget(), '/');
@@ -147,60 +147,59 @@ makeCancelObersvationCompositeMessage(shared_ptr<CoAP_Message> input) {}
 unique_ptr<LwM2M_Message> makeNotifyMessage(shared_ptr<CoAP_Message> input) {}
 unique_ptr<LwM2M_Message> makeSendMessage(shared_ptr<CoAP_Message> input) {}
 
-unique_ptr<LwM2M_Message> convert(shared_ptr<CoAP_Message> input) {
+bool processIfBootrstrapInterface(shared_ptr<CoAP_Option> option,
+                                  shared_ptr<CoAP_Message> message) {
+  return false;
+}
+
+bool processIfDeviceRegistrationInteraface(shared_ptr<CoAP_Option> option,
+                                           shared_ptr<CoAP_Message> message) {
   unique_ptr<LwM2M_Message> result;
-  if (!input->getOptions().empty()) {
-    for (auto option : input->getOptions()) {
-      if (option->getOptionNumber() == OptionNumber::URI_PATH) {
-        string uri_path = option->getValue();
-        if (uri_path == "rd") {
-          result = makeRegisterMessage(input);
-        } else if (uri_path.size() > 2) {
-          if (uri_path.substr(0, 3) == "rd/") {
-            switch (input->getHeader().getCodeType()) {
-            case CodeType::POST: {
-              result = makeUpdateMessage(input);
-              break;
-            }
-            case CodeType::DELETE: {
-              result = makeDeRegisterMessage(input);
-              break;
-            }
-            default: {
-              // log warning
-              break;
-            }
-            }
-          }
+  if (option->getOptionNumber() == OptionNumber::URI_PATH) {
+    string uri_path = option->getValue();
+    if (uri_path == "rd") {
+      result = makeRegisterMessage(message);
+    } else if (uri_path.size() > 2) {
+      if (uri_path.substr(0, 3) == "rd/") {
+        switch (message->getHeader().getCodeType()) {
+        case CodeType::POST: {
+          result = makeUpdateMessage(message);
+          break;
+        }
+        case CodeType::DELETE: {
+          result = makeDeRegisterMessage(message);
+          break;
+        }
+        default: {
+          // log warning
+          break;
+        }
         }
       }
     }
-    return result;
+  }
+  return result ? true : false;
+}
+
+bool processIfDeviceManagmentInterface(shared_ptr<CoAP_Option> option,
+                                       shared_ptr<CoAP_Message> message) {
+  return false;
+}
+
+bool processIfInformationReportingInterface(shared_ptr<CoAP_Option> option,
+                                            shared_ptr<CoAP_Message> message) {
+  return false;
+}
+
+void LwM2M_MessageConverter::convert(shared_ptr<CoAP_Message> message) {
+  if (!message->getOptions().empty()) {
+    for (auto option : message->getOptions()) {
+      if (processIfBootrstrapInterface(option, message)) {
+      } else if (processIfDeviceRegistrationInteraface(option, message)) {
+      } else if (processIfDeviceManagmentInterface(option, message)) {
+      } else if (processIfInformationReportingInterface(option, message)) {
+      }
+    }
   }
 }
-
-CoAP_Message &makeFromRegisterMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromDeRegisterMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromUpdateMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromReadMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromWriteMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromExecuteMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromCreateMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromDeleteMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromWriteAttributesMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromDiscoverMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromReadCompositeMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromWriteCompositeMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromObserveMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromObserveCompositeMessage(unique_ptr<LwM2M_Message> input) {
-}
-CoAP_Message &
-makeFromCancelObersvationMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &
-makeFromCancelObersvationCompositeMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromNotifyMessage(unique_ptr<LwM2M_Message> input) {}
-CoAP_Message &makeFromSendMessage(unique_ptr<LwM2M_Message> input) {}
-
-CoAP_Message &convert(unique_ptr<LwM2M_Message> input);
-
-} // namespace LwM2M_Model
+}; // namespace LwM2M_Model

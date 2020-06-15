@@ -19,7 +19,10 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC
                               CoAP
+                              Threadsafe_Queue
                               LwM2M_Model
+                              HaSLL::HaSLL
+                              Stoppable_Task
                               CoAP_Payload_Formats
 )
 
