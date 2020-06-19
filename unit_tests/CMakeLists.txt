@@ -25,3 +25,7 @@ add_test(
 set_target_properties(${THIS} PROPERTIES
                               CXX_STANDARD 17
 )
+
+add_custom_command(TARGET ${THIS} PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_CURRENT_LIST_DIR}/LwM2M/XML_Parser/test_model $<TARGET_FILE_DIR:${THIS}>)
