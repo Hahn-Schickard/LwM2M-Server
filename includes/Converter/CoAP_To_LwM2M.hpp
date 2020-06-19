@@ -6,7 +6,7 @@
 #include "LwM2M_Message.hpp"
 
 namespace LwM2M_Model {
-class LwM2M_MessageConverter : public Converter<CoAP::CoAP_Message> {
+class CoAP_To_LwM2M : public Converter<CoAP::CoAP_Message> {
   void convert(std::shared_ptr<CoAP::CoAP_Message> message) override;
 };
 } // namespace LwM2M_Model

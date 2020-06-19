@@ -1,4 +1,4 @@
-#include "LwM2M_MessageConverter.hpp"
+#include "CoAP_To_LwM2M.hpp"
 #include "CoRE_Link.hpp"
 #include "PlainText.hpp"
 #include "RegistrationInterfaceMessages.hpp"
@@ -170,10 +170,7 @@ bool processIfDeviceRegistrationInteraface(shared_ptr<CoAP_Option> option,
           result = makeDeRegisterMessage(message);
           break;
         }
-        default: {
-          // log warning
-          break;
-        }
+        default: { break; }
         }
       }
     }
@@ -191,7 +188,7 @@ bool processIfInformationReportingInterface(shared_ptr<CoAP_Option> option,
   return false;
 }
 
-void LwM2M_MessageConverter::convert(shared_ptr<CoAP_Message> message) {
+void CoAP_To_LwM2M::convert(shared_ptr<CoAP_Message> message) {
   if (!message->getOptions().empty()) {
     for (auto option : message->getOptions()) {
       if (processIfBootrstrapInterface(option, message)) {

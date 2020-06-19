@@ -1,4 +1,4 @@
-#include "CoAP_MessageConverter.hpp"
+#include "LwM2M_To_CoAP.hpp"
 
 using namespace std;
 using namespace CoAP;
@@ -24,11 +24,11 @@ makeFromCancelObersvationMessage(shared_ptr<LwM2M_Message> input) {}
 CoAP_Message &
 makeFromCancelObersvationCompositeMessage(shared_ptr<LwM2M_Message> input) {}
 
-CoAP_MessageConverter::CoAP_MessageConverter(
+LwM2M_To_CoAP::LwM2M_To_CoAP(
     shared_ptr<ThreadsafeQueue<CoAP_Message>> output_queue)
     : output_queue_(output_queue) {}
 
-void CoAP_MessageConverter::convert(shared_ptr<LwM2M_Message> message) {
+void LwM2M_To_CoAP::convert(shared_ptr<LwM2M_Message> message) {
   switch (message->getMessageType()) {
   case MessageType::REGISTER: {
     output_queue_->push(makeFromRegisterMessage(message));

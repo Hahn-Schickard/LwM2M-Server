@@ -7,11 +7,11 @@
 #include "Threadsafe_Queue.hpp"
 
 namespace LwM2M_Model {
-class CoAP_MessageConverter : public Converter<LwM2M_Message> {
+class LwM2M_To_CoAP : public Converter<LwM2M_Message> {
   std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>> output_queue_;
 
 public:
-  CoAP_MessageConverter(
+  LwM2M_To_CoAP(
       std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>> output_queue);
 
   void convert(std::shared_ptr<LwM2M_Message> message) override;
