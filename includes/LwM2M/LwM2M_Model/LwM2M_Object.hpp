@@ -5,7 +5,7 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 namespace LwM2M_Model {
 
@@ -17,7 +17,7 @@ struct LwM2M_Object {
   const bool multiple_instances_;
   const bool mandatory_;
   const std::string urn_;
-  const std::vector<LwM2M_Resource> resources_;
+  const std::unordered_map<uint32_t, LwM2M_Resource> resources_;
 
   LwM2M_Object()
       : name_(std::string()), description_(std::string()), id_(0),
@@ -39,7 +39,7 @@ struct LwM2M_Object {
 
   LwM2M_Object(std::string name, std::string description, uint32_t id,
                bool multiple_instances, bool mandatory, std::string urn,
-               std::vector<LwM2M_Resource> resources)
+               std::unordered_map<uint32_t, LwM2M_Resource> resources)
       : name_(std::move(name)), description_(std::move(description)), id_(id),
         multiple_instances_(multiple_instances), mandatory_(mandatory),
         urn_(std::move(urn)), resources_(std::move(resources)) {}

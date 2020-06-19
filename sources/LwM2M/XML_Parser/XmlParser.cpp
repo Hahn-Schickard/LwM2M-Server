@@ -198,9 +198,10 @@ LwM2M_Object deserializeObject(xml_node object_node) {
     auto object_mandatory =
         convertMandatoryType(getChildValue<string>(object_node, "Mandatory"));
     xml_node resource_nodes = object_node.child("Resources");
-    vector<LwM2M_Resource> resources;
+    unordered_map<uint32_t, LwM2M_Resource> resources;
     for (xml_node resource_node : resource_nodes.children("Item")) {
-      resources.push_back(deserializeResource(resource_node));
+      auto resource = deserializeResource(resource_node);
+      resources.emplace(resource.id_, resource);
     }
     return LwM2M_Object(object_name, object_description, object_id,
                         object_multiple_instances, object_mandatory, object_urn,
