@@ -1,7 +1,6 @@
 #include "PayloadDecoder.hpp"
 #include "CoRE_Link.hpp"
 #include "PlainText.hpp"
-#include "StringSpliter.hpp"
 
 using namespace std;
 

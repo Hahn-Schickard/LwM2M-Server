@@ -5,7 +5,6 @@
 
 using namespace std;
 
-namespace CoAP {
 namespace utility {
 vector<string> split(const string &s, char delimiter) {
   vector<string> tokens;
@@ -17,4 +16,3 @@ vector<string> split(const string &s, char delimiter) {
   return tokens;
 }
 } // namespace utility
-} // namespace CoAP
