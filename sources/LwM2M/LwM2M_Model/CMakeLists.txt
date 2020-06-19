@@ -3,15 +3,15 @@ cmake_minimum_required(VERSION 3.6)
 set(THIS LwM2M_Model)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/LwM2M_Model
-            ${INCLUDES_DIR}/LwM2M_Model/LwM2M_Messages
+            ${INCLUDES_DIR}/LwM2M/LwM2M_Model
+            ${INCLUDES_DIR}/LwM2M/LwM2M_Model/LwM2M_Messages
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
 
-add_library(${THIS} OBJECT)                
+add_library(${THIS})                
 
 target_sources(${THIS} PRIVATE 
                        ${THIS_INCLUDES}
@@ -19,8 +19,8 @@ target_sources(${THIS} PRIVATE
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M_Model>
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M_Model/LwM2M_Messages>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/LwM2M_Model>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/LwM2M_Model/LwM2M_Messages>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
