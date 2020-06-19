@@ -6,6 +6,14 @@ using namespace std;
 using namespace HaSLL;
 
 namespace LwM2M_Model {
+
+string generateDeviceID(string name, string endpoint_address,
+                        unsigned int endpoint_port) {
+  size_t result =
+      hash<string>{}(name) + hash<string>{}(endpoint_address) + endpoint_port;
+  return to_string(result);
+}
+
 RegistrationInterface::RegistrationInterface(const string &configuration_path)
     : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
@@ -64,5 +72,10 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRequest(
   }
   }
   return result;
+}
+
+shared_ptr<unordered_map<string, LwM2M_Device>>
+RegistrationInterface::getDeviceRegistery() {
+  return device_registery_;
 }
 } // namespace LwM2M_Model
