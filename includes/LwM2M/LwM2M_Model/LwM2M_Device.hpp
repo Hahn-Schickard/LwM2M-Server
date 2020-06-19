@@ -4,6 +4,7 @@
 #include "LwM2M_Object.hpp"
 #include "RegistrationInterfaceMessages.hpp"
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -20,6 +21,7 @@ class LwM2M_Device {
   std::unordered_map<uint32_t, LwM2M_Object> object_instances_;
 
 public:
+  LwM2M_Device();
   LwM2M_Device(std::string name, std::string endpoint_address,
                unsigned int endpoint_port, size_t life_time,
                LwM2M_Version version, BindingType binding, bool queue_mode,
