@@ -28,6 +28,9 @@ RegistrationInterface::assignObjectInstances(
     auto it = supported_descriptors_.find(object_id);
     if (it != supported_descriptors_.end()) {
       result.emplace(instance_id, it->second);
+    } else {
+      logger_->log(SeverityLevel::ERROR,
+                   "Object ID {} is not supported by the server.", object_id);
     }
   }
   return result;
