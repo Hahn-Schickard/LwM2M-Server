@@ -53,19 +53,20 @@ template <typename T> struct MessageProcessorThread {
   }
 };
 
-class MessageProcessingManager {
+class MessageProcessingThreadPool {
   std::shared_ptr<ThreadsafeQueue<LwM2M_Message>> outgoing_lwm2m_message_queue_;
   MessageProcessorThread<CoAP::CoAP_Message>
       incoming_message_processing_thread_;
   MessageProcessorThread<LwM2M_Message> outgoing_message_processing_thread_;
 
 public:
-  MessageProcessingManager(std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>>
-                               incoming_message_queue,
-                           std::shared_ptr<ThreadsafeQueue<LwM2M_Message>>
-                               outgoing_lwm2m_message_queue,
-                           std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>>
-                               outgoing_message_queue);
-  ~MessageProcessingManager();
+  MessageProcessingThreadPool(
+      std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>>
+          incoming_message_queue,
+      std::shared_ptr<ThreadsafeQueue<LwM2M_Message>>
+          outgoing_lwm2m_message_queue,
+      std::shared_ptr<ThreadsafeQueue<CoAP::CoAP_Message>>
+          outgoing_message_queue);
+  ~MessageProcessingThreadPool();
 };
 } // namespace LwM2M_Model
