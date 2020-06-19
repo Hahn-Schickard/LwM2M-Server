@@ -8,13 +8,13 @@
 
 namespace CoAP {
 
-typedef enum CoRELinkAttributeEnum {
+enum class CoRELinkAttribute {
   RESOURCE_TYPE,
   INTERFACE_DESCRIPTION,
   MAXIMUM_SIZE,
   CONTENT_TYPE,
   UNDEFINED
-} CoRELinkAttribute;
+};
 
 class CoRE_Link {
   std::string target_;

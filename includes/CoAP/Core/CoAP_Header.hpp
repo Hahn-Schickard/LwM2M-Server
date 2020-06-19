@@ -13,16 +13,16 @@ struct Network_IO_Exception : public std::runtime_error {
       : std::runtime_error(message) {}
 };
 
-typedef enum MessageTypeEnum {
+enum class MessageType {
   CONFIRMABLE = 0,
   NON_CONFIRMABLE = 1,
   ACKNOWLEDGMENT = 2,
   RESET = 3
-} MessageType;
+};
 
 std::string toString(MessageType type);
 
-typedef enum CodeTypeEnum {
+enum class CodeType {
   GET = 0x01,
   POST = 0x02,
   PUT = 0x03,
@@ -51,7 +51,7 @@ typedef enum CodeTypeEnum {
   RELEASE = 0xE4,
   ABORT = 0xE5,
   UNHANDLED
-} CodeType;
+};
 
 std::string toString(CodeType type);
 

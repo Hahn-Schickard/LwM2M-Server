@@ -13,15 +13,15 @@ struct UnsupportedOperation : public std::runtime_error {
       : std::runtime_error(message) {}
 };
 
-typedef enum InterfaceTypeEnum {
+enum class InterfaceType {
   REGISTRATION = 0x10,
   DEVICE_MANAGMENT = 0x20,
   INFORMATION_REPORTING = 0x30
-} InterfaceType;
+};
 
 std::string toString(InterfaceType type);
 
-typedef enum MessageTypeEnum {
+enum class MessageType {
   // Registration messages
   REGISTER = 0x11,
   DEREGISTER = 0x12,
@@ -43,7 +43,7 @@ typedef enum MessageTypeEnum {
   CANCEL_OBSERVATION_COMPOSITE = 0x33,
   NOTIFY = 0x34,
   SEND = 0x35
-} MessageType;
+};
 
 std::string toString(MessageType type);
 
@@ -71,6 +71,7 @@ class LwM2M_Message {
   MessageType message_type_;
 
 public:
+  LwM2M_Message();
   LwM2M_Message(InterfaceType interface_type, MessageType message_type);
 
   InterfaceType getInterfaceType();

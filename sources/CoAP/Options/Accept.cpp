@@ -23,11 +23,9 @@ Accept::Accept(vector<uint8_t> value)
   }
 }
 
-string Accept::getValue() { return to_string(value_); }
+string Accept::getValue() { return toString(value_); }
 
-string Accept::getString() { return toString(value_); }
-
-uint16_t Accept::getValueAsInt() { return value_; }
+uint16_t Accept::getValueAsInt() { return static_cast<uint16_t>(value_); }
 
 ContentFormatType Accept::getAcceptableContentFormatType() { return value_; }
 } // namespace CoAP

@@ -216,7 +216,8 @@ shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
       }
 
       if (previous) {
-        option_number = makeOptionNumber(delta + previous->getOptionNumber());
+        option_number = makeOptionNumber(
+            delta + static_cast<int>(previous->getOptionNumber()));
       } else {
         option_number = makeOptionNumber(delta);
       }

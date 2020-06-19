@@ -15,13 +15,13 @@ namespace LwM2M_Model {
  * operation types
  *
  */
-typedef enum OperationsTypeEnum {
+enum class OperationsType {
   NO_OPERATION,
   READ,
   WRITE,
   READ_AND_WRITE,
   EXECUTE
-} OperationsType;
+};
 
 /**
  * @enum DataTypeEnum
@@ -29,7 +29,7 @@ typedef enum OperationsTypeEnum {
  * types
  *
  */
-typedef enum {
+enum class DataType {
   NONE,    /*!< No specific data type is applicable to this resource (Only for
               Executable or Malformated Resources) */
   STRING,  /*!< UTF-8 String, represented as UTF-8 string for both Text and TLV
@@ -60,7 +60,7 @@ typedef enum {
                  UTF-8 string containign 2 16-bit ASCII integers seperated by
                  ':' in Text format or as two 16 bit unsigned integers in TLV
                  Format*/
-} DataType;
+};
 
 /**
  * @brief ObjectLink - indicates a link to another object

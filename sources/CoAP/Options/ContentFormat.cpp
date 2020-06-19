@@ -90,7 +90,9 @@ ContentFormat::ContentFormat(vector<uint8_t> value)
 
 string ContentFormat::getValue() { return toString(value_); }
 
-uint16_t ContentFormat::getValueAsInt() { return value_; }
+uint16_t ContentFormat::getValueAsInt() {
+  return static_cast<uint16_t>(value_);
+}
 
 ContentFormatType ContentFormat::getContentFormatType() { return value_; }
 

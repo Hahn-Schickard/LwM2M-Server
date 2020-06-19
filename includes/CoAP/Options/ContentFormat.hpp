@@ -8,7 +8,7 @@
 #include <vector>
 
 namespace CoAP {
-typedef enum ContentFormatTypeEnum {
+enum class ContentFormatType {
   PLAIN_TEXT = 0,
   CORE_LINK = 40,
   OPAQUE = 42,
@@ -18,7 +18,7 @@ typedef enum ContentFormatTypeEnum {
   TLV = 11542,
   JSON = 11543,
   UNRECOGNIZED
-} ContentFormatType;
+};
 
 ContentFormatType toContentFormatType(uint16_t value);
 std::string toString(ContentFormatType type);

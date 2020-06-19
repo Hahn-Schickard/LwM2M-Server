@@ -8,9 +8,9 @@
 #include <unordered_map>
 
 namespace LwM2M_Model {
-typedef enum LwM2M_VersionEnum { V1_0, V1_1, UNRECOGNIZED } LwM2M_Version;
+enum class LwM2M_Version { V1_0, V1_1, UNRECOGNIZED };
 
-typedef enum BindingTypeEnum { UDP, TCP, SMS, NON_IP, MALFORMED } BindingType;
+enum class BindingType { UDP, TCP, SMS, NON_IP, MALFORMED };
 
 class Regirstration_Interface_Message : public LwM2M_Message {
 public:

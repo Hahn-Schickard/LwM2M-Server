@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace CoAP {
-typedef enum OptionNumberEnum {
+enum class OptionNumber {
   RESERVED = 0,        // RFC7252
   IF_MATCH = 1,        // RFC7252
   URI_HOST = 3,        // RFC7252
@@ -29,7 +29,7 @@ typedef enum OptionNumberEnum {
   PROXY_SCHEME = 39,   // RFC7252
   SIZE_1 = 60,         // RFC7252
   NO_RESPONSE = 258    // RFC7967
-} OptionNumber;
+};
 
 std::string toString(OptionNumber option);
 

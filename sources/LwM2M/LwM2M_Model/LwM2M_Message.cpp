@@ -89,10 +89,13 @@ Notify_Attripube::Notify_Attripube(
       minimum_evaluation_period_(move(minimum_evaluation_period)),
       maximum_evaluation_period_(move(maximum_evaluation_period)) {}
 
+LwM2M_Message::LwM2M_Message() {}
+
 LwM2M_Message::LwM2M_Message(InterfaceType interface_type,
                              MessageType message_type)
     : interface_type_(interface_type), message_type_(message_type) {
-  if (interface_type_ != (message_type_ & INTERFACE_MASK)) {
+  if (static_cast<int>(interface_type_) !=
+      (static_cast<int>(message_type_) & INTERFACE_MASK)) {
     string error_msg = toString(interface_type_) + "does not supprot " +
                        toString(message_type_) + " message type";
     throw logic_error(error_msg);

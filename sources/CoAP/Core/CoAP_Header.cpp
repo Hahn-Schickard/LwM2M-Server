@@ -179,10 +179,10 @@ CoAP_Header::CoAP_Header(MessageType type, uint8_t message_length,
 
 vector<uint8_t> CoAP_Header::toPacket() {
   vector<uint8_t> result(4);
-  result[0] = 0x40;                      // set CoAP version to 1
-  result[0] = result[0] | (type_ << 4);  // set message type;
-  result[0] = result[0] | token_length_; // set token length
-  result[1] = code_;
+  result[0] = 0x40; // set CoAP version to 1
+  result[0] = result[0] | (static_cast<int>(type_) << 4); // set message type;
+  result[0] = result[0] | token_length_;                  // set token length
+  result[1] = static_cast<int>(code_);
   result[2] = message_id_ >> 8;   // set id MSB
   result[3] = message_id_ & 0xFF; // set id LSB
 
