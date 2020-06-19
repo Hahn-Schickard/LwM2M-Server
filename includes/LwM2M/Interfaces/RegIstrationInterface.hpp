@@ -18,6 +18,9 @@ class RegistrationInterface {
       device_registery_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
+  std::unordered_map<uint32_t, LwM2M_Object>
+  assignObjectInstances(std::unordered_map<unsigned int, unsigned int> objects);
+
   std::shared_ptr<LwM2M_Message>
   handleRegisterRequest(std::shared_ptr<Register_Request> request);
 
