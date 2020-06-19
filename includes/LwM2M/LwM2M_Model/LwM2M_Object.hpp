@@ -4,6 +4,7 @@
 #include "LwM2M_Resource.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -43,6 +44,17 @@ struct LwM2M_Object {
       : name_(std::move(name)), description_(std::move(description)), id_(id),
         multiple_instances_(multiple_instances), mandatory_(mandatory),
         urn_(std::move(urn)), resources_(std::move(resources)) {}
+
+  std::unique_ptr<LwM2M_Resource> getResource(uint32_t id) {
+    auto it = resources_.find(id);
+    std::unique_ptr<LwM2M_Resource> result;
+    if (it != resources_.end()) {
+      result = std::make_unique<LwM2M_Resource>(it->second);
+    } else {
+      result = std::make_unique<LwM2M_Resource>();
+    }
+    return result;
+  }
 };
 
 } // namespace LwM2M_Model
