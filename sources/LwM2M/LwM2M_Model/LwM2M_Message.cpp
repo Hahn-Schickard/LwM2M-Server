@@ -101,9 +101,4 @@ LwM2M_Message::LwM2M_Message(InterfaceType interface_type,
     throw logic_error(error_msg);
   }
 }
-
-InterfaceType LwM2M_Message::getInterfaceType() { return interface_type_; }
-
-MessageType LwM2M_Message::getMessageType() { return message_type_; }
-
 } // namespace LwM2M_Model

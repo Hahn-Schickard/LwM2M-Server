@@ -12,13 +12,12 @@ enum class LwM2M_Version { V1_0, V1_1, UNRECOGNIZED };
 
 enum class BindingType { UDP, TCP, SMS, NON_IP, MALFORMED };
 
-class Regirstration_Interface_Message : public LwM2M_Message {
-public:
+struct Regirstration_Interface_Message : public LwM2M_Message {
   Regirstration_Interface_Message(MessageType message_type)
       : LwM2M_Message(InterfaceType::REGISTRATION, message_type) {}
 };
 
-class Register_Request : public Regirstration_Interface_Message {
+struct Register_Request : public Regirstration_Interface_Message {
   std::string endpoint_name_;
   std::string endpoint_address_;
   unsigned int endpoint_port_;
@@ -29,7 +28,6 @@ class Register_Request : public Regirstration_Interface_Message {
   std::optional<std::string> sms_number_;
   std::unordered_map<unsigned int, unsigned int> object_instances_map_;
 
-public:
   Register_Request(
       std::string endpoint_name, std::string endpoint_address,
       unsigned int endpoint_port, size_t life_time, LwM2M_Version version,
@@ -38,7 +36,7 @@ public:
       std::unordered_map<unsigned int, unsigned int> object_instances_map);
 };
 
-class Update_Request : public Regirstration_Interface_Message {
+struct Update_Request : public Regirstration_Interface_Message {
   std::string location_;
   std::optional<size_t> lifetime_;
   std::optional<BindingType> binding_;
@@ -46,7 +44,6 @@ class Update_Request : public Regirstration_Interface_Message {
   std::optional<std::unordered_map<unsigned int, unsigned int>>
       object_instances_map_;
 
-public:
   Update_Request(std::string location, std::optional<size_t> lifetime,
                  std::optional<BindingType> binding,
                  std::optional<std::string> sms_number,
@@ -54,10 +51,9 @@ public:
                      object_instances_map);
 };
 
-class Deregister_Request : public Regirstration_Interface_Message {
+struct Deregister_Request : public Regirstration_Interface_Message {
   std::string location_;
 
-public:
   Deregister_Request(std::string location);
 };
 }; // namespace LwM2M_Model

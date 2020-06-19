@@ -47,7 +47,7 @@ enum class MessageType {
 
 std::string toString(MessageType type);
 
-class Notify_Attripube {
+struct Notify_Attripube {
   std::optional<unsigned int> minimum_period_;
   std::optional<unsigned int> maximum_period_;
   std::optional<unsigned int> greater_than_;
@@ -56,7 +56,6 @@ class Notify_Attripube {
   std::optional<unsigned int> minimum_evaluation_period_;
   std::optional<unsigned int> maximum_evaluation_period_;
 
-public:
   Notify_Attripube(std::optional<unsigned int> minimum_period,
                    std::optional<unsigned int> maximum_period,
                    std::optional<unsigned int> greater_than,
@@ -66,16 +65,12 @@ public:
                    std::optional<unsigned int> maximum_evaluation_period);
 };
 
-class LwM2M_Message {
+struct LwM2M_Message {
   InterfaceType interface_type_;
   MessageType message_type_;
 
-public:
   LwM2M_Message();
   LwM2M_Message(InterfaceType interface_type, MessageType message_type);
-
-  InterfaceType getInterfaceType();
-  MessageType getMessageType();
 };
 
 } // namespace LwM2M_Model

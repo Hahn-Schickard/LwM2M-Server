@@ -29,7 +29,7 @@ LwM2M_To_CoAP::LwM2M_To_CoAP(
     : output_queue_(output_queue) {}
 
 void LwM2M_To_CoAP::convert(shared_ptr<LwM2M_Message> message) {
-  switch (message->getMessageType()) {
+  switch (message->message_type_) {
   case MessageType::REGISTER: {
     output_queue_->push(makeFromRegisterMessage(message));
     break;

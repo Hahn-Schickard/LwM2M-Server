@@ -8,58 +8,53 @@
 #include <unordered_map>
 
 namespace LwM2M_Model {
-class DeviceManagment_Interface_Message : public LwM2M_Message {
-public:
+struct DeviceManagment_Interface_Message : public LwM2M_Message {
   DeviceManagment_Interface_Message(MessageType message_type)
       : LwM2M_Message(InterfaceType::DEVICE_MANAGMENT, message_type) {}
 };
 
-class Read_Request : public DeviceManagment_Interface_Message {
+struct Read_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
   std::optional<unsigned int> resoruce_instance_id_;
 
-public:
   Read_Request(unsigned int object_id,
                std::optional<unsigned int> object_instance_id,
                std::optional<unsigned int> resource_id,
                std::optional<unsigned int> resoruce_instance_id);
 };
 
-class Discover_Request : public DeviceManagment_Interface_Message {
+struct Discover_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
 
-public:
   Discover_Request(unsigned int object_id,
                    std::optional<unsigned int> object_instance_id,
                    std::optional<unsigned int> resource_id);
 };
 
-class Write_Request : public DeviceManagment_Interface_Message {
+struct Write_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   unsigned int object_instance_id_;
   std::optional<unsigned int> resource_id_;
   std::optional<unsigned int> resoruce_instance_id_;
   std::string value_;
 
-public:
   Write_Request(unsigned int object_id, unsigned int object_instance_id,
                 std::optional<unsigned int> resource_id,
                 std::optional<unsigned int> resoruce_instance_id,
                 std::string value);
 };
 
-class Write_Attributes_Request : public DeviceManagment_Interface_Message {
+struct Write_Attributes_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
   std::optional<unsigned int> resoruce_instance_id_;
   std::optional<Notify_Attripube> notify_attribute_;
 
-public:
   Write_Attributes_Request(unsigned int object_id,
                            std::optional<unsigned int> object_instance_id,
                            std::optional<unsigned int> resource_id,
@@ -67,42 +62,37 @@ public:
                            std::optional<Notify_Attripube> notify_attribute);
 };
 
-class Execute_Request : public DeviceManagment_Interface_Message {
+struct Execute_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   unsigned int object_instance_id_;
   unsigned int resource_id_;
   unsigned int resoruce_instance_id_;
   std::optional<std::string> arguments_;
 
-public:
   Execute_Request(unsigned int object_id, unsigned int object_instance_id,
                   unsigned int resource_id, unsigned int resoruce_instance_id,
                   std::optional<std::string> arguments);
 };
 
-class Create_Request : public DeviceManagment_Interface_Message {
+struct Create_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   std::string value_;
 
-public:
   Create_Request(unsigned int object_id, std::string value);
 };
 
-class Delete_Request : public DeviceManagment_Interface_Message {
+struct Delete_Request : public DeviceManagment_Interface_Message {
   unsigned int object_id_;
   unsigned int object_instance_id_;
 
-public:
   Delete_Request(unsigned int object_id, unsigned int object_instance_id);
 };
 
-class ReadComoposite_Request : public DeviceManagment_Interface_Message {
-public:
+struct ReadComoposite_Request : public DeviceManagment_Interface_Message {
   ReadComoposite_Request();
 };
 
-class WriteComoposite_Request : public DeviceManagment_Interface_Message {
-public:
+struct WriteComoposite_Request : public DeviceManagment_Interface_Message {
   WriteComoposite_Request();
 };
 } // namespace LwM2M_Model
