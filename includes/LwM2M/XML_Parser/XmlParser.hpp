@@ -4,6 +4,7 @@
 #include "LwM2M_Object.hpp"
 
 #include <string>
+#include <unordered_map>
 
 namespace LwM2M_Model {
 std::string deserializeFile(const std::string &filepath);
@@ -15,7 +16,7 @@ std::string deserializeFile(const std::string &filepath);
  * locations
  * @return std::vector<LwM2M_Model::LwM2M_Object>
  */
-std::vector<LwM2M_Model::LwM2M_Object>
+std::unordered_map<uint32_t, LwM2M_Model::LwM2M_Object>
 deserializeModel(const std::string &filepath);
 } // namespace LwM2M_Model
 

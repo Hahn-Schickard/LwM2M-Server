@@ -214,8 +214,8 @@ LwM2M_Object deserializeObject(xml_node object_node) {
   }
 }
 
-vector<LwM2M_Object> deserializeModel(const string &filepath) {
-  vector<LwM2M_Object> objects;
+unordered_map<uint32_t, LwM2M_Object> deserializeModel(const string &filepath) {
+  unordered_map<uint32_t, LwM2M_Object> objects;
   xml_document objects_document;
   filesystem::path root_path = filesystem::path(filepath).remove_filename();
   if (objects_document.load_file(filepath.c_str())) {
@@ -229,7 +229,8 @@ vector<LwM2M_Object> deserializeModel(const string &filepath) {
       if (object_descripotr.load_file(object_descriptor_file_path.c_str())) {
         for (auto object :
              object_descripotr.child("LWM2M").children("Object")) {
-          objects.push_back(deserializeObject(object));
+          LwM2M_Object lwm2m_object = deserializeObject(object);
+          objects.emplace(lwm2m_object.id_, lwm2m_object);
         }
       } else {
         string error_msg = "Could not open object descriptor file: " +
