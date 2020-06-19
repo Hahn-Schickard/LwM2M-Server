@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 set(THIS XML_Parser)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/XMLParser
+            ${INCLUDES_DIR}/LwM2M/XML_Parser
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -26,7 +26,7 @@ target_link_libraries(${THIS} PUBLIC
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/XMLParser>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/XML_Parser>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

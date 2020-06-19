@@ -9,8 +9,8 @@
 using namespace std;
 using namespace pugi;
 using namespace HaSLL;
-using namespace LwM2M_Model;
 
+namespace LwM2M_Model {
 shared_ptr<Logger> xml_parser_logger =
     LoggerRepository::getInstance().registerLoger("XML_Parser");
 
@@ -29,21 +29,17 @@ string deserializeNode(xml_node node) {
 string deserializeFile(const string &filepath) {
   xml_document document;
   string result;
-
   if (!document.load_file(filepath.c_str())) {
     xml_parser_logger->log(SeverityLevel::ERROR, "Cound not parse file: <>",
                            filepath);
     return result;
   }
-
   xml_node objects = document.child("LWM2M");
-
   for (xml_node object : objects.children("Object")) {
     for (xml_node property : object.children()) {
       result += deserializeNode(property);
     }
   }
-
   return result;
 }
 
@@ -59,7 +55,7 @@ uint32_t getChildValue<uint32_t>(xml_node parent, string child_name) {
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
                        " has no child named: " + child_name;
-    throw runtime_error(error_msg);
+    throw runtime_error(move(error_msg));
   }
 }
 
@@ -71,7 +67,7 @@ template <> double getChildValue<double>(xml_node parent, string child_name) {
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
                        " has no child named: " + child_name;
-    throw runtime_error(error_msg);
+    throw runtime_error(move(error_msg));
   }
 }
 
@@ -81,7 +77,7 @@ template <> string getChildValue<string>(xml_node parent, string child_name) {
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
                        " has no child named: " + child_name;
-    throw runtime_error(error_msg);
+    throw runtime_error(move(error_msg));
   }
 }
 
@@ -91,21 +87,24 @@ template <> bool getChildValue<bool>(xml_node parent, string child_name) {
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
                        " has no child named: " + child_name;
-    throw runtime_error(error_msg);
+    throw runtime_error(move(error_msg));
   }
 }
 
 OperationsType convertToOperationsType(string value) {
+  OperationsType result;
   if (value == "R") {
-    return OperationsType::READ;
+    result = OperationsType::READ;
   } else if (value == "W") {
-    return OperationsType::WRITE;
+    result = OperationsType::WRITE;
   } else if (value == "RW") {
-    return OperationsType::READ_AND_WRITE;
+    result = OperationsType::READ_AND_WRITE;
   } else if (value == "E") {
-    return OperationsType::EXECUTE;
+    result = OperationsType::EXECUTE;
+  } else {
+    result = OperationsType::NO_OPERATION;
   }
-  return OperationsType::NO_OPERATION;
+  return result;
 }
 
 bool convertInstanceType(string value) {
@@ -117,22 +116,25 @@ bool convertMandatoryType(string value) {
 }
 
 DataType converDataType(string value) {
+  DataType result;
   if (value == "String") {
-    return DataType::STRING;
+    result = DataType::STRING;
   } else if (value == "Integer") {
-    return DataType::INTEGER;
+    result = DataType::INTEGER;
   } else if (value == "Float") {
-    return DataType::FLOAT;
+    result = DataType::FLOAT;
   } else if (value == "Boolean") {
-    return DataType::BOOLEAN;
+    result = DataType::BOOLEAN;
   } else if (value == "Opaque") {
-    return DataType::OPAQUE;
+    result = DataType::OPAQUE;
   } else if (value == "Time") {
-    return DataType::TIME;
+    result = DataType::TIME;
   } else if (value == "Objlnk") {
-    return DataType::OBJECT_LINK;
+    result = DataType::OBJECT_LINK;
+  } else {
+    result = DataType::NONE;
   }
-  return DataType::NONE;
+  return result;
 }
 
 optional<RangeEnumeration> getRangeEnumeration(xml_node resource_node) {
@@ -169,16 +171,17 @@ LwM2M_Resource deserializeResource(xml_node resource_node) {
                             resoruce_multiple_instances, resource_mandatory,
                             resoruce_data_type, resource_range_enum.value(),
                             resource_units, resource_description);
+    } else {
+      return LwM2M_Resource(resource_id, resource_name, resource_operations,
+                            resoruce_multiple_instances, resource_mandatory,
+                            resoruce_data_type, resource_units,
+                            resource_description);
     }
-    return LwM2M_Resource(resource_id, resource_name, resource_operations,
-                          resoruce_multiple_instances, resource_mandatory,
-                          resoruce_data_type, resource_units,
-                          resource_description);
   } catch (exception &ex) {
     string error_msg =
         "Failed to deserialize resource node: " + string(resource_node.name()) +
         " due to error: " + ex.what();
-    throw runtime_error(error_msg);
+    throw runtime_error(move(error_msg));
   }
 }
 
@@ -206,7 +209,7 @@ LwM2M_Object deserializeObject(xml_node object_node) {
     string error_msg =
         "Failed to deserialize object node: " + string(object_node.name()) +
         " due to error: " + ex.what();
-    throw runtime_error(error_msg);
+    throw runtime_error(move(error_msg));
   }
 }
 
@@ -231,12 +234,12 @@ vector<LwM2M_Object> deserializeModel(const string &filepath) {
         } else {
           string error_msg = "Could not open object descriptor file: " +
                              string(object_descriptor_file_path);
-          throw runtime_error(error_msg);
+          throw runtime_error(move(error_msg));
         }
       }
     } else {
       string error_msg = "Could not open objects parent file: " + filepath;
-      throw runtime_error(error_msg);
+      throw runtime_error(move(error_msg));
     }
   } catch (exception &ex) {
     xml_parser_logger->log(SeverityLevel::ERROR,
@@ -244,3 +247,4 @@ vector<LwM2M_Object> deserializeModel(const string &filepath) {
   }
   return objects;
 }
+} // namespace LwM2M_Model
