@@ -216,35 +216,30 @@ LwM2M_Object deserializeObject(xml_node object_node) {
 
 vector<LwM2M_Object> deserializeModel(const string &filepath) {
   vector<LwM2M_Object> objects;
-  try {
-    xml_document objects_document;
-    filesystem::path root_path = filesystem::path(filepath).remove_filename();
-    if (objects_document.load_file(filepath.c_str())) {
-      xml_node obpejct_descriptor_path = objects_document.child("IPSOModel");
-      for (xml_node object_file_path :
-           obpejct_descriptor_path.children("IPSOPath")) {
-        filesystem::path object_descriptor_file_path = root_path;
-        object_descriptor_file_path +=
-            object_file_path.attribute("File").as_string();
-        xml_document object_descripotr;
-        if (object_descripotr.load_file(object_descriptor_file_path.c_str())) {
-          for (auto object :
-               object_descripotr.child("LWM2M").children("Object")) {
-            objects.push_back(deserializeObject(object));
-          }
-        } else {
-          string error_msg = "Could not open object descriptor file: " +
-                             string(object_descriptor_file_path);
-          throw runtime_error(move(error_msg));
+  xml_document objects_document;
+  filesystem::path root_path = filesystem::path(filepath).remove_filename();
+  if (objects_document.load_file(filepath.c_str())) {
+    xml_node obpejct_descriptor_path = objects_document.child("IPSOModel");
+    for (xml_node object_file_path :
+         obpejct_descriptor_path.children("IPSOPath")) {
+      filesystem::path object_descriptor_file_path = root_path;
+      object_descriptor_file_path +=
+          object_file_path.attribute("File").as_string();
+      xml_document object_descripotr;
+      if (object_descripotr.load_file(object_descriptor_file_path.c_str())) {
+        for (auto object :
+             object_descripotr.child("LWM2M").children("Object")) {
+          objects.push_back(deserializeObject(object));
         }
+      } else {
+        string error_msg = "Could not open object descriptor file: " +
+                           string(object_descriptor_file_path);
+        throw runtime_error(move(error_msg));
       }
-    } else {
-      string error_msg = "Could not open objects parent file: " + filepath;
-      throw runtime_error(move(error_msg));
     }
-  } catch (exception &ex) {
-    xml_parser_logger->log(SeverityLevel::ERROR,
-                           "Failled to deserialize mode: {}", ex.what());
+  } else {
+    string error_msg = "Could not open objects parent file: " + filepath;
+    throw runtime_error(move(error_msg));
   }
   return objects;
 }
