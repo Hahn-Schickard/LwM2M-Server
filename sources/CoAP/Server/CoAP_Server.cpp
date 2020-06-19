@@ -92,17 +92,12 @@ public:
         incominng_messages_(incominng_messages),
         outgoing_messages_(outgoing_messages),
         logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
-    logger_->log(SeverityLevel::TRACE,
-                 "CoAP_Port::CoAP_Port({},{},{}, incominng_messages_buffer, "
-                 "outgoing_messages_buffer)",
-                 ip_v6_handler, port_id, task_execution_period);
     logger_->log(SeverityLevel::INFO, "Opening a {} port on {}",
                  socket_.local_endpoint().port(),
                  socket_.local_endpoint().address().to_string());
   }
 
   ~CoAP_Port() {
-    logger_->log(SeverityLevel::TRACE, "~CoAP_Port::CoAP_Port()");
     LoggerRepository::getInstance().deregisterLoger(logger_->getName());
   }
 
@@ -122,18 +117,13 @@ CoAP_Server::CoAP_Server(bool ip_v6_handler, unsigned int port_id,
       task_execution_period_(task_execution_period),
       incominng_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
       outgoing_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
-  logger_->log(SeverityLevel::TRACE, "CoAP_Server::CoAP_Server({},{},{})",
-               ip_v6_handler, port_id, task_execution_period);
-};
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)){};
 
 CoAP_Server::~CoAP_Server() {
-  logger_->log(SeverityLevel::TRACE, "~CoAP_Server::CoAP_Server()");
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
 void CoAP_Server::run() {
-  logger_->log(SeverityLevel::TRACE, "CoAP_Server::run()");
   CoAP_Port port(ip_v6_handler_, port_id_, task_execution_period_,
                  incominng_messages_, outgoing_messages_);
   do {
@@ -146,24 +136,20 @@ void CoAP_Server::run() {
 }
 
 shared_ptr<CoAP_Message> CoAP_Server::pullRequest() {
-  logger_->log(SeverityLevel::TRACE, "CoAP_Server::pullRequest()");
   return incominng_messages_->wait_and_pop();
 }
 
 void CoAP_Server::pushResponse(CoAP_Message message) {
-  logger_->log(SeverityLevel::TRACE, "CoAP_Server::pushResponse()");
   outgoing_messages_->push(message);
 }
 
 shared_ptr<ThreadsafeQueue<CoAP_Message>>
 CoAP_Server::getIncomingMessagesQueue() {
-  logger_->log(SeverityLevel::TRACE, "CoAP_Server::getIncomingMessagesQueue()");
   return incominng_messages_;
 }
 
 shared_ptr<ThreadsafeQueue<CoAP_Message>>
 CoAP_Server::getOutgoingMessagesQueue() {
-  logger_->log(SeverityLevel::TRACE, "CoAP_Server::getOutgoingMessagesQueue()");
   return outgoing_messages_;
 }
 } // namespace CoAP
