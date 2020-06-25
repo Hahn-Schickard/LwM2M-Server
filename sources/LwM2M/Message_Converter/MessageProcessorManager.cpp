@@ -1,6 +1,6 @@
-#include "MessageProcessingThreadPool.hpp"
 #include "CoAP_To_LwM2M.hpp"
 #include "LwM2M_To_CoAP.hpp"
+#include "MessageProcessorManager.hpp"
 
 #include <cctype>
 #include <optional>
@@ -11,7 +11,7 @@ using namespace std;
 using namespace CoAP;
 namespace LwM2M_Model {
 
-MessageProcessingThreadPool::MessageProcessingThreadPool(
+MessageProcessorManager::MessageProcessorManager(
     shared_ptr<ThreadsafeQueue<CoAP_Message>> incoming_message_queue,
     shared_ptr<ThreadsafeQueue<LwM2M_Message>> outgoing_lwm2m_message_queue,
     shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_message_queue)
@@ -23,7 +23,7 @@ MessageProcessingThreadPool::MessageProcessingThreadPool(
           make_unique<LwM2M_To_CoAP>(outgoing_message_queue),
           outgoing_lwm2m_message_queue, "OutgoingMessageProcessor") {}
 
-MessageProcessingThreadPool::~MessageProcessingThreadPool() {
+MessageProcessorManager::~MessageProcessorManager() {
   incoming_message_processing_thread_.processor_.stop();
   outgoing_message_processing_thread_.processor_.stop();
   // possible race condition at this point?
