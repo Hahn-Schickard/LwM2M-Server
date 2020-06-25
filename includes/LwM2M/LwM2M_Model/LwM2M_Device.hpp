@@ -18,6 +18,7 @@ class LwM2M_Device {
   LwM2M_Version version_;
   BindingType binding_;
   bool queue_mode_;
+  std::optional<std::string> sms_number_;
   std::unordered_map<uint32_t, LwM2M_Object> object_instances_;
 
 public:
