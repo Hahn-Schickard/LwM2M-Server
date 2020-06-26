@@ -18,6 +18,8 @@ class RegistrationInterface {
       device_registery_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
+  bool isRegistered(std::string device_id);
+
   std::unordered_map<uint32_t, LwM2M_Object>
   assignObjectInstances(std::unordered_map<unsigned int, unsigned int> objects);
 

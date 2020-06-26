@@ -37,6 +37,12 @@ RegistrationInterface::assignObjectInstances(
   return result;
 }
 
+bool RegistrationInterface::isRegistered(string device_id) {
+  return (device_registery_->find(device_id) != device_registery_->end())
+             ? true
+             : false;
+}
+
 shared_ptr<LwM2M_Message> RegistrationInterface::handleRegisterRequest(
     shared_ptr<Register_Request> request) {
   shared_ptr<LwM2M_Message> result;
@@ -48,6 +54,11 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRegisterRequest(
                             request->version_, request->binding_,
                             request->queue_mode_, request->sms_number_,
                             object_instances);
+    if (isRegistered(new_device.getDeviceId())) {
+      device_registery_->erase(
+          device_registery_->find(new_device.getDeviceId()));
+      // Notify that device was removed
+    }
     device_registery_->emplace(new_device.getDeviceId(), new_device);
     result = make_shared<LwM2M_Response>(
         request->endpoint_address_, request->endpoint_port_, request->token_,
