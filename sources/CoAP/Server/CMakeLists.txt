@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Server)
+set(THIS CoAP_Server)
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/CoAP/Server
@@ -10,7 +10,7 @@ file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
 
-add_library(${THIS} OBJECT)                
+add_library(${THIS})                
 
 target_sources(${THIS} PRIVATE 
                        ${THIS_INCLUDES}

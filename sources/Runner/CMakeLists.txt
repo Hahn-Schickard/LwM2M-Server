@@ -11,7 +11,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PRIVATE
-                              Server
+                              CoAP_Server
                               HaSLL::HaSLL
                               Threads::Threads
 )
