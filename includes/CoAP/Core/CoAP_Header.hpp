@@ -23,12 +23,14 @@ enum class MessageType {
 std::string toString(MessageType type);
 
 enum class CodeType {
+  // Requests
   GET = 0x01,
   POST = 0x02,
   PUT = 0x03,
   DELETE = 0x04,
   FETCH = 0x05,
   iPATCH = 0x07,
+  // Responses
   OK = 0x40,
   CREATED = 0x41,
   DELETED = 0x42,
