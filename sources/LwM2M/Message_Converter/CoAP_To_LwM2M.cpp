@@ -112,9 +112,9 @@ unique_ptr<LwM2M_Message> makeRegisterMessage(shared_ptr<CoAP_Message> input) {
           }
 
           result = make_unique<Register_Request>(
-              endpoint_name_, input->getReceiverIP(), input->getReceiverPort(),
-              life_time_, version_, binding_, queue_mode_, sms_number_,
-              object_instances_map_);
+              input->getReceiverIP(), input->getReceiverPort(),
+              input->getToken(), endpoint_name_, life_time_, version_, binding_,
+              queue_mode_, sms_number_, object_instances_map_);
         }
       }
     }

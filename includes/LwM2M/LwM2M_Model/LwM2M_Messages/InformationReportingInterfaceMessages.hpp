@@ -9,8 +9,11 @@
 
 namespace LwM2M_Model {
 struct InformationReporting_Interface_Message : public LwM2M_Message {
-  InformationReporting_Interface_Message(MessageType message_type)
-      : LwM2M_Message(InterfaceType::INFORMATION_REPORTING, message_type) {}
+  InformationReporting_Interface_Message(std::string endpoint_address,
+                                         unsigned int endpoint_port,
+                                         std::vector<uint8_t> token,
+                                         MessageType message_type)
+      : LwM2M_Message(endpoint_address, endpoint_port, token, message_type) {}
 };
 
 struct Observe_Request : public InformationReporting_Interface_Message {
@@ -19,38 +22,46 @@ struct Observe_Request : public InformationReporting_Interface_Message {
   std::optional<unsigned int> resource_id_;
   std::optional<unsigned int> resoruce_instance_id_;
 
-  Observe_Request(unsigned int object_id,
+  Observe_Request(std::string endpoint_address, unsigned int endpoint_port,
+                  std::vector<uint8_t> token, unsigned int object_id,
                   std::optional<unsigned int> object_instance_id,
                   std::optional<unsigned int> resource_id,
                   std::optional<unsigned int> resoruce_instance_id);
 };
 
 struct Notify_Request : public InformationReporting_Interface_Message {
-  std::string token_;
   std::string value_;
 
-  Notify_Request(std::string token, std::string value);
+  Notify_Request(std::string endpoint_address, unsigned int endpoint_port,
+                 std::vector<uint8_t> token, std::string value);
 };
 
 struct CancelObservation_Request
     : public InformationReporting_Interface_Message {
   std::string location_;
 
-  CancelObservation_Request(std::string location);
+  CancelObservation_Request(std::string endpoint_address,
+                            unsigned int endpoint_port,
+                            std::vector<uint8_t> token, std::string location);
 };
 
 struct ObserveComposite_Request
     : public InformationReporting_Interface_Message {
-  ObserveComposite_Request();
+  ObserveComposite_Request(std::string endpoint_address,
+                           unsigned int endpoint_port,
+                           std::vector<uint8_t> token);
 };
 
 struct CancelObserveComposite_Request
     : public InformationReporting_Interface_Message {
-  CancelObserveComposite_Request();
+  CancelObserveComposite_Request(std::string endpoint_address,
+                                 unsigned int endpoint_port,
+                                 std::vector<uint8_t> token);
 };
 
 struct Send_Request : public InformationReporting_Interface_Message {
-  Send_Request();
+  Send_Request(std::string endpoint_address, unsigned int endpoint_port,
+               std::vector<uint8_t> token);
 };
 } // namespace LwM2M_Model
 

@@ -77,6 +77,33 @@ string toString(MessageType type) {
   }
 }
 
+InterfaceType getInterfaceType(MessageType message_type) {
+  InterfaceType result;
+  switch (static_cast<int>(message_type) & INTERFACE_MASK) {
+  case 0x10: {
+    result = InterfaceType::REGISTRATION;
+    break;
+  }
+  case 0x20: {
+    result = InterfaceType::DEVICE_MANAGMENT;
+    break;
+  }
+  case 0x30: {
+    result = InterfaceType::INFORMATION_REPORTING;
+    break;
+  }
+  case 0x40: {
+    result = InterfaceType::BOOTSTRAP;
+    break;
+  }
+  default: {
+    result = InterfaceType::NOT_RECOGNIZED;
+    break;
+  }
+  }
+  return result;
+}
+
 Notify_Attripube::Notify_Attripube(
     optional<unsigned int> minimum_period,
     optional<unsigned int> maximum_period, optional<unsigned int> greater_than,
@@ -91,9 +118,13 @@ Notify_Attripube::Notify_Attripube(
 
 LwM2M_Message::LwM2M_Message() {}
 
-LwM2M_Message::LwM2M_Message(InterfaceType interface_type,
+LwM2M_Message::LwM2M_Message(string endpoint_address,
+                             unsigned int endpoint_port, vector<uint8_t> token,
                              MessageType message_type)
-    : interface_type_(interface_type), message_type_(message_type) {
+    : message_type_(message_type),
+      interface_type_(getInterfaceType(message_type_)),
+      endpoint_address_(endpoint_address), endpoint_port_(endpoint_port),
+      token_(token) {
   if (static_cast<int>(interface_type_) !=
       (static_cast<int>(message_type_) & INTERFACE_MASK)) {
     string error_msg = toString(interface_type_) + "does not supprot " +
@@ -101,4 +132,12 @@ LwM2M_Message::LwM2M_Message(InterfaceType interface_type,
     throw logic_error(error_msg);
   }
 }
+
+LwM2M_Response::LwM2M_Response(string endpoint_address,
+                               unsigned int endpoint_port,
+                               vector<uint8_t> token, MessageType message_type,
+                               LwM2M_ResponseCode response_code,
+                               vector<uint8_t> payload)
+    : LwM2M_Message(endpoint_address, endpoint_port, token, message_type),
+      response_code_(response_code), payload_(payload) {}
 } // namespace LwM2M_Model

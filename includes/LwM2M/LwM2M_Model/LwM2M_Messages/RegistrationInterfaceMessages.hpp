@@ -13,14 +13,15 @@ enum class LwM2M_Version { V1_0, V1_1, UNRECOGNIZED };
 enum class BindingType { UDP, TCP, SMS, NON_IP, MALFORMED };
 
 struct Regirstration_Interface_Message : public LwM2M_Message {
-  Regirstration_Interface_Message(MessageType message_type)
-      : LwM2M_Message(InterfaceType::REGISTRATION, message_type) {}
+  Regirstration_Interface_Message(std::string endpoint_address,
+                                  unsigned int endpoint_port,
+                                  std::vector<uint8_t> token,
+                                  MessageType message_type)
+      : LwM2M_Message(endpoint_address, endpoint_port, token, message_type) {}
 };
 
 struct Register_Request : public Regirstration_Interface_Message {
   std::string endpoint_name_;
-  std::string endpoint_address_;
-  unsigned int endpoint_port_;
   size_t life_time_;
   LwM2M_Version version_;
   BindingType binding_;
@@ -29,9 +30,9 @@ struct Register_Request : public Regirstration_Interface_Message {
   std::unordered_map<unsigned int, unsigned int> object_instances_map_;
 
   Register_Request(
-      std::string endpoint_name, std::string endpoint_address,
-      unsigned int endpoint_port, size_t life_time, LwM2M_Version version,
-      BindingType binding, bool queue_mode,
+      std::string endpoint_address, unsigned int endpoint_port,
+      std::vector<uint8_t> token, std::string endpoint_name, size_t life_time,
+      LwM2M_Version version, BindingType binding, bool queue_mode,
       std::optional<std::string> sms_number,
       std::unordered_map<unsigned int, unsigned int> object_instances_map);
 };
@@ -44,7 +45,9 @@ struct Update_Request : public Regirstration_Interface_Message {
   std::optional<std::unordered_map<unsigned int, unsigned int>>
       object_instances_map_;
 
-  Update_Request(std::string location, std::optional<size_t> lifetime,
+  Update_Request(std::string endpoint_address, unsigned int endpoint_port,
+                 std::vector<uint8_t> token, std::string location,
+                 std::optional<size_t> lifetime,
                  std::optional<BindingType> binding,
                  std::optional<std::string> sms_number,
                  std::optional<std::unordered_map<unsigned int, unsigned int>>
@@ -54,7 +57,8 @@ struct Update_Request : public Regirstration_Interface_Message {
 struct Deregister_Request : public Regirstration_Interface_Message {
   std::string location_;
 
-  Deregister_Request(std::string location);
+  Deregister_Request(std::string endpoint_address, unsigned int endpoint_port,
+                     std::vector<uint8_t> token, std::string location);
 };
 }; // namespace LwM2M_Model
 
