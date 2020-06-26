@@ -129,7 +129,7 @@ LwM2M_Message::LwM2M_Message(string endpoint_address,
       (static_cast<int>(message_type_) & INTERFACE_MASK)) {
     string error_msg = toString(interface_type_) + "does not supprot " +
                        toString(message_type_) + " message type";
-    throw logic_error(error_msg);
+    throw logic_error(move(error_msg));
   }
 }
 
