@@ -1,3 +1,6 @@
+#ifndef __LWM2M_MESSAGE_PROCESSOR_MANAGER_HPP
+#define __LWM2M_MESSAGE_PROCESSOR_MANAGER_HPP
+
 #include "Converter.hpp"
 #include "Stoppable.hpp"
 #include "Threadsafe_Queue.hpp"
@@ -68,3 +71,5 @@ public:
   ~MessageProcessorManager();
 };
 } // namespace LwM2M_Model
+
+#endif //__LWM2M_MESSAGE_PROCESSOR_MANAGER_HPP
