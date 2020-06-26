@@ -14,6 +14,8 @@ namespace utility {
  * @return std::vector<std::string>
  */
 std::vector<std::string> split(const std::string &s, char delimiter);
+
+std::vector<uint8_t> convert(const std::string &s);
 } // namespace utility
 
 #endif //__UTILITY_STRING_SPLITER_HPP

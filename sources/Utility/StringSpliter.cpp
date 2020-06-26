@@ -15,4 +15,12 @@ vector<string> split(const string &s, char delimiter) {
   }
   return tokens;
 }
+
+vector<uint8_t> convert(const string &s) {
+  vector<uint8_t> result;
+  for (auto iterator = s.cbegin(); iterator != s.cend(); iterator++) {
+    result.push_back(*iterator);
+  }
+  return result;
+}
 } // namespace utility
