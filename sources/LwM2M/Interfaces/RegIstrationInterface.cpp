@@ -1,5 +1,6 @@
 #include "RegIstrationInterface.hpp"
 #include "LoggerRepository.hpp"
+#include "StringSpliter.hpp"
 #include "XmlParser.hpp"
 
 using namespace std;
@@ -48,9 +49,14 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRegisterRequest(
                             request->queue_mode_, request->sms_number_,
                             object_instances);
     device_registery_->emplace(new_device.getDeviceId(), new_device);
-    result = make_shared<LwM2M_Message>();
+    result = make_shared<LwM2M_Response>(
+        request->endpoint_address_, request->endpoint_port_, request->token_,
+        MessageType::REGISTER, LwM2M_ResponseCode::CREATED,
+        utility::convert(new_device.getDeviceId()));
   } else {
-    result = make_shared<LwM2M_Message>();
+    result = make_shared<LwM2M_Response>(
+        request->endpoint_address_, request->endpoint_port_, request->token_,
+        MessageType::REGISTER, LwM2M_ResponseCode::BAD_REQUEST);
   }
   return result;
 }
@@ -58,14 +64,14 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRegisterRequest(
 shared_ptr<LwM2M_Message>
 RegistrationInterface::handleUpdateRequest(shared_ptr<Update_Request> request) {
   shared_ptr<LwM2M_Message> result;
-  result = make_shared<LwM2M_Message>();
+  result = make_shared<LwM2M_Response>();
   return result;
 }
 
 shared_ptr<LwM2M_Message> RegistrationInterface::handleDeregisterRequest(
     shared_ptr<Deregister_Request> request) {
   shared_ptr<LwM2M_Message> result;
-  result = make_shared<LwM2M_Message>();
+  result = make_shared<LwM2M_Response>();
   return result;
 }
 

@@ -22,6 +22,7 @@ target_link_libraries(${THIS} PUBLIC
                               HaSLL::HaSLL
                               PRIVATE
                               XML_Parser
+                              Utility
 )
 
 target_include_directories(${THIS} INTERFACE
