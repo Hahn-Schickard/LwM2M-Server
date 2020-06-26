@@ -105,9 +105,13 @@ struct LwM2M_Response : LwM2M_Message {
   LwM2M_ResponseCode response_code_;
   std::vector<uint8_t> payload_;
 
+  LwM2M_Response();
   LwM2M_Response(std::string endpoint_address, unsigned int endpoint_port,
                  std::vector<uint8_t> token, MessageType message_type,
-                 LwM2M_ResponseCode response_code_,
+                 LwM2M_ResponseCode response_code);
+  LwM2M_Response(std::string endpoint_address, unsigned int endpoint_port,
+                 std::vector<uint8_t> token, MessageType message_type,
+                 LwM2M_ResponseCode response_code,
                  std::vector<uint8_t> payload);
 };
 

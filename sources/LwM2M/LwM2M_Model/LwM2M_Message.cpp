@@ -133,6 +133,20 @@ LwM2M_Message::LwM2M_Message(string endpoint_address,
   }
 }
 
+LwM2M_Response::LwM2M_Response()
+    : LwM2M_Message(string(), 0, vector<uint8_t>(),
+                    MessageType::NOT_RECOGNIZED),
+      response_code_(LwM2M_ResponseCode::UNHANDLED),
+      payload_(vector<uint8_t>()) {}
+
+LwM2M_Response::LwM2M_Response(std::string endpoint_address,
+                               unsigned int endpoint_port,
+                               std::vector<uint8_t> token,
+                               MessageType message_type,
+                               LwM2M_ResponseCode response_code)
+    : LwM2M_Message(endpoint_address, endpoint_port, token, message_type),
+      response_code_(response_code), payload_(vector<uint8_t>()) {}
+
 LwM2M_Response::LwM2M_Response(string endpoint_address,
                                unsigned int endpoint_port,
                                vector<uint8_t> token, MessageType message_type,
