@@ -1,4 +1,4 @@
-#include "RegIstrationInterface.hpp"
+#include "RegistrationInterface.hpp"
 #include "LoggerRepository.hpp"
 #include "StringSpliter.hpp"
 #include "XmlParser.hpp"
@@ -8,14 +8,35 @@ using namespace HaSLL;
 
 namespace LwM2M_Model {
 
-RegistrationInterface::RegistrationInterface(const string &configuration_path)
-    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+RegistrationInterface::RegistrationInterface(
+    shared_ptr<ThreadsafeQueue<LwM2M_Message>> outgoing_message_queue,
+    shared_ptr<ThreadsafeQueue<Regirstration_Interface_Message>>
+        incoming_message_queue,
+    const string &configuration_path)
+    : InterfaceRunner(outgoing_message_queue),
+      incoming_message_queue_(incoming_message_queue),
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
   } catch (exception &ex) {
     logger_->log(SeverityLevel::ERROR,
                  "Received an exception during descriptor deserialization: {}",
                  ex.what());
+  }
+}
+
+void RegistrationInterface::run() {
+  while (!stopRequested()) {
+    try {
+      auto response = handleRequest(incoming_message_queue_->wait_and_pop());
+      if (response) {
+        outgoing_message_queue_->push(*response.get());
+      }
+    } catch (exception &ex) {
+      logger_->log(SeverityLevel::ERROR,
+                   "Received an exception while processing messages: {}",
+                   ex.what());
+    }
   }
 }
 
