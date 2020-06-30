@@ -7,18 +7,27 @@
 #include "Threadsafe_Queue.hpp"
 
 #include <memory>
+#include <string>
 
 namespace CoAP {
 
+class SocketInterface {
+public:
+  virtual ~SocketInterface() = default;
+
+  virtual void listen() = 0;
+};
+
 class CoAP_Server : public Stoppable {
-  bool ip_v6_handler_;
-  unsigned int port_id_;
-  unsigned int task_execution_period_;
   std::shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages_;
   std::shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages_;
+  std::unique_ptr<SocketInterface> socket_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
 public:
+  CoAP_Server();
+  CoAP_Server(const std::string &ip_address, unsigned int port_id,
+              unsigned int task_execution_period);
   CoAP_Server(bool ip_v6_handler, unsigned int port_id,
               unsigned int task_execution_period);
   ~CoAP_Server();

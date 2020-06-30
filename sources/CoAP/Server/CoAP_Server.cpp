@@ -31,7 +31,7 @@ void handleReturnCode(string failure_message, asio::error_code return_code) {
   }
 }
 
-class CoAP_Port {
+class CoAP_Socket : public SocketInterface {
   io_context io_context_;
   udp::socket socket_;
   unsigned int task_execution_period_;
@@ -81,13 +81,10 @@ class CoAP_Port {
   }
 
 public:
-  CoAP_Port(bool ip_v6_handler, unsigned int port_id,
-            unsigned int task_execution_period,
-            shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages,
-            shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages)
-      : io_context_(),
-        socket_(io_context_,
-                udp::endpoint(selectProtocol(ip_v6_handler), port_id)),
+  CoAP_Socket(udp::endpoint socket_endpoint, unsigned int task_execution_period,
+              shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages,
+              shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages)
+      : io_context_(), socket_(io_context_, socket_endpoint),
         task_execution_period_(task_execution_period),
         incominng_messages_(incominng_messages),
         outgoing_messages_(outgoing_messages),
@@ -97,11 +94,27 @@ public:
                  socket_.local_endpoint().address().to_string());
   }
 
-  ~CoAP_Port() {
+  CoAP_Socket(const string &address, unsigned int port_id,
+              unsigned int task_execution_period,
+              shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages,
+              shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages)
+      : CoAP_Socket(udp::endpoint(ip::make_address(address), port_id),
+                    task_execution_period, incominng_messages,
+                    outgoing_messages) {}
+
+  CoAP_Socket(bool ip_v6_handler, unsigned int port_id,
+              unsigned int task_execution_period,
+              shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages,
+              shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages)
+      : CoAP_Socket(udp::endpoint(selectProtocol(ip_v6_handler), port_id),
+                    task_execution_period, incominng_messages,
+                    outgoing_messages) {}
+
+  ~CoAP_Socket() {
     LoggerRepository::getInstance().deregisterLoger(logger_->getName());
   }
 
-  void listen() {
+  void listen() override {
     shared_ptr<CoAP_Message> message = outgoing_messages_->try_pop();
     if (message) {
       send(move(message));
@@ -109,26 +122,36 @@ public:
       receive();
     }
   }
-}; // namespace LwM2M_Server
+};
+
+CoAP_Server::CoAP_Server()
+    : incominng_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
+      outgoing_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+
+CoAP_Server::CoAP_Server(const string &ip_address, unsigned int port_id,
+                         unsigned int task_execution_period)
+    : CoAP_Server() {
+  socket_ = make_unique<CoAP_Socket>(ip_address, port_id, task_execution_period,
+                                     incominng_messages_, outgoing_messages_);
+}
 
 CoAP_Server::CoAP_Server(bool ip_v6_handler, unsigned int port_id,
                          unsigned int task_execution_period)
-    : ip_v6_handler_(ip_v6_handler), port_id_(port_id),
-      task_execution_period_(task_execution_period),
-      incominng_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
-      outgoing_messages_(make_shared<ThreadsafeQueue<CoAP_Message>>()),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)){};
+    : CoAP_Server() {
+  socket_ =
+      make_unique<CoAP_Socket>(ip_v6_handler, port_id, task_execution_period,
+                               incominng_messages_, outgoing_messages_);
+};
 
 CoAP_Server::~CoAP_Server() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
 void CoAP_Server::run() {
-  CoAP_Port port(ip_v6_handler_, port_id_, task_execution_period_,
-                 incominng_messages_, outgoing_messages_);
   do {
     try {
-      port.listen();
+      socket_->listen();
     } catch (Network_IO_Exception &ex) {
       logger_->log(SeverityLevel::ERROR, ex.what());
     }
