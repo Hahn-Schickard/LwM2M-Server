@@ -14,7 +14,7 @@ namespace LwM2M_Model {
 
 struct LwM2M_Configuration {
   std::string object_descriptors_location;
-  bool ipv6_flag;
+  std::string ip_address;
   unsigned int server_port;
   unsigned int read_timeout;
 };

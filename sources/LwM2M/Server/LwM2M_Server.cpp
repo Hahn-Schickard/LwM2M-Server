@@ -6,7 +6,7 @@ using namespace CoAP;
 namespace LwM2M_Model {
 
 LwM2M_Server::LwM2M_Server(LwM2M_Configuration config)
-    : server_(config.ipv6_flag, config.server_port, config.read_timeout),
+    : server_(config.ip_address, config.server_port, config.read_timeout),
       lwm2m_message_queue_(make_shared<ThreadsafeQueue<LwM2M_Message>>()),
       message_processing_(server_.getIncomingMessagesQueue(),
                           lwm2m_message_queue_,
