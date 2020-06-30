@@ -92,7 +92,7 @@ int main() {
 
   thread server_thread;
   logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
-  CoAP_Server server(false, 5683, 10);
+  CoAP_Server server(string("0.0.0.0"), 5683, 10);
   try {
     server_thread = thread([&]() { server.run(); });
 
