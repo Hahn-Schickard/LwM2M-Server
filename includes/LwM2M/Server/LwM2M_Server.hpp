@@ -1,14 +1,12 @@
 #ifndef __LWM2M_SERVER_HPP
 #define __LWM2M_SERVER_HPP
 
-#include "CoAP_Server.hpp"
-#include "MessageProcessorManager.hpp"
-#include "MessageSorter.hpp"
-#include "RegistrationInterface.hpp"
+#include "Stoppable.hpp"
 #include "Threadsafe_Queue.hpp"
 
 #include <memory>
 #include <thread>
+#include <vector>
 
 namespace LwM2M_Model {
 
@@ -19,17 +17,16 @@ struct LwM2M_Configuration {
   unsigned int read_timeout;
 };
 
-class LwM2M_Server {
-  CoAP::CoAP_Server server_;
-  std::shared_ptr<ThreadsafeQueue<LwM2M_Message>> lwm2m_message_queue_;
-  MessageProcessorManager message_processing_;
-  MessageSorter message_sorter_;
-  RegistrationInterface registration_;
-  std::vector<std::thread *> processes_;
+class LwM2M_Server : public Stoppable {
+  std::vector<std::unique_ptr<Stoppable>> processes_;
+  std::vector<std::thread *> process_threads_;
+
+  void run() override;
 
 public:
   LwM2M_Server(LwM2M_Configuration config);
-  ~LwM2M_Server();
+
+  void stop();
 };
 } // namespace LwM2M_Model
 #endif //__LWM2M_SERVER_HPP
