@@ -5,6 +5,7 @@
 #include "Threadsafe_Queue.hpp"
 
 #include <memory>
+#include <string>
 #include <thread>
 #include <vector>
 
