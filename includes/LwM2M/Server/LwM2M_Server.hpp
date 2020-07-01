@@ -19,7 +19,7 @@ struct LwM2M_Configuration {
 
 class LwM2M_Server : public Stoppable {
   std::vector<std::unique_ptr<Stoppable>> processes_;
-  std::vector<std::thread *> process_threads_;
+  std::vector<std::unique_ptr<std::thread>> process_threads_;
 
   void run() override;
 
