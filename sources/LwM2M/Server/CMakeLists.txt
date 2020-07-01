@@ -20,9 +20,9 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC 
                               Stoppable_Task
                               Threads::Threads
+                              LwM2M_Model
                               PRIVATE
                               CoAP_Server
-                              LwM2M_Model
                               LwM2M_Interfaces
                               Message_Converter
                               Threadsafe_Queue

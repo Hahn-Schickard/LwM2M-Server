@@ -12,7 +12,9 @@ using namespace CoAP;
 
 namespace LwM2M_Model {
 
-LwM2M_Server::LwM2M_Server(LwM2M_Configuration config) {
+LwM2M_Server::LwM2M_Server(LwM2M_Configuration config)
+    : device_registery_(
+          make_shared<unordered_map<string, shared_ptr<LwM2M_Device>>>()) {
   auto server = make_unique<CoAP_Server>(config.ip_address, config.server_port,
                                          config.read_timeout);
   processes_.emplace_back(make_unique<MessageProcessor<CoAP::CoAP_Message>>(
@@ -24,7 +26,7 @@ LwM2M_Server::LwM2M_Server(LwM2M_Configuration config) {
       message_queue, "OutgoingMessageProcessor"));
   auto sorter = make_unique<MessageSorter>(message_queue);
   processes_.emplace_back(make_unique<RegistrationInterface>(
-      message_queue, sorter->getRegistrationInterfaceQueue(),
+      message_queue, sorter->getRegistrationInterfaceQueue(), device_registery_,
       config.object_descriptors_location));
   processes_.emplace_back(move(sorter));
   processes_.emplace_back(move(server));
