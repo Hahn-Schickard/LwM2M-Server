@@ -49,4 +49,12 @@ void LwM2M_Server::stop() {
   }
 }
 
+shared_ptr<LwM2M_Device> LwM2M_Server::getDevice(string device_id) {
+  auto it = device_registery_->find(device_id);
+  shared_ptr<LwM2M_Device> result;
+  if (it != device_registery_->end())
+    result = it->second;
+  return result;
+}
+
 } // namespace LwM2M_Model

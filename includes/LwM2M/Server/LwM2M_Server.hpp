@@ -32,6 +32,7 @@ public:
   LwM2M_Server(LwM2M_Configuration config);
 
   void stop();
+  std::shared_ptr<LwM2M_Device> getDevice(std::string device_id);
 };
 } // namespace LwM2M_Model
 #endif //__LWM2M_SERVER_HPP
