@@ -12,9 +12,12 @@ RegistrationInterface::RegistrationInterface(
     shared_ptr<ThreadsafeQueue<LwM2M_Message>> outgoing_message_queue,
     shared_ptr<ThreadsafeQueue<Regirstration_Interface_Message>>
         incoming_message_queue,
+    shared_ptr<unordered_map<string, shared_ptr<LwM2M_Device>>>
+        device_registery,
     const string &configuration_path)
     : InterfaceRunner(outgoing_message_queue),
       incoming_message_queue_(incoming_message_queue),
+      device_registery_(device_registery),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
@@ -70,21 +73,21 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRegisterRequest(
   if (request) {
     unordered_map<uint32_t, LwM2M_Object> object_instances =
         assignObjectInstances(request->object_instances_map_);
-    LwM2M_Device new_device(request->endpoint_name_, request->endpoint_address_,
-                            request->endpoint_port_, request->life_time_,
-                            request->version_, request->binding_,
-                            request->queue_mode_, request->sms_number_,
-                            object_instances);
-    if (isRegistered(new_device.getDeviceId())) {
+    auto new_device = make_shared<LwM2M_Device>(
+        request->endpoint_name_, request->endpoint_address_,
+        request->endpoint_port_, request->life_time_, request->version_,
+        request->binding_, request->queue_mode_, request->sms_number_,
+        object_instances);
+    if (isRegistered(new_device->getDeviceId())) {
       device_registery_->erase(
-          device_registery_->find(new_device.getDeviceId()));
+          device_registery_->find(new_device->getDeviceId()));
       // Notify that device was removed
     }
-    device_registery_->emplace(new_device.getDeviceId(), new_device);
+    device_registery_->emplace(new_device->getDeviceId(), new_device);
     result = make_shared<LwM2M_Response>(
         request->endpoint_address_, request->endpoint_port_, request->token_,
         MessageType::REGISTER, LwM2M_ResponseCode::CREATED,
-        utility::convert(new_device.getDeviceId()));
+        utility::convert(new_device->getDeviceId()));
   } else {
     result = make_shared<LwM2M_Response>(
         request->endpoint_address_, request->endpoint_port_, request->token_,
@@ -133,10 +136,5 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRequest(
   }
   }
   return result;
-}
-
-shared_ptr<unordered_map<string, LwM2M_Device>>
-RegistrationInterface::getDeviceRegistery() {
-  return device_registery_;
 }
 } // namespace LwM2M_Model
