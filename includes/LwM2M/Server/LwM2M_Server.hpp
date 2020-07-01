@@ -2,7 +2,6 @@
 #define __LWM2M_SERVER_HPP
 
 #include "Stoppable.hpp"
-#include "Threadsafe_Queue.hpp"
 
 #include <memory>
 #include <string>

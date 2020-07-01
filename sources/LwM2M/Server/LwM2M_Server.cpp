@@ -5,6 +5,7 @@
 #include "MessageProcessor.hpp"
 #include "MessageSorter.hpp"
 #include "RegistrationInterface.hpp"
+#include "Threadsafe_Queue.hpp"
 
 using namespace std;
 using namespace CoAP;
