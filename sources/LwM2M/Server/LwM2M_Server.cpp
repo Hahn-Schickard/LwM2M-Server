@@ -12,6 +12,8 @@ using namespace CoAP;
 
 namespace LwM2M_Model {
 
+LwM2M_Server::LwM2M_Server() {}
+
 LwM2M_Server::LwM2M_Server(LwM2M_Configuration config)
     : device_registery_(
           make_shared<unordered_map<string, shared_ptr<LwM2M_Device>>>()) {
@@ -28,8 +30,8 @@ LwM2M_Server::LwM2M_Server(LwM2M_Configuration config)
   processes_.emplace_back(make_unique<RegistrationInterface>(
       message_queue, sorter->getRegistrationInterfaceQueue(), device_registery_,
       config.object_descriptors_location));
-  processes_.emplace_back(move(sorter));
-  processes_.emplace_back(move(server));
+  processes_.push_back(move(sorter));
+  processes_.push_back(move(server));
 };
 
 void LwM2M_Server::run() {

@@ -29,6 +29,7 @@ class LwM2M_Server : public Stoppable {
   void run() override;
 
 public:
+  LwM2M_Server();
   LwM2M_Server(LwM2M_Configuration config);
 
   void stop();
