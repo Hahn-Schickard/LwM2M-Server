@@ -189,7 +189,7 @@ bool processIfInformationReportingInterface(shared_ptr<CoAP_Option> option,
 }
 
 void CoAP_To_LwM2M::convert(shared_ptr<CoAP_Message> message) {
-  if (!message->getOptions().empty()) {
+  if (message && !message->getOptions().empty()) {
     for (auto option : message->getOptions()) {
       if (processIfBootrstrapInterface(option, message)) {
       } else if (processIfDeviceRegistrationInteraface(option, message)) {
