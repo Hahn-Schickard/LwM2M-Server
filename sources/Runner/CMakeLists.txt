@@ -11,9 +11,25 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PRIVATE
-                              CoAP_Server
+                              LwM2M_Server
                               HaSLL::HaSLL
                               Threads::Threads
 )
 
 target_compile_features(${THIS} PUBLIC cxx_std_17)
+
+add_custom_command(TARGET ${THIS} POST_BUILD 
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${PROJECT_SOURCE_DIR}/model
+                        $<TARGET_FILE_DIR:${THIS}> 
+                    COMMENT "Copying LwM2M Model descriptors."
+                        VERBATIM
+)
+
+add_custom_command(TARGET ${THIS} POST_BUILD 
+                    COMMAND ${CMAKE_COMMAND} -E copy
+                        "${PROJECT_SOURCE_DIR}/loggerConfig.json"
+                        $<TARGET_FILE_DIR:${THIS}> 
+                    COMMENT "Copying Logger Configuration."
+                        VERBATIM
+)
