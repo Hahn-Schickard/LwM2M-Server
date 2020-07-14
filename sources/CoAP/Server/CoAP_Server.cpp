@@ -65,7 +65,7 @@ class CoAP_Socket : public SocketInterface {
     }
   }
 
-  void send(shared_ptr<CoAP_Message> message) {
+  void send(unique_ptr<CoAP_Message> message) {
     asio::error_code return_code;
     socket_.send_to(
         asio::buffer(message->toPacket()),
@@ -115,7 +115,7 @@ public:
   }
 
   void listen() override {
-    shared_ptr<CoAP_Message> message = outgoing_messages_->try_pop();
+    auto message = outgoing_messages_->try_pop();
     if (message) {
       send(move(message));
     } else {
@@ -158,7 +158,7 @@ void CoAP_Server::run() {
   } while (!stopRequested());
 }
 
-shared_ptr<CoAP_Message> CoAP_Server::pullRequest() {
+unique_ptr<CoAP_Message> CoAP_Server::pullRequest() {
   return incominng_messages_->wait_and_pop();
 }
 

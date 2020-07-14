@@ -61,7 +61,8 @@ unique_ptr<LwM2M_Message> makeRegisterMessage(shared_ptr<CoAP_Message> input) {
           for (auto option : input->getOptions()) {
             if (option->getOptionNumber() == OptionNumber::URI_QUERY) {
               if (option->getValue().substr(0, 2) == "b=") {
-                switch (toupper(option->getValue().at(3))) {
+                auto binding_type = toupper(option->getValue().at(2));
+                switch (binding_type) {
                 case 'U': {
                   binding_ = BindingType::UDP;
                   break;
@@ -80,10 +81,12 @@ unique_ptr<LwM2M_Message> makeRegisterMessage(shared_ptr<CoAP_Message> input) {
                 }
                 default: { break; }
                 }
+                continue;
               }
 
-              if (option->getValue().substr(0, 6) == "lwm2m=") {
-                string version_string = option->getValue().substr(7);
+              string lwm2M_version_tag = option->getValue().substr(0, 6);
+              if (lwm2M_version_tag == "lwm2m=") {
+                string version_string = option->getValue().substr(6, 7);
                 if (version_string == "1.0") {
                   version_ = LwM2M_Version::V1_0;
                 } else if (version_string == "1.1") {
@@ -91,22 +94,31 @@ unique_ptr<LwM2M_Message> makeRegisterMessage(shared_ptr<CoAP_Message> input) {
                 } else {
                   version_ = LwM2M_Version::UNRECOGNIZED;
                 }
+                continue;
               }
 
-              if (option->getValue().substr(0, 3) == "lt=") {
+              string lifetime_tag = option->getValue().substr(0, 3);
+              if (lifetime_tag == "lt=") {
                 life_time_ = atoll(option->getValue().substr(4).c_str());
+                continue;
               }
 
-              if (option->getValue().substr(0, 3) == "ep=") {
+              string endpoint_tag = option->getValue().substr(0, 3);
+              if (endpoint_tag == "ep=") {
                 endpoint_name_ = option->getValue().substr(3);
+                continue;
               }
 
-              if (option->getValue().substr(0, 4) == "sms=") {
+              string sms_tag = option->getValue().substr(0, 4);
+              if (sms_tag == "sms=") {
                 sms_number_ = option->getValue().substr(4);
+                continue;
               }
 
-              if (option->getValue().substr(0, 1) == "Q") {
+              string queue_tag = option->getValue().substr(0, 1);
+              if (queue_tag == "Q") {
                 queue_mode_ = true;
+                continue;
               }
             }
           }
@@ -147,27 +159,41 @@ makeCancelObersvationCompositeMessage(shared_ptr<CoAP_Message> input) {}
 unique_ptr<LwM2M_Message> makeNotifyMessage(shared_ptr<CoAP_Message> input) {}
 unique_ptr<LwM2M_Message> makeSendMessage(shared_ptr<CoAP_Message> input) {}
 
-bool processIfBootrstrapInterface(shared_ptr<CoAP_Option> option,
-                                  shared_ptr<CoAP_Message> message) {
+bool processIfBootrstrapInterface(
+    shared_ptr<CoAP_Option> option, shared_ptr<CoAP_Message> message,
+    shared_ptr<ThreadsafeQueue<LwM2M_Message>> output_queue) {
   return false;
 }
 
-bool processIfDeviceRegistrationInteraface(shared_ptr<CoAP_Option> option,
-                                           shared_ptr<CoAP_Message> message) {
-  unique_ptr<LwM2M_Message> result;
+bool processIfDeviceRegistrationInteraface(
+    shared_ptr<CoAP_Option> option, shared_ptr<CoAP_Message> message,
+    shared_ptr<ThreadsafeQueue<LwM2M_Message>> output_queue) {
+  bool result = false;
   if (option->getOptionNumber() == OptionNumber::URI_PATH) {
     string uri_path = option->getValue();
     if (uri_path == "rd") {
-      result = makeRegisterMessage(message);
+      auto register_msg = makeRegisterMessage(message);
+      if (register_msg) {
+        output_queue->push(move(register_msg));
+        result = true;
+      }
     } else if (uri_path.size() > 2) {
       if (uri_path.substr(0, 3) == "rd/") {
         switch (message->getHeader().getCodeType()) {
         case CodeType::POST: {
-          result = makeUpdateMessage(message);
+          auto update_msg = makeUpdateMessage(message);
+          if (update_msg) {
+            output_queue->push(move(update_msg));
+            result = true;
+          }
           break;
         }
         case CodeType::DELETE: {
-          result = makeDeRegisterMessage(message);
+          auto deregister_msg = makeDeRegisterMessage(message);
+          if (deregister_msg) {
+            output_queue->push(move(deregister_msg));
+            result = true;
+          }
           break;
         }
         default: { break; }
@@ -175,26 +201,35 @@ bool processIfDeviceRegistrationInteraface(shared_ptr<CoAP_Option> option,
       }
     }
   }
-  return result ? true : false;
-}
+  return result;
+} // namespace LwM2M_Model
 
-bool processIfDeviceManagmentInterface(shared_ptr<CoAP_Option> option,
-                                       shared_ptr<CoAP_Message> message) {
+bool processIfDeviceManagmentInterface(
+    shared_ptr<CoAP_Option> option, shared_ptr<CoAP_Message> message,
+    shared_ptr<ThreadsafeQueue<LwM2M_Message>> output_queue) {
   return false;
 }
 
-bool processIfInformationReportingInterface(shared_ptr<CoAP_Option> option,
-                                            shared_ptr<CoAP_Message> message) {
+bool processIfInformationReportingInterface(
+    shared_ptr<CoAP_Option> option, shared_ptr<CoAP_Message> message,
+    shared_ptr<ThreadsafeQueue<LwM2M_Message>> output_queue) {
   return false;
 }
+
+CoAP_To_LwM2M::CoAP_To_LwM2M(
+    shared_ptr<ThreadsafeQueue<LwM2M_Message>> output_queue)
+    : output_queue_(output_queue) {}
 
 void CoAP_To_LwM2M::convert(shared_ptr<CoAP_Message> message) {
   if (message && !message->getOptions().empty()) {
     for (auto option : message->getOptions()) {
-      if (processIfBootrstrapInterface(option, message)) {
-      } else if (processIfDeviceRegistrationInteraface(option, message)) {
-      } else if (processIfDeviceManagmentInterface(option, message)) {
-      } else if (processIfInformationReportingInterface(option, message)) {
+      if (processIfBootrstrapInterface(option, message, output_queue_)) {
+      } else if (processIfDeviceRegistrationInteraface(option, message,
+                                                       output_queue_)) {
+      } else if (processIfDeviceManagmentInterface(option, message,
+                                                   output_queue_)) {
+      } else if (processIfInformationReportingInterface(option, message,
+                                                        output_queue_)) {
       }
     }
   }

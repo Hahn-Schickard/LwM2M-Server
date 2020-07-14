@@ -16,7 +16,7 @@
 template <typename T> class ThreadsafeQueue {
 private:
   struct node {
-    std::shared_ptr<T> data;
+    std::unique_ptr<T> data;
     std::unique_ptr<node> next;
   };
 
@@ -77,9 +77,9 @@ public:
   ThreadsafeQueue(const ThreadsafeQueue &other) = delete;
   ThreadsafeQueue &operator=(const ThreadsafeQueue &other) = delete;
 
-  std::shared_ptr<T> try_pop() {
+  std::unique_ptr<T> try_pop() {
     std::unique_ptr<node> old_head = try_pop_head();
-    return old_head ? old_head->data : std::shared_ptr<T>();
+    return old_head ? move(old_head->data) : std::unique_ptr<T>();
   }
 
   bool try_pop(T &value) {
@@ -92,21 +92,22 @@ public:
     return (head.get() == get_tail());
   }
 
-  std::shared_ptr<T> wait_and_pop() {
+  std::unique_ptr<T> wait_and_pop() {
     std::unique_ptr<node> const old_head = wait_pop_head();
-    return old_head->data;
+    return move(old_head->data);
   }
 
   void wait_and_pop(T &value) {
     std::unique_ptr<node> const old_head = wait_pop_head(value);
   }
 
-  void push(T new_value) {
-    std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
+  void push(T new_value) { push(std::make_unique<T>(std::move(new_value))); }
+
+  void push(std::unique_ptr<T> new_value) {
     std::unique_ptr<node> p(new node);
     {
       std::lock_guard<std::mutex> tail_lock(tail_mutex);
-      tail->data = new_data;
+      tail->data = move(new_value);
       node *const new_tail = p.get();
       tail->next = std::move(p);
       tail = new_tail;

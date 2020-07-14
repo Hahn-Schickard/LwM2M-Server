@@ -25,7 +25,6 @@ public:
         message_buffer_(message_buffer),
         logger_(
             HaSLL::LoggerRepository::getInstance().registerLoger(logger_name)) {
-    run();
   }
 
   void run() override {

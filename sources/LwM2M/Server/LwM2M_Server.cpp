@@ -19,10 +19,10 @@ LwM2M_Server::LwM2M_Server(LwM2M_Configuration config)
           make_shared<unordered_map<string, shared_ptr<LwM2M_Device>>>()) {
   auto server = make_unique<CoAP_Server>(config.ip_address, config.server_port,
                                          config.read_timeout);
-  processes_.emplace_back(make_unique<MessageProcessor<CoAP::CoAP_Message>>(
-      make_unique<CoAP_To_LwM2M>(), server->getIncomingMessagesQueue(),
-      "IncomingMessageProcessor"));
   auto message_queue = make_shared<ThreadsafeQueue<LwM2M_Message>>();
+  processes_.emplace_back(make_unique<MessageProcessor<CoAP::CoAP_Message>>(
+      make_unique<CoAP_To_LwM2M>(message_queue),
+      server->getIncomingMessagesQueue(), "IncomingMessageProcessor"));
   processes_.emplace_back(make_unique<MessageProcessor<LwM2M_Message>>(
       make_unique<LwM2M_To_CoAP>(server->getOutgoingMessagesQueue()),
       message_queue, "OutgoingMessageProcessor"));

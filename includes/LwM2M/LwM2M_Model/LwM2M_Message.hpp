@@ -113,6 +113,8 @@ struct LwM2M_Response : LwM2M_Message {
                  std::vector<uint8_t> token, MessageType message_type,
                  LwM2M_ResponseCode response_code,
                  std::vector<uint8_t> payload);
+
+  virtual ~LwM2M_Response() = default;
 };
 
 } // namespace LwM2M_Model

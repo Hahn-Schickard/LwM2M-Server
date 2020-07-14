@@ -12,7 +12,7 @@ enum class LwM2M_Version { V1_0, V1_1, UNRECOGNIZED };
 
 enum class BindingType { UDP, TCP, SMS, NON_IP, MALFORMED };
 
-struct Regirstration_Interface_Message : public LwM2M_Message {
+struct Regirstration_Interface_Message : LwM2M_Message {
   Regirstration_Interface_Message(std::string endpoint_address,
                                   unsigned int endpoint_port,
                                   std::vector<uint8_t> token,

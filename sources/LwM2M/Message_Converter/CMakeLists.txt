@@ -24,6 +24,8 @@ target_link_libraries(${THIS} PUBLIC
                               LwM2M_Model
                               Threadsafe_Queue
                               HaSLL::HaSLL
+                              PRIVATE 
+                              Utility
 )
 
 target_include_directories(${THIS} INTERFACE

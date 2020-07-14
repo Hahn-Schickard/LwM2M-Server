@@ -1,5 +1,6 @@
 #include "MessageSorter.hpp"
 #include "LoggerRepository.hpp"
+#include "UniquePtrCast.hpp"
 
 using namespace std;
 using namespace HaSLL;
@@ -24,25 +25,25 @@ MessageSorter::MessageSorter(
 void MessageSorter::run() {
   while (!stopRequested()) {
     try {
-      shared_ptr<LwM2M_Message> msg = incoming_message_queue_->wait_and_pop();
+      auto msg = incoming_message_queue_->wait_and_pop();
       switch (msg->interface_type_) {
       case InterfaceType::REGISTRATION: {
-        auto register_msg =
-            static_pointer_cast<Regirstration_Interface_Message>(msg);
-        registration_interface_queue_->push(*register_msg.get());
+        registration_interface_queue_->push(
+            utility::static_pointer_cast<Regirstration_Interface_Message>(
+                move(msg)));
         break;
       }
       case InterfaceType::DEVICE_MANAGMENT: {
-        auto device_managment_msg =
-            static_pointer_cast<DeviceManagment_Interface_Message>(msg);
-        device_managment_interface_queue_->push(*device_managment_msg.get());
+
+        device_managment_interface_queue_->push(
+            utility::static_pointer_cast<DeviceManagment_Interface_Message>(
+                move(msg)));
         break;
       }
       case InterfaceType::INFORMATION_REPORTING: {
-        auto information_reporting_msg =
-            static_pointer_cast<InformationReporting_Interface_Message>(msg);
         information_reporting_interface_queue_->push(
-            *information_reporting_msg.get());
+            utility::static_pointer_cast<
+                InformationReporting_Interface_Message>(move(msg)));
         break;
       }
       case InterfaceType::BOOTSTRAP:

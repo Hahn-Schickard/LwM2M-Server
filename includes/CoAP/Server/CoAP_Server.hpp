@@ -34,7 +34,7 @@ public:
 
   void run();
 
-  std::shared_ptr<CoAP_Message> pullRequest();
+  std::unique_ptr<CoAP_Message> pullRequest();
   void pushResponse(CoAP_Message message);
 
   std::shared_ptr<ThreadsafeQueue<CoAP_Message>> getIncomingMessagesQueue();
