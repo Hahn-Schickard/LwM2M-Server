@@ -26,17 +26,17 @@ class RegistrationInterface : public InterfaceRunner {
   std::unordered_map<uint32_t, ObjectDescriptor>
   assignObjectInstances(std::unordered_map<unsigned int, unsigned int> objects);
 
-  std::shared_ptr<Message>
-  handleRegisterRequest(std::shared_ptr<Register_Request> request);
+  std::unique_ptr<Message>
+  handleRegisterRequest(std::unique_ptr<Register_Request> request);
 
-  std::shared_ptr<Message>
-  handleUpdateRequest(std::shared_ptr<Update_Request> request);
+  std::unique_ptr<Message>
+  handleUpdateRequest(std::unique_ptr<Update_Request> request);
 
-  std::shared_ptr<Message>
-  handleDeregisterRequest(std::shared_ptr<Deregister_Request> request);
+  std::unique_ptr<Message>
+  handleDeregisterRequest(std::unique_ptr<Deregister_Request> request);
 
-  std::shared_ptr<Message>
-  handleRequest(std::shared_ptr<Regirstration_Interface_Message> message);
+  std::unique_ptr<Message>
+  handleRequest(std::unique_ptr<Regirstration_Interface_Message> message);
 
 public:
   RegistrationInterface(

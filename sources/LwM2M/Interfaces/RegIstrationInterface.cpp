@@ -1,6 +1,7 @@
 #include "RegistrationInterface.hpp"
 #include "LoggerRepository.hpp"
 #include "StringSpliter.hpp"
+#include "UniquePtrCast.hpp"
 #include "XmlParser.hpp"
 
 using namespace std;
@@ -32,7 +33,7 @@ void RegistrationInterface::run() {
     try {
       auto response = handleRequest(incoming_message_queue_->wait_and_pop());
       if (response) {
-        outgoing_message_queue_->push(*response.get());
+        outgoing_message_queue_->push(move(response));
       }
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
@@ -66,9 +67,9 @@ bool RegistrationInterface::isRegistered(string device_id) {
              : false;
 }
 
-shared_ptr<Message> RegistrationInterface::handleRegisterRequest(
-    shared_ptr<Register_Request> request) {
-  shared_ptr<Message> result;
+unique_ptr<Message> RegistrationInterface::handleRegisterRequest(
+    unique_ptr<Register_Request> request) {
+  unique_ptr<Message> result;
   if (request) {
     unordered_map<uint32_t, ObjectDescriptor> object_instances =
         assignObjectInstances(request->object_instances_map_);
@@ -83,54 +84,53 @@ shared_ptr<Message> RegistrationInterface::handleRegisterRequest(
       // Notify that device was removed
     }
     device_registery_->emplace(new_device->getDeviceId(), new_device);
-    result = make_shared<Response>(request->endpoint_address_,
+    result = make_unique<Response>(request->endpoint_address_,
                                    request->endpoint_port_, request->token_,
                                    MessageType::REGISTER, ResponseCode::CREATED,
                                    utility::convert(new_device->getDeviceId()));
   } else {
-    result = make_shared<Response>(
+    result = make_unique<Response>(
         request->endpoint_address_, request->endpoint_port_, request->token_,
         MessageType::REGISTER, ResponseCode::BAD_REQUEST);
   }
   return result;
 }
 
-shared_ptr<Message>
-RegistrationInterface::handleUpdateRequest(shared_ptr<Update_Request> request) {
-  shared_ptr<Message> result;
-  result = make_shared<Response>();
+unique_ptr<Message>
+RegistrationInterface::handleUpdateRequest(unique_ptr<Update_Request> request) {
+  unique_ptr<Message> result;
   return result;
 }
 
-shared_ptr<Message> RegistrationInterface::handleDeregisterRequest(
-    shared_ptr<Deregister_Request> request) {
-  shared_ptr<Message> result;
-  result = make_shared<Response>();
+unique_ptr<Message> RegistrationInterface::handleDeregisterRequest(
+    unique_ptr<Deregister_Request> request) {
+  unique_ptr<Message> result;
   return result;
 }
 
-shared_ptr<Message> RegistrationInterface::handleRequest(
-    shared_ptr<Regirstration_Interface_Message> message) {
-  shared_ptr<Message> result;
+unique_ptr<Message> RegistrationInterface::handleRequest(
+    unique_ptr<Regirstration_Interface_Message> message) {
+  unique_ptr<Message> result;
   switch (message->message_type_) {
   case MessageType::REGISTER: {
-    result =
-        handleRegisterRequest(static_pointer_cast<Register_Request>(message));
+    result = handleRegisterRequest(
+        utility::static_pointer_cast<Register_Request>(move(message)));
     break;
   }
   case MessageType::UPDATE: {
-    result = handleUpdateRequest(static_pointer_cast<Update_Request>(message));
+    result = handleUpdateRequest(
+        utility::static_pointer_cast<Update_Request>(move(message)));
     break;
   }
   case MessageType::DEREGISTER: {
     result = handleDeregisterRequest(
-        static_pointer_cast<Deregister_Request>(message));
+        utility::static_pointer_cast<Deregister_Request>(move(message)));
     break;
   }
   default: {
     logger_->log(SeverityLevel::ERROR, "Could not process {} message type",
                  message->message_type_);
-    result = make_shared<Message>();
+    result = unique_ptr<Message>();
     break;
   }
   }
