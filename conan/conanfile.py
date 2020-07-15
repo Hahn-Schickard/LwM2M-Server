@@ -10,7 +10,7 @@ class PackageConan(ConanFile):
     description = "A Logging library based on SPD Log."
     topics = ("conan", "spdlog", "logging")
     build_requires = "gtest/1.8.1@bincrafters/stable"
-    requires = "asio/1.16.0", "HaSLL/0.2.0@hahn-schickard/stable", "nlohmann_json/3.7.3", "pugixml/1.10@bincrafters/stable"
+    requires = "asio/1.16.0", "HaSLL/0.2.1@hahn-schickard/stable", "nlohmann_json/3.7.3", "pugixml/1.10@bincrafters/stable"
     settings = "cppstd", "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
                "fPIC": [True, False]}
