@@ -6,7 +6,7 @@
 #include <string>
 
 namespace CoAP {
-class ETag : public CoAP_Option {
+class ETag : public Option {
   std::string value_; // opaque type
 
 public:

@@ -18,27 +18,27 @@ public:
   virtual void listen() = 0;
 };
 
-class CoAP_Server : public Stoppable {
-  std::shared_ptr<ThreadsafeQueue<CoAP_Message>> incominng_messages_;
-  std::shared_ptr<ThreadsafeQueue<CoAP_Message>> outgoing_messages_;
+class Server : public Stoppable {
+  std::shared_ptr<ThreadsafeQueue<Message>> incominng_messages_;
+  std::shared_ptr<ThreadsafeQueue<Message>> outgoing_messages_;
   std::unique_ptr<SocketInterface> socket_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
 public:
-  CoAP_Server();
-  CoAP_Server(const std::string &ip_address, unsigned int port_id,
-              unsigned int task_execution_period);
-  CoAP_Server(bool ip_v6_handler, unsigned int port_id,
-              unsigned int task_execution_period);
-  ~CoAP_Server();
+  Server();
+  Server(const std::string &ip_address, unsigned int port_id,
+         unsigned int task_execution_period);
+  Server(bool ip_v6_handler, unsigned int port_id,
+         unsigned int task_execution_period);
+  ~Server();
 
   void run();
 
-  std::unique_ptr<CoAP_Message> pullRequest();
-  void pushResponse(CoAP_Message message);
+  std::unique_ptr<Message> pullRequest();
+  void pushResponse(Message message);
 
-  std::shared_ptr<ThreadsafeQueue<CoAP_Message>> getIncomingMessagesQueue();
-  std::shared_ptr<ThreadsafeQueue<CoAP_Message>> getOutgoingMessagesQueue();
+  std::shared_ptr<ThreadsafeQueue<Message>> getIncomingMessagesQueue();
+  std::shared_ptr<ThreadsafeQueue<Message>> getOutgoingMessagesQueue();
 };
 } // namespace CoAP
 

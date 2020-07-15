@@ -11,9 +11,9 @@
 #include <memory>
 #include <thread>
 
-namespace LwM2M_Model {
+namespace LwM2M {
 class MessageSorter : public Stoppable {
-  std::shared_ptr<ThreadsafeQueue<LwM2M_Message>> incoming_message_queue_;
+  std::shared_ptr<ThreadsafeQueue<Message>> incoming_message_queue_;
   std::shared_ptr<ThreadsafeQueue<Regirstration_Interface_Message>>
       registration_interface_queue_;
   std::shared_ptr<ThreadsafeQueue<DeviceManagment_Interface_Message>>
@@ -25,7 +25,7 @@ class MessageSorter : public Stoppable {
 public:
   MessageSorter();
   MessageSorter(
-      std::shared_ptr<ThreadsafeQueue<LwM2M_Message>> incoming_message_queue);
+      std::shared_ptr<ThreadsafeQueue<Message>> incoming_message_queue);
 
   void run() override;
   std::shared_ptr<ThreadsafeQueue<Regirstration_Interface_Message>>
@@ -35,6 +35,6 @@ public:
   std::shared_ptr<ThreadsafeQueue<InformationReporting_Interface_Message>>
   getInformationReportingQueue();
 };
-} // namespace LwM2M_Model
+} // namespace LwM2M
 
 #endif //__LWM2M_MESSAGE_SORTER_HPP

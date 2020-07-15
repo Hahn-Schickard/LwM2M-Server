@@ -7,13 +7,13 @@
 #include <string>
 #include <unordered_map>
 
-namespace LwM2M_Model {
-struct DeviceManagment_Interface_Message : public LwM2M_Message {
+namespace LwM2M {
+struct DeviceManagment_Interface_Message : public Message {
   DeviceManagment_Interface_Message(std::string endpoint_address,
                                     unsigned int endpoint_port,
                                     std::vector<uint8_t> token,
                                     MessageType message_type)
-      : LwM2M_Message(endpoint_address, endpoint_port, token, message_type) {}
+      : Message(endpoint_address, endpoint_port, token, message_type) {}
 };
 
 struct Read_Request : public DeviceManagment_Interface_Message {
@@ -114,6 +114,6 @@ struct WriteComoposite_Request : public DeviceManagment_Interface_Message {
                           unsigned int endpoint_port,
                           std::vector<uint8_t> token);
 };
-} // namespace LwM2M_Model
+} // namespace LwM2M
 
 #endif //__LWM2M_MODEL_DEVICE_MANAGMENT_INTERFACE_MESSAGES_HPP

@@ -71,12 +71,12 @@ ContentFormat::ContentFormat()
     : ContentFormat(ContentFormatType::UNRECOGNIZED) {}
 
 ContentFormat::ContentFormat(ContentFormatType format_type)
-    : CoAP_Option(OptionNumber::CONTENT_FORMAT, 2, false, false, false, 2),
+    : Option(OptionNumber::CONTENT_FORMAT, 2, false, false, false, 2),
       value_(format_type) {}
 
 ContentFormat::ContentFormat(vector<uint8_t> value)
-    : CoAP_Option(OptionNumber::CONTENT_FORMAT, value.size(), false, false,
-                  false, 2) {
+    : Option(OptionNumber::CONTENT_FORMAT, value.size(), false, false, false,
+             2) {
   if (!value.empty()) {
     uint16_t concat_value = 0;
     uint8_t offset = 0;

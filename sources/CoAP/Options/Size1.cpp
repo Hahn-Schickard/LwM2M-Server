@@ -5,23 +5,19 @@ namespace CoAP {
 Size1::Size1() : Size1((uint8_t)0) {}
 
 Size1::Size1(uint8_t value)
-    : CoAP_Option(OptionNumber::SIZE_1, 1, false, false, false, 4),
-      value_(value) {}
+    : Option(OptionNumber::SIZE_1, 1, false, false, false, 4), value_(value) {}
 
 Size1::Size1(uint16_t value)
-    : CoAP_Option(OptionNumber::SIZE_1, 2, false, false, false, 4),
-      value_(value) {}
+    : Option(OptionNumber::SIZE_1, 2, false, false, false, 4), value_(value) {}
 
 Size1::Size1(uint32_t value)
-    : CoAP_Option(OptionNumber::SIZE_1, 3, false, false, false, 4),
-      value_(value) {}
+    : Option(OptionNumber::SIZE_1, 3, false, false, false, 4), value_(value) {}
 
 Size1::Size1(uint64_t value)
-    : CoAP_Option(OptionNumber::SIZE_1, 4, false, false, false, 4),
-      value_(value) {}
+    : Option(OptionNumber::SIZE_1, 4, false, false, false, 4), value_(value) {}
 
 Size1::Size1(vector<uint8_t> value)
-    : CoAP_Option(OptionNumber::SIZE_1, value.size(), false, false, false, 4) {
+    : Option(OptionNumber::SIZE_1, value.size(), false, false, false, 4) {
   if (!value.empty()) {
     uint64_t concat_value = 0;
     uint8_t offset = 0;

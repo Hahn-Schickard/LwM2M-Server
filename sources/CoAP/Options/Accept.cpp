@@ -7,11 +7,11 @@ namespace CoAP {
 Accept::Accept() : Accept(ContentFormatType::UNRECOGNIZED) {}
 
 Accept::Accept(ContentFormatType format_type)
-    : CoAP_Option(OptionNumber::ACCEPT, 2, true, false, false, 2),
+    : Option(OptionNumber::ACCEPT, 2, true, false, false, 2),
       value_(format_type) {}
 
 Accept::Accept(vector<uint8_t> value)
-    : CoAP_Option(OptionNumber::ACCEPT, value.size(), true, false, false, 2) {
+    : Option(OptionNumber::ACCEPT, value.size(), true, false, false, 2) {
   if (!value.empty()) {
     uint16_t concat_value = 0;
     uint8_t offset = 0;

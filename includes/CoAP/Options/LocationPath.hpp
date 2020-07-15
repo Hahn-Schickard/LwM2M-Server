@@ -6,7 +6,7 @@
 #include <string>
 
 namespace CoAP {
-class LocationPath : public CoAP_Option {
+class LocationPath : public Option {
   std::string value_;
 
 public:

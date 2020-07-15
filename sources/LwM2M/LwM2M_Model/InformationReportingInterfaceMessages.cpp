@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 Observe_Request::Observe_Request(string endpoint_address,
                                  unsigned int endpoint_port,
@@ -57,4 +57,4 @@ Send_Request::Send_Request(string endpoint_address, unsigned int endpoint_port,
   throw UnsupportedOperation("Send operation is not supported!");
 }
 
-} // namespace LwM2M_Model
+} // namespace LwM2M

@@ -1,8 +1,9 @@
 #ifndef __LWM2M_MESSAGE_CONVERTER_HPP
 #define __LWM2M_MESSAGE_CONVERTER_HPP
+
 #include <memory>
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 template <typename T> class Converter {
 public:
@@ -10,6 +11,6 @@ public:
   virtual void convert(std::shared_ptr<T> message) = 0;
 };
 
-} // namespace LwM2M_Model
+} // namespace LwM2M
 
 #endif //__LWM2M_MESSAGE_CONVERTER_HPP

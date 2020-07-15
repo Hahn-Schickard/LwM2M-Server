@@ -6,14 +6,13 @@
 using namespace std;
 using namespace HaSLL;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 RegistrationInterface::RegistrationInterface(
-    shared_ptr<ThreadsafeQueue<LwM2M_Message>> outgoing_message_queue,
+    shared_ptr<ThreadsafeQueue<Message>> outgoing_message_queue,
     shared_ptr<ThreadsafeQueue<Regirstration_Interface_Message>>
         incoming_message_queue,
-    shared_ptr<unordered_map<string, shared_ptr<LwM2M_Device>>>
-        device_registery,
+    shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
     const string &configuration_path)
     : InterfaceRunner(outgoing_message_queue),
       incoming_message_queue_(incoming_message_queue),
@@ -43,10 +42,10 @@ void RegistrationInterface::run() {
   }
 }
 
-unordered_map<uint32_t, LwM2M_Object>
+unordered_map<uint32_t, ObjectDescriptor>
 RegistrationInterface::assignObjectInstances(
     unordered_map<unsigned int, unsigned int> objects) {
-  unordered_map<uint32_t, LwM2M_Object> result;
+  unordered_map<uint32_t, ObjectDescriptor> result;
   for (auto &object : objects) {
     uint32_t object_id = object.first;
     uint32_t instance_id = object.second;
@@ -67,13 +66,13 @@ bool RegistrationInterface::isRegistered(string device_id) {
              : false;
 }
 
-shared_ptr<LwM2M_Message> RegistrationInterface::handleRegisterRequest(
+shared_ptr<Message> RegistrationInterface::handleRegisterRequest(
     shared_ptr<Register_Request> request) {
-  shared_ptr<LwM2M_Message> result;
+  shared_ptr<Message> result;
   if (request) {
-    unordered_map<uint32_t, LwM2M_Object> object_instances =
+    unordered_map<uint32_t, ObjectDescriptor> object_instances =
         assignObjectInstances(request->object_instances_map_);
-    auto new_device = make_shared<LwM2M_Device>(
+    auto new_device = make_shared<Device>(
         request->endpoint_name_, request->endpoint_address_,
         request->endpoint_port_, request->life_time_, request->version_,
         request->binding_, request->queue_mode_, request->sms_number_,
@@ -84,35 +83,35 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRegisterRequest(
       // Notify that device was removed
     }
     device_registery_->emplace(new_device->getDeviceId(), new_device);
-    result = make_shared<LwM2M_Response>(
-        request->endpoint_address_, request->endpoint_port_, request->token_,
-        MessageType::REGISTER, LwM2M_ResponseCode::CREATED,
-        utility::convert(new_device->getDeviceId()));
+    result = make_shared<Response>(request->endpoint_address_,
+                                   request->endpoint_port_, request->token_,
+                                   MessageType::REGISTER, ResponseCode::CREATED,
+                                   utility::convert(new_device->getDeviceId()));
   } else {
-    result = make_shared<LwM2M_Response>(
+    result = make_shared<Response>(
         request->endpoint_address_, request->endpoint_port_, request->token_,
-        MessageType::REGISTER, LwM2M_ResponseCode::BAD_REQUEST);
+        MessageType::REGISTER, ResponseCode::BAD_REQUEST);
   }
   return result;
 }
 
-shared_ptr<LwM2M_Message>
+shared_ptr<Message>
 RegistrationInterface::handleUpdateRequest(shared_ptr<Update_Request> request) {
-  shared_ptr<LwM2M_Message> result;
-  result = make_shared<LwM2M_Response>();
+  shared_ptr<Message> result;
+  result = make_shared<Response>();
   return result;
 }
 
-shared_ptr<LwM2M_Message> RegistrationInterface::handleDeregisterRequest(
+shared_ptr<Message> RegistrationInterface::handleDeregisterRequest(
     shared_ptr<Deregister_Request> request) {
-  shared_ptr<LwM2M_Message> result;
-  result = make_shared<LwM2M_Response>();
+  shared_ptr<Message> result;
+  result = make_shared<Response>();
   return result;
 }
 
-shared_ptr<LwM2M_Message> RegistrationInterface::handleRequest(
+shared_ptr<Message> RegistrationInterface::handleRequest(
     shared_ptr<Regirstration_Interface_Message> message) {
-  shared_ptr<LwM2M_Message> result;
+  shared_ptr<Message> result;
   switch (message->message_type_) {
   case MessageType::REGISTER: {
     result =
@@ -131,10 +130,10 @@ shared_ptr<LwM2M_Message> RegistrationInterface::handleRequest(
   default: {
     logger_->log(SeverityLevel::ERROR, "Could not process {} message type",
                  message->message_type_);
-    result = make_shared<LwM2M_Message>();
+    result = make_shared<Message>();
     break;
   }
   }
   return result;
 }
-} // namespace LwM2M_Model
+} // namespace LwM2M

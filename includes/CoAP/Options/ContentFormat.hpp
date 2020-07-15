@@ -23,7 +23,7 @@ enum class ContentFormatType {
 ContentFormatType toContentFormatType(uint16_t value);
 std::string toString(ContentFormatType type);
 
-class ContentFormat : public CoAP_Option {
+class ContentFormat : public Option {
   ContentFormatType value_;
 
 public:

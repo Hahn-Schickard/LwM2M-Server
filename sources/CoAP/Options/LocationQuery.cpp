@@ -7,8 +7,8 @@ namespace CoAP {
 LocationQuery::LocationQuery() : LocationQuery(string()) {}
 
 LocationQuery::LocationQuery(string value)
-    : CoAP_Option(OptionNumber::LOCATION_QUERY, value.size(), false, true,
-                  false, 255),
+    : Option(OptionNumber::LOCATION_QUERY, value.size(), false, true, false,
+             255),
       value_(move(value)) {}
 
 string LocationQuery::getValue() { return value_; }

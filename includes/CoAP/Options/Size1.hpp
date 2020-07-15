@@ -8,7 +8,7 @@
 #include <vector>
 
 namespace CoAP {
-class Size1 : public CoAP_Option {
+class Size1 : public Option {
   uint64_t value_;
 
 public:

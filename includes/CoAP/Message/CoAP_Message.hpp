@@ -12,12 +12,12 @@
 
 namespace CoAP {
 
-class CoAP_Message {
+class Message {
   std::string receiver_ip_;
   unsigned int receiver_port_;
-  CoAP_Header header_;
+  Header header_;
   std::vector<uint8_t> token_;
-  std::vector<std::shared_ptr<CoAP_Option>> options_;
+  std::vector<std::shared_ptr<Option>> options_;
   std::shared_ptr<PayloadFormat> body_;
 
   void processToken(std::vector<uint8_t> &udp_datagram);
@@ -25,20 +25,20 @@ class CoAP_Message {
   void processPayload(std::vector<uint8_t> &udp_datagram);
 
 public:
-  CoAP_Message();
-  CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
-               std::vector<uint8_t> udp_datagram);
-  CoAP_Message(std::string receiver_ip, unsigned int receiver_port,
-               CoAP_Header header_data, std::vector<uint8_t> token,
-               std::vector<std::shared_ptr<CoAP_Option>> options,
-               std::shared_ptr<PayloadFormat> body);
+  Message();
+  Message(std::string receiver_ip, unsigned int receiver_port,
+          std::vector<uint8_t> udp_datagram);
+  Message(std::string receiver_ip, unsigned int receiver_port,
+          Header header_data, std::vector<uint8_t> token,
+          std::vector<std::shared_ptr<Option>> options,
+          std::shared_ptr<PayloadFormat> body);
 
   std::vector<uint8_t> toPacket();
   std::string getReceiverIP();
   unsigned int getReceiverPort();
-  CoAP_Header &getHeader();
+  Header &getHeader();
   std::vector<uint8_t> getToken();
-  std::vector<std::shared_ptr<CoAP_Option>> getOptions();
+  std::vector<std::shared_ptr<Option>> getOptions();
   std::shared_ptr<PayloadFormat> getBody();
 };
 } // namespace CoAP

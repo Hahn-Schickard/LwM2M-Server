@@ -149,9 +149,9 @@ string toString(CodeType type) {
   return result;
 }
 
-CoAP_Header::CoAP_Header() {}
+Header::Header() {}
 
-CoAP_Header::CoAP_Header(vector<uint8_t> data) {
+Header::Header(vector<uint8_t> data) {
   if (!data.empty()) {
     int coap_ver = (0xC0 & data[0]) >> 6;
     if ((coap_ver != 1)) {
@@ -172,12 +172,12 @@ CoAP_Header::CoAP_Header(vector<uint8_t> data) {
   }
 }
 
-CoAP_Header::CoAP_Header(MessageType type, uint8_t message_length,
-                         CodeType code_type, uint16_t message_id)
+Header::Header(MessageType type, uint8_t message_length, CodeType code_type,
+               uint16_t message_id)
     : type_(type), token_length_(message_length), code_(code_type),
       message_id_(message_id) {}
 
-vector<uint8_t> CoAP_Header::toPacket() {
+vector<uint8_t> Header::toPacket() {
   vector<uint8_t> result(4);
   result[0] = 0x40; // set CoAP version to 1
   result[0] = result[0] | (static_cast<int>(type_) << 4); // set message type;
@@ -189,12 +189,12 @@ vector<uint8_t> CoAP_Header::toPacket() {
   return result;
 }
 
-MessageType CoAP_Header::getMesageType() { return type_; }
+MessageType Header::getMesageType() { return type_; }
 
-uint8_t CoAP_Header::getTokenLenght() { return token_length_; }
+uint8_t Header::getTokenLenght() { return token_length_; }
 
-CodeType CoAP_Header::getCodeType() { return code_; }
+CodeType Header::getCodeType() { return code_; }
 
-uint16_t CoAP_Header::getMessageID() { return message_id_; }
+uint16_t Header::getMessageID() { return message_id_; }
 
 } // namespace CoAP

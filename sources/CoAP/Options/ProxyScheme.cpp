@@ -7,8 +7,7 @@ namespace CoAP {
 ProxyScheme::ProxyScheme() : ProxyScheme(string("0")) {}
 
 ProxyScheme::ProxyScheme(string value)
-    : CoAP_Option(OptionNumber::PROXY_SCHEME, value.size(), true, false, true,
-                  255),
+    : Option(OptionNumber::PROXY_SCHEME, value.size(), true, false, true, 255),
       value_(move(value)) {
   if (value.size() < 1) {
     throw out_of_range(

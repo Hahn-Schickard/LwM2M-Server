@@ -156,8 +156,7 @@ OptionNumber makeOptionNumber(unsigned int number) {
   return option_number;
 }
 
-shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
-                              deque<uint8_t> &option) {
+shared_ptr<Option> build(shared_ptr<Option> previous, deque<uint8_t> &option) {
   unsigned short delta;
   unsigned short lenght;
   size_t option_size;
@@ -222,7 +221,7 @@ shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
         option_number = makeOptionNumber(delta);
       }
 
-      shared_ptr<CoAP_Option> result;
+      shared_ptr<Option> result;
       switch (option_number) {
       case OptionNumber::IF_MATCH: {
         string option_value = string(option.begin() + option_size,
@@ -322,7 +321,7 @@ shared_ptr<CoAP_Option> build(shared_ptr<CoAP_Option> previous,
       throw PayloadMarkerDetected();
     }
   } else {
-    return shared_ptr<CoAP_Option>();
+    return shared_ptr<Option>();
   }
 }
 } // namespace CoAP

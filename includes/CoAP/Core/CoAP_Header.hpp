@@ -57,17 +57,17 @@ enum class CodeType {
 
 std::string toString(CodeType type);
 
-class CoAP_Header {
+class Header {
   MessageType type_;
   uint8_t token_length_;
   CodeType code_;
   uint16_t message_id_;
 
 public:
-  CoAP_Header();
-  CoAP_Header(std::vector<uint8_t> data);
-  CoAP_Header(MessageType type, uint8_t message_length, CodeType code_type,
-              uint16_t message_id);
+  Header();
+  Header(std::vector<uint8_t> data);
+  Header(MessageType type, uint8_t message_length, CodeType code_type,
+         uint16_t message_id);
 
   std::vector<uint8_t> toPacket();
   MessageType getMesageType();

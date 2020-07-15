@@ -7,7 +7,7 @@
 #include <string>
 
 namespace CoAP {
-class MaxAge : public CoAP_Option {
+class MaxAge : public Option {
   uint64_t value_;
 
 public:

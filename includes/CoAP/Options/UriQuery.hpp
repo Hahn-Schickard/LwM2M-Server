@@ -6,7 +6,7 @@
 #include <string>
 
 namespace CoAP {
-class UriQuery : public CoAP_Option {
+class UriQuery : public Option {
   std::string value_;
 
 public:

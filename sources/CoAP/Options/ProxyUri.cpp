@@ -7,8 +7,7 @@ namespace CoAP {
 ProxyUri::ProxyUri() : ProxyUri(string("0")) {}
 
 ProxyUri::ProxyUri(string value)
-    : CoAP_Option(OptionNumber::PROXY_URI, value.size(), true, false, true,
-                  1034),
+    : Option(OptionNumber::PROXY_URI, value.size(), true, false, true, 1034),
       value_(move(value)) {
   if (value.size() < 1) {
     throw out_of_range(

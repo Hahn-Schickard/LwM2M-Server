@@ -33,7 +33,7 @@ enum class OptionNumber {
 
 std::string toString(OptionNumber option);
 
-class CoAP_Option {
+class Option {
   OptionNumber option_number_;
   size_t option_size_;
   bool critical_;
@@ -44,10 +44,10 @@ protected:
   const size_t max_size_;
 
 public:
-  CoAP_Option(OptionNumber option_number, size_t option_size, bool critical,
-              bool repeatable, bool unsafe, size_t max_size);
-  CoAP_Option();
-  virtual ~CoAP_Option() = default;
+  Option(OptionNumber option_number, size_t option_size, bool critical,
+         bool repeatable, bool unsafe, size_t max_size);
+  Option();
+  virtual ~Option() = default;
 
   virtual std::string getValue() = 0;
 

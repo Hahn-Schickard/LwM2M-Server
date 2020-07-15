@@ -6,7 +6,7 @@
 #include <string>
 
 namespace CoAP {
-class ProxyScheme : public CoAP_Option {
+class ProxyScheme : public Option {
   std::string value_;
 
 public:

@@ -10,30 +10,29 @@
 #include <unordered_map>
 #include <vector>
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
-struct LwM2M_Configuration {
+struct Configuration {
   std::string object_descriptors_location;
   std::string ip_address;
   unsigned int server_port;
   unsigned int read_timeout;
 };
 
-class LwM2M_Server : public Stoppable {
+class Server : public Stoppable {
   std::vector<std::unique_ptr<Stoppable>> processes_;
   std::vector<std::unique_ptr<std::thread>> process_threads_;
-  std::shared_ptr<
-      std::unordered_map<std::string, std::shared_ptr<LwM2M_Device>>>
+  std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
 
   void run() override;
 
 public:
-  LwM2M_Server();
-  LwM2M_Server(LwM2M_Configuration config);
+  Server();
+  Server(Configuration config);
 
   void stop();
-  std::shared_ptr<LwM2M_Device> getDevice(std::string device_id);
+  std::shared_ptr<Device> getDevice(std::string device_id);
 };
-} // namespace LwM2M_Model
+} // namespace LwM2M
 #endif //__LWM2M_SERVER_HPP

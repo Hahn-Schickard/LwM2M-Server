@@ -6,7 +6,7 @@ using namespace std;
 
 #define INTERFACE_MASK 0xF0
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 string toString(InterfaceType type) {
   switch (type) {
@@ -116,11 +116,10 @@ Notify_Attripube::Notify_Attripube(
       minimum_evaluation_period_(move(minimum_evaluation_period)),
       maximum_evaluation_period_(move(maximum_evaluation_period)) {}
 
-LwM2M_Message::LwM2M_Message() {}
+Message::Message() {}
 
-LwM2M_Message::LwM2M_Message(string endpoint_address,
-                             unsigned int endpoint_port, vector<uint8_t> token,
-                             MessageType message_type)
+Message::Message(string endpoint_address, unsigned int endpoint_port,
+                 vector<uint8_t> token, MessageType message_type)
     : message_type_(message_type),
       interface_type_(getInterfaceType(message_type_)),
       endpoint_address_(endpoint_address), endpoint_port_(endpoint_port),
@@ -133,25 +132,19 @@ LwM2M_Message::LwM2M_Message(string endpoint_address,
   }
 }
 
-LwM2M_Response::LwM2M_Response()
-    : LwM2M_Message(string(), 0, vector<uint8_t>(),
-                    MessageType::NOT_RECOGNIZED),
-      response_code_(LwM2M_ResponseCode::UNHANDLED),
-      payload_(vector<uint8_t>()) {}
+Response::Response()
+    : Message(string(), 0, vector<uint8_t>(), MessageType::NOT_RECOGNIZED),
+      response_code_(ResponseCode::UNHANDLED), payload_(vector<uint8_t>()) {}
 
-LwM2M_Response::LwM2M_Response(std::string endpoint_address,
-                               unsigned int endpoint_port,
-                               std::vector<uint8_t> token,
-                               MessageType message_type,
-                               LwM2M_ResponseCode response_code)
-    : LwM2M_Message(endpoint_address, endpoint_port, token, message_type),
+Response::Response(std::string endpoint_address, unsigned int endpoint_port,
+                   std::vector<uint8_t> token, MessageType message_type,
+                   ResponseCode response_code)
+    : Message(endpoint_address, endpoint_port, token, message_type),
       response_code_(response_code), payload_(vector<uint8_t>()) {}
 
-LwM2M_Response::LwM2M_Response(string endpoint_address,
-                               unsigned int endpoint_port,
-                               vector<uint8_t> token, MessageType message_type,
-                               LwM2M_ResponseCode response_code,
-                               vector<uint8_t> payload)
-    : LwM2M_Message(endpoint_address, endpoint_port, token, message_type),
+Response::Response(string endpoint_address, unsigned int endpoint_port,
+                   vector<uint8_t> token, MessageType message_type,
+                   ResponseCode response_code, vector<uint8_t> payload)
+    : Message(endpoint_address, endpoint_port, token, message_type),
       response_code_(response_code), payload_(payload) {}
-} // namespace LwM2M_Model
+} // namespace LwM2M

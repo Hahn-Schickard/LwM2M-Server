@@ -5,13 +5,13 @@
 using namespace std;
 using namespace HaSLL;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 MessageSorter::MessageSorter()
-    : MessageSorter(shared_ptr<ThreadsafeQueue<LwM2M_Message>>()) {}
+    : MessageSorter(shared_ptr<ThreadsafeQueue<Message>>()) {}
 
 MessageSorter::MessageSorter(
-    shared_ptr<ThreadsafeQueue<LwM2M_Message>> incoming_message_queue)
+    shared_ptr<ThreadsafeQueue<Message>> incoming_message_queue)
     : incoming_message_queue_(incoming_message_queue),
       registration_interface_queue_(
           make_shared<ThreadsafeQueue<Regirstration_Interface_Message>>()),
@@ -75,4 +75,4 @@ MessageSorter::getInformationReportingQueue() {
   return information_reporting_interface_queue_;
 }
 
-} // namespace LwM2M_Model
+} // namespace LwM2M

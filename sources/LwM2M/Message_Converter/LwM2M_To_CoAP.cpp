@@ -2,48 +2,40 @@
 
 using namespace std;
 using namespace CoAP;
-namespace LwM2M_Model {
+namespace LwM2M {
 
-unique_ptr<CoAP_Message>
-makeFromRegisterMessage(shared_ptr<LwM2M_Message> input) {
-  return unique_ptr<CoAP_Message>();
+unique_ptr<CoAP::Message> makeFromRegisterMessage(shared_ptr<Message> input) {
+  return unique_ptr<CoAP::Message>();
 }
 
-unique_ptr<CoAP_Message>
-makeFromDeRegisterMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromUpdateMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message> makeFromReadMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message> makeFromWriteMessage(shared_ptr<LwM2M_Message> input) {
+unique_ptr<CoAP::Message> makeFromDeRegisterMessage(shared_ptr<Message> input) {
 }
-unique_ptr<CoAP_Message>
-makeFromExecuteMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromCreateMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromDeleteMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromWriteAttributesMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromDiscoverMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromReadCompositeMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromWriteCompositeMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromObserveMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromObserveCompositeMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromCancelObersvationMessage(shared_ptr<LwM2M_Message> input) {}
-unique_ptr<CoAP_Message>
-makeFromCancelObersvationCompositeMessage(shared_ptr<LwM2M_Message> input) {}
+unique_ptr<CoAP::Message> makeFromUpdateMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message> makeFromReadMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message> makeFromWriteMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message> makeFromExecuteMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message> makeFromCreateMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message> makeFromDeleteMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message>
+makeFromWriteAttributesMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message> makeFromDiscoverMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message>
+makeFromReadCompositeMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message>
+makeFromWriteCompositeMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message> makeFromObserveMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message>
+makeFromObserveCompositeMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message>
+makeFromCancelObersvationMessage(shared_ptr<Message> input) {}
+unique_ptr<CoAP::Message>
+makeFromCancelObersvationCompositeMessage(shared_ptr<Message> input) {}
 
 LwM2M_To_CoAP::LwM2M_To_CoAP(
-    shared_ptr<ThreadsafeQueue<CoAP_Message>> output_queue)
+    shared_ptr<ThreadsafeQueue<CoAP::Message>> output_queue)
     : output_queue_(output_queue) {}
 
-void LwM2M_To_CoAP::convert(shared_ptr<LwM2M_Message> message) {
+void LwM2M_To_CoAP::convert(shared_ptr<Message> message) {
   if (message) {
     switch (message->message_type_) {
     case MessageType::REGISTER: {
@@ -121,4 +113,4 @@ void LwM2M_To_CoAP::convert(shared_ptr<LwM2M_Message> message) {
   }
 }
 
-} // namespace LwM2M_Model
+} // namespace LwM2M

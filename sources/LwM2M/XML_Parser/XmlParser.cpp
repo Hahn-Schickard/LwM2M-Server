@@ -10,7 +10,7 @@ using namespace std;
 using namespace pugi;
 using namespace HaSLL;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 shared_ptr<Logger> xml_parser_logger =
     LoggerRepository::getInstance().registerLoger("XML_Parser");
 
@@ -144,7 +144,7 @@ optional<RangeEnumeration> getRangeEnumeration(xml_node resource_node) {
   return nullopt;
 }
 
-LwM2M_Resource deserializeResource(xml_node resource_node) {
+ResourceDescriptor deserializeResource(xml_node resource_node) {
   try {
     uint32_t resource_id;
     if (resource_node.attribute("ID").hash_value()) {
@@ -167,15 +167,15 @@ LwM2M_Resource deserializeResource(xml_node resource_node) {
         getChildValue<string>(resource_node, "Description");
 
     if (resource_range_enum.has_value()) {
-      return LwM2M_Resource(resource_id, resource_name, resource_operations,
-                            resoruce_multiple_instances, resource_mandatory,
-                            resoruce_data_type, resource_range_enum.value(),
-                            resource_units, resource_description);
+      return ResourceDescriptor(resource_id, resource_name, resource_operations,
+                                resoruce_multiple_instances, resource_mandatory,
+                                resoruce_data_type, resource_range_enum.value(),
+                                resource_units, resource_description);
     } else {
-      return LwM2M_Resource(resource_id, resource_name, resource_operations,
-                            resoruce_multiple_instances, resource_mandatory,
-                            resoruce_data_type, resource_units,
-                            resource_description);
+      return ResourceDescriptor(resource_id, resource_name, resource_operations,
+                                resoruce_multiple_instances, resource_mandatory,
+                                resoruce_data_type, resource_units,
+                                resource_description);
     }
   } catch (exception &ex) {
     string error_msg =
@@ -185,7 +185,7 @@ LwM2M_Resource deserializeResource(xml_node resource_node) {
   }
 }
 
-LwM2M_Object deserializeObject(xml_node object_node) {
+ObjectDescriptor deserializeObject(xml_node object_node) {
   try {
     auto object_name = getChildValue<string>(object_node, "Name");
     auto object_description =
@@ -198,14 +198,14 @@ LwM2M_Object deserializeObject(xml_node object_node) {
     auto object_mandatory =
         convertMandatoryType(getChildValue<string>(object_node, "Mandatory"));
     xml_node resource_nodes = object_node.child("Resources");
-    unordered_map<uint32_t, LwM2M_Resource> resources;
+    unordered_map<uint32_t, ResourceDescriptor> resources;
     for (xml_node resource_node : resource_nodes.children("Item")) {
       auto resource = deserializeResource(resource_node);
       resources.emplace(resource.id_, resource);
     }
-    return LwM2M_Object(object_name, object_description, object_id,
-                        object_multiple_instances, object_mandatory, object_urn,
-                        resources);
+    return ObjectDescriptor(object_name, object_description, object_id,
+                            object_multiple_instances, object_mandatory,
+                            object_urn, resources);
   } catch (exception &ex) {
     string error_msg =
         "Failed to deserialize object node: " + string(object_node.name()) +
@@ -214,8 +214,9 @@ LwM2M_Object deserializeObject(xml_node object_node) {
   }
 }
 
-unordered_map<uint32_t, LwM2M_Object> deserializeModel(const string &filepath) {
-  unordered_map<uint32_t, LwM2M_Object> objects;
+unordered_map<uint32_t, ObjectDescriptor>
+deserializeModel(const string &filepath) {
+  unordered_map<uint32_t, ObjectDescriptor> objects;
   xml_document objects_document;
   filesystem::path root_path = filesystem::path(filepath).remove_filename();
   if (objects_document.load_file(filepath.c_str())) {
@@ -229,8 +230,8 @@ unordered_map<uint32_t, LwM2M_Object> deserializeModel(const string &filepath) {
       if (object_descripotr.load_file(object_descriptor_file_path.c_str())) {
         for (auto object :
              object_descripotr.child("LWM2M").children("Object")) {
-          LwM2M_Object lwm2m_object = deserializeObject(object);
-          objects.emplace(lwm2m_object.id_, lwm2m_object);
+          ObjectDescriptor ObjectDescriptor = deserializeObject(object);
+          objects.emplace(ObjectDescriptor.id_, ObjectDescriptor);
         }
       } else {
         string error_msg = "Could not open object descriptor file: " +
@@ -244,4 +245,4 @@ unordered_map<uint32_t, LwM2M_Object> deserializeModel(const string &filepath) {
   }
   return objects;
 }
-} // namespace LwM2M_Model
+} // namespace LwM2M

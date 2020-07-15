@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 Read_Request::Read_Request(string endpoint_address, unsigned int endpoint_port,
                            vector<uint8_t> token, unsigned int object_id,
@@ -97,4 +97,4 @@ WriteComoposite_Request::WriteComoposite_Request(string endpoint_address,
   throw UnsupportedOperation("Write-Composite operation is not supported!");
 }
 
-} // namespace LwM2M_Model
+} // namespace LwM2M

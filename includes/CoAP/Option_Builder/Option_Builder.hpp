@@ -13,8 +13,8 @@ struct PayloadMarkerDetected : public std::exception {
   const char *what() const throw() { return "Payload Marker Detected"; }
 };
 
-std::shared_ptr<CoAP_Option> build(std::shared_ptr<CoAP_Option> previous,
-                                   std::deque<uint8_t> &options);
+std::shared_ptr<Option> build(std::shared_ptr<Option> previous,
+                              std::deque<uint8_t> &options);
 } // namespace CoAP
 
 #endif //__COAP_OPTION_BUILDER_HPP

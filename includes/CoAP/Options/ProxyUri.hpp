@@ -6,7 +6,7 @@
 #include <string>
 
 namespace CoAP {
-class ProxyUri : public CoAP_Option {
+class ProxyUri : public Option {
   std::string value_;
 
 public:

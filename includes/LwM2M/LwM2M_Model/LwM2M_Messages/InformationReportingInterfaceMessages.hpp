@@ -7,13 +7,13 @@
 #include <string>
 #include <unordered_map>
 
-namespace LwM2M_Model {
-struct InformationReporting_Interface_Message : public LwM2M_Message {
+namespace LwM2M {
+struct InformationReporting_Interface_Message : public Message {
   InformationReporting_Interface_Message(std::string endpoint_address,
                                          unsigned int endpoint_port,
                                          std::vector<uint8_t> token,
                                          MessageType message_type)
-      : LwM2M_Message(endpoint_address, endpoint_port, token, message_type) {}
+      : Message(endpoint_address, endpoint_port, token, message_type) {}
 };
 
 struct Observe_Request : public InformationReporting_Interface_Message {
@@ -63,6 +63,6 @@ struct Send_Request : public InformationReporting_Interface_Message {
   Send_Request(std::string endpoint_address, unsigned int endpoint_port,
                std::vector<uint8_t> token);
 };
-} // namespace LwM2M_Model
+} // namespace LwM2M
 
 #endif //__LWM2M_MODEL_INFORMATION_REPORTING_INTERFACE_MESSAGES_HPP

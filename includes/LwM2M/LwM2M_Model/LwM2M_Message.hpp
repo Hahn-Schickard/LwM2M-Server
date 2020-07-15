@@ -1,5 +1,5 @@
-#ifndef __LWM2M_MESSAGE_HPP
-#define __LWM2M_MESSAGE_HPP
+#ifndef __Message_HPP
+#define __Message_HPP
 
 #include <optional>
 #include <stdexcept>
@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 struct UnsupportedOperation : public std::runtime_error {
   UnsupportedOperation(std::string const &message)
@@ -69,19 +69,19 @@ struct Notify_Attripube {
                    std::optional<unsigned int> maximum_evaluation_period);
 };
 
-struct LwM2M_Message {
+struct Message {
   MessageType message_type_;
   InterfaceType interface_type_;
   std::string endpoint_address_;
   unsigned int endpoint_port_;
   std::vector<uint8_t> token_;
 
-  LwM2M_Message();
-  LwM2M_Message(std::string endpoint_address, unsigned int endpoint_port,
-                std::vector<uint8_t> token, MessageType message_type);
+  Message();
+  Message(std::string endpoint_address, unsigned int endpoint_port,
+          std::vector<uint8_t> token, MessageType message_type);
 };
 
-enum LwM2M_ResponseCode {
+enum ResponseCode {
   OK = 0x40,
   CREATED = 0x41,
   DELETED = 0x42,
@@ -101,22 +101,21 @@ enum LwM2M_ResponseCode {
   UNHANDLED
 };
 
-struct LwM2M_Response : LwM2M_Message {
-  LwM2M_ResponseCode response_code_;
+struct Response : Message {
+  ResponseCode response_code_;
   std::vector<uint8_t> payload_;
 
-  LwM2M_Response();
-  LwM2M_Response(std::string endpoint_address, unsigned int endpoint_port,
-                 std::vector<uint8_t> token, MessageType message_type,
-                 LwM2M_ResponseCode response_code);
-  LwM2M_Response(std::string endpoint_address, unsigned int endpoint_port,
-                 std::vector<uint8_t> token, MessageType message_type,
-                 LwM2M_ResponseCode response_code,
-                 std::vector<uint8_t> payload);
+  Response();
+  Response(std::string endpoint_address, unsigned int endpoint_port,
+           std::vector<uint8_t> token, MessageType message_type,
+           ResponseCode response_code);
+  Response(std::string endpoint_address, unsigned int endpoint_port,
+           std::vector<uint8_t> token, MessageType message_type,
+           ResponseCode response_code, std::vector<uint8_t> payload);
 
-  virtual ~LwM2M_Response() = default;
+  virtual ~Response() = default;
 };
 
-} // namespace LwM2M_Model
+} // namespace LwM2M
 
-#endif //__LWM2M_MESSAGE_HPP
+#endif //__Message_HPP

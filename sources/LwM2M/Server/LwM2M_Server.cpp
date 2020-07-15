@@ -8,22 +8,21 @@
 #include "Threadsafe_Queue.hpp"
 
 using namespace std;
-using namespace CoAP;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
-LwM2M_Server::LwM2M_Server() {}
+Server::Server() {}
 
-LwM2M_Server::LwM2M_Server(LwM2M_Configuration config)
+Server::Server(Configuration config)
     : device_registery_(
-          make_shared<unordered_map<string, shared_ptr<LwM2M_Device>>>()) {
-  auto server = make_unique<CoAP_Server>(config.ip_address, config.server_port,
-                                         config.read_timeout);
-  auto message_queue = make_shared<ThreadsafeQueue<LwM2M_Message>>();
-  processes_.emplace_back(make_unique<MessageProcessor<CoAP::CoAP_Message>>(
+          make_shared<unordered_map<string, shared_ptr<Device>>>()) {
+  auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,
+                                          config.read_timeout);
+  auto message_queue = make_shared<ThreadsafeQueue<Message>>();
+  processes_.emplace_back(make_unique<MessageProcessor<CoAP::Message>>(
       make_unique<CoAP_To_LwM2M>(message_queue),
       server->getIncomingMessagesQueue(), "IncomingMessageProcessor"));
-  processes_.emplace_back(make_unique<MessageProcessor<LwM2M_Message>>(
+  processes_.emplace_back(make_unique<MessageProcessor<Message>>(
       make_unique<LwM2M_To_CoAP>(server->getOutgoingMessagesQueue()),
       message_queue, "OutgoingMessageProcessor"));
   auto sorter = make_unique<MessageSorter>(message_queue);
@@ -34,14 +33,14 @@ LwM2M_Server::LwM2M_Server(LwM2M_Configuration config)
   processes_.push_back(move(server));
 };
 
-void LwM2M_Server::run() {
+void Server::run() {
   for (const auto &process : processes_) {
     process_threads_.emplace_back(
         make_unique<thread>([&]() { process->start(); }));
   }
 }
 
-void LwM2M_Server::stop() {
+void Server::stop() {
   stop();
   for (const auto &process : processes_) {
     process->stop();
@@ -51,12 +50,12 @@ void LwM2M_Server::stop() {
   }
 }
 
-shared_ptr<LwM2M_Device> LwM2M_Server::getDevice(string device_id) {
+shared_ptr<Device> Server::getDevice(string device_id) {
   auto it = device_registery_->find(device_id);
-  shared_ptr<LwM2M_Device> result;
+  shared_ptr<Device> result;
   if (it != device_registery_->end())
     result = it->second;
   return result;
 }
 
-} // namespace LwM2M_Model
+} // namespace LwM2M

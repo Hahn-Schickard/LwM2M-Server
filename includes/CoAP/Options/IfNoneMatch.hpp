@@ -6,7 +6,7 @@
 #include <string>
 
 namespace CoAP {
-class IfNoneMatch : public CoAP_Option {
+class IfNoneMatch : public Option {
 public:
   IfNoneMatch();
 

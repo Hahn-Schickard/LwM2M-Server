@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 
 Register_Request::Register_Request(
     string endpoint_address, unsigned int endpoint_port, vector<uint8_t> token,
@@ -34,4 +34,4 @@ Deregister_Request::Deregister_Request(string endpoint_address,
                                       MessageType::DEREGISTER),
       location_(move(location)) {}
 
-}; // namespace LwM2M_Model
+}; // namespace LwM2M

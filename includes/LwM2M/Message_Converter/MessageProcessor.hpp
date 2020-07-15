@@ -9,7 +9,7 @@
 #include <memory>
 #include <thread>
 
-namespace LwM2M_Model {
+namespace LwM2M {
 template <typename T> class MessageProcessor : public Stoppable {
   std::unique_ptr<Converter<T>> converter_;
   std::shared_ptr<ThreadsafeQueue<T>> message_buffer_;
@@ -38,6 +38,6 @@ public:
     }
   }
 };
-} // namespace LwM2M_Model
+} // namespace LwM2M
 
 #endif //__LWM2M_MESSAGE_PROCESSOR_MANAGER_HPP

@@ -6,7 +6,7 @@
 #include <string>
 
 namespace CoAP {
-class IfMatch : public CoAP_Option {
+class IfMatch : public Option {
   std::string value_; // opaque type
 
 public:

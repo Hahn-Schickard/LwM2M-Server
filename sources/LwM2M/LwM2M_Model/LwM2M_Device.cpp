@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace LwM2M_Model {
+namespace LwM2M {
 string generateDeviceID(string name, string endpoint_address,
                         unsigned int endpoint_port) {
   size_t result =
@@ -10,18 +10,17 @@ string generateDeviceID(string name, string endpoint_address,
   return to_string(result);
 }
 
-LwM2M_Device::LwM2M_Device() {}
+Device::Device() {}
 
-LwM2M_Device::LwM2M_Device(
-    string name, string endpoint_address, unsigned int endpoint_port,
-    size_t life_time, LwM2M_Version version, BindingType binding,
-    bool queue_mode, optional<string> sms_number,
-    unordered_map<uint32_t, LwM2M_Object> object_instances_map)
+Device::Device(string name, string endpoint_address, unsigned int endpoint_port,
+               size_t life_time, LwM2M_Version version, BindingType binding,
+               bool queue_mode, optional<string> sms_number,
+               unordered_map<uint32_t, ObjectDescriptor> object_instances_map)
     : device_id_(generateDeviceID(name, endpoint_address, endpoint_port)),
       name_(name), endpoint_address_(endpoint_address),
       endpoint_port_(endpoint_port), life_time_(life_time), version_(version),
       binding_(binding), queue_mode_(queue_mode), sms_number_(sms_number),
       object_instances_(object_instances_map) {}
 
-string LwM2M_Device::getDeviceId() { return device_id_; }
-} // namespace LwM2M_Model
+string Device::getDeviceId() { return device_id_; }
+} // namespace LwM2M

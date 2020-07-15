@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace CoAP {
-class Accept : public CoAP_Option {
+class Accept : public Option {
   ContentFormatType value_;
 
 public:

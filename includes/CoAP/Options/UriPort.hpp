@@ -8,7 +8,7 @@
 #include <vector>
 
 namespace CoAP {
-class UriPort : public CoAP_Option {
+class UriPort : public Option {
   uint16_t value_;
 
 public:

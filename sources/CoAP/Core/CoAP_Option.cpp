@@ -103,12 +103,10 @@ string toString(OptionNumber option) {
   return result;
 }
 
-CoAP_Option::CoAP_Option()
-    : CoAP_Option(OptionNumber::RESERVED, 0, false, false, false, 0) {}
+Option::Option() : Option(OptionNumber::RESERVED, 0, false, false, false, 0) {}
 
-CoAP_Option::CoAP_Option(OptionNumber option_number, size_t option_size,
-                         bool critical, bool repeatable, bool unsafe,
-                         size_t max_size)
+Option::Option(OptionNumber option_number, size_t option_size, bool critical,
+               bool repeatable, bool unsafe, size_t max_size)
     : option_number_(option_number), option_size_(option_size),
       critical_(critical), repeatable_(repeatable), unsafe_(unsafe),
       max_size_(max_size) {
@@ -119,10 +117,10 @@ CoAP_Option::CoAP_Option(OptionNumber option_number, size_t option_size,
   }
 }
 
-OptionNumber CoAP_Option::getOptionNumber() { return option_number_; }
-size_t CoAP_Option::size() { return option_size_; }
+OptionNumber Option::getOptionNumber() { return option_number_; }
+size_t Option::size() { return option_size_; }
 
-bool CoAP_Option::isCritical() { return critical_; }
-bool CoAP_Option::isRepeatable() { return repeatable_; }
-bool CoAP_Option::isUnsafe() { return unsafe_; }
+bool Option::isCritical() { return critical_; }
+bool Option::isRepeatable() { return repeatable_; }
+bool Option::isUnsafe() { return unsafe_; }
 } // namespace CoAP
