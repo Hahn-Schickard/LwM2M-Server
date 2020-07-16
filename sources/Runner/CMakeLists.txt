@@ -21,7 +21,7 @@ target_compile_features(${THIS} PUBLIC cxx_std_17)
 add_custom_command(TARGET ${THIS} POST_BUILD 
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
                         ${PROJECT_SOURCE_DIR}/model
-                        $<TARGET_FILE_DIR:${THIS}> 
+                        $<TARGET_FILE_DIR:${THIS}>/model 
                     COMMENT "Copying LwM2M Model descriptors."
                         VERBATIM
 )
