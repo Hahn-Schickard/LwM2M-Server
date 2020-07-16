@@ -11,8 +11,8 @@ using namespace HaSLL;
 using namespace std;
 
 int main() {
-  auto logger = LoggerRepository::getInstance("./loggerConfig.json")
-                    .registerLoger("Example_Runner");
+  LoggerRepository::initialise("loggerConfig.json");
+  auto logger = LoggerRepository::getInstance().registerLoger("Example_Runner");
   LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
   LwM2M::Server server;
