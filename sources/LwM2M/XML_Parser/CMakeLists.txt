@@ -21,7 +21,6 @@ target_link_libraries(${THIS} PUBLIC
                               LwM2M_Model
                               PRIVATE
                               pugixml::pugixml
-                              HaSLL::HaSLL
                               stdc++fs
 )
 

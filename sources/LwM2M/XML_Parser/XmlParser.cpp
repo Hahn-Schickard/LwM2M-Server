@@ -1,5 +1,4 @@
 #include "XmlParser.hpp"
-#include "LoggerRepository.hpp"
 #include "pugixml.hpp"
 
 #include <filesystem>
@@ -8,7 +7,6 @@
 
 using namespace std;
 using namespace pugi;
-using namespace HaSLL;
 
 namespace LwM2M {
 string deserializeNode(xml_node node) {
