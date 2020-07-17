@@ -11,9 +11,6 @@ using namespace pugi;
 using namespace HaSLL;
 
 namespace LwM2M {
-shared_ptr<Logger> xml_parser_logger =
-    LoggerRepository::getInstance().registerLoger("XML_Parser");
-
 string deserializeNode(xml_node node) {
   string result;
   if (node.first_child() != node.last_child()) {
@@ -22,23 +19,6 @@ string deserializeNode(xml_node node) {
     }
   } else {
     result += string(node.name()) + "=" + string(node.child_value()) + "\n\r";
-  }
-  return result;
-}
-
-string deserializeFile(const string &filepath) {
-  xml_document document;
-  string result;
-  if (!document.load_file(filepath.c_str())) {
-    xml_parser_logger->log(SeverityLevel::ERROR, "Cound not parse file: <>",
-                           filepath);
-    return result;
-  }
-  xml_node objects = document.child("LWM2M");
-  for (xml_node object : objects.children("Object")) {
-    for (xml_node property : object.children()) {
-      result += deserializeNode(property);
-    }
   }
   return result;
 }
