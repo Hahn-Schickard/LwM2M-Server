@@ -44,7 +44,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
   return result;
 }
 
-unique_ptr<Message> makeRegisterMessage(shared_ptr<CoAP::Message> input) {
+unique_ptr<Message> makeRegisterMessage(unique_ptr<CoAP::Message> input) {
   unique_ptr<Message> result;
   if (input->getHeader().getCodeType() == CodeType::POST) {
     for (auto option : input->getOptions()) {
@@ -125,8 +125,9 @@ unique_ptr<Message> makeRegisterMessage(shared_ptr<CoAP::Message> input) {
 
           result = make_unique<Register_Request>(
               input->getReceiverIP(), input->getReceiverPort(),
-              input->getToken(), endpoint_name_, life_time_, version_, binding_,
-              queue_mode_, sms_number_, object_instances_map_);
+              input->getHeader().getMessageID(), input->getToken(),
+              endpoint_name_, life_time_, version_, binding_, queue_mode_,
+              sms_number_, object_instances_map_);
         }
       }
     }
@@ -134,43 +135,43 @@ unique_ptr<Message> makeRegisterMessage(shared_ptr<CoAP::Message> input) {
   return result;
 }
 
-unique_ptr<Message> makeDeRegisterMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeUpdateMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeReadMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeWriteMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeExecuteMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeCreateMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeDeleteMessage(shared_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeDeRegisterMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeUpdateMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeReadMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeWriteMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeExecuteMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeCreateMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeDeleteMessage(unique_ptr<CoAP::Message> input) {}
 unique_ptr<Message>
-makeWriteAttributesMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeDiscoverMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeReadCompositeMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeWriteCompositeMessage(shared_ptr<CoAP::Message> input) {
+makeWriteAttributesMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeDiscoverMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeReadCompositeMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeWriteCompositeMessage(unique_ptr<CoAP::Message> input) {
 }
-unique_ptr<Message> makeObserveMessage(shared_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeObserveMessage(unique_ptr<CoAP::Message> input) {}
 unique_ptr<Message>
-makeObserveCompositeMessage(shared_ptr<CoAP::Message> input) {}
+makeObserveCompositeMessage(unique_ptr<CoAP::Message> input) {}
 unique_ptr<Message>
-makeCancelObersvationMessage(shared_ptr<CoAP::Message> input) {}
+makeCancelObersvationMessage(unique_ptr<CoAP::Message> input) {}
 unique_ptr<Message>
-makeCancelObersvationCompositeMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeNotifyMessage(shared_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeSendMessage(shared_ptr<CoAP::Message> input) {}
+makeCancelObersvationCompositeMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeNotifyMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeSendMessage(unique_ptr<CoAP::Message> input) {}
 
 bool processIfBootrstrapInterface(
-    shared_ptr<Option> option, shared_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   return false;
 }
 
 bool processIfDeviceRegistrationInteraface(
-    shared_ptr<Option> option, shared_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   bool result = false;
   if (option->getOptionNumber() == OptionNumber::URI_PATH) {
     string uri_path = option->getValue();
     if (uri_path == "rd") {
-      auto register_msg = makeRegisterMessage(message);
+      auto register_msg = makeRegisterMessage(move(message));
       if (register_msg) {
         output_queue->push(move(register_msg));
         result = true;
@@ -179,7 +180,7 @@ bool processIfDeviceRegistrationInteraface(
       if (uri_path.substr(0, 3) == "rd/") {
         switch (message->getHeader().getCodeType()) {
         case CodeType::POST: {
-          auto update_msg = makeUpdateMessage(message);
+          auto update_msg = makeUpdateMessage(move(message));
           if (update_msg) {
             output_queue->push(move(update_msg));
             result = true;
@@ -187,7 +188,7 @@ bool processIfDeviceRegistrationInteraface(
           break;
         }
         case CodeType::DELETE: {
-          auto deregister_msg = makeDeRegisterMessage(message);
+          auto deregister_msg = makeDeRegisterMessage(move(message));
           if (deregister_msg) {
             output_queue->push(move(deregister_msg));
             result = true;
@@ -203,13 +204,13 @@ bool processIfDeviceRegistrationInteraface(
 } // namespace LwM2M_Model
 
 bool processIfDeviceManagmentInterface(
-    shared_ptr<Option> option, shared_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   return false;
 }
 
 bool processIfInformationReportingInterface(
-    shared_ptr<Option> option, shared_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   return false;
 }
@@ -217,16 +218,20 @@ bool processIfInformationReportingInterface(
 CoAP_To_LwM2M::CoAP_To_LwM2M(shared_ptr<ThreadsafeQueue<Message>> output_queue)
     : output_queue_(output_queue) {}
 
-void CoAP_To_LwM2M::convert(shared_ptr<CoAP::Message> message) {
-  if (message && !message->getOptions().empty()) {
+void CoAP_To_LwM2M::convert(unique_ptr<CoAP::Message> message) {
+  if (message) {
     for (auto option : message->getOptions()) {
-      if (processIfBootrstrapInterface(option, message, output_queue_)) {
-      } else if (processIfDeviceRegistrationInteraface(option, message,
+      if (processIfBootrstrapInterface(option, move(message), output_queue_)) {
+        break;
+      } else if (processIfDeviceRegistrationInteraface(option, move(message),
                                                        output_queue_)) {
-      } else if (processIfDeviceManagmentInterface(option, message,
+        break;
+      } else if (processIfDeviceManagmentInterface(option, move(message),
                                                    output_queue_)) {
-      } else if (processIfInformationReportingInterface(option, message,
+        break;
+      } else if (processIfInformationReportingInterface(option, move(message),
                                                         output_queue_)) {
+        break;
       }
     }
   }

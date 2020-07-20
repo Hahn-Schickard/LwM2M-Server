@@ -13,7 +13,7 @@ class LwM2M_To_CoAP : public Converter<Message> {
 public:
   LwM2M_To_CoAP(std::shared_ptr<ThreadsafeQueue<CoAP::Message>> output_queue);
 
-  void convert(std::shared_ptr<Message> message) override;
+  void convert(std::unique_ptr<Message> message) override;
 };
 } // namespace LwM2M
 #endif //_LWM2M_MESSAGE_TO_COAP_MESAGE_CONVERTER_HPP

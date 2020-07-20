@@ -8,7 +8,7 @@ namespace LwM2M {
 template <typename T> class Converter {
 public:
   virtual ~Converter() = default;
-  virtual void convert(std::shared_ptr<T> message) = 0;
+  virtual void convert(std::unique_ptr<T> message) = 0;
 };
 
 } // namespace LwM2M
