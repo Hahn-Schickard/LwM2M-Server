@@ -42,6 +42,9 @@ analyze_memory_usage:
   needs: ["build"]
   tags:
     - conan
+  before_script:
+    - echo ${VALGRIND_TARGET}
+    - echo ${VALGRIND_TARGET_ARGS}
   script:
     - python3 utility/runValgrind.py ${VALGRIND_TARGET} ${VALGRIND_TARGET_ARGS}
   artifacts:
