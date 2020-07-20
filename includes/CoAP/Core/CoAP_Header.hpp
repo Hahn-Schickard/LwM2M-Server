@@ -22,7 +22,7 @@ enum class MessageType {
 
 std::string toString(MessageType type);
 
-enum class CodeType {
+enum class CodeType : int {
   // Requests
   GET = 0x01,
   POST = 0x02,
