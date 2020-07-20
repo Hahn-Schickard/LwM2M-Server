@@ -35,7 +35,7 @@ public:
   void run();
 
   std::unique_ptr<Message> pullRequest();
-  void pushResponse(Message message);
+  void pushResponse(std::unique_ptr<Message> message);
 
   std::shared_ptr<ThreadsafeQueue<Message>> getIncomingMessagesQueue();
   std::shared_ptr<ThreadsafeQueue<Message>> getOutgoingMessagesQueue();

@@ -160,8 +160,8 @@ unique_ptr<Message> Server::pullRequest() {
   return incominng_messages_->wait_and_pop();
 }
 
-void Server::pushResponse(Message message) {
-  outgoing_messages_->push(message);
+void Server::pushResponse(unique_ptr<Message> message) {
+  outgoing_messages_->push(move(message));
 }
 
 shared_ptr<ThreadsafeQueue<Message>> Server::getIncomingMessagesQueue() {
