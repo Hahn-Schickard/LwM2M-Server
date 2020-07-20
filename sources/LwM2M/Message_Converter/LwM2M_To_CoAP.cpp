@@ -31,11 +31,16 @@ LwM2M_To_CoAP::LwM2M_To_CoAP(
 
 void LwM2M_To_CoAP::convert(unique_ptr<Message> message) {
   if (message) {
-    if (message->response_)
-      output_queue_->push(createResponse(
-          utility::static_pointer_cast<Response>(move(message))));
+    if (message->response_) {
+      auto response =
+          createResponse(utility::static_pointer_cast<Response>(move(message)));
+      if (response)
+        output_queue_->push(move(response));
+    }
   } else {
-    output_queue_->push(createRequest(move(message)));
+    auto request = createRequest(move(message));
+    if (request)
+      output_queue_->push(move(request));
   }
 }
 
