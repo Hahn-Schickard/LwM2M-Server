@@ -1,6 +1,7 @@
 #include "LoggerRepository.hpp"
 #include "LwM2M_Server.hpp"
 
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -10,7 +11,7 @@
 using namespace HaSLL;
 using namespace std;
 
-int main() {
+int main(int argc, const char *argv[]) {
   try {
     LoggerRepository::initialise("loggerConfig.json");
     auto logger =
@@ -23,7 +24,13 @@ int main() {
           string("model/descriptors.xml"), string("0.0.0.0"), 5683, 10});
       server.start();
       logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
-      for (;;) {
+      if (argc > 0) {
+        int sleep_period = atoi(argv[1]);
+        this_thread::sleep_for(chrono::seconds(sleep_period));
+        server.stop();
+      } else {
+        for (;;) {
+        }
       }
 
     } catch (exception &e) {
