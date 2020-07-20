@@ -39,6 +39,7 @@ public:
 
   std::vector<CoRE_Link> getLinks();
   std::string toString() override;
+  size_t size() override;
 };
 } // namespace CoAP
 

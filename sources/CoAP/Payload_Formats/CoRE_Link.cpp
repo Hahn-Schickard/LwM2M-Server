@@ -117,4 +117,5 @@ string CoRE_Links::toString() {
   return result;
 }
 
+size_t CoRE_Links::size() { return links_.size(); }
 } // namespace CoAP

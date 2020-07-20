@@ -12,8 +12,10 @@ class PlainText : public PayloadFormat {
 
 public:
   PlainText();
+  PlainText(std::vector<uint8_t> bytestream);
   PlainText(std::string utf_8_string);
   std::string toString() override;
+  size_t size() override;
 };
 
 } // namespace CoAP

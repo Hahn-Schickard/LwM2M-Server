@@ -15,6 +15,7 @@ public:
 
   ContentFormatType getContentFormatType() { return format_type_; }
   virtual std::string toString() = 0;
+  virtual size_t size() = 0;
 };
 } // namespace CoAP
 
