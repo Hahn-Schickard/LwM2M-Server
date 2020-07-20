@@ -119,11 +119,12 @@ Notify_Attripube::Notify_Attripube(
 Message::Message() {}
 
 Message::Message(string endpoint_address, unsigned int endpoint_port,
-                 vector<uint8_t> token, MessageType message_type)
+                 uint16_t message_id, vector<uint8_t> token,
+                 MessageType message_type)
     : message_type_(message_type),
-      interface_type_(getInterfaceType(message_type_)),
+      interface_type_(getInterfaceType(message_type_)), response_(false),
       endpoint_address_(endpoint_address), endpoint_port_(endpoint_port),
-      token_(token) {
+      message_id_(message_id), token_(token) {
   if (static_cast<int>(interface_type_) !=
       (static_cast<int>(message_type_) & INTERFACE_MASK)) {
     string error_msg = toString(interface_type_) + "does not supprot " +
@@ -133,18 +134,21 @@ Message::Message(string endpoint_address, unsigned int endpoint_port,
 }
 
 Response::Response()
-    : Message(string(), 0, vector<uint8_t>(), MessageType::NOT_RECOGNIZED),
+    : Message(string(), 0, 0, vector<uint8_t>(), MessageType::NOT_RECOGNIZED),
       response_code_(ResponseCode::UNHANDLED), payload_(vector<uint8_t>()) {}
 
-Response::Response(std::string endpoint_address, unsigned int endpoint_port,
-                   std::vector<uint8_t> token, MessageType message_type,
-                   ResponseCode response_code)
-    : Message(endpoint_address, endpoint_port, token, message_type),
+Response::Response(string endpoint_address, unsigned int endpoint_port,
+                   uint16_t message_id, vector<uint8_t> token,
+                   MessageType message_type, ResponseCode response_code)
+    : Message(endpoint_address, endpoint_port, message_id, token, message_type),
       response_code_(response_code), payload_(vector<uint8_t>()) {}
 
 Response::Response(string endpoint_address, unsigned int endpoint_port,
-                   vector<uint8_t> token, MessageType message_type,
-                   ResponseCode response_code, vector<uint8_t> payload)
-    : Message(endpoint_address, endpoint_port, token, message_type),
-      response_code_(response_code), payload_(payload) {}
+                   uint16_t message_id, vector<uint8_t> token,
+                   MessageType message_type, ResponseCode response_code,
+                   vector<uint8_t> payload)
+    : Message(endpoint_address, endpoint_port, message_id, token, message_type),
+      response_code_(response_code), payload_(payload) {
+  response_ = true;
+}
 } // namespace LwM2M

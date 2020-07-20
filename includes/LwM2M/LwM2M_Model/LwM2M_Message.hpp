@@ -72,16 +72,19 @@ struct Notify_Attripube {
 struct Message {
   MessageType message_type_;
   InterfaceType interface_type_;
+  bool response_;
   std::string endpoint_address_;
   unsigned int endpoint_port_;
+  uint16_t message_id_;
   std::vector<uint8_t> token_;
 
   Message();
   Message(std::string endpoint_address, unsigned int endpoint_port,
-          std::vector<uint8_t> token, MessageType message_type);
+          uint16_t message_id_, std::vector<uint8_t> token,
+          MessageType message_type);
 };
 
-enum ResponseCode {
+enum class ResponseCode : int {
   OK = 0x40,
   CREATED = 0x41,
   DELETED = 0x42,
@@ -107,11 +110,12 @@ struct Response : Message {
 
   Response();
   Response(std::string endpoint_address, unsigned int endpoint_port,
-           std::vector<uint8_t> token, MessageType message_type,
-           ResponseCode response_code);
+           uint16_t message_id, std::vector<uint8_t> token,
+           MessageType message_type, ResponseCode response_code);
   Response(std::string endpoint_address, unsigned int endpoint_port,
-           std::vector<uint8_t> token, MessageType message_type,
-           ResponseCode response_code, std::vector<uint8_t> payload);
+           uint16_t message_id, std::vector<uint8_t> token,
+           MessageType message_type, ResponseCode response_code,
+           std::vector<uint8_t> payload);
 
   virtual ~Response() = default;
 };

@@ -15,9 +15,11 @@ enum class BindingType { UDP, TCP, SMS, NON_IP, MALFORMED };
 struct Regirstration_Interface_Message : Message {
   Regirstration_Interface_Message(std::string endpoint_address,
                                   unsigned int endpoint_port,
+                                  uint16_t message_id,
                                   std::vector<uint8_t> token,
                                   MessageType message_type)
-      : Message(endpoint_address, endpoint_port, token, message_type) {}
+      : Message(endpoint_address, endpoint_port, message_id, token,
+                message_type) {}
 };
 
 struct Register_Request : public Regirstration_Interface_Message {
@@ -31,8 +33,9 @@ struct Register_Request : public Regirstration_Interface_Message {
 
   Register_Request(
       std::string endpoint_address, unsigned int endpoint_port,
-      std::vector<uint8_t> token, std::string endpoint_name, size_t life_time,
-      LwM2M_Version version, BindingType binding, bool queue_mode,
+      uint16_t message_id, std::vector<uint8_t> token,
+      std::string endpoint_name, size_t life_time, LwM2M_Version version,
+      BindingType binding, bool queue_mode,
       std::optional<std::string> sms_number,
       std::unordered_map<unsigned int, unsigned int> object_instances_map);
 };
@@ -46,8 +49,8 @@ struct Update_Request : public Regirstration_Interface_Message {
       object_instances_map_;
 
   Update_Request(std::string endpoint_address, unsigned int endpoint_port,
-                 std::vector<uint8_t> token, std::string location,
-                 std::optional<size_t> lifetime,
+                 uint16_t message_id, std::vector<uint8_t> token,
+                 std::string location, std::optional<size_t> lifetime,
                  std::optional<BindingType> binding,
                  std::optional<std::string> sms_number,
                  std::optional<std::unordered_map<unsigned int, unsigned int>>
@@ -58,7 +61,8 @@ struct Deregister_Request : public Regirstration_Interface_Message {
   std::string location_;
 
   Deregister_Request(std::string endpoint_address, unsigned int endpoint_port,
-                     std::vector<uint8_t> token, std::string location);
+                     uint16_t message_id, std::vector<uint8_t> token,
+                     std::string location);
 };
 }; // namespace LwM2M
 

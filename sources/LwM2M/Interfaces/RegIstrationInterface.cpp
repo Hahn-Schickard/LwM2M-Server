@@ -84,14 +84,15 @@ unique_ptr<Message> RegistrationInterface::handleRegisterRequest(
       // Notify that device was removed
     }
     device_registery_->emplace(new_device->getDeviceId(), new_device);
-    result = make_unique<Response>(request->endpoint_address_,
-                                   request->endpoint_port_, request->token_,
-                                   MessageType::REGISTER, ResponseCode::CREATED,
-                                   utility::convert(new_device->getDeviceId()));
+    result = make_unique<Response>(
+        request->endpoint_address_, request->endpoint_port_,
+        request->message_id_, request->token_, MessageType::REGISTER,
+        ResponseCode::CREATED, utility::convert(new_device->getDeviceId()));
   } else {
     result = make_unique<Response>(
-        request->endpoint_address_, request->endpoint_port_, request->token_,
-        MessageType::REGISTER, ResponseCode::BAD_REQUEST);
+        request->endpoint_address_, request->endpoint_port_,
+        request->message_id_, request->token_, MessageType::REGISTER,
+        ResponseCode::BAD_REQUEST);
   }
   return result;
 }
