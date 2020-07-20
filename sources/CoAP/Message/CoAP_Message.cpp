@@ -97,15 +97,18 @@ vector<uint8_t> Message::toPacket() {
   return result;
 }
 
-string Message::getReceiverIP() { return receiver_ip_; }
+string Message::getReceiverIP() const { return receiver_ip_; }
 
-unsigned int Message::getReceiverPort() { return receiver_port_; }
+unsigned int Message::getReceiverPort() const { return receiver_port_; }
 
-Header &Message::getHeader() { return header_; }
+const Header Message::getHeader() const {
+  auto header_copy(header_);
+  return header_copy;
+}
 
-vector<uint8_t> Message::getToken() { return token_; }
+vector<uint8_t> Message::getToken() const { return token_; }
 
-vector<shared_ptr<Option>> Message::getOptions() { return options_; }
+vector<shared_ptr<Option>> Message::getOptions() const { return options_; }
 
-shared_ptr<PayloadFormat> Message::getBody() { return body_; }
+shared_ptr<PayloadFormat> Message::getBody() const { return body_; }
 } // namespace CoAP

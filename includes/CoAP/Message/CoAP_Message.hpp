@@ -34,12 +34,12 @@ public:
           std::shared_ptr<PayloadFormat> body);
 
   std::vector<uint8_t> toPacket();
-  std::string getReceiverIP();
-  unsigned int getReceiverPort();
-  Header &getHeader();
-  std::vector<uint8_t> getToken();
-  std::vector<std::shared_ptr<Option>> getOptions();
-  std::shared_ptr<PayloadFormat> getBody();
+  std::string getReceiverIP() const;
+  unsigned int getReceiverPort() const;
+  const Header getHeader() const;
+  std::vector<uint8_t> getToken() const;
+  std::vector<std::shared_ptr<Option>> getOptions() const;
+  std::shared_ptr<PayloadFormat> getBody() const;
 };
 } // namespace CoAP
 #endif //__COAP_MESSAGE_DEFINITION_HPP

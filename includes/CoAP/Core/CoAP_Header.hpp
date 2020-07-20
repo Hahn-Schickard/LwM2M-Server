@@ -70,10 +70,10 @@ public:
          uint16_t message_id);
 
   std::vector<uint8_t> toPacket();
-  MessageType getMesageType();
-  uint8_t getTokenLenght();
-  CodeType getCodeType();
-  uint16_t getMessageID();
+  MessageType getMesageType() const;
+  uint8_t getTokenLenght() const;
+  CodeType getCodeType() const;
+  uint16_t getMessageID() const;
 };
 } // namespace CoAP
 

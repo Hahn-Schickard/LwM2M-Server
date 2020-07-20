@@ -84,7 +84,7 @@ public:
 
   bool try_pop(T &value) {
     std::unique_ptr<node> const old_head = try_pop_head(value);
-    return old_head;
+    return old_head ? true : false;
   }
 
   bool empty() {
@@ -104,15 +104,17 @@ public:
   void push(T new_value) { push(std::make_unique<T>(std::move(new_value))); }
 
   void push(std::unique_ptr<T> new_value) {
-    std::unique_ptr<node> p(new node);
-    {
-      std::lock_guard<std::mutex> tail_lock(tail_mutex);
-      tail->data = move(new_value);
-      node *const new_tail = p.get();
-      tail->next = std::move(p);
-      tail = new_tail;
+    if (new_value) {
+      std::unique_ptr<node> p(new node);
+      {
+        std::lock_guard<std::mutex> tail_lock(tail_mutex);
+        tail->data = move(new_value);
+        node *const new_tail = p.get();
+        tail->next = std::move(p);
+        tail = new_tail;
+      }
+      data_cond.notify_one();
     }
-    data_cond.notify_one();
   }
 };
 

@@ -44,7 +44,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
   return result;
 }
 
-unique_ptr<Message> makeRegisterMessage(unique_ptr<CoAP::Message> input) {
+unique_ptr<Message> makeRegisterMessage(const CoAP::Message *input) {
   unique_ptr<Message> result;
   if (input->getHeader().getCodeType() == CodeType::POST) {
     for (auto option : input->getOptions()) {
@@ -135,43 +135,39 @@ unique_ptr<Message> makeRegisterMessage(unique_ptr<CoAP::Message> input) {
   return result;
 }
 
-unique_ptr<Message> makeDeRegisterMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeUpdateMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeReadMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeWriteMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeExecuteMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeCreateMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeDeleteMessage(unique_ptr<CoAP::Message> input) {}
+unique_ptr<Message> makeDeRegisterMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeUpdateMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeReadMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeWriteMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeExecuteMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeCreateMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeDeleteMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeWriteAttributesMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeDiscoverMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeReadCompositeMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeWriteCompositeMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeObserveMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeObserveCompositeMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeCancelObersvationMessage(const CoAP::Message *input) {}
 unique_ptr<Message>
-makeWriteAttributesMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeDiscoverMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeReadCompositeMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeWriteCompositeMessage(unique_ptr<CoAP::Message> input) {
-}
-unique_ptr<Message> makeObserveMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message>
-makeObserveCompositeMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message>
-makeCancelObersvationMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message>
-makeCancelObersvationCompositeMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeNotifyMessage(unique_ptr<CoAP::Message> input) {}
-unique_ptr<Message> makeSendMessage(unique_ptr<CoAP::Message> input) {}
+makeCancelObersvationCompositeMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeNotifyMessage(const CoAP::Message *input) {}
+unique_ptr<Message> makeSendMessage(const CoAP::Message *input) {}
 
 bool processIfBootrstrapInterface(
-    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, const CoAP::Message *message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   return false;
 }
 
 bool processIfDeviceRegistrationInteraface(
-    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, const CoAP::Message *message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   bool result = false;
   if (option->getOptionNumber() == OptionNumber::URI_PATH) {
     string uri_path = option->getValue();
     if (uri_path == "rd") {
-      auto register_msg = makeRegisterMessage(move(message));
+      auto register_msg = makeRegisterMessage(message);
       if (register_msg) {
         output_queue->push(move(register_msg));
         result = true;
@@ -180,7 +176,7 @@ bool processIfDeviceRegistrationInteraface(
       if (uri_path.substr(0, 3) == "rd/") {
         switch (message->getHeader().getCodeType()) {
         case CodeType::POST: {
-          auto update_msg = makeUpdateMessage(move(message));
+          auto update_msg = makeUpdateMessage(message);
           if (update_msg) {
             output_queue->push(move(update_msg));
             result = true;
@@ -188,7 +184,7 @@ bool processIfDeviceRegistrationInteraface(
           break;
         }
         case CodeType::DELETE: {
-          auto deregister_msg = makeDeRegisterMessage(move(message));
+          auto deregister_msg = makeDeRegisterMessage(message);
           if (deregister_msg) {
             output_queue->push(move(deregister_msg));
             result = true;
@@ -204,13 +200,13 @@ bool processIfDeviceRegistrationInteraface(
 } // namespace LwM2M_Model
 
 bool processIfDeviceManagmentInterface(
-    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, const CoAP::Message *message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   return false;
 }
 
 bool processIfInformationReportingInterface(
-    shared_ptr<Option> option, unique_ptr<CoAP::Message> message,
+    shared_ptr<Option> option, const CoAP::Message *message,
     shared_ptr<ThreadsafeQueue<Message>> output_queue) {
   return false;
 }
@@ -221,15 +217,15 @@ CoAP_To_LwM2M::CoAP_To_LwM2M(shared_ptr<ThreadsafeQueue<Message>> output_queue)
 void CoAP_To_LwM2M::convert(unique_ptr<CoAP::Message> message) {
   if (message) {
     for (auto option : message->getOptions()) {
-      if (processIfBootrstrapInterface(option, move(message), output_queue_)) {
+      if (processIfBootrstrapInterface(option, message.get(), output_queue_)) {
         break;
-      } else if (processIfDeviceRegistrationInteraface(option, move(message),
+      } else if (processIfDeviceRegistrationInteraface(option, message.get(),
                                                        output_queue_)) {
         break;
-      } else if (processIfDeviceManagmentInterface(option, move(message),
+      } else if (processIfDeviceManagmentInterface(option, message.get(),
                                                    output_queue_)) {
         break;
-      } else if (processIfInformationReportingInterface(option, move(message),
+      } else if (processIfInformationReportingInterface(option, message.get(),
                                                         output_queue_)) {
         break;
       }

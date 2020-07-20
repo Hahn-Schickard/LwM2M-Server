@@ -189,12 +189,12 @@ vector<uint8_t> Header::toPacket() {
   return result;
 }
 
-MessageType Header::getMesageType() { return type_; }
+MessageType Header::getMesageType() const { return type_; }
 
-uint8_t Header::getTokenLenght() { return token_length_; }
+uint8_t Header::getTokenLenght() const { return token_length_; }
 
-CodeType Header::getCodeType() { return code_; }
+CodeType Header::getCodeType() const { return code_; }
 
-uint16_t Header::getMessageID() { return message_id_; }
+uint16_t Header::getMessageID() const { return message_id_; }
 
 } // namespace CoAP
