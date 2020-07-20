@@ -55,9 +55,10 @@ class Socket : public SocketInterface {
           !udp_datagram.empty()) {
         try {
           udp_datagram.resize(bytes_read.get());
-          Message message(remote_endpoint.address().to_string(),
-                          remote_endpoint.port(), move(udp_datagram));
-          incominng_messages_->push(message);
+          auto message =
+              make_unique<Message>(remote_endpoint.address().to_string(),
+                                   remote_endpoint.port(), move(udp_datagram));
+          incominng_messages_->push(move(message));
         } catch (const domain_error &ex) {
           logger_->log(SeverityLevel::ERROR, ex.what());
         }
