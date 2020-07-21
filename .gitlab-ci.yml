@@ -3,7 +3,7 @@ include: "ci-variables.yml"
 cache: &global
   key: ${CI_PROJECT_ID}_global_cache
   paths:
-    - ~/.conan
+    - ${CI_PROJECT_DIR}/.conan
   policy: pull
 
 stages:
@@ -19,6 +19,7 @@ stages:
     - conan
   before_script:
     - conan config set storage.download_cache="${CI_PROJECT_DIR}/.conan"
+    - conan config set storage.path="${CI_PROJECT_DIR}/.conan/data"
     - conan config get storage.download_cache
 
 build:
