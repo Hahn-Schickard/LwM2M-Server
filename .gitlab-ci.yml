@@ -1,5 +1,11 @@
 include: "ci-variables.yml"
 
+cache: &global
+  key: ${CI_PROJECT_ID}_global_cache
+  paths:
+    - ~/.conan
+  policy: pull
+
 stages:
   - build
   - test
@@ -8,7 +14,15 @@ stages:
   - package
   - deploy
 
+.setup:
+  tags:
+    - conan
+  after_script:
+    - conan config set storage.download_cache="${CI_PROJECT_DIR}/.conan"
+    - conan config get storage.download_cache
+
 build:
+  extends: .setup
   stage: build
   tags:
     - conan
@@ -20,11 +34,15 @@ build:
   script:
     - cmake ${CMAKE_VARIABLES} ..
     - cmake --build . --target all --config Debug --
+  cache:
+    <<: *global
+    policy: pull
   artifacts:
     paths:
       - build/
 
 run_tests:
+  extends: .setup
   stage: test
   needs: ["build"]
   tags:
@@ -33,11 +51,14 @@ run_tests:
     - cd build
   script:
     - ctest --verbose
+  after_script:
+    - cd ..
   artifacts:
     paths:
       - build/
 
 analyze_memory_usage:
+  extends: .setup
   stage: analyze
   needs: ["build"]
   tags:
@@ -54,6 +75,7 @@ analyze_memory_usage:
   allow_failure: true
 
 check_code_coverage:
+  extends: .setup
   stage: analyze
   needs: ["build", "run_tests"]
   tags:
