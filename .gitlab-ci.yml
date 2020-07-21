@@ -37,7 +37,7 @@ build:
     - cmake --build . --target all --config Debug --
   cache:
     <<: *global
-    policy: push
+    policy: pull-push
   artifacts:
     paths:
       - build/
