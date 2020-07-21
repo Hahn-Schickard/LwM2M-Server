@@ -17,7 +17,7 @@ stages:
 .setup:
   tags:
     - conan
-  after_script:
+  before_script:
     - conan config set storage.download_cache="${CI_PROJECT_DIR}/.conan"
     - conan config get storage.download_cache
 
