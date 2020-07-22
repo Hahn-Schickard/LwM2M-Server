@@ -24,8 +24,8 @@ int main(int argc, const char *argv[]) {
           string("model/descriptors.xml"), string("0.0.0.0"), 5683, 10});
       server.start();
       logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
-      if (argc > 0) {
-        int sleep_period = atoi(argv[1]);
+      if (argc > 1) {
+        int sleep_period = atoi(argv[2]);
         this_thread::sleep_for(chrono::seconds(sleep_period));
         server.stop();
       } else {
