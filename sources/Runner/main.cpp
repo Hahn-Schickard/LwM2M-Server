@@ -2,6 +2,7 @@
 #include "LwM2M_Server.hpp"
 
 #include <chrono>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -25,7 +26,7 @@ int main(int argc, const char *argv[]) {
       server.start();
       logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
       if (argc > 1) {
-        int sleep_period = atoi(argv[2]);
+        int sleep_period = atoi(argv[1]);
         this_thread::sleep_for(chrono::seconds(sleep_period));
         server.stop();
       } else {
