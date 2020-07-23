@@ -14,5 +14,8 @@
     <IPSOPath File="descriptors/deviceObject.xml" />
     <IPSOPath File="descriptors/testObj.xml" />
     <IPSOPath File="descriptors/Electric-Phase.xml" />
+    <IPSOPath File="descriptors/Location.xml" />
+    <IPSOPath File="descriptors/Security.xml" />
+    <IPSOPath File="descriptors/Server.xml" />
 </IPSOModel>
 
