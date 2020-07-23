@@ -33,7 +33,6 @@ int main(int argc, const char *argv[]) {
         for (;;) {
         }
       }
-
     } catch (exception &e) {
       logger->log(SeverityLevel::ERROR, "Received an exception: {}", e.what());
       cerr << e.what();
