@@ -88,11 +88,9 @@ shared_ptr<PayloadFormat> decode(shared_ptr<ContentFormat> format,
 }
 
 vector<uint8_t> encodePlainText(string payload) {
-  throwCodingError("Plain Text", false);
+  return vector<uint8_t>(payload.begin(), payload.end());
 }
-vector<uint8_t> encodeCoRELink(string payload) {
-  throwCodingError("CoRE Link", false);
-}
+
 vector<uint8_t> encodeOpaque(string payload) {
   throwCodingError("Opaque", false);
 }
@@ -109,12 +107,9 @@ vector<uint8_t> encodeJSON(string payload) { throwCodingError("JSON", false); }
 vector<uint8_t> encode(shared_ptr<PayloadFormat> format) {
   vector<uint8_t> result;
   switch (format->getContentFormatType()) {
-  case ContentFormatType::PLAIN_TEXT: {
-    result = encodePlainText(format->toString());
-    break;
-  }
+  case ContentFormatType::PLAIN_TEXT:
   case ContentFormatType::CORE_LINK: {
-    result = encodeCoRELink(format->toString());
+    result = encodePlainText(format->toString());
     break;
   }
   case ContentFormatType::OPAQUE: {
