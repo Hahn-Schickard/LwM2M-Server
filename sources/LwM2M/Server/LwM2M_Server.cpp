@@ -1,6 +1,7 @@
 #include "LwM2M_Server.hpp"
 #include "CoAP_Server.hpp"
 #include "CoAP_To_LwM2M.hpp"
+#include "LoggerRepository.hpp"
 #include "LwM2M_To_CoAP.hpp"
 #include "MessageProcessor.hpp"
 #include "MessageSorter.hpp"
@@ -8,45 +9,99 @@
 #include "Threadsafe_Queue.hpp"
 
 using namespace std;
+using namespace HaSLL;
 
 namespace LwM2M {
+
+struct ProcessIsAlreadyRunning : public runtime_error {
+  ProcessIsAlreadyRunning(string const &message) : runtime_error(message) {}
+};
+
+struct ProcessIsNotRunning : public runtime_error {
+  ProcessIsNotRunning(string const &message) : runtime_error(message) {}
+};
+
+Process::Process() : Process(unique_ptr<Stoppable>(), "") {}
+
+Process::Process(unique_ptr<Stoppable> task, string task_name)
+    : task_(move(task)), task_thread_(make_unique<thread>()),
+      task_name_(task_name) {}
+
+void Process::startTask() {
+  if (!task_thread_->joinable())
+    task_thread_ = make_unique<thread>([&]() { task_->start(); });
+  else {
+    string error_msg = "Prcoess" + task_name_ + " is already running";
+    throw ProcessIsAlreadyRunning(move(error_msg));
+  }
+}
+
+void Process::stopTask() {
+  if (task_thread_->joinable()) {
+    task_->stop();
+    task_thread_->join();
+  } else {
+    string error_msg = "Prcoess" + task_name_ + " is not running";
+    throw ProcessIsNotRunning(move(error_msg));
+  }
+}
+
+string Process::getName() { return task_name_; }
 
 Server::Server() {}
 
 Server::Server(Configuration config)
     : device_registery_(
-          make_shared<unordered_map<string, shared_ptr<Device>>>()) {
+          make_shared<unordered_map<string, shared_ptr<Device>>>()),
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,
                                           config.read_timeout);
   auto message_queue = make_shared<ThreadsafeQueue<Message>>();
   processes_.emplace_back(make_unique<MessageProcessor<CoAP::Message>>(
-      make_unique<CoAP_To_LwM2M>(message_queue),
-      server->getIncomingMessagesQueue(), "IncomingMessageProcessor"));
-  processes_.emplace_back(make_unique<MessageProcessor<Message>>(
-      make_unique<LwM2M_To_CoAP>(server->getOutgoingMessagesQueue()),
-      message_queue, "OutgoingMessageProcessor"));
+                              make_unique<CoAP_To_LwM2M>(message_queue),
+                              server->getIncomingMessagesQueue(),
+                              "IncomingMessageProcessor"),
+                          "Incoming Message Processor");
+  processes_.emplace_back(
+      make_unique<MessageProcessor<Message>>(
+          make_unique<LwM2M_To_CoAP>(server->getOutgoingMessagesQueue()),
+          message_queue, "OutgoingMessageProcessor"),
+      "Outgoing Message Processor");
   auto sorter = make_unique<MessageSorter>(message_queue);
-  processes_.emplace_back(make_unique<RegistrationInterface>(
-      message_queue, sorter->getRegistrationInterfaceQueue(), device_registery_,
-      config.object_descriptors_location));
-  processes_.push_back(move(sorter));
-  processes_.push_back(move(server));
+  processes_.emplace_back(
+      make_unique<RegistrationInterface>(
+          message_queue, sorter->getRegistrationInterfaceQueue(),
+          device_registery_, config.object_descriptors_location),
+      "Registration Interface");
+  processes_.emplace_back(move(sorter), "Task Sorter");
+  processes_.emplace_back(move(server), "CoAP Server");
 };
 
 void Server::run() {
-  for (const auto &process : processes_) {
-    process_threads_.emplace_back(
-        make_unique<thread>([&]() { process->start(); }));
+  for (auto &process : processes_) {
+    try {
+      process.startTask();
+    } catch (ProcessIsAlreadyRunning &ex) {
+      logger_->log(SeverityLevel::TRACE, ex.what());
+      continue;
+    } catch (exception &ex) {
+      logger_->log(SeverityLevel::ERROR, ex.what());
+      break;
+    }
   }
 }
 
 void Server::stop() {
-  stop();
-  for (const auto &process : processes_) {
-    process->stop();
-  }
-  for (const auto &process_thread : process_threads_) {
-    process_thread->join();
+  for (auto &process : processes_) {
+    try {
+      process.stopTask();
+    } catch (ProcessIsNotRunning &ex) {
+      logger_->log(SeverityLevel::TRACE, ex.what());
+      continue;
+    } catch (exception &ex) {
+      logger_->log(SeverityLevel::ERROR, ex.what());
+      break;
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 #ifndef __LWM2M_SERVER_HPP
 #define __LWM2M_SERVER_HPP
 
+#include "Logger.hpp"
 #include "LwM2M_Device.hpp"
 #include "Stoppable.hpp"
 
@@ -12,6 +13,20 @@
 
 namespace LwM2M {
 
+class Process {
+  std::unique_ptr<Stoppable> task_;
+  std::unique_ptr<std::thread> task_thread_;
+  std::string task_name_;
+
+public:
+  Process();
+  Process(std::unique_ptr<Stoppable> task, std::string task_name);
+
+  void startTask();
+  void stopTask();
+  std::string getName();
+};
+
 struct Configuration {
   std::string object_descriptors_location;
   std::string ip_address;
@@ -20,11 +35,10 @@ struct Configuration {
 };
 
 class Server : public Stoppable {
-  std::vector<std::unique_ptr<Stoppable>> processes_;
-  std::vector<std::unique_ptr<std::thread>> process_threads_;
+  std::vector<Process> processes_;
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
-
+  std::shared_ptr<HaSLL::Logger> logger_;
   void run() override;
 
 public:

@@ -21,12 +21,12 @@ target_link_libraries(${THIS} PUBLIC
                               Stoppable_Task
                               Threads::Threads
                               LwM2M_Model
+                              HaSLL::HaSLL
                               PRIVATE
                               CoAP_Server
                               LwM2M_Interfaces
                               Message_Converter
                               Threadsafe_Queue
-                              HaSLL::HaSLL
 )
 
 target_include_directories(${THIS} INTERFACE
