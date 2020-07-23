@@ -48,7 +48,7 @@ class Socket : public SocketInterface {
     future<size_t> bytes_read = socket_.async_receive_from(
         asio::buffer(udp_datagram), remote_endpoint, asio::use_future);
     if (!io_context_.stopped()) {
-      io_context_.run();
+      io_context_.run_for(asio::chrono::seconds(task_execution_period_));
 
       if (bytes_read.wait_for(asio::chrono::seconds(task_execution_period_)) ==
               future_status::ready &&
