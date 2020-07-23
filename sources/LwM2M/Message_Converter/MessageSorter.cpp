@@ -25,33 +25,36 @@ MessageSorter::MessageSorter(
 void MessageSorter::run() {
   while (!stopRequested()) {
     try {
-      auto msg = incoming_message_queue_->wait_and_pop();
-      switch (msg->interface_type_) {
-      case InterfaceType::REGISTRATION: {
-        registration_interface_queue_->push(
-            utility::static_pointer_cast<Regirstration_Interface_Message>(
-                move(msg)));
-        break;
-      }
-      case InterfaceType::DEVICE_MANAGMENT: {
+      auto message = incoming_message_queue_->try_pop();
+      if (message) {
+        switch (message->interface_type_) {
+        case InterfaceType::REGISTRATION: {
+          registration_interface_queue_->push(
+              utility::static_pointer_cast<Regirstration_Interface_Message>(
+                  move(message)));
+          break;
+        }
+        case InterfaceType::DEVICE_MANAGMENT: {
 
-        device_managment_interface_queue_->push(
-            utility::static_pointer_cast<DeviceManagment_Interface_Message>(
-                move(msg)));
-        break;
-      }
-      case InterfaceType::INFORMATION_REPORTING: {
-        information_reporting_interface_queue_->push(
-            utility::static_pointer_cast<
-                InformationReporting_Interface_Message>(move(msg)));
-        break;
-      }
-      case InterfaceType::BOOTSTRAP:
-      default: {
-        logger_->log(
-            HaSLL::SeverityLevel::INFO, "Dropping unhandled {} message {} ",
-            toString(msg->interface_type_), toString(msg->message_type_));
-      }
+          device_managment_interface_queue_->push(
+              utility::static_pointer_cast<DeviceManagment_Interface_Message>(
+                  move(message)));
+          break;
+        }
+        case InterfaceType::INFORMATION_REPORTING: {
+          information_reporting_interface_queue_->push(
+              utility::static_pointer_cast<
+                  InformationReporting_Interface_Message>(move(message)));
+          break;
+        }
+        case InterfaceType::BOOTSTRAP:
+        default: {
+          logger_->log(HaSLL::SeverityLevel::INFO,
+                       "Dropping unhandled {} message {} ",
+                       toString(message->interface_type_),
+                       toString(message->message_type_));
+        }
+        }
       }
     } catch (exception &ex) {
       logger_->log(HaSLL::SeverityLevel::ERROR, "Caught an exception: {}",

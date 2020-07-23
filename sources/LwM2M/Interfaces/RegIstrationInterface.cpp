@@ -31,9 +31,12 @@ RegistrationInterface::RegistrationInterface(
 void RegistrationInterface::run() {
   while (!stopRequested()) {
     try {
-      auto response = handleRequest(incoming_message_queue_->wait_and_pop());
-      if (response) {
-        outgoing_message_queue_->push(move(response));
+      auto message = incoming_message_queue_->try_pop();
+      if (message) {
+        auto response = handleRequest(move(message));
+        if (response) {
+          outgoing_message_queue_->push(move(response));
+        }
       }
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,

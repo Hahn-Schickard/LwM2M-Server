@@ -30,7 +30,9 @@ public:
   void run() override {
     while (!stopRequested()) {
       try {
-        converter_->convert(message_buffer_->wait_and_pop());
+        auto message = message_buffer_->try_pop();
+        if (message)
+          converter_->convert(move(message));
       } catch (std::exception &ex) {
         logger_->log(HaSLL::SeverityLevel::ERROR, "Caught an exception: {}",
                      ex.what());
