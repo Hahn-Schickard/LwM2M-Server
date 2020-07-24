@@ -40,6 +40,19 @@ struct Register_Request : public Regirstration_Interface_Message {
       std::unordered_map<unsigned int, unsigned int> object_instances_map);
 };
 
+struct Register_Response : Response {
+  std::vector<std::string> location_;
+
+  Register_Response();
+  Register_Response(std::string endpoint_address, unsigned int endpoint_port,
+                    uint16_t message_id, std::vector<uint8_t> token,
+                    MessageType message_type, ResponseCode response_code);
+  Register_Response(std::string endpoint_address, unsigned int endpoint_port,
+                    uint16_t message_id, std::vector<uint8_t> token,
+                    MessageType message_type, ResponseCode response_code,
+                    std::vector<std::string> location);
+};
+
 struct Update_Request : public Regirstration_Interface_Message {
   std::string location_;
   std::optional<size_t> lifetime_;

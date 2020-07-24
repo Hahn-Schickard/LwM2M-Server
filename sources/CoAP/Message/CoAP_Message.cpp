@@ -88,12 +88,16 @@ Message::Message(string receiver_ip, unsigned int receiver_port,
 vector<uint8_t> Message::toPacket() {
   auto result = header_.toPacket();
 
-  vector<uint8_t> payload;
+  result.insert(result.end(), token_.begin(), token_.end());
+
+  vector<uint8_t> option_pack = encode(options_);
+  result.insert(result.end(), option_pack.begin(), option_pack.end());
+
   if (body_) {
-    payload = encode(body_);
+    vector<uint8_t> payload = encode(body_);
+    result.insert(result.end(), payload.begin(), payload.end());
   }
 
-  result.insert(result.end(), payload.begin(), payload.end());
   return result;
 }
 

@@ -17,6 +17,26 @@ Register_Request::Register_Request(
       sms_number_(move(sms_number)),
       object_instances_map_(move(object_instances_map)) {}
 
+Register_Response::Register_Response() : Response() {}
+
+Register_Response::Register_Response(string endpoint_address,
+                                     unsigned int endpoint_port,
+                                     uint16_t message_id, vector<uint8_t> token,
+                                     MessageType message_type,
+                                     ResponseCode response_code)
+    : Response(endpoint_address, endpoint_port, message_id, move(token),
+               message_type, response_code) {}
+
+Register_Response::Register_Response(string endpoint_address,
+                                     unsigned int endpoint_port,
+                                     uint16_t message_id, vector<uint8_t> token,
+                                     MessageType message_type,
+                                     ResponseCode response_code,
+                                     vector<string> location)
+    : Response(endpoint_address, endpoint_port, message_id, move(token),
+               message_type, response_code),
+      location_(move(location)) {}
+
 Update_Request::Update_Request(
     string endpoint_address, unsigned int endpoint_port, uint16_t message_id,
     vector<uint8_t> token, string location, optional<size_t> lifetime,
