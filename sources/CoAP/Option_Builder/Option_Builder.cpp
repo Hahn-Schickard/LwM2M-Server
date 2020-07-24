@@ -17,6 +17,8 @@
 #include "UriPort.hpp"
 #include "UriQuery.hpp"
 
+#include <algorithm>
+#include <netinet/in.h>
 #include <stdexcept>
 
 #define BYTE_MSB_MASK 0xF0
@@ -154,6 +156,189 @@ OptionNumber makeOptionNumber(unsigned int number) {
   }
   }
   return option_number;
+}
+
+ContentFormatType getContentTypeFromString(string value) {
+  ContentFormatType result = ContentFormatType::UNRECOGNIZED;
+  transform(value.begin(), value.end(), value.begin(),
+            [](unsigned char c) { return toupper(c); });
+
+  if (value == "PLAIN_TEXT") {
+    result = ContentFormatType::PLAIN_TEXT;
+  } else if (value == "CORE_LINK") {
+    result = ContentFormatType::CORE_LINK;
+  } else if (value == "OPAQUE") {
+    result = ContentFormatType::OPAQUE;
+  } else if (value == "CBOR") {
+    result = ContentFormatType::CBOR;
+  } else if (value == "SENML_JSON") {
+    result = ContentFormatType::SENML_JSON;
+  } else if (value == "SENML_CBOR") {
+    result = ContentFormatType::SENML_CBOR;
+  } else if (value == "TLV") {
+    result = ContentFormatType::TLV;
+  } else if (value == "JSON") {
+    result = ContentFormatType::JSON;
+  } else {
+    string error_msg = "Unrecognized content format type:" + value;
+    throw domain_error(error_msg);
+  }
+  return result;
+}
+
+shared_ptr<Option> build(OptionNumber option, string value) {
+  shared_ptr<Option> result;
+  switch (option) {
+  case OptionNumber::IF_MATCH: {
+    result = make_shared<IfMatch>(move(value));
+    break;
+  }
+  case OptionNumber::URI_HOST: {
+    result = make_shared<UriHost>(move(value));
+    break;
+  }
+  case OptionNumber::ETAG: {
+    result = make_shared<ETag>(move(value));
+    break;
+  }
+  case OptionNumber::IF_NONE_MATCH: {
+    result = make_shared<IfNoneMatch>();
+    break;
+  }
+  case OptionNumber::OBSERVE: {
+    throw OptionIsNotImplemented("Observe");
+  }
+  case OptionNumber::URI_PATH: {
+    result = make_shared<UriPath>(move(value));
+    break;
+  }
+  case OptionNumber::CONTENT_FORMAT: {
+    result = make_shared<ContentFormat>(getContentTypeFromString(move(value)));
+    break;
+  }
+  case OptionNumber::MAX_AGE: {
+    result = make_shared<MaxAge>((uint64_t)stoi(value));
+    break;
+  }
+  case OptionNumber::URI_QUERY: {
+    result = make_shared<UriQuery>(move(value));
+    break;
+  }
+  case OptionNumber::ACCEPT: {
+    result = make_shared<Accept>(getContentTypeFromString(move(value)));
+    break;
+  }
+  case OptionNumber::LOCATION_QUERY: {
+    result = make_shared<LocationQuery>(move(value));
+    break;
+  }
+  case OptionNumber::BLOCK_2: {
+    throw OptionIsNotImplemented("Block 2");
+  }
+  case OptionNumber::BLOCK_1: {
+    throw OptionIsNotImplemented("Block 1");
+  }
+  case OptionNumber::SIZE_2: {
+    throw OptionIsNotImplemented("Size 2");
+  }
+  case OptionNumber::PROXY_URI: {
+    result = make_shared<ProxyUri>(move(value));
+    break;
+  }
+  case OptionNumber::PROXY_SCHEME: {
+    result = make_shared<ProxyScheme>(move(value));
+    break;
+  }
+  case OptionNumber::SIZE_1: {
+    result = make_shared<Size1>((uint64_t)stoi(value));
+    break;
+  }
+  case OptionNumber::NO_RESPONSE: {
+    throw OptionIsNotImplemented("No Response");
+  }
+  case OptionNumber::OSCORE: {
+    throw OptionIsNotImplemented("Oscore");
+  }
+  case OptionNumber::URI_PORT: {
+    result = make_shared<UriPort>((uint16_t)stoi(value));
+    break;
+  }
+  case OptionNumber::LOCATION_PATH: {
+    result = make_shared<LocationPath>(move(value));
+    break;
+  }
+  case OptionNumber::RESERVED:
+  default: {
+    string error_msg = toString(option) + " is not handled";
+    throw domain_error(error_msg);
+  }
+  }
+  return move(result);
+}
+
+vector<uint8_t> encode(vector<shared_ptr<Option>> options) {
+  vector<uint8_t> result;
+  if (!options.empty()) {
+    auto previous_option = make_shared<Option>();
+    for (auto option : options) {
+      switch (option->size()) {
+      case BYTE_LONG: {
+        result.reserve(3 + option->getValue().size());
+        uint8_t delta = BYTE_LONG;
+        uint8_t length = BYTE_LONG;
+        uint8_t option_header = delta << 4 & length;
+        result.push_back(option_header);
+        uint8_t extended_delta =
+            static_cast<uint8_t>(option->getOptionNumber()) -
+            static_cast<uint8_t>(previous_option->getOptionNumber()) +
+            BYTE_LONG_OFFSET;
+        result.push_back(extended_delta);
+        uint8_t extended_length = option->getValue().size();
+        result.push_back(extended_length);
+        result.insert(result.end(), option->getValue().begin(),
+                      option->getValue().end());
+      }
+      case SHORT_LONG: {
+        result.reserve(5 + option->getValue().size());
+        uint8_t delta = SHORT_LONG;
+        uint8_t length = SHORT_LONG;
+        uint8_t option_header = delta << 4 & length;
+        result.push_back(option_header);
+        uint16_t extended_delta =
+            static_cast<uint16_t>(option->getOptionNumber()) -
+            static_cast<uint16_t>(previous_option->getOptionNumber()) +
+            SHORT_LONG_OFFSET;
+        //@TODO: check how to best handle network byte order conversion
+        uint8_t extended_delta_msb = extended_delta >> 8;
+        result.push_back(extended_delta_msb);
+        uint8_t extended_delta_lsb = extended_delta & 0xFF;
+        result.push_back(extended_delta_lsb);
+        uint16_t extended_length = option->getValue().size();
+        uint8_t extended_length_msb = extended_length >> 8;
+        result.push_back(extended_length_msb);
+        uint8_t extended_length_lsb = extended_length & 0xFF;
+        result.push_back(extended_length_lsb);
+        result.insert(result.end(), option->getValue().begin(),
+                      option->getValue().end());
+      }
+      default: {
+        result.reserve(1 + option->getValue().size());
+        uint8_t delta =
+            static_cast<uint8_t>(option->getOptionNumber()) -
+            static_cast<uint8_t>(previous_option->getOptionNumber());
+        uint8_t length = option->getValue().size();
+        uint8_t option_header = delta << 4 & length;
+        result.push_back(option_header);
+        result.insert(result.end(), option->getValue().begin(),
+                      option->getValue().end());
+      }
+      }
+      previous_option = option;
+    }
+
+    result.push_back(PAYLOAD_MARKER);
+  }
+  return result;
 }
 
 shared_ptr<Option> build(shared_ptr<Option> previous, deque<uint8_t> &option) {
