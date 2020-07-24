@@ -118,9 +118,14 @@ Option::Option(OptionNumber option_number, size_t option_size, bool critical,
 }
 
 OptionNumber Option::getOptionNumber() { return option_number_; }
+
+string Option::getValue() { return string(); }
+
 size_t Option::size() { return option_size_; }
 
 bool Option::isCritical() { return critical_; }
+
 bool Option::isRepeatable() { return repeatable_; }
+
 bool Option::isUnsafe() { return unsafe_; }
 } // namespace CoAP

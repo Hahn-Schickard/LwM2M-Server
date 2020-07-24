@@ -49,7 +49,7 @@ public:
   Option();
   virtual ~Option() = default;
 
-  virtual std::string getValue() = 0;
+  virtual std::string getValue();
 
   OptionNumber getOptionNumber();
   size_t size();
