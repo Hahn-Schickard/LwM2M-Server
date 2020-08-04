@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 namespace LwM2M {
-std::unordered_map<uint32_t, ObjectDescriptor>
+std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
 deserializeModel(const std::string &filepath);
 } // namespace LwM2M
 
