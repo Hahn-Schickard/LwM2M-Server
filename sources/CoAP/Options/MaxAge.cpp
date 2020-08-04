@@ -1,6 +1,10 @@
 #include "MaxAge.hpp"
+#include "PrimitiveConverter.hpp"
+
+#include <stdexcept>
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 MaxAge::MaxAge() : MaxAge((uint8_t)60) {}
 
@@ -16,7 +20,7 @@ MaxAge::MaxAge(uint32_t value)
 MaxAge::MaxAge(uint64_t value)
     : Option(OptionNumber::MAX_AGE, 2, false, false, true, 4), value_(value) {}
 
-MaxAge::MaxAge(std::vector<uint8_t> value)
+MaxAge::MaxAge(vector<uint8_t> value)
     : Option(OptionNumber::MAX_AGE, value.size(), false, false, true, 4) {
   if (!value.empty()) {
     uint64_t concat_value = 0;
@@ -27,9 +31,11 @@ MaxAge::MaxAge(std::vector<uint8_t> value)
     }
     value_ = concat_value;
   }
-}
+} // namespace CoAP
 
-string MaxAge::getValue() { return to_string(value_); }
+vector<uint8_t> MaxAge::getValue() { return toBytes(value_); }
 
-uint64_t MaxAge::getValueAsInt() { return value_; }
+string MaxAge::getAsString() { return to_string(value_); }
+
+uint64_t MaxAge::getAsLong() { return value_; }
 } // namespace CoAP

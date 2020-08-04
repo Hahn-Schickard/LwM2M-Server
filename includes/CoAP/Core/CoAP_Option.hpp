@@ -1,6 +1,7 @@
 #ifndef __COAP_OPTION_DEFINITIONS_HPP
 #define __COAP_OPTION_DEFINITIONS_HPP
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
@@ -49,7 +50,8 @@ public:
   Option();
   virtual ~Option() = default;
 
-  virtual std::string getValue();
+  virtual std::vector<uint8_t> getValue();
+  virtual std::string getAsString();
 
   OptionNumber getOptionNumber();
   size_t size();

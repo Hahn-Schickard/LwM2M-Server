@@ -1,8 +1,10 @@
 #include "ContentFormat.hpp"
+#include "PrimitiveConverter.hpp"
 
 #include <stdexcept>
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 ContentFormatType toContentFormatType(uint16_t value) {
   switch (value) {
@@ -88,11 +90,11 @@ ContentFormat::ContentFormat(vector<uint8_t> value)
   }
 }
 
-string ContentFormat::getValue() { return toString(value_); }
+vector<uint8_t> ContentFormat::getValue() { return toBytes(getAsShort()); }
 
-uint16_t ContentFormat::getValueAsInt() {
-  return static_cast<uint16_t>(value_);
-}
+string ContentFormat::getAsString() { return toString(value_); }
+
+uint16_t ContentFormat::getAsShort() { return static_cast<uint16_t>(value_); }
 
 ContentFormatType ContentFormat::getContentFormatType() { return value_; }
 

@@ -18,8 +18,9 @@ public:
   MaxAge(uint64_t value);
   MaxAge(std::vector<uint8_t> value);
 
-  std::string getValue() override;
-  uint64_t getValueAsInt();
+  std::vector<uint8_t> getValue() override;
+  std::string getAsString() override;
+  uint64_t getAsLong();
 };
 } // namespace CoAP
 

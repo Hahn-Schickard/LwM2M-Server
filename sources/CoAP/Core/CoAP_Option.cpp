@@ -119,7 +119,9 @@ Option::Option(OptionNumber option_number, size_t option_size, bool critical,
 
 OptionNumber Option::getOptionNumber() { return option_number_; }
 
-string Option::getValue() { return string(); }
+vector<uint8_t> Option::getValue() { return vector<uint8_t>(); }
+
+string Option::getAsString() { return string(); }
 
 size_t Option::size() { return option_size_; }
 

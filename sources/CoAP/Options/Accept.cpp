@@ -1,8 +1,8 @@
 #include "Accept.hpp"
-
-#include <stdexcept>
+#include "PrimitiveConverter.hpp"
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 Accept::Accept() : Accept(ContentFormatType::UNRECOGNIZED) {}
 
@@ -23,9 +23,11 @@ Accept::Accept(vector<uint8_t> value)
   }
 }
 
-string Accept::getValue() { return toString(value_); }
+vector<uint8_t> Accept::getValue() { return toBytes(getAsShort()); }
 
-uint16_t Accept::getValueAsInt() { return static_cast<uint16_t>(value_); }
+string Accept::getAsString() { return toString(value_); }
+
+uint16_t Accept::getAsShort() { return static_cast<uint16_t>(value_); }
 
 ContentFormatType Accept::getAcceptableContentFormatType() { return value_; }
 } // namespace CoAP

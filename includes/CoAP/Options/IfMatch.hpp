@@ -13,7 +13,8 @@ public:
   IfMatch();
   IfMatch(std::string value);
 
-  std::string getValue() override;
+  std::vector<uint8_t> getValue() override;
+  std::string getAsString() override;
 };
 } // namespace CoAP
 #endif //__COAP_OPTION_IF_MATCH_DEFINITION_HPP

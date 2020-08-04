@@ -13,7 +13,8 @@ public:
   LocationQuery();
   LocationQuery(std::string value);
 
-  std::string getValue() override;
+  std::vector<uint8_t> getValue() override;
+  std::string getAsString() override;
 };
 } // namespace CoAP
 

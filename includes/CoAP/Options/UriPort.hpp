@@ -17,8 +17,9 @@ public:
   UriPort(uint16_t value);
   UriPort(std::vector<uint8_t> value);
 
-  std::string getValue() override;
-  uint16_t getValueAsInt();
+  std::vector<uint8_t> getValue() override;
+  std::string getAsString() override;
+  uint16_t getAsShort();
 };
 } // namespace CoAP
 

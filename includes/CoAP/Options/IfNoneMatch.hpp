@@ -10,7 +10,8 @@ class IfNoneMatch : public Option {
 public:
   IfNoneMatch();
 
-  std::string getValue() override;
+  std::vector<uint8_t> getValue() override;
+  std::string getAsString() override;
 };
 
 } // namespace CoAP

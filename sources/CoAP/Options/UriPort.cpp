@@ -1,6 +1,8 @@
 #include "UriPort.hpp"
+#include "PrimitiveConverter.hpp"
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 UriPort::UriPort() : UriPort((uint8_t)0) {}
 
@@ -23,7 +25,9 @@ UriPort::UriPort(std::vector<uint8_t> value)
   }
 }
 
-string UriPort::getValue() { return to_string(value_); }
+vector<uint8_t> UriPort::getValue() { return toBytes(value_); }
 
-uint16_t UriPort::getValueAsInt() { return value_; }
+string UriPort::getAsString() { return to_string(value_); }
+
+uint16_t UriPort::getAsShort() { return value_; }
 } // namespace CoAP

@@ -1,6 +1,5 @@
 
 #include "Option_Builder.hpp"
-
 #include "Accept.hpp"
 #include "ContentFormat.hpp"
 #include "ETag.hpp"
@@ -9,6 +8,7 @@
 #include "LocationPath.hpp"
 #include "LocationQuery.hpp"
 #include "MaxAge.hpp"
+#include "PrimitiveConverter.hpp"
 #include "ProxyScheme.hpp"
 #include "ProxyUri.hpp"
 #include "Size1.hpp"
@@ -276,67 +276,55 @@ shared_ptr<Option> build(OptionNumber option, string value) {
   return move(result);
 }
 
+vector<uint8_t> makeOptionHeader(uint16_t delta, uint16_t lenght = 0) {
+  uint8_t first_byte = 0;
+  vector<uint8_t> extentions;
+  if (delta < BYTE_LONG)
+    first_byte += delta << 4;
+  else if (delta < 255) {
+    first_byte += BYTE_LONG << 4;
+    extentions.push_back(delta - BYTE_LONG_OFFSET);
+  } else {
+    first_byte += SHORT_LONG << 4;
+    vector<uint8_t> short_pack =
+        utility::toBytes((uint16_t)(delta - SHORT_LONG_OFFSET));
+    extentions.insert(extentions.end(), short_pack.begin(), short_pack.end());
+  }
+
+  if (lenght <= BYTE_LONG)
+    first_byte += lenght;
+  else if (lenght < 255) {
+    first_byte += BYTE_LONG;
+    extentions.push_back(lenght - BYTE_LONG_OFFSET);
+  } else {
+    first_byte += SHORT_LONG << 4;
+    vector<uint8_t> short_pack =
+        utility::toBytes((uint16_t)(lenght - SHORT_LONG_OFFSET));
+    extentions.insert(extentions.end(), short_pack.begin(), short_pack.end());
+  }
+
+  vector<uint8_t> result;
+  result.push_back(first_byte);
+  if (!extentions.empty())
+    result.insert(result.end(), extentions.begin(), extentions.end());
+
+  return result;
+}
+
 vector<uint8_t> encode(vector<shared_ptr<Option>> options) {
   vector<uint8_t> result;
   if (!options.empty()) {
     auto previous_option = make_shared<Option>();
     for (auto option : options) {
-      switch (option->size()) {
-      case BYTE_LONG: {
-        result.reserve(3 + option->getValue().size());
-        uint8_t delta = BYTE_LONG;
-        uint8_t length = BYTE_LONG;
-        uint8_t option_header = delta << 4 & length;
-        result.push_back(option_header);
-        uint8_t extended_delta =
-            static_cast<uint8_t>(option->getOptionNumber()) -
-            static_cast<uint8_t>(previous_option->getOptionNumber()) +
-            BYTE_LONG_OFFSET;
-        result.push_back(extended_delta);
-        uint8_t extended_length = option->getValue().size();
-        result.push_back(extended_length);
-        result.insert(result.end(), option->getValue().begin(),
-                      option->getValue().end());
-      }
-      case SHORT_LONG: {
-        result.reserve(5 + option->getValue().size());
-        uint8_t delta = SHORT_LONG;
-        uint8_t length = SHORT_LONG;
-        uint8_t option_header = delta << 4 & length;
-        result.push_back(option_header);
-        uint16_t extended_delta =
-            static_cast<uint16_t>(option->getOptionNumber()) -
-            static_cast<uint16_t>(previous_option->getOptionNumber()) +
-            SHORT_LONG_OFFSET;
-        //@TODO: check how to best handle network byte order conversion
-        uint8_t extended_delta_msb = extended_delta >> 8;
-        result.push_back(extended_delta_msb);
-        uint8_t extended_delta_lsb = extended_delta & 0xFF;
-        result.push_back(extended_delta_lsb);
-        uint16_t extended_length = option->getValue().size();
-        uint8_t extended_length_msb = extended_length >> 8;
-        result.push_back(extended_length_msb);
-        uint8_t extended_length_lsb = extended_length & 0xFF;
-        result.push_back(extended_length_lsb);
-        result.insert(result.end(), option->getValue().begin(),
-                      option->getValue().end());
-      }
-      default: {
-        result.reserve(1 + option->getValue().size());
-        uint8_t delta =
-            static_cast<uint8_t>(option->getOptionNumber()) -
-            static_cast<uint8_t>(previous_option->getOptionNumber());
-        uint8_t length = option->getValue().size();
-        uint8_t option_header = delta << 4 & length;
-        result.push_back(option_header);
-        result.insert(result.end(), option->getValue().begin(),
-                      option->getValue().end());
-      }
-      }
+      vector<uint8_t> header = makeOptionHeader(
+          static_cast<uint16_t>(option->getOptionNumber()) -
+              static_cast<uint16_t>(previous_option->getOptionNumber()),
+          option->size());
+      result.insert(result.end(), header.begin(), header.end());
+      vector<uint8_t> value = option->getValue();
+      result.insert(result.end(), value.begin(), value.end());
       previous_option = option;
     }
-
-    result.push_back(PAYLOAD_MARKER);
   }
   return result;
 }

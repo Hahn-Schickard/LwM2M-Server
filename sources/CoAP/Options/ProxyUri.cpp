@@ -1,8 +1,10 @@
 #include "ProxyUri.hpp"
+#include "PrimitiveConverter.hpp"
 
 #include <stdexcept>
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 ProxyUri::ProxyUri() : ProxyUri(string("0")) {}
 
@@ -15,5 +17,7 @@ ProxyUri::ProxyUri(string value)
   }
 }
 
-string ProxyUri::getValue() { return value_; }
+vector<uint8_t> ProxyUri::getValue() { return toBytes(value_); }
+
+string ProxyUri::getAsString() { return value_; }
 } // namespace CoAP

@@ -1,8 +1,10 @@
 #include "ProxyScheme.hpp"
+#include "PrimitiveConverter.hpp"
 
 #include <stdexcept>
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 ProxyScheme::ProxyScheme() : ProxyScheme(string("0")) {}
 
@@ -15,5 +17,7 @@ ProxyScheme::ProxyScheme(string value)
   }
 }
 
-string ProxyScheme::getValue() { return value_; }
+vector<uint8_t> ProxyScheme::getValue() { return toBytes(value_); }
+
+string ProxyScheme::getAsString() { return value_; }
 } // namespace CoAP

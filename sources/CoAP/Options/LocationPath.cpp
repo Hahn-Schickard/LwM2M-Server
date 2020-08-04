@@ -1,8 +1,8 @@
 #include "LocationPath.hpp"
-
-#include <stdexcept>
+#include "PrimitiveConverter.hpp"
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 LocationPath::LocationPath() : LocationPath(string()) {}
 
@@ -11,5 +11,7 @@ LocationPath::LocationPath(string value)
              255),
       value_(move(value)) {}
 
-string LocationPath::getValue() { return value_; }
+vector<uint8_t> LocationPath::getValue() { return toBytes(value_); }
+
+string LocationPath::getAsString() { return value_; }
 } // namespace CoAP

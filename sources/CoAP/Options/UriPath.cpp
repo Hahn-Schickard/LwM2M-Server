@@ -1,8 +1,8 @@
 #include "UriPath.hpp"
-
-#include <stdexcept>
+#include "PrimitiveConverter.hpp"
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 UriPath::UriPath() : UriPath(string()) {}
 
@@ -10,5 +10,7 @@ UriPath::UriPath(string value)
     : Option(OptionNumber::URI_PATH, value.size(), true, true, true, 255),
       value_(move(value)) {}
 
-string UriPath::getValue() { return value_; }
+vector<uint8_t> UriPath::getValue() { return toBytes(value_); }
+
+string UriPath::getAsString() { return value_; }
 } // namespace CoAP

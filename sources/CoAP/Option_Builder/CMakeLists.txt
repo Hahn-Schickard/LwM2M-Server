@@ -19,6 +19,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC
                               CoAP_Options
+                              Utility
 )
 
 target_include_directories(${THIS} INTERFACE

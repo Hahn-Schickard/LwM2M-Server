@@ -95,6 +95,8 @@ vector<uint8_t> Message::toPacket() {
 
   if (body_) {
     vector<uint8_t> payload = encode(body_);
+    if (!options_.empty())
+      result.push_back(PAYLOAD_MARKER);
     result.insert(result.end(), payload.begin(), payload.end());
   }
 

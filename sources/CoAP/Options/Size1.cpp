@@ -1,6 +1,8 @@
 #include "Size1.hpp"
+#include "PrimitiveConverter.hpp"
 
 using namespace std;
+using namespace utility;
 namespace CoAP {
 Size1::Size1() : Size1((uint8_t)0) {}
 
@@ -29,7 +31,9 @@ Size1::Size1(vector<uint8_t> value)
   }
 }
 
-string Size1::getValue() { return to_string(value_); }
+vector<uint8_t> Size1::getValue() { return toBytes(value_); }
 
-uint64_t Size1::getValueAsInt() { return value_; }
+string Size1::getAsString() { return to_string(value_); }
+
+uint64_t Size1::getAsLong() { return value_; }
 } // namespace CoAP
