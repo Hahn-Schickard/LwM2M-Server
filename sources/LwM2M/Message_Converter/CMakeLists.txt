@@ -22,6 +22,7 @@ target_link_libraries(${THIS} PUBLIC
                               CoAP
                               CoAP_Payload_Formats
                               LwM2M_Model
+                              LwM2M_Interfaces
                               Threadsafe_Queue
                               HaSLL::HaSLL
                               PRIVATE 

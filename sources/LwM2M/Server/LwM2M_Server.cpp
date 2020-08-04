@@ -4,7 +4,6 @@
 #include "LoggerRepository.hpp"
 #include "LwM2M_To_CoAP.hpp"
 #include "MessageProcessor.hpp"
-#include "MessageSorter.hpp"
 #include "RegistrationInterface.hpp"
 #include "Threadsafe_Queue.hpp"
 
@@ -57,23 +56,18 @@ Server::Server(Configuration config)
   auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,
                                           config.read_timeout);
   auto message_queue = make_shared<ThreadsafeQueue<Message>>();
-  processes_.emplace_back(make_unique<MessageProcessor<CoAP::Message>>(
-                              make_unique<CoAP_To_LwM2M>(message_queue),
-                              server->getIncomingMessagesQueue(),
-                              "IncomingMessageProcessor"),
-                          "Incoming Message Processor");
+  auto registration = make_shared<RegistrationInterface>(
+      device_registery_, config.object_descriptors_location);
+  processes_.emplace_back(
+      make_unique<MessageProcessor<CoAP::Message>>(
+          make_unique<CoAP_To_LwM2M>(message_queue, registration),
+          server->getIncomingMessagesQueue(), "IncomingMessageProcessor"),
+      "Incoming Message Processor");
   processes_.emplace_back(
       make_unique<MessageProcessor<Message>>(
           make_unique<LwM2M_To_CoAP>(server->getOutgoingMessagesQueue()),
           message_queue, "OutgoingMessageProcessor"),
       "Outgoing Message Processor");
-  auto sorter = make_unique<MessageSorter>(message_queue);
-  processes_.emplace_back(
-      make_unique<RegistrationInterface>(
-          message_queue, sorter->getRegistrationInterfaceQueue(),
-          device_registery_, config.object_descriptors_location),
-      "Registration Interface");
-  processes_.emplace_back(move(sorter), "Task Sorter");
   processes_.emplace_back(move(server), "CoAP Server");
 };
 

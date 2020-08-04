@@ -1,7 +1,6 @@
 #include "CoAP_To_LwM2M.hpp"
 #include "CoRE_Link.hpp"
 #include "PlainText.hpp"
-#include "RegistrationInterfaceMessages.hpp"
 #include "StringSpliter.hpp"
 
 #include <cctype>
@@ -44,12 +43,12 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
   return result;
 }
 
-unique_ptr<Message> makeRegisterMessage(const CoAP::Message *input) {
-  unique_ptr<Message> result;
+unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
+  unique_ptr<Register_Request> result;
   if (input->getHeader().getCodeType() == CodeType::POST) {
     for (auto option : input->getOptions()) {
       if (option->getOptionNumber() == OptionNumber::URI_PATH) {
-        if (option->getValue() == "rd") {
+        if (option->getAsString() == "rd") {
           string endpoint_name_;
           size_t life_time_ = 0;
           LwM2M_Version version_ = LwM2M_Version::UNRECOGNIZED;
@@ -60,7 +59,7 @@ unique_ptr<Message> makeRegisterMessage(const CoAP::Message *input) {
               getObjectList(input->getBody());
           for (auto option : input->getOptions()) {
             if (option->getOptionNumber() == OptionNumber::URI_QUERY) {
-              if (option->getValue().substr(0, 2) == "b=") {
+              if (option->getAsString().substr(0, 2) == "b=") {
                 auto binding_type = toupper(option->getValue().at(2));
                 switch (binding_type) {
                 case 'U': {
@@ -84,9 +83,9 @@ unique_ptr<Message> makeRegisterMessage(const CoAP::Message *input) {
                 continue;
               }
 
-              string lwm2M_version_tag = option->getValue().substr(0, 6);
+              string lwm2M_version_tag = option->getAsString().substr(0, 6);
               if (lwm2M_version_tag == "lwm2m=") {
-                string version_string = option->getValue().substr(6, 7);
+                string version_string = option->getAsString().substr(6, 7);
                 if (version_string == "1.0") {
                   version_ = LwM2M_Version::V1_0;
                 } else if (version_string == "1.1") {
@@ -97,25 +96,25 @@ unique_ptr<Message> makeRegisterMessage(const CoAP::Message *input) {
                 continue;
               }
 
-              string lifetime_tag = option->getValue().substr(0, 3);
+              string lifetime_tag = option->getAsString().substr(0, 3);
               if (lifetime_tag == "lt=") {
-                life_time_ = atoll(option->getValue().substr(4).c_str());
+                life_time_ = atoll(option->getAsString().substr(4).c_str());
                 continue;
               }
 
-              string endpoint_tag = option->getValue().substr(0, 3);
+              string endpoint_tag = option->getAsString().substr(0, 3);
               if (endpoint_tag == "ep=") {
-                endpoint_name_ = option->getValue().substr(3);
+                endpoint_name_ = option->getAsString().substr(3);
                 continue;
               }
 
-              string sms_tag = option->getValue().substr(0, 4);
+              string sms_tag = option->getAsString().substr(0, 4);
               if (sms_tag == "sms=") {
-                sms_number_ = option->getValue().substr(4);
+                sms_number_ = option->getAsString().substr(4);
                 continue;
               }
 
-              string queue_tag = option->getValue().substr(0, 1);
+              string queue_tag = option->getAsString().substr(0, 1);
               if (queue_tag == "Q") {
                 queue_mode_ = true;
                 continue;
@@ -135,8 +134,9 @@ unique_ptr<Message> makeRegisterMessage(const CoAP::Message *input) {
   return result;
 }
 
-unique_ptr<Message> makeDeRegisterMessage(const CoAP::Message *input) {}
-unique_ptr<Message> makeUpdateMessage(const CoAP::Message *input) {}
+unique_ptr<Deregister_Request>
+makeDeRegisterMessage(const CoAP::Message *input) {}
+unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeReadMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeWriteMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeExecuteMessage(const CoAP::Message *input) {}
@@ -154,79 +154,68 @@ makeCancelObersvationCompositeMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeNotifyMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeSendMessage(const CoAP::Message *input) {}
 
-bool processIfBootrstrapInterface(
-    shared_ptr<Option> option, const CoAP::Message *message,
-    shared_ptr<ThreadsafeQueue<Message>> output_queue) {
+bool CoAP_To_LwM2M::processIfBootrstrapInterface(shared_ptr<Option> option,
+                                                 const CoAP::Message *message) {
   return false;
 }
 
-bool processIfDeviceRegistrationInteraface(
-    shared_ptr<Option> option, const CoAP::Message *message,
-    shared_ptr<ThreadsafeQueue<Message>> output_queue) {
+bool CoAP_To_LwM2M::processIfDeviceRegistrationInteraface(
+    shared_ptr<Option> option, const CoAP::Message *message) {
   bool result = false;
+  unique_ptr<Response> response;
   if (option->getOptionNumber() == OptionNumber::URI_PATH) {
-    string uri_path = option->getValue();
+    string uri_path = option->getAsString();
     if (uri_path == "rd") {
-      auto register_msg = makeRegisterMessage(message);
-      if (register_msg) {
-        output_queue->push(move(register_msg));
-        result = true;
-      }
+      response = registration_->handleRequest(makeRegisterMessage(message));
     } else if (uri_path.size() > 2) {
       if (uri_path.substr(0, 3) == "rd/") {
         switch (message->getHeader().getCodeType()) {
         case CodeType::POST: {
-          auto update_msg = makeUpdateMessage(message);
-          if (update_msg) {
-            output_queue->push(move(update_msg));
-            result = true;
-          }
+          response = registration_->handleRequest(makeUpdateMessage(message));
           break;
         }
         case CodeType::DELETE: {
-          auto deregister_msg = makeDeRegisterMessage(message);
-          if (deregister_msg) {
-            output_queue->push(move(deregister_msg));
-            result = true;
-          }
+          response =
+              registration_->handleRequest(makeDeRegisterMessage(message));
           break;
         }
         default: { break; }
         }
       }
     }
+    if (response) {
+      output_queue_->push(move(response));
+      result = true;
+    }
   }
   return result;
 } // namespace LwM2M_Model
 
-bool processIfDeviceManagmentInterface(
-    shared_ptr<Option> option, const CoAP::Message *message,
-    shared_ptr<ThreadsafeQueue<Message>> output_queue) {
+bool CoAP_To_LwM2M::processIfDeviceManagmentInterface(
+    shared_ptr<Option> option, const CoAP::Message *message) {
   return false;
 }
 
-bool processIfInformationReportingInterface(
-    shared_ptr<Option> option, const CoAP::Message *message,
-    shared_ptr<ThreadsafeQueue<Message>> output_queue) {
+bool CoAP_To_LwM2M::processIfInformationReportingInterface(
+    shared_ptr<Option> option, const CoAP::Message *message) {
   return false;
-}
+} // namespace LwM2M
 
-CoAP_To_LwM2M::CoAP_To_LwM2M(shared_ptr<ThreadsafeQueue<Message>> output_queue)
-    : output_queue_(output_queue) {}
+CoAP_To_LwM2M::CoAP_To_LwM2M(shared_ptr<ThreadsafeQueue<Message>> output_queue,
+                             shared_ptr<RegistrationInterface> registration)
+    : output_queue_(output_queue), registration_(registration) {}
 
 void CoAP_To_LwM2M::convert(unique_ptr<CoAP::Message> message) {
   if (message) {
     for (auto option : message->getOptions()) {
-      if (processIfBootrstrapInterface(option, message.get(), output_queue_)) {
+      if (processIfBootrstrapInterface(option, message.get())) {
         break;
-      } else if (processIfDeviceRegistrationInteraface(option, message.get(),
-                                                       output_queue_)) {
+      } else if (processIfDeviceRegistrationInteraface(option, message.get())) {
         break;
-      } else if (processIfDeviceManagmentInterface(option, message.get(),
-                                                   output_queue_)) {
+      } else if (processIfDeviceManagmentInterface(option, message.get())) {
         break;
-      } else if (processIfInformationReportingInterface(option, message.get(),
-                                                        output_queue_)) {
+      } else if (processIfInformationReportingInterface(option,
+                                                        message.get())) {
         break;
       }
     }
