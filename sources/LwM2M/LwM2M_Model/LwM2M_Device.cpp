@@ -12,10 +12,11 @@ string generateDeviceID(string name, string endpoint_address,
 
 Device::Device() {}
 
-Device::Device(string name, string endpoint_address, unsigned int endpoint_port,
-               size_t life_time, LwM2M_Version version, BindingType binding,
-               bool queue_mode, optional<string> sms_number,
-               unordered_map<uint32_t, ObjectDescriptor> object_instances_map)
+Device::Device(
+    string name, string endpoint_address, unsigned int endpoint_port,
+    size_t life_time, LwM2M_Version version, BindingType binding,
+    bool queue_mode, optional<string> sms_number,
+    unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> object_instances_map)
     : device_id_(generateDeviceID(name, endpoint_address, endpoint_port)),
       name_(name), endpoint_address_(endpoint_address),
       endpoint_port_(endpoint_port), life_time_(life_time), version_(version),

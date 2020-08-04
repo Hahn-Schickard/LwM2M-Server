@@ -23,19 +23,16 @@ ObjectDescriptor::ObjectDescriptor(ObjectDescriptor &&instance)
 ObjectDescriptor::ObjectDescriptor(
     string name, string description, uint32_t id, bool multiple_instances,
     bool mandatory, string urn,
-    unordered_map<uint32_t, ResourceDescriptor> resources)
+    unordered_map<uint32_t, shared_ptr<ResourceDescriptor>> resources)
     : name_(move(name)), description_(move(description)), id_(id),
       multiple_instances_(multiple_instances), mandatory_(mandatory),
       urn_(move(urn)), resources_(move(resources)) {}
 
-unique_ptr<ResourceDescriptor> ObjectDescriptor::getResource(uint32_t id) {
+shared_ptr<ResourceDescriptor> ObjectDescriptor::getResource(uint32_t id) {
   auto it = resources_.find(id);
-  unique_ptr<ResourceDescriptor> result;
-  if (it != resources_.end()) {
-    result = make_unique<ResourceDescriptor>(it->second);
-  } else {
-    result = make_unique<ResourceDescriptor>();
-  }
+  shared_ptr<ResourceDescriptor> result;
+  if (it != resources_.end())
+    result = it->second;
   return result;
 }
 } // namespace LwM2M

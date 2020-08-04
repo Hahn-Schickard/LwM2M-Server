@@ -122,7 +122,7 @@ optional<RangeEnumeration> getRangeEnumeration(xml_node resource_node) {
   return nullopt;
 }
 
-ResourceDescriptor deserializeResource(xml_node resource_node) {
+shared_ptr<ResourceDescriptor> deserializeResource(xml_node resource_node) {
   try {
     uint32_t resource_id;
     if (resource_node.attribute("ID").hash_value()) {
@@ -145,15 +145,15 @@ ResourceDescriptor deserializeResource(xml_node resource_node) {
         getChildValue<string>(resource_node, "Description");
 
     if (resource_range_enum.has_value()) {
-      return ResourceDescriptor(resource_id, resource_name, resource_operations,
-                                resoruce_multiple_instances, resource_mandatory,
-                                resoruce_data_type, resource_range_enum.value(),
-                                resource_units, resource_description);
+      return make_shared<ResourceDescriptor>(
+          resource_id, resource_name, resource_operations,
+          resoruce_multiple_instances, resource_mandatory, resoruce_data_type,
+          resource_range_enum.value(), resource_units, resource_description);
     } else {
-      return ResourceDescriptor(resource_id, resource_name, resource_operations,
-                                resoruce_multiple_instances, resource_mandatory,
-                                resoruce_data_type, resource_units,
-                                resource_description);
+      return make_shared<ResourceDescriptor>(
+          resource_id, resource_name, resource_operations,
+          resoruce_multiple_instances, resource_mandatory, resoruce_data_type,
+          resource_units, resource_description);
     }
   } catch (exception &ex) {
     string error_msg =
@@ -163,7 +163,7 @@ ResourceDescriptor deserializeResource(xml_node resource_node) {
   }
 }
 
-ObjectDescriptor deserializeObject(xml_node object_node) {
+shared_ptr<ObjectDescriptor> deserializeObject(xml_node object_node) {
   try {
     auto object_name = getChildValue<string>(object_node, "Name");
     auto object_description =
@@ -176,14 +176,14 @@ ObjectDescriptor deserializeObject(xml_node object_node) {
     auto object_mandatory =
         convertMandatoryType(getChildValue<string>(object_node, "Mandatory"));
     xml_node resource_nodes = object_node.child("Resources");
-    unordered_map<uint32_t, ResourceDescriptor> resources;
+    unordered_map<uint32_t, shared_ptr<ResourceDescriptor>> resources;
     for (xml_node resource_node : resource_nodes.children("Item")) {
       auto resource = deserializeResource(resource_node);
-      resources.emplace(resource.id_, resource);
+      resources.emplace(resource->id_, move(resource));
     }
-    return ObjectDescriptor(object_name, object_description, object_id,
-                            object_multiple_instances, object_mandatory,
-                            object_urn, resources);
+    return make_shared<ObjectDescriptor>(
+        object_name, object_description, object_id, object_multiple_instances,
+        object_mandatory, object_urn, resources);
   } catch (exception &ex) {
     string error_msg =
         "Failed to deserialize object node: " + string(object_node.name()) +
@@ -192,9 +192,9 @@ ObjectDescriptor deserializeObject(xml_node object_node) {
   }
 }
 
-unordered_map<uint32_t, ObjectDescriptor>
+unordered_map<uint32_t, shared_ptr<ObjectDescriptor>>
 deserializeModel(const string &filepath) {
-  unordered_map<uint32_t, ObjectDescriptor> objects;
+  unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> objects;
   xml_document objects_document;
   filesystem::path root_path = filesystem::path(filepath).remove_filename();
   if (objects_document.load_file(filepath.c_str())) {
@@ -208,8 +208,8 @@ deserializeModel(const string &filepath) {
       if (object_descripotr.load_file(object_descriptor_file_path.c_str())) {
         for (auto object :
              object_descripotr.child("LWM2M").children("Object")) {
-          ObjectDescriptor ObjectDescriptor = deserializeObject(object);
-          objects.emplace(ObjectDescriptor.id_, ObjectDescriptor);
+          auto ObjectDescriptor = deserializeObject(object);
+          objects.emplace(ObjectDescriptor->id_, ObjectDescriptor);
         }
       } else {
         string error_msg = "Could not open object descriptor file: " +
