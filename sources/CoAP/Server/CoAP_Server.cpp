@@ -5,16 +5,30 @@
 #include <deque>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
 #define PACKET_SIZE_UPPER_BOUND 65536
+#define BYTE_MSB_MASK 0xF0
+#define BYTE_LSB_MASK 0xF
 
 using namespace std;
 using namespace HaSLL;
 using namespace asio;
 using asio::ip::udp;
 namespace CoAP {
+
+string toHexString(vector<uint8_t> bytes) {
+  char const hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                              '8', '9', 'A', 'B', 'C', 'D', 'F'};
+  string hex;
+  for (size_t i = 0; i < bytes.size(); i++) {
+    hex += hex_chars[(bytes[i] & BYTE_MSB_MASK) >> 4];
+    hex += hex_chars[(bytes[i] & BYTE_LSB_MASK)];
+  }
+  return hex;
+}
 
 udp selectProtocol(bool ip_v6) {
   if (ip_v6) {
@@ -32,6 +46,7 @@ void handleReturnCode(string failure_message, asio::error_code return_code) {
 }
 
 class Socket : public SocketInterface {
+  mutex socket_lock_;
   io_context io_context_;
   udp::socket socket_;
   unsigned int task_execution_period_;
@@ -40,6 +55,7 @@ class Socket : public SocketInterface {
   shared_ptr<Logger> logger_;
 
   void receive() {
+    lock_guard<std::mutex> lock(socket_lock_);
     vector<uint8_t> udp_datagram(PACKET_SIZE_UPPER_BOUND);
     udp::endpoint remote_endpoint;
     asio::error_code return_code;
@@ -67,18 +83,28 @@ class Socket : public SocketInterface {
   }
 
   void send(unique_ptr<Message> message) {
+    lock_guard<std::mutex> lock(socket_lock_);
     asio::error_code return_code;
-    socket_.send_to(
-        asio::buffer(message->toPacket()),
-        udp::endpoint(asio::ip::address::from_string(message->getReceiverIP()),
-                      message->getReceiverPort()),
-        0, return_code);
-    handleReturnCode("Could not send " +
-                         toString(message->getHeader().getMesageType()) + " " +
-                         toString(message->getHeader().getCodeType()) + " to " +
-                         message->getReceiverIP() + ":" +
-                         to_string(message->getReceiverPort()),
-                     return_code);
+    try {
+      vector<uint8_t> buffer = message->toPacket();
+      socket_.send_to(asio::buffer(move(buffer)),
+                      udp::endpoint(asio::ip::address::from_string(
+                                        message->getReceiverIP()),
+                                    message->getReceiverPort()),
+                      0, return_code);
+      handleReturnCode("Could not send " +
+                           toString(message->getHeader().getMesageType()) +
+                           " " + toString(message->getHeader().getCodeType()) +
+                           " to " + message->getReceiverIP() + ":" +
+                           to_string(message->getReceiverPort()),
+                       return_code);
+    } catch (bad_alloc &ex) {
+      logger_->log(
+          SeverityLevel::ERROR,
+          "Could not serialise message with ID {} and Token {} for {}:{}",
+          message->getHeader().getMessageID(), toHexString(message->getToken()),
+          message->getReceiverIP(), message->getReceiverPort());
+    }
   }
 
 public:
