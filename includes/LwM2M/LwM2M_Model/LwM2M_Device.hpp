@@ -19,7 +19,8 @@ class Device {
   BindingType binding_;
   bool queue_mode_;
   std::optional<std::string> sms_number_;
-  std::unordered_map<uint32_t, ObjectDescriptor> object_instances_;
+  std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
+      object_instances_;
 
 public:
   Device();
@@ -27,7 +28,8 @@ public:
          unsigned int endpoint_port, size_t life_time, LwM2M_Version version,
          BindingType binding, bool queue_mode,
          std::optional<std::string> sms_number,
-         std::unordered_map<uint32_t, ObjectDescriptor> object_instances_map);
+         std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
+             object_instances_map);
 
   std::string getDeviceId();
 };
