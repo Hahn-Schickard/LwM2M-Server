@@ -135,13 +135,17 @@ Message::Message(string endpoint_address, unsigned int endpoint_port,
 
 Response::Response()
     : Message(string(), 0, 0, vector<uint8_t>(), MessageType::NOT_RECOGNIZED),
-      response_code_(ResponseCode::UNHANDLED), payload_(vector<uint8_t>()) {}
+      response_code_(ResponseCode::UNHANDLED), payload_(vector<uint8_t>()) {
+  response_ = true;
+}
 
 Response::Response(string endpoint_address, unsigned int endpoint_port,
                    uint16_t message_id, vector<uint8_t> token,
                    MessageType message_type, ResponseCode response_code)
     : Message(endpoint_address, endpoint_port, message_id, token, message_type),
-      response_code_(response_code), payload_(vector<uint8_t>()) {}
+      response_code_(response_code), payload_(vector<uint8_t>()) {
+  response_ = true;
+}
 
 Response::Response(string endpoint_address, unsigned int endpoint_port,
                    uint16_t message_id, vector<uint8_t> token,
