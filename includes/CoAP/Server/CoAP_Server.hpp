@@ -18,9 +18,11 @@ public:
   virtual void listen() = 0;
 };
 
+using MessageBuffer = ThreadsafeQueue<CoAP::Message>;
+
 class Server : public Stoppable {
-  std::shared_ptr<ThreadsafeQueue<Message>> incominng_messages_;
-  std::shared_ptr<ThreadsafeQueue<Message>> outgoing_messages_;
+  std::shared_ptr<MessageBuffer> incominng_messages_;
+  std::shared_ptr<MessageBuffer> outgoing_messages_;
   std::unique_ptr<SocketInterface> socket_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
@@ -37,8 +39,8 @@ public:
   std::unique_ptr<Message> pullRequest();
   void pushResponse(std::unique_ptr<Message> message);
 
-  std::shared_ptr<ThreadsafeQueue<Message>> getIncomingMessagesQueue();
-  std::shared_ptr<ThreadsafeQueue<Message>> getOutgoingMessagesQueue();
+  std::shared_ptr<MessageBuffer> getIncomingMessagesQueue();
+  std::shared_ptr<MessageBuffer> getOutgoingMessagesQueue();
 };
 } // namespace CoAP
 

@@ -50,8 +50,8 @@ class Socket : public SocketInterface {
   io_context io_context_;
   udp::socket socket_;
   unsigned int task_execution_period_;
-  shared_ptr<ThreadsafeQueue<Message>> incominng_messages_;
-  shared_ptr<ThreadsafeQueue<Message>> outgoing_messages_;
+  shared_ptr<MessageBuffer> incominng_messages_;
+  shared_ptr<MessageBuffer> outgoing_messages_;
   shared_ptr<Logger> logger_;
 
   void receive() {
@@ -109,8 +109,8 @@ class Socket : public SocketInterface {
 
 public:
   Socket(udp::endpoint socket_endpoint, unsigned int task_execution_period,
-         shared_ptr<ThreadsafeQueue<Message>> incominng_messages,
-         shared_ptr<ThreadsafeQueue<Message>> outgoing_messages)
+         shared_ptr<MessageBuffer> incominng_messages,
+         shared_ptr<MessageBuffer> outgoing_messages)
       : io_context_(), socket_(io_context_, socket_endpoint),
         task_execution_period_(task_execution_period),
         incominng_messages_(incominng_messages),
@@ -123,15 +123,15 @@ public:
 
   Socket(const string &address, unsigned int port_id,
          unsigned int task_execution_period,
-         shared_ptr<ThreadsafeQueue<Message>> incominng_messages,
-         shared_ptr<ThreadsafeQueue<Message>> outgoing_messages)
+         shared_ptr<MessageBuffer> incominng_messages,
+         shared_ptr<MessageBuffer> outgoing_messages)
       : Socket(udp::endpoint(ip::make_address(address), port_id),
                task_execution_period, incominng_messages, outgoing_messages) {}
 
   Socket(bool ip_v6_handler, unsigned int port_id,
          unsigned int task_execution_period,
-         shared_ptr<ThreadsafeQueue<Message>> incominng_messages,
-         shared_ptr<ThreadsafeQueue<Message>> outgoing_messages)
+         shared_ptr<MessageBuffer> incominng_messages,
+         shared_ptr<MessageBuffer> outgoing_messages)
       : Socket(udp::endpoint(selectProtocol(ip_v6_handler), port_id),
                task_execution_period, incominng_messages, outgoing_messages) {}
 
@@ -150,8 +150,8 @@ public:
 };
 
 Server::Server()
-    : incominng_messages_(make_shared<ThreadsafeQueue<Message>>()),
-      outgoing_messages_(make_shared<ThreadsafeQueue<Message>>()),
+    : incominng_messages_(make_shared<MessageBuffer>()),
+      outgoing_messages_(make_shared<MessageBuffer>()),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 
 Server::Server(const string &ip_address, unsigned int port_id,
@@ -190,11 +190,11 @@ void Server::pushResponse(unique_ptr<Message> message) {
   outgoing_messages_->push(move(message));
 }
 
-shared_ptr<ThreadsafeQueue<Message>> Server::getIncomingMessagesQueue() {
+shared_ptr<MessageBuffer> Server::getIncomingMessagesQueue() {
   return incominng_messages_;
 }
 
-shared_ptr<ThreadsafeQueue<Message>> Server::getOutgoingMessagesQueue() {
+shared_ptr<MessageBuffer> Server::getOutgoingMessagesQueue() {
   return outgoing_messages_;
 }
 } // namespace CoAP
