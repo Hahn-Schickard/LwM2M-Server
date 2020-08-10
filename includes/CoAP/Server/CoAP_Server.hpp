@@ -4,7 +4,6 @@
 #include "CoAP_Message.hpp"
 #include "Logger.hpp"
 #include "Stoppable.hpp"
-#include "Threadsafe_Queue.hpp"
 
 #include <memory>
 #include <string>
@@ -17,8 +16,6 @@ public:
 
   virtual void listen() = 0;
 };
-
-using MessageBuffer = ThreadsafeQueue<CoAP::Message>;
 
 class Server : public Stoppable {
   std::shared_ptr<MessageBuffer> incominng_messages_;
