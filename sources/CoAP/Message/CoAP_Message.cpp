@@ -85,7 +85,7 @@ Message::Message(string receiver_ip, unsigned int receiver_port,
       header_(move(header_data)), token_(move(token)), options_(move(options)),
       body_(move(body)) {}
 
-vector<uint8_t> Message::toPacket() {
+vector<uint8_t> Message::toPacket() const {
   auto result = header_.toPacket();
 
   result.insert(result.end(), token_.begin(), token_.end());

@@ -3,8 +3,9 @@
 
 #include "CoAP_Header.hpp"
 #include "CoAP_Option.hpp"
+#include "Hashers.hpp"
 #include "PayloadFormat.hpp"
-#include "Threadsafe_Queue.hpp"
+#include "Threadsafe_Unique_Queue.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -34,7 +35,7 @@ public:
           std::vector<std::shared_ptr<Option>> options,
           std::shared_ptr<PayloadFormat> body);
 
-  std::vector<uint8_t> toPacket();
+  std::vector<uint8_t> toPacket() const;
   std::string getReceiverIP() const;
   unsigned int getReceiverPort() const;
   const Header getHeader() const;
@@ -43,7 +44,15 @@ public:
   std::shared_ptr<PayloadFormat> getBody() const;
 };
 
-typedef ThreadsafeQueue<CoAP::Message> MessageBuffer;
-
+typedef ThreadsafeUniqueQueue<CoAP::Message> MessageBuffer;
 } // namespace CoAP
+
+namespace std {
+template <> struct hash<CoAP::Message> {
+  size_t operator()(const CoAP::Message &value) const {
+    return hash<vector<uint8_t>>{}(value.toPacket());
+  }
+};
+} // namespace std
+
 #endif //__COAP_MESSAGE_DEFINITION_HPP
