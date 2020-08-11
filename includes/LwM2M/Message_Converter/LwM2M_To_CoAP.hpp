@@ -4,11 +4,11 @@
 #include "CoAP_Message.hpp"
 #include "Converter.hpp"
 #include "LwM2M_Message.hpp"
-#include "Threadsafe_Queue.hpp"
+#include "Queue_Interface.hpp"
 
 namespace LwM2M {
 class LwM2M_To_CoAP : public Converter<Message> {
-  std::shared_ptr<ThreadsafeQueue<CoAP::Message>> output_queue_;
+  std::shared_ptr<CoAP::MessageBuffer> output_queue_;
 
 public:
   LwM2M_To_CoAP(std::shared_ptr<CoAP::MessageBuffer> output_queue);

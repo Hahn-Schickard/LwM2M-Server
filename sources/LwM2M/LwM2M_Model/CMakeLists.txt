@@ -18,6 +18,11 @@ target_sources(${THIS} PRIVATE
                        ${sources_list}
 )
 
+target_link_libraries(${THIS} PUBLIC
+                              Threadsafe_Queue
+                              Utility
+)
+
 target_include_directories(${THIS} INTERFACE
                            $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/LwM2M_Model>
                            $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/LwM2M_Model/LwM2M_Messages>

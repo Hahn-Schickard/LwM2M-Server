@@ -37,8 +37,7 @@ unique_ptr<CoAP::Message> createRequest(unique_ptr<Message> input) {
   return unique_ptr<CoAP::Message>();
 }
 
-LwM2M_To_CoAP::LwM2M_To_CoAP(
-    shared_ptr<ThreadsafeQueue<CoAP::Message>> output_queue)
+LwM2M_To_CoAP::LwM2M_To_CoAP(shared_ptr<CoAP::MessageBuffer> output_queue)
     : output_queue_(output_queue) {}
 
 void LwM2M_To_CoAP::convert(unique_ptr<Message> message) {
