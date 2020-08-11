@@ -201,7 +201,7 @@ bool CoAP_To_LwM2M::processIfInformationReportingInterface(
   return false;
 } // namespace LwM2M
 
-CoAP_To_LwM2M::CoAP_To_LwM2M(shared_ptr<ThreadsafeQueue<Message>> output_queue,
+CoAP_To_LwM2M::CoAP_To_LwM2M(shared_ptr<QueueInterface<Message>> output_queue,
                              shared_ptr<RegistrationInterface> registration)
     : output_queue_(output_queue), registration_(registration) {}
 

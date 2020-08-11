@@ -55,7 +55,7 @@ Server::Server(Configuration config)
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,
                                           config.read_timeout);
-  auto message_queue = make_shared<ThreadsafeQueue<LwM2M::Message>>();
+  auto message_queue = make_shared<ThreadsafeUniqueQueue<LwM2M::Message>>();
   auto registration = make_shared<RegistrationInterface>(
       device_registery_, config.object_descriptors_location);
   processes_.emplace_back(
