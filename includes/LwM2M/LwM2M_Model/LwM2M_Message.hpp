@@ -1,6 +1,8 @@
 #ifndef __Message_HPP
 #define __Message_HPP
 
+#include "Hashers.hpp"
+
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -121,5 +123,19 @@ struct Response : Message {
 };
 
 } // namespace LwM2M
+
+namespace std {
+template <> struct hash<LwM2M::Message> {
+  size_t operator()(const LwM2M::Message &value) const {
+    return hash<int>{}(static_cast<int>(value.message_type_)) +
+           hash<int>{}(static_cast<int>(value.interface_type_)) +
+           hash<bool>{}(value.response_) +
+           hash<string>{}(value.endpoint_address_) +
+           hash<unsigned int>{}(value.endpoint_port_) +
+           hash<uint16_t>{}(value.message_id_) +
+           hash<vector<uint8_t>>{}(value.token_);
+  }
+};
+} // namespace std
 
 #endif //__Message_HPP
