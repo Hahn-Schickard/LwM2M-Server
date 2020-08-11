@@ -1,12 +1,13 @@
 #ifndef _THREAD_SAFE_UNIQUE_QUEUE_HPP
 #define _THREAD_SAFE_UNIQUE_QUEUE_HPP
 
+#include "Queue_Interface.hpp"
+
 #include <condition_variable>
-#include <memory>
 #include <mutex>
 #include <unordered_set>
 
-template <typename T> class ThreadsafeUniqueQueue {
+template <typename T> class ThreadsafeUniqueQueue : public QueueInterface<T> {
   struct Node {
     std::shared_ptr<T> data;
     std::unique_ptr<Node> next;
