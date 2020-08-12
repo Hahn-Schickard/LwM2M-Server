@@ -5,7 +5,6 @@
 #include "CoAP_Option.hpp"
 #include "Hashers.hpp"
 #include "PayloadFormat.hpp"
-#include "Threadsafe_Unique_Queue.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -43,8 +42,6 @@ public:
   std::vector<std::shared_ptr<Option>> getOptions() const;
   std::shared_ptr<PayloadFormat> getBody() const;
 };
-
-typedef ThreadsafeUniqueQueue<CoAP::Message> MessageBuffer;
 } // namespace CoAP
 
 namespace std {

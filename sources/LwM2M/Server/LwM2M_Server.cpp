@@ -5,7 +5,7 @@
 #include "LwM2M_To_CoAP.hpp"
 #include "MessageProcessor.hpp"
 #include "RegistrationInterface.hpp"
-#include "Threadsafe_Queue.hpp"
+#include "Threadsafe_Unique_Queue.hpp"
 
 using namespace std;
 using namespace HaSLL;

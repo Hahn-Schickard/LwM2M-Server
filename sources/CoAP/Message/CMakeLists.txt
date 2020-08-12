@@ -20,7 +20,6 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC
                               CoAP_Option_Builder
                               CoAP_Payload_Decoder
-                              Threadsafe_Queue
                               Utility
 )
 

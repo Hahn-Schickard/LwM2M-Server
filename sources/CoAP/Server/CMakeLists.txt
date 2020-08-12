@@ -21,6 +21,7 @@ target_link_libraries(${THIS} PUBLIC
                               CoAP
                               Stoppable_Task
                               HaSLL::HaSLL
+                              Threadsafe_Queue
                               PRIVATE 
                               asio::asio
                               XML_Parser

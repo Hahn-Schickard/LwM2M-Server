@@ -3,6 +3,7 @@
 
 #include "CoAP_Message.hpp"
 #include "Logger.hpp"
+#include "Queue_Interface.hpp"
 #include "Stoppable.hpp"
 
 #include <memory>
@@ -18,8 +19,8 @@ public:
 };
 
 class Server : public Stoppable {
-  std::shared_ptr<MessageBuffer> incominng_messages_;
-  std::shared_ptr<MessageBuffer> outgoing_messages_;
+  std::shared_ptr<QueueInterface<CoAP::Message>> incominng_messages_;
+  std::shared_ptr<QueueInterface<CoAP::Message>> outgoing_messages_;
   std::unique_ptr<SocketInterface> socket_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
@@ -36,8 +37,8 @@ public:
   std::unique_ptr<Message> pullRequest();
   void pushResponse(std::unique_ptr<Message> message);
 
-  std::shared_ptr<MessageBuffer> getIncomingMessagesQueue();
-  std::shared_ptr<MessageBuffer> getOutgoingMessagesQueue();
+  std::shared_ptr<QueueInterface<CoAP::Message>> getIncomingMessagesQueue();
+  std::shared_ptr<QueueInterface<CoAP::Message>> getOutgoingMessagesQueue();
 };
 } // namespace CoAP
 

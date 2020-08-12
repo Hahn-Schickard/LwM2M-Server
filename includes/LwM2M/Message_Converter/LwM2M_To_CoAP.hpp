@@ -8,10 +8,10 @@
 
 namespace LwM2M {
 class LwM2M_To_CoAP : public Converter<Message> {
-  std::shared_ptr<CoAP::MessageBuffer> output_queue_;
+  std::shared_ptr<QueueInterface<CoAP::Message>> output_queue_;
 
 public:
-  LwM2M_To_CoAP(std::shared_ptr<CoAP::MessageBuffer> output_queue);
+  LwM2M_To_CoAP(std::shared_ptr<QueueInterface<CoAP::Message>> output_queue);
 
   void convert(std::unique_ptr<Message> message) override;
 };
