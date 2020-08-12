@@ -1,10 +1,10 @@
 #ifndef _THREAD_SAFE_QUEUE_HPP
 #define _THREAD_SAFE_QUEUE_HPP
 
-#include "Queue_Interface.hpp"
-
 #include <condition_variable>
+#include <memory>
 #include <mutex>
+#include <stdexcept>
 
 /**
  * @brief Thread Safe Queue
@@ -14,7 +14,7 @@
  *
  * @tparam T
  */
-template <typename T> class ThreadsafeQueue : public QueueInterface<T> {
+template <typename T> class ThreadsafeQueue {
 private:
   struct Node {
     std::unique_ptr<T> data;

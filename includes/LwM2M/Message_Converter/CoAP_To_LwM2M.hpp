@@ -5,12 +5,12 @@
 #include "CoAP_Option.hpp"
 #include "Converter.hpp"
 #include "LwM2M_Message.hpp"
-#include "Queue_Interface.hpp"
 #include "RegistrationInterface.hpp"
+#include "Threadsafe_Unique_Queue.hpp"
 
 namespace LwM2M {
 class CoAP_To_LwM2M : public Converter<CoAP::Message> {
-  std::shared_ptr<QueueInterface<LwM2M::Message>> output_queue_;
+  std::shared_ptr<ThreadsafeUniqueQueue<LwM2M::Message>> output_queue_;
   std::shared_ptr<RegistrationInterface> registration_;
 
   bool processIfBootrstrapInterface(std::shared_ptr<CoAP::Option> option,
@@ -25,8 +25,9 @@ class CoAP_To_LwM2M : public Converter<CoAP::Message> {
                                          const CoAP::Message *message);
 
 public:
-  CoAP_To_LwM2M(std::shared_ptr<QueueInterface<LwM2M::Message>> output_queue,
-                std::shared_ptr<RegistrationInterface> registration);
+  CoAP_To_LwM2M(
+      std::shared_ptr<ThreadsafeUniqueQueue<LwM2M::Message>> output_queue,
+      std::shared_ptr<RegistrationInterface> registration);
 
   void convert(std::unique_ptr<CoAP::Message> message) override;
 };
