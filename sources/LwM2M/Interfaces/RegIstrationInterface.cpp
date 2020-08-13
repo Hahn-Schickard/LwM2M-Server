@@ -17,8 +17,8 @@ struct ObjectDescriptorNotSupported : runtime_error {
 
 RegistrationInterface::RegistrationInterface(
     shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
-    const string &configuration_path)
-    : device_registery_(device_registery),
+    shared_ptr<MessageEncoder> encoder, const string &configuration_path)
+    : device_registery_(device_registery), encoder_(encoder),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
@@ -54,9 +54,9 @@ bool RegistrationInterface::isRegistered(string device_id) {
              : false;
 }
 
-unique_ptr<Response>
-RegistrationInterface::handleRequest(unique_ptr<Register_Request> request) {
-  unique_ptr<Response> result;
+bool RegistrationInterface::handleRequest(
+    unique_ptr<Register_Request> request) {
+  unique_ptr<Register_Response> result;
   try {
     unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> object_instances =
         assignObjectInstances(request->object_instances_map_);
@@ -82,18 +82,18 @@ RegistrationInterface::handleRequest(unique_ptr<Register_Request> request) {
         request->message_id_, request->token_, MessageType::REGISTER,
         ResponseCode::BAD_REQUEST);
   }
-  return result;
+  encoder_->encode(move(result));
+  return true;
 } // namespace LwM2M
 
-unique_ptr<Response>
-RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
-  unique_ptr<Response> result;
+bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
+  bool result = false;
   return result;
 }
 
-unique_ptr<Response>
-RegistrationInterface::handleRequest(unique_ptr<Deregister_Request> request) {
-  unique_ptr<Response> result;
+bool RegistrationInterface::handleRequest(
+    unique_ptr<Deregister_Request> request) {
+  bool result = false;
   return result;
 }
 } // namespace LwM2M

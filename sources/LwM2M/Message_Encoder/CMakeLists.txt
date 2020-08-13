@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS LwM2M_Interfaces)
+set(THIS Message_Encoder)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/LwM2M/Interfaces
+            ${INCLUDES_DIR}/LwM2M/Message_Encoder
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -17,19 +17,17 @@ target_sources(${THIS} PRIVATE
                        ${sources_list}
 )
 
-target_link_libraries(${THIS} PUBLIC 
+target_link_libraries(${THIS} PUBLIC
+                              CoAP
+                              CoAP_Payload_Formats
                               LwM2M_Model
-                              Stoppable_Task
+                              LwM2M_Interfaces
                               Threadsafe_Queue
-                              Message_Encoder
                               HaSLL::HaSLL
-                              PRIVATE
-                              XML_Parser
-                              Utility
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Interfaces>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Message_Encoder>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

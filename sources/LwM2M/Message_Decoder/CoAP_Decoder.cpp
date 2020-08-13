@@ -1,5 +1,7 @@
-#include "CoAP_To_LwM2M.hpp"
+#include "CoAP_Decoder.hpp"
+#include "CoAP_Option.hpp"
 #include "CoRE_Link.hpp"
+#include "LoggerRepository.hpp"
 #include "PlainText.hpp"
 #include "StringSpliter.hpp"
 
@@ -10,8 +12,9 @@
 
 using namespace std;
 using namespace CoAP;
-namespace LwM2M {
+using namespace HaSLL;
 
+namespace LwM2M {
 unordered_map<unsigned int, unsigned int>
 getObjectList(shared_ptr<PayloadFormat> payload) {
   unordered_map<unsigned int, unsigned int> result;
@@ -154,72 +157,78 @@ makeCancelObersvationCompositeMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeNotifyMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeSendMessage(const CoAP::Message *input) {}
 
-bool CoAP_To_LwM2M::processIfBootrstrapInterface(shared_ptr<Option> option,
-                                                 const CoAP::Message *message) {
+CoAP_Decoder::CoAP_Decoder(
+    shared_ptr<RegistrationInterface> registration,
+    shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer)
+    : registration_(registration), message_buffer_(message_buffer),
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+
+bool CoAP_Decoder::processIfBootrstrapInterface(const CoAP::Message *message) {
   return false;
 }
 
-bool CoAP_To_LwM2M::processIfDeviceRegistrationInteraface(
-    shared_ptr<Option> option, const CoAP::Message *message) {
+bool CoAP_Decoder::processIfDeviceRegistrationInteraface(
+    const CoAP::Message *message) {
   bool result = false;
-  unique_ptr<Response> response;
-  if (option->getOptionNumber() == OptionNumber::URI_PATH) {
-    string uri_path = option->getAsString();
-    if (uri_path == "rd") {
-      response = registration_->handleRequest(makeRegisterMessage(message));
-    } else if (uri_path.size() > 2) {
-      if (uri_path.substr(0, 3) == "rd/") {
-        switch (message->getHeader().getCodeType()) {
-        case CodeType::POST: {
-          response = registration_->handleRequest(makeUpdateMessage(message));
-          break;
-        }
-        case CodeType::DELETE: {
-          response =
-              registration_->handleRequest(makeDeRegisterMessage(message));
-          break;
-        }
-        default: { break; }
+  for (auto option : message->getOptions()) {
+    if (option->getOptionNumber() == OptionNumber::URI_PATH) {
+      string uri_path = option->getAsString();
+      if (uri_path == "rd") {
+        result = registration_->handleRequest(makeRegisterMessage(message));
+        break;
+      } else if (uri_path.size() > 2) {
+        if (uri_path.substr(0, 3) == "rd/") {
+          switch (message->getHeader().getCodeType()) {
+          case CodeType::POST: {
+            result = registration_->handleRequest(makeUpdateMessage(message));
+            break;
+          }
+          case CodeType::DELETE: {
+            result =
+                registration_->handleRequest(makeDeRegisterMessage(message));
+            break;
+          }
+          default: { break; }
+          }
         }
       }
-    }
-    if (response) {
-      output_queue_->push(move(response));
-      result = true;
     }
   }
   return result;
-} // namespace LwM2M_Model
+}
 
-bool CoAP_To_LwM2M::processIfDeviceManagmentInterface(
-    shared_ptr<Option> option, const CoAP::Message *message) {
+bool CoAP_Decoder::processIfDeviceManagmentInterface(
+    const CoAP::Message *message) {
   return false;
 }
 
-bool CoAP_To_LwM2M::processIfInformationReportingInterface(
-    shared_ptr<Option> option, const CoAP::Message *message) {
+bool CoAP_Decoder::processIfInformationReportingInterface(
+    const CoAP::Message *message) {
   return false;
-} // namespace LwM2M
+}
 
-CoAP_To_LwM2M::CoAP_To_LwM2M(
-    shared_ptr<ThreadsafeUniqueQueue<Message>> output_queue,
-    shared_ptr<RegistrationInterface> registration)
-    : output_queue_(output_queue), registration_(registration) {}
-
-void CoAP_To_LwM2M::convert(unique_ptr<CoAP::Message> message) {
+void CoAP_Decoder::decode(unique_ptr<CoAP::Message> message) {
   if (message) {
-    for (auto option : message->getOptions()) {
-      if (processIfBootrstrapInterface(option, message.get())) {
-        break;
-      } else if (processIfDeviceRegistrationInteraface(option, message.get())) {
-        break;
-      } else if (processIfDeviceManagmentInterface(option, message.get())) {
-        break;
-      } else if (processIfInformationReportingInterface(option,
-                                                        message.get())) {
-        break;
-      }
+    if (processIfBootrstrapInterface(message.get())) {
+      return;
+    } else if (processIfDeviceRegistrationInteraface(message.get())) {
+      return;
+    } else if (processIfDeviceManagmentInterface(message.get())) {
+      return;
+    } else if (processIfInformationReportingInterface(message.get())) {
+      return;
     }
   }
 }
-}; // namespace LwM2M
+
+void CoAP_Decoder::run() {
+  while (!stopRequested()) {
+    try {
+      decode(message_buffer_->try_pop());
+    } catch (exception &ex) {
+      logger_->log(HaSLL::SeverityLevel::ERROR, "Caught an exception: {}",
+                   ex.what());
+    }
+  }
+}
+} // namespace LwM2M
