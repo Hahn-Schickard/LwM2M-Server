@@ -32,6 +32,12 @@ public:
              object_instances_map);
 
   std::string getDeviceId();
+  void updateBinding(BindingType binding);
+  void updateLifetime(size_t life_time);
+  void updateSMS_Number(std::string sms_number);
+  void updateObjectsMap(
+      std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
+          object_instances);
 };
 }; // namespace LwM2M
 
