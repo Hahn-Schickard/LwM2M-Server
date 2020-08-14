@@ -84,27 +84,68 @@ bool RegistrationInterface::handleRequest(
   }
   encoder_->encode(move(result));
   return true;
-} // namespace LwM2M
+}
 
 bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
-  bool result = false;
-  return result;
+  try {
+    auto device = device_registery_->at(request->location_);
+    if (device) {
+      if (request->binding_) {
+        device->updateBinding(request->binding_.value());
+      }
+      if (request->lifetime_) {
+        device->updateLifetime(request->lifetime_.value());
+      }
+      if (request->sms_number_) {
+        device->updateSMS_Number(request->sms_number_.value());
+      }
+      if (!request->object_instances_map_.empty()) {
+        unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> object_instances =
+            assignObjectInstances(request->object_instances_map_);
+        device->updateObjectsMap(object_instances);
+      }
+      // Notify that device was updated
+      encoder_->encode(make_unique<Response>(
+          request->endpoint_address_, request->endpoint_port_,
+          request->message_id_, request->token_, MessageType::UPDATE,
+          ResponseCode::CHANGED));
+    } else
+      encoder_->encode(make_unique<Response>(
+          request->endpoint_address_, request->endpoint_port_,
+          request->message_id_, request->token_, MessageType::UPDATE,
+          ResponseCode::NOT_FOUND));
+  } catch (ObjectDescriptorNotSupported &ex) {
+    logger_->log(SeverityLevel::ERROR, ex.what());
+    encoder_->encode(make_unique<Register_Response>(
+        request->endpoint_address_, request->endpoint_port_,
+        request->message_id_, request->token_, MessageType::UPDATE,
+        ResponseCode::BAD_REQUEST));
+  }
+  return true;
 }
 
 bool RegistrationInterface::handleRequest(
     unique_ptr<Deregister_Request> request) {
-  if (isRegistered(request->location_)) {
-    device_registery_->erase(device_registery_->find(request->location_));
-    // Notify that device was removed
-    encoder_->encode(make_unique<Response>(
+  try {
+    if (isRegistered(request->location_)) {
+      device_registery_->erase(device_registery_->find(request->location_));
+      // Notify that device was removed
+      encoder_->encode(make_unique<Response>(
+          request->endpoint_address_, request->endpoint_port_,
+          request->message_id_, request->token_, MessageType::DEREGISTER,
+          ResponseCode::DELETED));
+    } else
+      encoder_->encode(make_unique<Response>(
+          request->endpoint_address_, request->endpoint_port_,
+          request->message_id_, request->token_, MessageType::DEREGISTER,
+          ResponseCode::NOT_FOUND));
+  } catch (ObjectDescriptorNotSupported &ex) {
+    logger_->log(SeverityLevel::ERROR, ex.what());
+    encoder_->encode(make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_, request->token_, MessageType::DEREGISTER,
-        ResponseCode::DELETED));
-  } else
-    encoder_->encode(make_unique<Response>(
-        request->endpoint_address_, request->endpoint_port_,
-        request->message_id_, request->token_, MessageType::DEREGISTER,
-        ResponseCode::NOT_FOUND));
+        ResponseCode::BAD_REQUEST));
+  }
   return true;
 }
 } // namespace LwM2M
