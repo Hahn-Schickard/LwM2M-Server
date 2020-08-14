@@ -48,89 +48,87 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
 
 unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
   unique_ptr<Register_Request> result;
-  if (input->getHeader().getCodeType() == CodeType::POST) {
-    for (auto option : input->getOptions()) {
-      if (option->getOptionNumber() == OptionNumber::URI_PATH) {
-        if (option->getAsString() == "rd") {
-          string endpoint_name_;
-          size_t life_time_ = 0;
-          LwM2M_Version version_ = LwM2M_Version::UNRECOGNIZED;
-          BindingType binding_ = BindingType::MALFORMED;
-          bool queue_mode_ = false;
-          optional<string> sms_number_ = nullopt;
-          unordered_map<unsigned int, unsigned int> object_instances_map_ =
-              getObjectList(input->getBody());
-          for (auto option : input->getOptions()) {
-            if (option->getOptionNumber() == OptionNumber::URI_QUERY) {
-              if (option->getAsString().substr(0, 2) == "b=") {
-                auto binding_type = toupper(option->getValue().at(2));
-                switch (binding_type) {
-                case 'U': {
-                  binding_ = BindingType::UDP;
-                  break;
-                }
-                case 'T': {
-                  binding_ = BindingType::TCP;
-                  break;
-                }
-                case 'S': {
-                  binding_ = BindingType::SMS;
-                  break;
-                }
-                case 'N': {
-                  binding_ = BindingType::NON_IP;
-                  break;
-                }
-                default: { break; }
-                }
-                continue;
+  for (auto option : input->getOptions()) {
+    if (option->getOptionNumber() == OptionNumber::URI_PATH) {
+      if (option->getAsString() == "rd") {
+        string endpoint_name_;
+        size_t life_time_ = 0;
+        LwM2M_Version version_ = LwM2M_Version::UNRECOGNIZED;
+        BindingType binding_ = BindingType::MALFORMED;
+        bool queue_mode_ = false;
+        optional<string> sms_number_ = nullopt;
+        unordered_map<unsigned int, unsigned int> object_instances_map_ =
+            getObjectList(input->getBody());
+        for (auto option : input->getOptions()) {
+          if (option->getOptionNumber() == OptionNumber::URI_QUERY) {
+            if (option->getAsString().substr(0, 2) == "b=") {
+              auto binding_type = toupper(option->getValue().at(2));
+              switch (binding_type) {
+              case 'U': {
+                binding_ = BindingType::UDP;
+                break;
               }
+              case 'T': {
+                binding_ = BindingType::TCP;
+                break;
+              }
+              case 'S': {
+                binding_ = BindingType::SMS;
+                break;
+              }
+              case 'N': {
+                binding_ = BindingType::NON_IP;
+                break;
+              }
+              default: { break; }
+              }
+              continue;
+            }
 
-              string lwm2M_version_tag = option->getAsString().substr(0, 6);
-              if (lwm2M_version_tag == "lwm2m=") {
-                string version_string = option->getAsString().substr(6, 7);
-                if (version_string == "1.0") {
-                  version_ = LwM2M_Version::V1_0;
-                } else if (version_string == "1.1") {
-                  version_ = LwM2M_Version::V1_1;
-                } else {
-                  version_ = LwM2M_Version::UNRECOGNIZED;
-                }
-                continue;
+            string lwm2M_version_tag = option->getAsString().substr(0, 6);
+            if (lwm2M_version_tag == "lwm2m=") {
+              string version_string = option->getAsString().substr(6, 7);
+              if (version_string == "1.0") {
+                version_ = LwM2M_Version::V1_0;
+              } else if (version_string == "1.1") {
+                version_ = LwM2M_Version::V1_1;
+              } else {
+                version_ = LwM2M_Version::UNRECOGNIZED;
               }
+              continue;
+            }
 
-              string lifetime_tag = option->getAsString().substr(0, 3);
-              if (lifetime_tag == "lt=") {
-                life_time_ = atoll(option->getAsString().substr(4).c_str());
-                continue;
-              }
+            string lifetime_tag = option->getAsString().substr(0, 3);
+            if (lifetime_tag == "lt=") {
+              life_time_ = atoll(option->getAsString().substr(4).c_str());
+              continue;
+            }
 
-              string endpoint_tag = option->getAsString().substr(0, 3);
-              if (endpoint_tag == "ep=") {
-                endpoint_name_ = option->getAsString().substr(3);
-                continue;
-              }
+            string endpoint_tag = option->getAsString().substr(0, 3);
+            if (endpoint_tag == "ep=") {
+              endpoint_name_ = option->getAsString().substr(3);
+              continue;
+            }
 
-              string sms_tag = option->getAsString().substr(0, 4);
-              if (sms_tag == "sms=") {
-                sms_number_ = option->getAsString().substr(4);
-                continue;
-              }
+            string sms_tag = option->getAsString().substr(0, 4);
+            if (sms_tag == "sms=") {
+              sms_number_ = option->getAsString().substr(4);
+              continue;
+            }
 
-              string queue_tag = option->getAsString().substr(0, 1);
-              if (queue_tag == "Q") {
-                queue_mode_ = true;
-                continue;
-              }
+            string queue_tag = option->getAsString().substr(0, 1);
+            if (queue_tag == "Q") {
+              queue_mode_ = true;
+              continue;
             }
           }
-
-          result = make_unique<Register_Request>(
-              input->getReceiverIP(), input->getReceiverPort(),
-              input->getHeader().getMessageID(), input->getToken(),
-              endpoint_name_, life_time_, version_, binding_, queue_mode_,
-              sms_number_, object_instances_map_);
         }
+
+        result = make_unique<Register_Request>(
+            input->getReceiverIP(), input->getReceiverPort(),
+            input->getHeader().getMessageID(), input->getToken(),
+            endpoint_name_, life_time_, version_, binding_, queue_mode_,
+            sms_number_, object_instances_map_);
       }
     }
   }
@@ -139,6 +137,7 @@ unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
 
 unique_ptr<Deregister_Request>
 makeDeRegisterMessage(const CoAP::Message *input) {}
+
 unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeReadMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeWriteMessage(const CoAP::Message *input) {}
