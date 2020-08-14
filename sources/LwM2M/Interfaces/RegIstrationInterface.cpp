@@ -93,7 +93,18 @@ bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
 
 bool RegistrationInterface::handleRequest(
     unique_ptr<Deregister_Request> request) {
-  bool result = false;
-  return result;
+  if (isRegistered(request->location_)) {
+    device_registery_->erase(device_registery_->find(request->location_));
+    // Notify that device was removed
+    encoder_->encode(make_unique<Response>(
+        request->endpoint_address_, request->endpoint_port_,
+        request->message_id_, request->token_, MessageType::DEREGISTER,
+        ResponseCode::DELETED));
+  } else
+    encoder_->encode(make_unique<Response>(
+        request->endpoint_address_, request->endpoint_port_,
+        request->message_id_, request->token_, MessageType::DEREGISTER,
+        ResponseCode::NOT_FOUND));
+  return true;
 }
 } // namespace LwM2M
