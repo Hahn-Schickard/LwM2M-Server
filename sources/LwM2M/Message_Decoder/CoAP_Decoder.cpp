@@ -136,7 +136,12 @@ unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
 }
 
 unique_ptr<Deregister_Request>
-makeDeRegisterMessage(const CoAP::Message *input) {}
+makeDeRegisterMessage(const CoAP::Message *input) {
+  return make_unique<Deregister_Request>(
+      input->getReceiverIP(), input->getReceiverPort(),
+      input->getHeader().getMessageID(), input->getToken(),
+      input->getOptions().at(1)->getAsString());
+}
 
 unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeReadMessage(const CoAP::Message *input) {}
@@ -168,32 +173,24 @@ bool CoAP_Decoder::processIfBootrstrapInterface(const CoAP::Message *message) {
 
 bool CoAP_Decoder::processIfDeviceRegistrationInteraface(
     const CoAP::Message *message) {
-  bool result = false;
-  for (auto option : message->getOptions()) {
-    if (option->getOptionNumber() == OptionNumber::URI_PATH) {
-      string uri_path = option->getAsString();
-      if (uri_path == "rd") {
-        result = registration_->handleRequest(makeRegisterMessage(message));
-        break;
-      } else if (uri_path.size() > 2) {
-        if (uri_path.substr(0, 3) == "rd/") {
-          switch (message->getHeader().getCodeType()) {
-          case CodeType::POST: {
-            result = registration_->handleRequest(makeUpdateMessage(message));
-            break;
+  auto options = message->getOptions();
+  for (auto it = options.begin(); it != options.end(); it++) {
+    if ((*it)->getOptionNumber() == OptionNumber::URI_PATH) {
+      if ((*it)->getAsString() == "rd") {
+        if (message->getHeader().getCodeType() == CodeType::POST) {
+          auto next_option = it + 1;
+          if (next_option != options.end()) {
+            if ((*next_option)->getOptionNumber() == OptionNumber::URI_PATH)
+              return registration_->handleRequest(makeUpdateMessage(message));
           }
-          case CodeType::DELETE: {
-            result =
-                registration_->handleRequest(makeDeRegisterMessage(message));
-            break;
-          }
-          default: { break; }
-          }
+          return registration_->handleRequest(makeRegisterMessage(message));
+        } else if (message->getHeader().getCodeType() == CodeType::DELETE) {
+          return registration_->handleRequest(makeDeRegisterMessage(message));
         }
       }
     }
   }
-  return result;
+  return false;
 }
 
 bool CoAP_Decoder::processIfDeviceManagmentInterface(
@@ -209,13 +206,9 @@ bool CoAP_Decoder::processIfInformationReportingInterface(
 void CoAP_Decoder::decode(unique_ptr<CoAP::Message> message) {
   if (message) {
     if (processIfBootrstrapInterface(message.get())) {
-      return;
     } else if (processIfDeviceRegistrationInteraface(message.get())) {
-      return;
     } else if (processIfDeviceManagmentInterface(message.get())) {
-      return;
     } else if (processIfInformationReportingInterface(message.get())) {
-      return;
     }
   }
 }
