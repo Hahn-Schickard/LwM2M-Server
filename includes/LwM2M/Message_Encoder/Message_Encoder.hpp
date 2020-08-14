@@ -15,6 +15,7 @@ public:
   virtual ~MessageEncoder() = default;
 
   virtual void encode(std::unique_ptr<Register_Response> input) = 0;
+  virtual void encode(std::unique_ptr<Response> input) = 0;
 };
 } // namespace LwM2M
 
