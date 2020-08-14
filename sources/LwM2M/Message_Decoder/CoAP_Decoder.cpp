@@ -18,30 +18,32 @@ namespace LwM2M {
 unordered_map<unsigned int, unsigned int>
 getObjectList(shared_ptr<PayloadFormat> payload) {
   unordered_map<unsigned int, unsigned int> result;
-  switch (payload->getContentFormatType()) {
-  case ContentFormatType::CORE_LINK: {
-    shared_ptr<CoRE_Links> core_links =
-        static_pointer_cast<CoRE_Links>(payload);
-    for (auto link : core_links->getLinks()) {
-      // ignore content attributes
-      if (link.getTarget() != "/") {
-        vector<string> object_instance_pair =
-            utility::split(link.getTarget(), '/');
-        if (object_instance_pair.size() == 2) {
-          result.emplace(atoi(object_instance_pair.at(0).c_str()),
-                         atoi(object_instance_pair.at(1).c_str()));
+  if (payload) {
+    switch (payload->getContentFormatType()) {
+    case ContentFormatType::CORE_LINK: {
+      shared_ptr<CoRE_Links> core_links =
+          static_pointer_cast<CoRE_Links>(payload);
+      for (auto link : core_links->getLinks()) {
+        // ignore content attributes
+        if (link.getTarget() != "/") {
+          vector<string> object_instance_pair =
+              utility::split(link.getTarget(), '/');
+          if (object_instance_pair.size() == 2) {
+            result.emplace(atoi(object_instance_pair.at(0).c_str()),
+                           atoi(object_instance_pair.at(1).c_str()));
+          }
         }
       }
+      break;
     }
-    break;
-  }
-  default: {
-    string error_msg =
-        "Registration request must use " +
-        toString(ContentFormatType::CORE_LINK) + " fortmat type, not " +
-        toString(payload->getContentFormatType()) + " fortmat type.";
-    throw domain_error(move(error_msg));
-  }
+    default: {
+      string error_msg =
+          "Registration request must use " +
+          toString(ContentFormatType::CORE_LINK) + " fortmat type, not " +
+          toString(payload->getContentFormatType()) + " fortmat type.";
+      throw domain_error(move(error_msg));
+    }
+    }
   }
   return result;
 }
@@ -143,7 +145,59 @@ makeDeRegisterMessage(const CoAP::Message *input) {
       input->getOptions().at(1)->getAsString());
 }
 
-unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {}
+unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {
+  auto options = input->getOptions();
+  string location = options.at(1)->getAsString();
+  optional<size_t> life_time_ = nullopt;
+  optional<BindingType> binding_ = nullopt;
+  optional<string> sms_number_ = nullopt;
+  unordered_map<unsigned int, unsigned int> object_instances_map =
+      getObjectList(input->getBody());
+  for (auto it = options.begin() + 2; it != options.end(); it++) {
+    if ((*it)->getOptionNumber() == OptionNumber::URI_QUERY) {
+      if ((*it)->getAsString().substr(0, 2) == "b=") {
+        auto binding_type = toupper((*it)->getValue().at(2));
+        switch (binding_type) {
+        case 'U': {
+          binding_ = BindingType::UDP;
+          break;
+        }
+        case 'T': {
+          binding_ = BindingType::TCP;
+          break;
+        }
+        case 'S': {
+          binding_ = BindingType::SMS;
+          break;
+        }
+        case 'N': {
+          binding_ = BindingType::NON_IP;
+          break;
+        }
+        default: { break; }
+        }
+        continue;
+      }
+
+      string lifetime_tag = (*it)->getAsString().substr(0, 3);
+      if (lifetime_tag == "lt=") {
+        life_time_ = atoll((*it)->getAsString().substr(4).c_str());
+        continue;
+      }
+
+      string sms_tag = (*it)->getAsString().substr(0, 4);
+      if (sms_tag == "sms=") {
+        sms_number_ = (*it)->getAsString().substr(4);
+        continue;
+      }
+    }
+  }
+  return make_unique<Update_Request>(
+      input->getReceiverIP(), input->getReceiverPort(),
+      input->getHeader().getMessageID(), input->getToken(), location,
+      life_time_, binding_, sms_number_, object_instances_map);
+}
+
 unique_ptr<Message> makeReadMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeWriteMessage(const CoAP::Message *input) {}
 unique_ptr<Message> makeExecuteMessage(const CoAP::Message *input) {}
