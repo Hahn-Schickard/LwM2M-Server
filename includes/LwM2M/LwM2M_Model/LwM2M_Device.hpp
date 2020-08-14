@@ -1,5 +1,5 @@
-#ifndef __Device_HPP
-#define __Device_HPP
+#ifndef __LWM2M_DEVICE_HPP
+#define __LWM2M_DEVICE_HPP
 
 #include "LwM2M_ObjectDescriptor.hpp"
 #include "RegistrationInterfaceMessages.hpp"
@@ -41,4 +41,4 @@ public:
 };
 }; // namespace LwM2M
 
-#endif //__Device_HPP
+#endif //__LWM2M_DEVICE_HPP
