@@ -158,32 +158,83 @@ OptionNumber makeOptionNumber(unsigned int number) {
   return option_number;
 }
 
-ContentFormatType getContentTypeFromString(string value) {
-  ContentFormatType result = ContentFormatType::UNRECOGNIZED;
-  transform(value.begin(), value.end(), value.begin(),
-            [](unsigned char c) { return toupper(c); });
-
-  if (value == "PLAIN_TEXT") {
-    result = ContentFormatType::PLAIN_TEXT;
-  } else if (value == "CORE_LINK") {
-    result = ContentFormatType::CORE_LINK;
-  } else if (value == "OPAQUE") {
-    result = ContentFormatType::OPAQUE;
-  } else if (value == "CBOR") {
-    result = ContentFormatType::CBOR;
-  } else if (value == "SENML_JSON") {
-    result = ContentFormatType::SENML_JSON;
-  } else if (value == "SENML_CBOR") {
-    result = ContentFormatType::SENML_CBOR;
-  } else if (value == "TLV") {
-    result = ContentFormatType::TLV;
-  } else if (value == "JSON") {
-    result = ContentFormatType::JSON;
-  } else {
-    string error_msg = "Unrecognized content format type:" + value;
-    throw domain_error(error_msg);
+size_t oneAtATimeHash(const string &value) {
+  string buffer(value);
+  transform(buffer.begin(), buffer.end(), buffer.begin(), ::toupper);
+  // Bob Jenkins One at a Time hash
+  size_t hash = 0;
+  for (unsigned int i = 0; i < buffer.size(); i++) {
+    hash += buffer[i];
+    hash += (hash << 10);
+    hash ^= (hash >> 6);
   }
-  return result;
+
+  hash += (hash << 3);
+  hash ^= (hash >> 11);
+  hash += (hash << 15);
+
+  return hash;
+}
+
+class ContentFormatHash {
+  size_t short_hash_;
+  size_t long_hash_;
+
+public:
+  ContentFormatHash(const string &short_hash, const string &long_hash)
+      : short_hash_(oneAtATimeHash(short_hash)),
+        long_hash_(oneAtATimeHash(long_hash)) {}
+
+  size_t constexpr short_hash() { return short_hash_; }
+  size_t constexpr long_hash() { return long_hash_; }
+};
+
+static ContentFormatHash PLAIN_TEXT =
+    ContentFormatHash("PLAIN_TEXT", toString(ContentFormatType::PLAIN_TEXT));
+static ContentFormatHash CORE_LINK =
+    ContentFormatHash("CORE_LINK", toString(ContentFormatType::CORE_LINK));
+static ContentFormatHash OPAQUE =
+    ContentFormatHash("OPAQUE", toString(ContentFormatType::OPAQUE));
+static ContentFormatHash CBOR =
+    ContentFormatHash("CBOR", toString(ContentFormatType::CBOR));
+static ContentFormatHash SENML_JSON =
+    ContentFormatHash("SENML_JSON", toString(ContentFormatType::SENML_JSON));
+static ContentFormatHash SENML_CBOR =
+    ContentFormatHash("SENML_CBOR", toString(ContentFormatType::SENML_CBOR));
+static ContentFormatHash TLV =
+    ContentFormatHash("TLV", toString(ContentFormatType::TLV));
+static ContentFormatHash JSON =
+    ContentFormatHash("JSON", toString(ContentFormatType::JSON));
+
+ContentFormatType getContentTypeFromString(const string &value) {
+  size_t value_hash = oneAtATimeHash(value);
+  if (value_hash == PLAIN_TEXT.long_hash() ||
+      value_hash == PLAIN_TEXT.short_hash()) {
+    return ContentFormatType::PLAIN_TEXT;
+  } else if (value_hash == CORE_LINK.long_hash() ||
+             value_hash == CORE_LINK.short_hash()) {
+    return ContentFormatType::CORE_LINK;
+  } else if (value_hash == OPAQUE.long_hash() ||
+             value_hash == OPAQUE.short_hash()) {
+    return ContentFormatType::OPAQUE;
+  } else if (value_hash == CBOR.long_hash() ||
+             value_hash == CBOR.short_hash()) {
+    return ContentFormatType::CBOR;
+  } else if (value_hash == SENML_JSON.long_hash() ||
+             value_hash == SENML_JSON.short_hash()) {
+    return ContentFormatType::SENML_JSON;
+  } else if (value_hash == SENML_CBOR.long_hash() ||
+             value_hash == SENML_CBOR.short_hash()) {
+    return ContentFormatType::SENML_CBOR;
+  } else if (value_hash == TLV.long_hash() || value_hash == TLV.short_hash()) {
+    return ContentFormatType::TLV;
+  } else if (value_hash == JSON.long_hash() ||
+             value_hash == JSON.short_hash()) {
+    return ContentFormatType::JSON;
+  } else {
+    string error_msg = "Unrecognized content format type: " + value;
+    throw domain_error(move(error_msg));
+  }
 }
 
 shared_ptr<Option> build(OptionNumber option, string value) {
