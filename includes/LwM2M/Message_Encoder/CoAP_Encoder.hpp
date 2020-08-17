@@ -16,6 +16,8 @@ public:
   CoAP_Encoder(
       std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> output_queue);
 
+  void encode(std::unique_ptr<Read_Request> input) override;
+
   void encode(std::unique_ptr<Register_Response> input) override;
   void encode(std::unique_ptr<Response> input) override;
 };

@@ -14,6 +14,8 @@ class MessageEncoder {
 public:
   virtual ~MessageEncoder() = default;
 
+  virtual void encode(std::unique_ptr<Read_Request> input) = 0;
+
   virtual void encode(std::unique_ptr<Register_Response> input) = 0;
   virtual void encode(std::unique_ptr<Response> input) = 0;
 };

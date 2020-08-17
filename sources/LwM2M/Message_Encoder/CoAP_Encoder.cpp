@@ -15,6 +15,36 @@ CoAP_Encoder::CoAP_Encoder(
     : MessageEncoder(), output_queue_(output_queue),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 
+void CoAP_Encoder::encode(std::unique_ptr<Read_Request> input) {
+  try {
+    vector<shared_ptr<CoAP::Option>> options;
+    options.emplace_back(build(CoAP::OptionNumber::ACCEPT, "CORE_LINK"));
+    options.emplace_back(
+        build(CoAP::OptionNumber::LOCATION_PATH, to_string(input->object_id_)));
+    if (input->object_instance_id_) {
+      options.emplace_back(
+          build(CoAP::OptionNumber::LOCATION_PATH,
+                to_string(input->object_instance_id_.value())));
+      if (input->resource_id_) {
+        options.emplace_back(build(CoAP::OptionNumber::LOCATION_PATH,
+                                   to_string(input->resource_id_.value())));
+        if (input->resoruce_instance_id_) {
+          options.emplace_back(
+              build(CoAP::OptionNumber::LOCATION_PATH,
+                    to_string(input->resoruce_instance_id_.value())));
+        }
+      }
+    }
+    output_queue_->push(make_unique<CoAP::Message>(
+        input->endpoint_address_, input->endpoint_port_,
+        CoAP::Header(CoAP::MessageType::ACKNOWLEDGMENT, input->token_.size(),
+                     CodeType::GET, input->message_id_),
+        input->token_, options, shared_ptr<PayloadFormat>()));
+  } catch (exception &ex) {
+    logger_->log(SeverityLevel::ERROR, ex.what());
+  }
+}
+
 void CoAP_Encoder::encode(unique_ptr<Register_Response> input) {
   try {
     vector<shared_ptr<CoAP::Option>> options;
