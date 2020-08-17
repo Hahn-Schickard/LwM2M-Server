@@ -1,11 +1,10 @@
 #include "LwM2M_Server.hpp"
+#include "CoAP_Decoder.hpp"
+#include "CoAP_Encoder.hpp"
 #include "CoAP_Server.hpp"
-#include "CoAP_To_LwM2M.hpp"
 #include "LoggerRepository.hpp"
-#include "LwM2M_To_CoAP.hpp"
-#include "MessageProcessor.hpp"
 #include "RegistrationInterface.hpp"
-#include "Threadsafe_Queue.hpp"
+#include "Threadsafe_Unique_Queue.hpp"
 
 using namespace std;
 using namespace HaSLL;
@@ -55,19 +54,13 @@ Server::Server(Configuration config)
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,
                                           config.read_timeout);
-  auto message_queue = make_shared<ThreadsafeQueue<Message>>();
+  shared_ptr<MessageEncoder> encoder =
+      make_shared<CoAP_Encoder>(server->getOutgoingMessagesQueue());
   auto registration = make_shared<RegistrationInterface>(
-      device_registery_, config.object_descriptors_location);
-  processes_.emplace_back(
-      make_unique<MessageProcessor<CoAP::Message>>(
-          make_unique<CoAP_To_LwM2M>(message_queue, registration),
-          server->getIncomingMessagesQueue(), "IncomingMessageProcessor"),
-      "Incoming Message Processor");
-  processes_.emplace_back(
-      make_unique<MessageProcessor<Message>>(
-          make_unique<LwM2M_To_CoAP>(server->getOutgoingMessagesQueue()),
-          message_queue, "OutgoingMessageProcessor"),
-      "Outgoing Message Processor");
+      device_registery_, encoder, config.object_descriptors_location);
+  processes_.emplace_back(make_unique<CoAP_Decoder>(
+                              registration, server->getIncomingMessagesQueue()),
+                          "Incoming Message Processor");
   processes_.emplace_back(move(server), "CoAP Server");
 };
 

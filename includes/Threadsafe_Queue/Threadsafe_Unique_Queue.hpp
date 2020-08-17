@@ -1,24 +1,34 @@
-#ifndef _THREAD_SAFE_QUEUE_HPP
-#define _THREAD_SAFE_QUEUE_HPP
+#ifndef _THREAD_SAFE_UNIQUE_QUEUE_HPP
+#define _THREAD_SAFE_UNIQUE_QUEUE_HPP
 
 #include <condition_variable>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
+#include <unordered_set>
 
-/**
- * @brief Thread Safe Queue
- * Based on a Code listings from:
- * A. Williams C++ Concurrency in Action Second Edition, New York, Shelter
- * Island: Manning 2019
- *
- * @tparam T
- */
-template <typename T> class ThreadsafeQueue {
-private:
+template <typename T> class ThreadsafeUniqueQueue {
   struct Node {
-    std::unique_ptr<T> data;
+    std::shared_ptr<T> data;
     std::unique_ptr<Node> next;
+  };
+
+  struct WeakPtrHash {
+  public:
+    size_t operator()(std::weak_ptr<T> weak_ptr) const {
+      auto ptr = weak_ptr.lock();
+      return std::hash<T>()(*ptr);
+    }
+  };
+
+  struct WeakPtrEqual {
+  public:
+    bool operator()(std::weak_ptr<T> weak_ptr1,
+                    std::weak_ptr<T> weak_ptr2) const {
+      auto ptr1 = weak_ptr1.lock();
+      auto ptr2 = weak_ptr2.lock();
+      return std::hash<T>()(*ptr1) == std::hash<T>()(*ptr2) ? true : false;
+    }
   };
 
   std::mutex head_mutex;
@@ -26,6 +36,7 @@ private:
   std::mutex tail_mutex;
   Node *tail;
   std::condition_variable data_cond;
+  std::unordered_set<std::weak_ptr<T>, WeakPtrHash, WeakPtrEqual> lookup;
 
   Node *get_tail() {
     std::lock_guard<std::mutex> tail_lock(tail_mutex);
@@ -35,6 +46,7 @@ private:
   std::unique_ptr<Node> pop_head() {
     std::unique_ptr<Node> old_head = std::move(head);
     head = std::move(old_head->next);
+    lookup.erase(lookup.find(old_head->data));
     return old_head;
   }
 
@@ -68,15 +80,14 @@ private:
     if (head.get() == get_tail()) {
       return std::unique_ptr<Node>();
     }
-    value = std::move(*head->data);
+    value = *head->data;
     return pop_head();
   }
 
 public:
-  ThreadsafeQueue() : head(new Node), tail(head.get()) {}
-
-  ThreadsafeQueue(const ThreadsafeQueue &other) = delete;
-  ThreadsafeQueue &operator=(const ThreadsafeQueue &other) = delete;
+  ThreadsafeUniqueQueue() : head(new Node), tail(head.get()) {}
+  ThreadsafeUniqueQueue(const ThreadsafeUniqueQueue &other) = delete;
+  ThreadsafeUniqueQueue &operator=(const ThreadsafeUniqueQueue &other) = delete;
 
   /**
    * @brief Checks if the queue has some data to return
@@ -85,7 +96,8 @@ public:
    */
   std::unique_ptr<T> try_pop() {
     std::unique_ptr<Node> old_head = try_pop_head();
-    return old_head ? move(old_head->data) : std::unique_ptr<T>();
+    return old_head ? std::make_unique<T>(*old_head->data.get())
+                    : std::unique_ptr<T>();
   }
 
   /**
@@ -113,7 +125,7 @@ public:
    */
   std::unique_ptr<T> wait_and_pop() {
     std::unique_ptr<Node> const old_head = wait_pop_head();
-    return move(old_head->data);
+    return std::make_unique<T>(*old_head->data.get());
   }
 
   /**
@@ -127,23 +139,38 @@ public:
   }
 
   /**
-   * @brief Creates a std::unique_ptr from a given value and savs it in a queue
+   * @brief Saves a given value within the queue if no duplicate exists.
+   *
+   * When pushing a custom object, you need to provide a specialization for
+   * size_t hash<Key>::operator() as specifed by:
+   * https://en.cppreference.com/w/cpp/utility/hash/operator()
+   *
+   * A simple example of such implementation could be:
+   * @code {.cpp}
+    struct Custom {
+      string name;
+      int age;
+    };
+    namespace std {
+    template <> struct hash<Custom> {
+    public:
+      size_t operator()(const Custom &value) const {
+        return hash<string>{}(value.name) + hash<int>{}(value.age);
+      }
+    };
+    } // namespace std
+   * @endcode
    *
    * @param new_value
    */
-  void push(T new_value) { push(std::make_unique<T>(std::move(new_value))); }
-
-  /**
-   * @brief Saves a given std::unique_ptr in a queue
-   *
-   * @param new_value
-   */
-  void push(std::unique_ptr<T> new_value) {
-    if (new_value) {
+  void push(T new_value) {
+    auto value = std::make_shared<T>(new_value);
+    if (lookup.find(value) == lookup.end()) {
       std::unique_ptr<Node> p(new Node);
       {
         std::lock_guard<std::mutex> tail_lock(tail_mutex);
-        tail->data = move(new_value);
+        tail->data = move(value);
+        lookup.insert(tail->data);
         Node *const new_tail = p.get();
         tail->next = std::move(p);
         tail = new_tail;
@@ -151,6 +178,15 @@ public:
       data_cond.notify_one();
     }
   }
+
+  /**
+   * @brief Saves the value of a std::unique_ptr by calling
+   * std::unique_ptr::get() if there are no duplicates witih the queue,
+   * otherwise discards the std::unique_ptr
+   *
+   * @param new_value
+   */
+  void push(std::unique_ptr<T> new_value) { push(*new_value.get()); }
 };
 
-#endif //_THREAD_SAFE_QUEUE_HPP
+#endif //_THREAD_SAFE_UNIQUE_QUEUE_HPP

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Message_Converter)
+set(THIS Message_Decoder)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/LwM2M/Message_Converter
+            ${INCLUDES_DIR}/LwM2M/Message_Decoder
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -30,7 +30,7 @@ target_link_libraries(${THIS} PUBLIC
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Message_Converter>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Message_Decoder>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

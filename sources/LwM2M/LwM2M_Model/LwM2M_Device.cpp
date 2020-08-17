@@ -24,4 +24,18 @@ Device::Device(
       object_instances_(object_instances_map) {}
 
 string Device::getDeviceId() { return device_id_; }
+
+void Device::updateBinding(BindingType binding) { binding_ = binding; }
+
+void Device::updateLifetime(size_t life_time) { life_time_ = life_time; }
+
+void Device::updateSMS_Number(std::string sms_number) {
+  sms_number_ = sms_number;
+}
+
+void Device::updateObjectsMap(
+    std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
+        object_instances) {
+  object_instances_ = object_instances;
+}
 } // namespace LwM2M

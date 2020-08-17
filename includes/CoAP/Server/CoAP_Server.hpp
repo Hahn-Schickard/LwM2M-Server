@@ -4,7 +4,7 @@
 #include "CoAP_Message.hpp"
 #include "Logger.hpp"
 #include "Stoppable.hpp"
-#include "Threadsafe_Queue.hpp"
+#include "Threadsafe_Unique_Queue.hpp"
 
 #include <memory>
 #include <string>
@@ -19,8 +19,8 @@ public:
 };
 
 class Server : public Stoppable {
-  std::shared_ptr<ThreadsafeQueue<Message>> incominng_messages_;
-  std::shared_ptr<ThreadsafeQueue<Message>> outgoing_messages_;
+  std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> incominng_messages_;
+  std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> outgoing_messages_;
   std::unique_ptr<SocketInterface> socket_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
@@ -37,8 +37,10 @@ public:
   std::unique_ptr<Message> pullRequest();
   void pushResponse(std::unique_ptr<Message> message);
 
-  std::shared_ptr<ThreadsafeQueue<Message>> getIncomingMessagesQueue();
-  std::shared_ptr<ThreadsafeQueue<Message>> getOutgoingMessagesQueue();
+  std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>>
+  getIncomingMessagesQueue();
+  std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>>
+  getOutgoingMessagesQueue();
 };
 } // namespace CoAP
 

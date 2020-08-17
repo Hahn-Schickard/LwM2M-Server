@@ -69,7 +69,7 @@ public:
   Header(MessageType type, uint8_t message_length, CodeType code_type,
          uint16_t message_id);
 
-  std::vector<uint8_t> toPacket();
+  std::vector<uint8_t> toPacket() const;
   MessageType getMesageType() const;
   uint8_t getTokenLenght() const;
   CodeType getCodeType() const;

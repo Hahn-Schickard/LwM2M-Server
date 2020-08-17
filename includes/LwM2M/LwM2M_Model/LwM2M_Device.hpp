@@ -1,5 +1,5 @@
-#ifndef __Device_HPP
-#define __Device_HPP
+#ifndef __LWM2M_DEVICE_HPP
+#define __LWM2M_DEVICE_HPP
 
 #include "LwM2M_ObjectDescriptor.hpp"
 #include "RegistrationInterfaceMessages.hpp"
@@ -32,7 +32,13 @@ public:
              object_instances_map);
 
   std::string getDeviceId();
+  void updateBinding(BindingType binding);
+  void updateLifetime(size_t life_time);
+  void updateSMS_Number(std::string sms_number);
+  void updateObjectsMap(
+      std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
+          object_instances);
 };
 }; // namespace LwM2M
 
-#endif //__Device_HPP
+#endif //__LWM2M_DEVICE_HPP

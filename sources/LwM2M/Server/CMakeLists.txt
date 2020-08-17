@@ -25,7 +25,8 @@ target_link_libraries(${THIS} PUBLIC
                               PRIVATE
                               CoAP_Server
                               LwM2M_Interfaces
-                              Message_Converter
+                              Message_Decoder
+                              Message_Encoder
                               Threadsafe_Queue
 )
 

@@ -10,7 +10,7 @@ file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
 INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
 
-add_library(${THIS} OBJECT)                
+add_library(${THIS})                
 
 target_sources(${THIS} PRIVATE 
                        ${THIS_INCLUDES}
@@ -21,6 +21,7 @@ target_link_libraries(${THIS} PUBLIC
                               LwM2M_Model
                               Stoppable_Task
                               Threadsafe_Queue
+                              Message_Encoder
                               HaSLL::HaSLL
                               PRIVATE
                               XML_Parser
