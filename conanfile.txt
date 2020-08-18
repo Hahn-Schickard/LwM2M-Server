@@ -1,5 +1,5 @@
 [requires]
-gtest/1.8.1@bincrafters/stable 
+gtest/1.10.0
 asio/1.16.0
 HaSLL/0.2.2@hahn-schickard/stable
 nlohmann_json/3.7.3
