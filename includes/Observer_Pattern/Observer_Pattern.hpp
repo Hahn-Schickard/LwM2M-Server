@@ -1,6 +1,7 @@
 #ifndef __GENERIC_OBSERVERR_PATTERN_HPP
 #define __GENERIC_OBSERVERR_PATTERN_HPP
 
+#include "stdexcept"
 #include <memory>
 #include <unordered_set>
 
@@ -13,28 +14,43 @@ template <typename EventType> class EventListener {
 
 public:
   EventListener(EventBroadcasterPtr broadcaster) : broadcaster_(broadcaster) {
-    broadcaster_->attach(std::shared_ptr<EventListener>(this));
+    if (broadcaster)
+      broadcaster_->attach(this);
+    else
+      throw std::invalid_argument("EventBroadcasterPtr can not be a null ptr.");
   }
 
-  ~EventListener() {
-    broadcaster_->detach(std::shared_ptr<EventListener>(this));
-  }
+  ~EventListener() { broadcaster_->detach(this); }
 
-  void handleEvent(EventType);
+  virtual void handleEvent(std::shared_ptr<EventType>) = 0;
 };
 
-template <typename EventType> class EventBroadcaster {
-  using EventListenerPtr = std::shared_ptr<EventListener<EventType>>;
+template <typename EventType> class EventBroadcasterInterface {
+  using EventListenerPtr = EventListener<EventType> *;
+
+public:
+  virtual ~EventBroadcasterInterface() = default;
+
+  virtual void attach(EventListenerPtr listener) = 0;
+  virtual void detach(EventListenerPtr listener) = 0;
+  virtual void notify(std::shared_ptr<EventType> event) = 0;
+};
+
+template <typename EventType>
+class EventBroadcaster : public EventBroadcasterInterface<EventType> {
+  using EventListenerPtr = EventListener<EventType> *;
   std::unordered_set<EventListenerPtr> listeners_;
 
 public:
-  void attach(EventListenerPtr listener) { listeners_.insert(listener); }
+  void attach(EventListenerPtr listener) override {
+    listeners_.insert(listener);
+  }
 
-  void detach(EventListenerPtr listener) {
+  void detach(EventListenerPtr listener) override {
     listeners_.erase(listeners_.find(listener));
   }
 
-  void notify(EventType event) {
+  void notify(std::shared_ptr<EventType> event) override {
     for (auto listener : listeners_) {
       listener->handleEvent(event);
     }
