@@ -9,7 +9,7 @@
 using namespace std;
 using namespace ObserverPattern;
 
-class RegistrationTable : public EventBroadcaster<PersonEvent> {
+class RegistrationTable : public EventSource<PersonEvent> {
 public:
   void registerPerson(string name) {
     notify(make_shared<PersonEvent>(name, PersonEventType::REGISTERED));

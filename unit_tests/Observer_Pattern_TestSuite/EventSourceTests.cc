@@ -8,14 +8,14 @@
 using namespace std;
 using namespace ObserverPattern;
 
-class RegistrationTableMock : public EventBroadcasterInterface<PersonEvent> {
+class RegistrationTableMock : public EventSourceInterface<PersonEvent> {
 public:
   MOCK_METHOD(void, attach, (EventListenerPtr<PersonEvent>), (override));
   MOCK_METHOD(void, detach, (EventListenerPtr<PersonEvent>), (override));
   MOCK_METHOD(void, notify, (std::shared_ptr<PersonEvent>), (override));
 };
 
-class EventBroadcasterTests : public ::testing::Test {
+class EventSourceTests : public ::testing::Test {
 protected:
   void SetUp() override { table = make_shared<RegistrationTableMock>(); }
 
@@ -30,20 +30,20 @@ public:
   void handleEvent(std::shared_ptr<PersonEvent>) override {}
 };
 
-TEST_F(EventBroadcasterTests, canAttachAndDetatch) {
+TEST_F(EventSourceTests, canAttachAndDetatch) {
   EXPECT_CALL(*table, attach(::testing::_)).Times(1);
   EXPECT_CALL(*table, detach(::testing::_)).Times(1);
   EXPECT_NO_THROW(make_shared<ConventionBooth>(table));
 }
 
-TEST(EventBroadcasterExceptionTests, canThrowInvalidArgument) {
+TEST(EventSourceExceptionTests, canThrowInvalidArgument) {
   auto non_existant_table = shared_ptr<RegistrationTableMock>();
 
   EXPECT_THROW(make_shared<ConventionBooth>(non_existant_table),
                std::invalid_argument);
 }
 
-TEST(EventBroadcasterExceptionTests, canDetachFromDeadBroadcaster) {
+TEST(EventSourceExceptionTests, canDetachFromDeadBroadcaster) {
   auto non_existant_table = make_shared<RegistrationTableMock>();
 
   shared_ptr<ConventionBooth> booth;

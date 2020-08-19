@@ -6,22 +6,22 @@
 #include <unordered_set>
 
 namespace ObserverPattern {
-template <typename EventType> class EventBroadcasterInterface;
+template <typename EventType> class EventSourceInterface;
 template <typename EventType>
-using EventBroadcasterInterfacePtr =
-    std::shared_ptr<EventBroadcasterInterface<EventType>>;
+using EventSourceInterfacePtr =
+    std::shared_ptr<EventSourceInterface<EventType>>;
 
 template <typename EventType> class EventListener {
-  EventBroadcasterInterfacePtr<EventType> broadcaster_;
+  EventSourceInterfacePtr<EventType> broadcaster_;
 
 public:
-  EventListener(EventBroadcasterInterfacePtr<EventType> broadcaster)
+  EventListener(EventSourceInterfacePtr<EventType> broadcaster)
       : broadcaster_(broadcaster) {
     if (broadcaster)
       broadcaster_->attach(this);
     else
       throw std::invalid_argument(
-          "EventBroadcasterInterfacePtr can not be a nullptr.");
+          "EventSourceInterfacePtr can not be a nullptr.");
   }
 
   ~EventListener() { broadcaster_->detach(this); }
@@ -32,9 +32,9 @@ public:
 template <typename EventType>
 using EventListenerPtr = EventListener<EventType> *;
 
-template <typename EventType> class EventBroadcasterInterface {
+template <typename EventType> class EventSourceInterface {
 public:
-  virtual ~EventBroadcasterInterface() = default;
+  virtual ~EventSourceInterface() = default;
 
   virtual void attach(EventListenerPtr<EventType> listener) = 0;
   virtual void detach(EventListenerPtr<EventType> listener) = 0;
@@ -42,7 +42,7 @@ public:
 };
 
 template <typename EventType>
-class EventBroadcaster : public EventBroadcasterInterface<EventType> {
+class EventSource : public EventSourceInterface<EventType> {
   std::unordered_set<EventListenerPtr<EventType>> listeners_;
 
 public:
