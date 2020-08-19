@@ -1,3 +1,4 @@
+#include "ObserverPatterTestsShared.hpp"
 #include "Observer_Pattern.hpp"
 
 #include "gmock/gmock.h"
@@ -7,27 +8,6 @@
 
 using namespace std;
 using namespace ObserverPattern;
-
-enum class PersonEventType { REGISTERED, DEREGISTERED };
-
-class PersonEvent {
-  string name;
-  PersonEventType event;
-
-public:
-  PersonEvent(string person_name, PersonEventType event_type)
-      : name(move(person_name)), event(event_type) {}
-
-  bool operator==(const PersonEvent &comparison) {
-    if (name == comparison.name && event == comparison.event)
-      return true;
-    else
-      return false;
-  }
-
-  const string &getName() const { return name; }
-  PersonEventType getEventType() const { return event; }
-};
 
 class RegistrationTable : public EventBroadcaster<PersonEvent> {
 public:
@@ -47,6 +27,17 @@ public:
   MOCK_METHOD(void, handleEvent, (shared_ptr<PersonEvent>), (override));
 };
 
+class EventListenerTests : public ::testing::Test {
+protected:
+  void SetUp() override {
+    table = make_shared<RegistrationTable>();
+    booth = make_shared<ConventionBoothMock>(table);
+  }
+
+  shared_ptr<RegistrationTable> table;
+  shared_ptr<ConventionBoothMock> booth;
+};
+
 MATCHER_P(EventPtrIsEqual, value, "") {
   if (arg->getName() == value->getName() &&
       arg->getEventType() == value->getEventType())
@@ -55,27 +46,18 @@ MATCHER_P(EventPtrIsEqual, value, "") {
     return false;
 }
 
-TEST(EventListenerTests, canNotifyOnRegistration) {
-  auto table = make_shared<RegistrationTable>();
-  auto booth = make_shared<ConventionBoothMock>(table);
-  auto expected = make_shared<PersonEvent>("Bob", PersonEventType::REGISTERED);
-
-  EXPECT_CALL(*booth, handleEvent(EventPtrIsEqual(expected))).Times(1);
+TEST_F(EventListenerTests, canNotifyOnRegistration) {
+  EXPECT_CALL(*booth, handleEvent(EventPtrIsEqual(make_shared<PersonEvent>(
+                          "Bob", PersonEventType::REGISTERED))))
+      .Times(1);
 
   table->registerPerson("Bob");
 }
 
-TEST(EventListenerTests, canNotifyOnDeRegistration) {
-  auto table = make_shared<RegistrationTable>();
-  auto booth = make_shared<ConventionBoothMock>(table);
-
-  EXPECT_CALL(*booth, handleEvent(EventPtrIsEqual(make_shared<PersonEvent>(
-                          "Bob", PersonEventType::REGISTERED))))
-      .Times(1);
+TEST_F(EventListenerTests, canNotifyOnDeRegistration) {
   EXPECT_CALL(*booth, handleEvent(EventPtrIsEqual(make_shared<PersonEvent>(
                           "Bob", PersonEventType::DEREGISTERED))))
       .Times(1);
 
-  table->registerPerson("Bob");
   table->deregisterPerson("Bob");
 }
