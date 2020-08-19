@@ -27,10 +27,28 @@ public:
   ConventionBooth(shared_ptr<RegistrationTableMock> table)
       : EventListener(table) {}
 
-  void handleEvent(std::shared_ptr<PersonEvent> event) override {}
+  void handleEvent(std::shared_ptr<PersonEvent>) override {}
 };
 
-TEST_F(EventBroadcasterTests, canAttach) {
+TEST_F(EventBroadcasterTests, canAttachAndDetatch) {
   EXPECT_CALL(*table, attach(::testing::_)).Times(1);
+  EXPECT_CALL(*table, detach(::testing::_)).Times(1);
   EXPECT_NO_THROW(make_shared<ConventionBooth>(table));
+}
+
+TEST(EventBroadcasterExceptionTests, canThrowInvalidArgument) {
+  auto non_existant_table = shared_ptr<RegistrationTableMock>();
+
+  EXPECT_THROW(make_shared<ConventionBooth>(non_existant_table),
+               std::invalid_argument);
+}
+
+TEST(EventBroadcasterExceptionTests, canDetachFromDeadBroadcaster) {
+  auto non_existant_table = make_shared<RegistrationTableMock>();
+
+  shared_ptr<ConventionBooth> booth;
+  EXPECT_NO_THROW(booth = make_shared<ConventionBooth>(non_existant_table));
+
+  non_existant_table.reset();
+  EXPECT_NO_THROW(booth.reset());
 }
