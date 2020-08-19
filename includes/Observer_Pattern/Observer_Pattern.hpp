@@ -6,18 +6,21 @@
 #include <unordered_set>
 
 namespace ObserverPattern {
-template <typename EventType> class EventBroadcaster;
+template <typename EventType> class EventBroadcasterInterface;
 
 template <typename EventType> class EventListener {
-  using EventBroadcasterPtr = std::shared_ptr<EventBroadcaster<EventType>>;
-  EventBroadcasterPtr broadcaster_;
+  using EventBroadcasterInterfacePtr =
+      std::shared_ptr<EventBroadcasterInterface<EventType>>;
+  EventBroadcasterInterfacePtr broadcaster_;
 
 public:
-  EventListener(EventBroadcasterPtr broadcaster) : broadcaster_(broadcaster) {
+  EventListener(EventBroadcasterInterfacePtr broadcaster)
+      : broadcaster_(broadcaster) {
     if (broadcaster)
       broadcaster_->attach(this);
     else
-      throw std::invalid_argument("EventBroadcasterPtr can not be a null ptr.");
+      throw std::invalid_argument(
+          "EventBroadcasterInterfacePtr can not be a nullptr.");
   }
 
   ~EventListener() { broadcaster_->detach(this); }
