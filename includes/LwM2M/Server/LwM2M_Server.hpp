@@ -3,6 +3,7 @@
 
 #include "Logger.hpp"
 #include "LwM2M_Device.hpp"
+#include "RegistrationInterface.hpp"
 #include "Stoppable.hpp"
 
 #include <memory>
@@ -38,7 +39,9 @@ class Server : public Stoppable {
   std::vector<Process> processes_;
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
+  std::shared_ptr<RegistrationInterface> registration_;
   std::shared_ptr<HaSLL::Logger> logger_;
+
   void run() override;
 
 public:
@@ -47,6 +50,7 @@ public:
 
   void stop();
   std::shared_ptr<Device> getDevice(std::string device_id);
+  RegistrationEventSourcePtr getEventSource();
 };
 } // namespace LwM2M
 #endif //__LWM2M_SERVER_HPP
