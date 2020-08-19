@@ -7,14 +7,15 @@
 
 namespace ObserverPattern {
 template <typename EventType> class EventBroadcasterInterface;
+template <typename EventType>
+using EventBroadcasterInterfacePtr =
+    std::shared_ptr<EventBroadcasterInterface<EventType>>;
 
 template <typename EventType> class EventListener {
-  using EventBroadcasterInterfacePtr =
-      std::shared_ptr<EventBroadcasterInterface<EventType>>;
-  EventBroadcasterInterfacePtr broadcaster_;
+  EventBroadcasterInterfacePtr<EventType> broadcaster_;
 
 public:
-  EventListener(EventBroadcasterInterfacePtr broadcaster)
+  EventListener(EventBroadcasterInterfacePtr<EventType> broadcaster)
       : broadcaster_(broadcaster) {
     if (broadcaster)
       broadcaster_->attach(this);
@@ -28,28 +29,28 @@ public:
   virtual void handleEvent(std::shared_ptr<EventType>) = 0;
 };
 
-template <typename EventType> class EventBroadcasterInterface {
-  using EventListenerPtr = EventListener<EventType> *;
+template <typename EventType>
+using EventListenerPtr = EventListener<EventType> *;
 
+template <typename EventType> class EventBroadcasterInterface {
 public:
   virtual ~EventBroadcasterInterface() = default;
 
-  virtual void attach(EventListenerPtr listener) = 0;
-  virtual void detach(EventListenerPtr listener) = 0;
+  virtual void attach(EventListenerPtr<EventType> listener) = 0;
+  virtual void detach(EventListenerPtr<EventType> listener) = 0;
   virtual void notify(std::shared_ptr<EventType> event) = 0;
 };
 
 template <typename EventType>
 class EventBroadcaster : public EventBroadcasterInterface<EventType> {
-  using EventListenerPtr = EventListener<EventType> *;
-  std::unordered_set<EventListenerPtr> listeners_;
+  std::unordered_set<EventListenerPtr<EventType>> listeners_;
 
 public:
-  void attach(EventListenerPtr listener) override {
+  void attach(EventListenerPtr<EventType> listener) override {
     listeners_.insert(listener);
   }
 
-  void detach(EventListenerPtr listener) override {
+  void detach(EventListenerPtr<EventType> listener) override {
     listeners_.erase(listeners_.find(listener));
   }
 

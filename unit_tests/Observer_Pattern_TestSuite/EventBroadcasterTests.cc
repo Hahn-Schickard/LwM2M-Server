@@ -9,11 +9,9 @@ using namespace std;
 using namespace ObserverPattern;
 
 class RegistrationTableMock : public EventBroadcasterInterface<PersonEvent> {
-  using EventListenerPtr = EventListener<PersonEvent> *;
-
 public:
-  MOCK_METHOD(void, attach, (EventListenerPtr), (override));
-  MOCK_METHOD(void, detach, (EventListenerPtr), (override));
+  MOCK_METHOD(void, attach, (EventListenerPtr<PersonEvent>), (override));
+  MOCK_METHOD(void, detach, (EventListenerPtr<PersonEvent>), (override));
   MOCK_METHOD(void, notify, (std::shared_ptr<PersonEvent>), (override));
 };
 
