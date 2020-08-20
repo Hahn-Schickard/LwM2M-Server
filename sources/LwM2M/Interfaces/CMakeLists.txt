@@ -20,7 +20,7 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC 
                               LwM2M_Model
                               Stoppable_Task
-                              Threadsafe_Queue
+                              Observer_Pattern
                               Message_Encoder
                               HaSLL::HaSLL
                               PRIVATE

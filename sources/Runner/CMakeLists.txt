@@ -12,6 +12,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PRIVATE
                               LwM2M_Server
+                              Observer_Pattern
                               HaSLL::HaSLL
                               Threads::Threads
 )

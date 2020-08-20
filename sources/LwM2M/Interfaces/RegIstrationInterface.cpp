@@ -19,6 +19,9 @@ RegistrationInterface::RegistrationInterface(
     shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
     shared_ptr<MessageEncoder> encoder, const string &configuration_path)
     : device_registery_(device_registery), encoder_(encoder),
+      event_source_(
+          make_shared<
+              ObserverPattern::EventSource<RegistrationInterfaceEvent>>()),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
@@ -65,12 +68,13 @@ bool RegistrationInterface::handleRequest(
         request->endpoint_port_, request->life_time_, request->version_,
         request->binding_, request->queue_mode_, request->sms_number_,
         object_instances);
-    if (isRegistered(new_device->getDeviceId())) {
+    if (isRegistered(new_device->getDeviceId()))
       device_registery_->erase(
           device_registery_->find(new_device->getDeviceId()));
-      // Notify that device was removed
-    }
     device_registery_->emplace(new_device->getDeviceId(), new_device);
+    event_source_->notify(make_shared<RegistrationInterfaceEvent>(
+        RegistrationInterfaceEvent{RegistrationInterfaceEventType::REGISTERED,
+                                   new_device->getDeviceId(), new_device}));
     result = make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_, request->token_, MessageType::REGISTER,
@@ -89,22 +93,30 @@ bool RegistrationInterface::handleRequest(
 bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
   try {
     auto device = device_registery_->at(request->location_);
+    bool updated = false;
     if (device) {
       if (request->binding_) {
         device->updateBinding(request->binding_.value());
+        updated = true;
       }
       if (request->lifetime_) {
         device->updateLifetime(request->lifetime_.value());
+        updated = true;
       }
       if (request->sms_number_) {
         device->updateSMS_Number(request->sms_number_.value());
+        updated = true;
       }
       if (!request->object_instances_map_.empty()) {
         unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> object_instances =
             assignObjectInstances(request->object_instances_map_);
         device->updateObjectsMap(object_instances);
+        updated = true;
       }
-      // Notify that device was updated
+      if (updated)
+        event_source_->notify(make_shared<RegistrationInterfaceEvent>(
+            RegistrationInterfaceEvent{RegistrationInterfaceEventType::UPDATED,
+                                       request->location_, device}));
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
           request->message_id_, request->token_, MessageType::UPDATE,
@@ -129,7 +141,10 @@ bool RegistrationInterface::handleRequest(
   try {
     if (isRegistered(request->location_)) {
       device_registery_->erase(device_registery_->find(request->location_));
-      // Notify that device was removed
+      event_source_->notify(
+          make_shared<RegistrationInterfaceEvent>(RegistrationInterfaceEvent{
+              RegistrationInterfaceEventType::DEREGISTERED, request->location_,
+              shared_ptr<Device>()}));
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
           request->message_id_, request->token_, MessageType::DEREGISTER,
@@ -147,5 +162,9 @@ bool RegistrationInterface::handleRequest(
         ResponseCode::BAD_REQUEST));
   }
   return true;
+}
+
+RegistrationEventSourcePtr RegistrationInterface::getEventSource() {
+  return event_source_;
 }
 } // namespace LwM2M
