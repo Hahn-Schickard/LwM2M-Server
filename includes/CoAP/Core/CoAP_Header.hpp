@@ -66,6 +66,7 @@ class Header {
 public:
   Header();
   Header(std::vector<uint8_t> data);
+  Header(MessageType type, uint8_t message_length, CodeType code_type);
   Header(MessageType type, uint8_t message_length, CodeType code_type,
          uint16_t message_id);
 
