@@ -1,5 +1,5 @@
-#ifndef __LWM2M_MODEL_OBJECT_HPP
-#define __LWM2M_MODEL_OBJECT_HPP
+#ifndef __LWM2M_MODEL_OBJECT_DESCRIPTOR_HPP
+#define __LWM2M_MODEL_OBJECT_DESCRIPTOR_HPP
 
 #include "LwM2M_ResourceDescriptor.hpp"
 
@@ -35,4 +35,4 @@ struct ObjectDescriptor {
 
 } // namespace LwM2M
 
-#endif //__LWM2M_MODEL_OBJECT_HPP
+#endif //__LWM2M_MODEL_OBJECT_DESCRIPTOR_HPP
