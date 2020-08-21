@@ -77,13 +77,13 @@ bool RegistrationInterface::handleRequest(
                                    new_device->getDeviceId(), new_device}));
     result = make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
-        request->message_id_, request->token_, MessageType::REGISTER,
+        request->message_id_.value(), request->token_, MessageType::REGISTER,
         ResponseCode::CREATED, vector<string>{"rd", new_device->getDeviceId()});
   } catch (ObjectDescriptorNotSupported &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
     result = make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
-        request->message_id_, request->token_, MessageType::REGISTER,
+        request->message_id_.value(), request->token_, MessageType::REGISTER,
         ResponseCode::BAD_REQUEST);
   }
   encoder_->encode(move(result));
@@ -119,18 +119,18 @@ bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
                                        request->location_, device}));
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
-          request->message_id_, request->token_, MessageType::UPDATE,
+          request->message_id_.value(), request->token_, MessageType::UPDATE,
           ResponseCode::CHANGED));
     } else
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
-          request->message_id_, request->token_, MessageType::UPDATE,
+          request->message_id_.value(), request->token_, MessageType::UPDATE,
           ResponseCode::NOT_FOUND));
   } catch (ObjectDescriptorNotSupported &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
     encoder_->encode(make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
-        request->message_id_, request->token_, MessageType::UPDATE,
+        request->message_id_.value(), request->token_, MessageType::UPDATE,
         ResponseCode::BAD_REQUEST));
   }
   return true;
@@ -147,18 +147,18 @@ bool RegistrationInterface::handleRequest(
               shared_ptr<Device>()}));
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
-          request->message_id_, request->token_, MessageType::DEREGISTER,
-          ResponseCode::DELETED));
+          request->message_id_.value(), request->token_,
+          MessageType::DEREGISTER, ResponseCode::DELETED));
     } else
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
-          request->message_id_, request->token_, MessageType::DEREGISTER,
-          ResponseCode::NOT_FOUND));
+          request->message_id_.value(), request->token_,
+          MessageType::DEREGISTER, ResponseCode::NOT_FOUND));
   } catch (ObjectDescriptorNotSupported &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
     encoder_->encode(make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
-        request->message_id_, request->token_, MessageType::DEREGISTER,
+        request->message_id_.value(), request->token_, MessageType::DEREGISTER,
         ResponseCode::BAD_REQUEST));
   }
   return true;

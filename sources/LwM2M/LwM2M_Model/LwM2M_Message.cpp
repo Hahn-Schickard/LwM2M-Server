@@ -119,6 +119,13 @@ Notify_Attripube::Notify_Attripube(
 Message::Message() {}
 
 Message::Message(string endpoint_address, unsigned int endpoint_port,
+                 MessageType message_type)
+    : message_type_(message_type),
+      interface_type_(getInterfaceType(message_type_)), response_(false),
+      endpoint_address_(endpoint_address), endpoint_port_(endpoint_port),
+      message_id_(nullopt) {}
+
+Message::Message(string endpoint_address, unsigned int endpoint_port,
                  uint16_t message_id, vector<uint8_t> token,
                  MessageType message_type)
     : message_type_(message_type),

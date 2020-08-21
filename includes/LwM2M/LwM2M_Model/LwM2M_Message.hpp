@@ -77,10 +77,12 @@ struct Message {
   bool response_;
   std::string endpoint_address_;
   unsigned int endpoint_port_;
-  uint16_t message_id_;
+  std::optional<uint16_t> message_id_;
   std::vector<uint8_t> token_;
 
   Message();
+  Message(std::string endpoint_address, unsigned int endpoint_port,
+          MessageType message_type);
   Message(std::string endpoint_address, unsigned int endpoint_port,
           uint16_t message_id_, std::vector<uint8_t> token,
           MessageType message_type);
@@ -132,7 +134,7 @@ template <> struct hash<LwM2M::Message> {
            hash<bool>{}(value.response_) +
            hash<string>{}(value.endpoint_address_) +
            hash<unsigned int>{}(value.endpoint_port_) +
-           hash<uint16_t>{}(value.message_id_) +
+           hash<uint16_t>{}(value.message_id_ ? value.message_id_.value() : 0) +
            hash<vector<uint8_t>>{}(value.token_);
   }
 };
