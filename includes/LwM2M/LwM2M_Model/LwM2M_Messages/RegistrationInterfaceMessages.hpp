@@ -2,15 +2,13 @@
 #define __LWM2M_MODEL_REGISTRATION_INTERFACE_MESSAGES_HPP
 
 #include "LwM2M_Message.hpp"
+#include "LwM2M_Type.hpp"
 
 #include <optional>
 #include <string>
 #include <unordered_map>
 
 namespace LwM2M {
-enum class LwM2M_Version { V1_0, V1_1, UNRECOGNIZED };
-
-enum class BindingType { UDP, TCP, SMS, NON_IP, MALFORMED };
 
 struct Regirstration_Interface_Message : Message {
   Regirstration_Interface_Message(std::string endpoint_address,
@@ -28,15 +26,14 @@ struct Register_Request : public Regirstration_Interface_Message {
   LwM2M_Version version_;
   BindingType binding_;
   bool queue_mode_;
-  std::optional<std::string> sms_number_;
+  std::string sms_number_;
   std::unordered_map<unsigned int, unsigned int> object_instances_map_;
 
   Register_Request(
       std::string endpoint_address, unsigned int endpoint_port,
       uint16_t message_id, std::vector<uint8_t> token,
       std::string endpoint_name, size_t life_time, LwM2M_Version version,
-      BindingType binding, bool queue_mode,
-      std::optional<std::string> sms_number,
+      BindingType binding, bool queue_mode, std::string sms_number,
       std::unordered_map<unsigned int, unsigned int> object_instances_map);
 };
 

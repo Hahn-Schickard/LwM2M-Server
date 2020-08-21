@@ -58,7 +58,7 @@ unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
         LwM2M_Version version_ = LwM2M_Version::UNRECOGNIZED;
         BindingType binding_ = BindingType::MALFORMED;
         bool queue_mode_ = false;
-        optional<string> sms_number_ = nullopt;
+        string sms_number_;
         unordered_map<unsigned int, unsigned int> object_instances_map_ =
             getObjectList(input->getBody());
         for (auto option : input->getOptions()) {

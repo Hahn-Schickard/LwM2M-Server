@@ -8,7 +8,7 @@ Register_Request::Register_Request(
     string endpoint_address, unsigned int endpoint_port, uint16_t message_id,
     vector<uint8_t> token, string endpoint_name, size_t life_time,
     LwM2M_Version version, BindingType binding, bool queue_mode,
-    optional<string> sms_number,
+    string sms_number,
     unordered_map<unsigned int, unsigned int> object_instances_map)
     : Regirstration_Interface_Message(endpoint_address, endpoint_port,
                                       message_id, token, MessageType::REGISTER),
