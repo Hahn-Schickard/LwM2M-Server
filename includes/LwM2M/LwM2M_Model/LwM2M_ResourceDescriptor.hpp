@@ -1,5 +1,5 @@
-#ifndef __LWM2M_MODEL_RESOURCE_HPP
-#define __LWM2M_MODEL_RESOURCE_HPP
+#ifndef __LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP
+#define __LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP
 
 #include <algorithm>
 #include <cstdint>
@@ -47,7 +47,7 @@ enum class DataType {
   BOOLEAN, /*<! An 8 bit unsigned integer value containign 0 for FALSE or 1 for
               TRUE, Represented as 0 or 1 ASCII charater in Text and as an 8 bit
               unsigned integer with value of 0 or 1 in TLV format */
-  OPAQUE,  /*<! A sequence of binary octets. Represented as Bas64 encoding of
+  OPAQUE,  /*<! A sequence of binary octets. Represented as Base64 encoding of
               binary data as defined per RFC4648 in ASCII format and as a
               sequence of binary data limited by the length field in TLV format.
             */
@@ -72,6 +72,12 @@ struct ObjectLink {
 
   ObjectLink(uint16_t object_id, uint16_t instance_id);
 };
+
+/**
+ * @brief Opaque a sequenc of binary data
+ *
+ */
+using Opaque = std::vector<uint8_t>;
 
 /**
  * @brief RangeEnumeration - represents a range of supported value types by the
@@ -126,4 +132,4 @@ struct ResourceDescriptor {
 };
 
 } // namespace LwM2M
-#endif //__LWM2M_MODEL_RESOURCE_HPP
+#endif //__LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP
