@@ -42,7 +42,7 @@ Write_Attributes_Request::Write_Attributes_Request(
     optional<unsigned int> object_instance_id,
     optional<unsigned int> resource_id,
     optional<unsigned int> resoruce_instance_id,
-    optional<Notify_Attripube> notify_attribute)
+    optional<Notify_Attribute> notify_attribute)
     : DeviceManagment_Interface_Message(endpoint_address, endpoint_port,
 
                                         MessageType::WRITE_ATTRIBUTES),

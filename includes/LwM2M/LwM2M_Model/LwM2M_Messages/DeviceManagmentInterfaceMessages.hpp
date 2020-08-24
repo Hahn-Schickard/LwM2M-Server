@@ -58,14 +58,14 @@ struct Write_Attributes_Request : public DeviceManagment_Interface_Message {
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;
   std::optional<unsigned int> resoruce_instance_id_;
-  std::optional<Notify_Attripube> notify_attribute_;
+  std::optional<Notify_Attribute> notify_attribute_;
 
   Write_Attributes_Request(std::string endpoint_address,
                            unsigned int endpoint_port, unsigned int object_id,
                            std::optional<unsigned int> object_instance_id,
                            std::optional<unsigned int> resource_id,
                            std::optional<unsigned int> resoruce_instance_id,
-                           std::optional<Notify_Attripube> notify_attribute);
+                           std::optional<Notify_Attribute> notify_attribute);
 };
 
 struct Execute_Request : public DeviceManagment_Interface_Message {

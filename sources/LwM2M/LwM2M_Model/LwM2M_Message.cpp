@@ -104,7 +104,7 @@ InterfaceType getInterfaceType(MessageType message_type) {
   return result;
 }
 
-Notify_Attripube::Notify_Attripube(
+Notify_Attribute::Notify_Attribute(
     optional<unsigned int> minimum_period,
     optional<unsigned int> maximum_period, optional<unsigned int> greater_than,
     optional<unsigned int> less_than, optional<unsigned int> step,
