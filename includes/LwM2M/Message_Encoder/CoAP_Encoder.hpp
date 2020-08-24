@@ -4,6 +4,7 @@
 #include "CoAP_Message.hpp"
 #include "Logger.hpp"
 #include "Message_Encoder.hpp"
+#include "RegistrationMessages.hpp"
 #include "Threadsafe_Unique_Queue.hpp"
 
 namespace LwM2M {

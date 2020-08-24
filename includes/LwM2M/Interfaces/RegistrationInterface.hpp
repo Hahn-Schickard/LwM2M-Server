@@ -7,7 +7,7 @@
 #include "Message_Encoder.hpp"
 #include "Observer_Pattern.hpp"
 #include "RegistrationInterfaceEvent.hpp"
-#include "RegistrationInterfaceMessages.hpp"
+#include "RegistrationMessages.hpp"
 
 #include <memory>
 #include <string>

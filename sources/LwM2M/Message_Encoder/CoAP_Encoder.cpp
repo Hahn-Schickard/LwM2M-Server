@@ -3,7 +3,6 @@
 #include "LoggerRepository.hpp"
 #include "Option_Builder.hpp"
 #include "PlainText.hpp"
-#include "RegistrationInterfaceMessages.hpp"
 
 using namespace std;
 using namespace CoAP;

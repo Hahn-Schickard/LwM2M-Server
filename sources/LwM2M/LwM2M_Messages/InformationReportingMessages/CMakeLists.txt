@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS LwM2M_Model)
+set(THIS LwM2M_Information_Reporting_Messages)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/LwM2M/LwM2M_Model
+            ${INCLUDES_DIR}/LwM2M/Messages/InformationReportingMessages
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -18,13 +18,11 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              LwM2M_Core
-                              Threadsafe_Queue
-                              Utility
+                              LwM2M_Core_Messages
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/LwM2M_Model>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Messages/InformationReportingMessages>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

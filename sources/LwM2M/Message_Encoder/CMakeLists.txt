@@ -20,8 +20,10 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC
                               CoAP
                               CoAP_Payload_Formats
-                              LwM2M_Model
-                              LwM2M_Interfaces
+                              LwM2M_Core_Messages
+                              LwM2M_Registration_Messages
+                              LwM2M_Information_Reporting_Messages
+                              LwM2M_Device_Managment_Messages
                               Threadsafe_Queue
                               HaSLL::HaSLL
 )

@@ -1,10 +1,9 @@
 #ifndef __LWM2M_MESSAGE_ENCODER_HPP
 #define __LWM2M_MESSAGE_ENCODER_HPP
 
-#include "DeviceManagmentInterfaceMessages.hpp"
-#include "InformationReportingInterfaceMessages.hpp"
+#include "DeviceManagmentMessages.hpp"
 #include "LwM2M_Message.hpp"
-#include "RegistrationInterfaceMessages.hpp"
+#include "Register_Response.hpp"
 
 #include <memory>
 

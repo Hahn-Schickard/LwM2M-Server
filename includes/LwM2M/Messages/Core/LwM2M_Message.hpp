@@ -1,12 +1,11 @@
-#ifndef __Message_HPP
-#define __Message_HPP
+#ifndef __LWM2M_MESSAGE_HPP
+#define __LWM2M_MESSAGE_HPP
 
 #include "Hashers.hpp"
 
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace LwM2M {
@@ -140,4 +139,4 @@ template <> struct hash<LwM2M::Message> {
 };
 } // namespace std
 
-#endif //__Message_HPP
+#endif //__LWM2M_MESSAGE_HPP

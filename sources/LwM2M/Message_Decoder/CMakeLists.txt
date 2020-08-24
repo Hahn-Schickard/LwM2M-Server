@@ -21,7 +21,10 @@ target_link_libraries(${THIS} PUBLIC
                               Stoppable_Task
                               CoAP
                               CoAP_Payload_Formats
-                              LwM2M_Model
+                              LwM2M_Core_Messages
+                              LwM2M_Registration_Messages
+                              LwM2M_Information_Reporting_Messages
+                              LwM2M_Device_Managment_Messages
                               LwM2M_Interfaces
                               Threadsafe_Queue
                               HaSLL::HaSLL

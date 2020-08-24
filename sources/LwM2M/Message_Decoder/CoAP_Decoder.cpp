@@ -3,6 +3,7 @@
 #include "CoRE_Link.hpp"
 #include "LoggerRepository.hpp"
 #include "PlainText.hpp"
+#include "RegistrationMessages.hpp"
 #include "StringSpliter.hpp"
 
 #include <cctype>
