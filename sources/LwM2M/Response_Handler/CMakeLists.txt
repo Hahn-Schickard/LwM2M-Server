@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Message_Decoder)
+set(THIS Response_Handler)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/LwM2M/Message_Decoder
+            ${INCLUDES_DIR}/LwM2M/Response_Handler
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -18,23 +18,15 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              Stoppable_Task
-                              CoAP
-                              CoAP_Payload_Formats
-                              LwM2M_Core_Messages
+                              LwM2M_Model
                               LwM2M_Registration_Messages
-                              LwM2M_Information_Reporting_Messages
-                              LwM2M_Device_Managment_Messages
-                              LwM2M_Interfaces
-                              Response_Handler
-                              Threadsafe_Queue
-                              HaSLL::HaSLL
-                              PRIVATE 
+                              Message_Encoder
+                              PRIVATE
                               Utility
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Message_Decoder>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Response_Handler>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

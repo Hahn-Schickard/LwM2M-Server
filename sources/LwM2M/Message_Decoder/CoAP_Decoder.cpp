@@ -218,9 +218,21 @@ unique_ptr<Message> makeSendMessage(const CoAP::Message *input) {}
 
 CoAP_Decoder::CoAP_Decoder(
     shared_ptr<RegistrationInterface> registration,
-    shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer)
+    shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer,
+    shared<ResponseHandler> response_handler)
     : registration_(registration), message_buffer_(message_buffer),
+      response_handler_(response_handler),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+
+bool CoAP_Decoder::processIfResponse(const CoAP::Message *message) {
+  if (message->getHeader().getMesageType() ==
+          CoAP::MessageType::ACKNOWLEDGMENT &&
+      message->getHeader().getCodeType() == CoAP::CodeType::CONTENT) {
+    auto options = message->getOptions();
+    for
+  }
+  return false;
+}
 
 bool CoAP_Decoder::processIfBootrstrapInterface(const CoAP::Message *message) {
   return false;
@@ -260,13 +272,14 @@ bool CoAP_Decoder::processIfInformationReportingInterface(
 
 void CoAP_Decoder::decode(unique_ptr<CoAP::Message> message) {
   if (message) {
-    if (processIfBootrstrapInterface(message.get())) {
+    if (processIfResponse(message.get())) {
+    } else if (processIfBootrstrapInterface(message.get())) {
     } else if (processIfDeviceRegistrationInteraface(message.get())) {
     } else if (processIfDeviceManagmentInterface(message.get())) {
     } else if (processIfInformationReportingInterface(message.get())) {
     }
   }
-}
+} // namespace LwM2M
 
 void CoAP_Decoder::run() {
   while (!stopRequested()) {
