@@ -15,7 +15,7 @@ namespace LwM2M {
 class CoAP_Decoder : public Stoppable {
   std::shared_ptr<RegistrationInterface> registration_;
   std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer_;
-  std::shared<ResponseHandler> response_handler_;
+  std::shared_ptr<ResponseHandler> response_handler_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
   bool processIfResponse(const CoAP::Message *message);
@@ -29,7 +29,7 @@ public:
   CoAP_Decoder(
       std::shared_ptr<RegistrationInterface> registration,
       std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer,
-      std::shared<ResponseHandler> response_handler);
+      std::shared_ptr<ResponseHandler> response_handler);
 
   void run() override;
 };

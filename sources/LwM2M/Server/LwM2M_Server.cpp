@@ -57,9 +57,10 @@ Server::Server(Configuration config)
       make_shared<CoAP_Encoder>(server->getOutgoingMessagesQueue());
   registration_ = make_shared<RegistrationInterface>(
       device_registery_, encoder, config.object_descriptors_location);
+  auto response_handler = make_shared<ResponseHandler>(encoder);
   processes_.emplace_back(
-      make_unique<CoAP_Decoder>(registration_,
-                                server->getIncomingMessagesQueue()),
+      make_unique<CoAP_Decoder>(
+          registration_, server->getIncomingMessagesQueue(), response_handler),
       "Incoming Message Processor");
   processes_.emplace_back(move(server), "CoAP Server");
 };
