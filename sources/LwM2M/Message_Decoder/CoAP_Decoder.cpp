@@ -20,7 +20,7 @@ unordered_map<unsigned int, unsigned int>
 getObjectList(shared_ptr<PayloadFormat> payload) {
   unordered_map<unsigned int, unsigned int> result;
   if (payload) {
-    switch (payload->getContentFormatType()) {
+    switch (payload->getContentFormatType().getContentFormatType()) {
     case ContentFormatType::CORE_LINK: {
       shared_ptr<CoRE_Links> core_links =
           static_pointer_cast<CoRE_Links>(payload);
@@ -41,7 +41,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
       string error_msg =
           "Registration request must use " +
           toString(ContentFormatType::CORE_LINK) + " fortmat type, not " +
-          toString(payload->getContentFormatType()) + " fortmat type.";
+          payload->getContentFormatType().getAsString() + " fortmat type.";
       throw domain_error(move(error_msg));
     }
     }
@@ -273,11 +273,11 @@ ResponseCode convert(CoAP::CodeType code_type) {
 unique_ptr<Response> makeResponse(const CoAP::Message *message) {
   unique_ptr<Response> response;
   if (message->getHeader().getCodeType() == CoAP::CodeType::CONTENT) {
-    auto payload = message->getBody();
     response = make_unique<Response>(
         message->getReceiverIP(), message->getReceiverPort(),
         message->getHeader().getMessageID(), message->getToken(),
-        MessageType::NOT_RECOGNIZED, ResponseCode::CONTENT, payload);
+        MessageType::NOT_RECOGNIZED, ResponseCode::CONTENT,
+        message->getBody()->getBytes());
   } else if (message->getHeader().getCodeType() == CoAP::CodeType::CONTINUE) {
     // @TODO: handle segmented packets
   } else if (message->getHeader().getCodeType() != CoAP::CodeType::UNHANDLED) {
