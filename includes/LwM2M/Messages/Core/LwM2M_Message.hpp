@@ -2,7 +2,9 @@
 #define __LWM2M_MESSAGE_HPP
 
 #include "Hashers.hpp"
+#include "LwM2M_DataFormat.hpp"
 
+#include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -109,7 +111,7 @@ enum class ResponseCode : int {
 
 struct Response : Message {
   ResponseCode response_code_;
-  std::vector<uint8_t> payload_;
+  std::shared_ptr<DataFormat> payload_;
 
   Response();
   Response(std::string endpoint_address, unsigned int endpoint_port,
@@ -118,7 +120,7 @@ struct Response : Message {
   Response(std::string endpoint_address, unsigned int endpoint_port,
            uint16_t message_id, std::vector<uint8_t> token,
            MessageType message_type, ResponseCode response_code,
-           std::vector<uint8_t> payload);
+           std::shared_ptr<DataFormat> payload);
 
   virtual ~Response() = default;
 };

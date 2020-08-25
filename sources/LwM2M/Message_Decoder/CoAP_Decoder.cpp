@@ -2,6 +2,9 @@
 #include "CoAP_Option.hpp"
 #include "CoRE_Link.hpp"
 #include "LoggerRepository.hpp"
+#include "LwM2M_Opaque.hpp"
+#include "LwM2M_PlainText.hpp"
+#include "LwM2M_TLV.hpp"
 #include "PlainText.hpp"
 #include "RegistrationMessages.hpp"
 #include "StringSpliter.hpp"
@@ -21,7 +24,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
   unordered_map<unsigned int, unsigned int> result;
   if (payload) {
     switch (payload->getContentFormatType().getContentFormatType()) {
-    case ContentFormatType::CORE_LINK: {
+    case CoAP::ContentFormatType::CORE_LINK: {
       shared_ptr<CoRE_Links> core_links =
           static_pointer_cast<CoRE_Links>(payload);
       for (auto link : core_links->getLinks()) {
@@ -40,7 +43,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
     default: {
       string error_msg =
           "Registration request must use " +
-          toString(ContentFormatType::CORE_LINK) + " fortmat type, not " +
+          toString(CoAP::ContentFormatType::CORE_LINK) + " fortmat type, not " +
           payload->getContentFormatType().getAsString() + " fortmat type.";
       throw domain_error(move(error_msg));
     }
@@ -270,14 +273,33 @@ ResponseCode convert(CoAP::CodeType code_type) {
   }
 }
 
+shared_ptr<DataFormat>
+decodeResponsePayload(shared_ptr<PayloadFormat> payload) {
+  switch (payload->getContentFormatType().getAsShort()) {
+  case static_cast<uint16_t>(ContentFormatType::PLAIN_TEXT): {
+    return make_shared<PlainText>(payload->getBytes());
+  }
+  case static_cast<uint16_t>(ContentFormatType::OPAQUE): {
+    return make_shared<Opaque>(payload->getBytes());
+  }
+  case static_cast<uint16_t>(ContentFormatType::TLV): {
+    return make_shared<TLV>(payload->getBytes());
+  }
+  case static_cast<uint16_t>(ContentFormatType::JSON):
+  case static_cast<uint16_t>(ContentFormatType::CBOR):
+  case static_cast<uint16_t>(ContentFormatType::UNRECOGNIZED):
+  default: { return shared_ptr<DataFormat>(); }
+  }
+}
+
 unique_ptr<Response> makeResponse(const CoAP::Message *message) {
   unique_ptr<Response> response;
   if (message->getHeader().getCodeType() == CoAP::CodeType::CONTENT) {
+    auto payload = decodeResponsePayload(message->getBody());
     response = make_unique<Response>(
         message->getReceiverIP(), message->getReceiverPort(),
         message->getHeader().getMessageID(), message->getToken(),
-        MessageType::NOT_RECOGNIZED, ResponseCode::CONTENT,
-        message->getBody()->getBytes());
+        MessageType::NOT_RECOGNIZED, ResponseCode::CONTENT, payload);
   } else if (message->getHeader().getCodeType() == CoAP::CodeType::CONTINUE) {
     // @TODO: handle segmented packets
   } else if (message->getHeader().getCodeType() != CoAP::CodeType::UNHANDLED) {

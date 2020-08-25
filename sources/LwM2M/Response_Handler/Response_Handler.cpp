@@ -19,8 +19,7 @@ ResponseHandler::generateRequest(unique_ptr<Read_Request> request) {
 void ResponseHandler::setResponse(unique_ptr<Response> response) {
   auto it = responses_.find(response->token_);
   if (it != responses_.end()) {
-    // implement data converter for payload and call it here
-    auto value = response->payload_;
+    auto value = response->payload_->getValue();
     it->second.set_value(value);
   }
 }

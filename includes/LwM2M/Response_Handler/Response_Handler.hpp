@@ -14,8 +14,7 @@
 
 namespace LwM2M {
 
-using ReturnType = std::variant<bool, int64_t, double, std::string, uint64_t,
-                                ObjectLink, Opaque>;
+using ReturnType = std::vector<uint8_t>;
 using ResponseFuture = std::future<ReturnType>;
 
 class ResponseHandler {
