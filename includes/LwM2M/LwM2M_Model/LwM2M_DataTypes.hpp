@@ -19,12 +19,6 @@ struct ObjectLink {
 };
 
 /**
- * @brief Opaque a sequenc of binary data
- *
- */
-using Opaque = std::vector<uint8_t>;
-
-/**
  * @brief RangeEnumeration - represents a range of supported value types by the
  * LwM2M Resource
  *

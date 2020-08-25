@@ -14,7 +14,7 @@ using ResourceVariant = std::variant<
     std::shared_ptr<Resource<bool>>, std::shared_ptr<Resource<int64_t>>,
     std::shared_ptr<Resource<double>>, std::shared_ptr<Resource<std::string>>,
     std::shared_ptr<Resource<uint64_t>>, std::shared_ptr<Resource<ObjectLink>>,
-    std::shared_ptr<Resource<Opaque>>>;
+    std::shared_ptr<Resource<std::vector<uint8_t>>>>;
 
 using ObjectDescriptorPtr = std::shared_ptr<ObjectDescriptor>;
 

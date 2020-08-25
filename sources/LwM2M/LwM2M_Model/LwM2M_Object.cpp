@@ -51,7 +51,7 @@ Object::Object(std::shared_ptr<Endpoint> endpoint,
     case DataType::OPAQUE: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<Opaque>(endpoint, resource_pair.second));
+          makeResourcePtr<vector<uint8_t>>(endpoint, resource_pair.second));
       break;
     }
     case DataType::STRING: {
