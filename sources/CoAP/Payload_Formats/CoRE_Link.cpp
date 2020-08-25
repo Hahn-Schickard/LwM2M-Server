@@ -105,6 +105,11 @@ CoRE_Links::CoRE_Links(string utf_8_string) : CoRE_Links() {
 
 vector<CoRE_Link> CoRE_Links::getLinks() { return links_; }
 
+vector<uint8_t> CoRE_Links::getBytes() {
+  auto string_pack = toString();
+  return vector<uint8_t>(string_pack.begin(), string_pack.end());
+}
+
 string CoRE_Links::toString() {
   string result;
   for (auto link : links_) {
@@ -116,6 +121,4 @@ string CoRE_Links::toString() {
   }
   return result;
 }
-
-size_t CoRE_Links::size() { return links_.size(); }
 } // namespace CoAP

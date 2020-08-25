@@ -38,8 +38,8 @@ public:
   CoRE_Links(std::string utf_8_string);
 
   std::vector<CoRE_Link> getLinks();
+  std::vector<uint8_t> getBytes() override;
   std::string toString() override;
-  size_t size() override;
 };
 } // namespace CoAP
 

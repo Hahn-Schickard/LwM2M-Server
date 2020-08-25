@@ -115,7 +115,7 @@ vector<uint8_t> Message::toPacket() const {
   result.insert(result.end(), option_pack.begin(), option_pack.end());
 
   if (body_) {
-    vector<uint8_t> payload = encode(body_);
+    vector<uint8_t> payload = body_->getBytes();
     if (!options_.empty())
       result.push_back(PAYLOAD_MARKER);
     result.insert(result.end(), payload.begin(), payload.end());
