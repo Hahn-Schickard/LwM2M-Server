@@ -19,7 +19,7 @@ ResponseHandler::generateRequest(unique_ptr<Read_Request> request) {
 void ResponseHandler::setResponse(unique_ptr<Response> response) {
   auto it = responses_.find(response->token_);
   if (it != responses_.end()) {
-    auto value = response->payload_->getValue();
+    auto value = response->payload_;
     it->second.set_value(value);
   }
 }

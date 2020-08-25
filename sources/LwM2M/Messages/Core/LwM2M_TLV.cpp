@@ -33,7 +33,7 @@ uint8_t TLV_Header::toByte() {
 
 TLV::TLV() : TLV(vector<uint8_t>()) {}
 
-TLV::TLV(vector<uint8_t> bytestream) : DataFormat(ContentFormatType::OPAQUE) {
+TLV::TLV(vector<uint8_t> bytestream) {
   auto it = bytestream.begin();
   header_ = make_shared<TLV_Header>(*it);
   it++;
@@ -68,6 +68,7 @@ TLV::TLV(vector<uint8_t> bytestream) : DataFormat(ContentFormatType::OPAQUE) {
   }
   it++;
   value_ = vector<uint8_t>(it, it + length_);
+  bytestream.erase(bytestream.begin(), it + length_);
 }
 
 vector<uint8_t> TLV::getValue() { return value_; }
@@ -114,5 +115,33 @@ vector<uint8_t> TLV::getBytes() {
   return result;
 }
 
-string TLV::toString() { return string(value_.begin(), value_.end()); }
+string TLV::toString() {
+  //@TODO: implement hexification
+  return string();
+}
+
+TLV_Pack::TLV_Pack(vector<uint8_t> bytestream)
+    : DataFormat(ContentFormatType::TLV) {
+  do {
+    values_.push_back(TLV(bytestream));
+  } while (!bytestream.empty());
+}
+
+vector<TLV> TLV_Pack::getValue() { return values_; }
+
+vector<uint8_t> TLV_Pack::getBytes() {
+  vector<uint8_t> result;
+  for (auto value : values_) {
+    auto byte_pack = value.getBytes();
+    result.insert(result.end(), byte_pack.begin(), byte_pack.end());
+  }
+  return result;
+}
+
+string TLV_Pack::toString() {
+  string result;
+  for (auto value : values_) {
+    result += value.toString();
+  }
+}
 } // namespace LwM2M

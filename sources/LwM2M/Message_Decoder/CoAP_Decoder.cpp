@@ -283,7 +283,7 @@ decodeResponsePayload(shared_ptr<PayloadFormat> payload) {
     return make_shared<Opaque>(payload->getBytes());
   }
   case static_cast<uint16_t>(ContentFormatType::TLV): {
-    return make_shared<TLV>(payload->getBytes());
+    return make_shared<TLV_Pack>(payload->getBytes());
   }
   case static_cast<uint16_t>(ContentFormatType::JSON):
   case static_cast<uint16_t>(ContentFormatType::CBOR):

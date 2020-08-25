@@ -19,6 +19,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC
                               LwM2M_Model
+                              LwM2M_Core_Messages
                               LwM2M_Registration_Messages
                               Message_Encoder
                               PRIVATE

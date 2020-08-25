@@ -11,7 +11,7 @@ public:
   Opaque();
   Opaque(std::vector<uint8_t> bytestream);
 
-  std::vector<uint8_t> getValue() override;
+  std::vector<uint8_t> getValue();
   std::vector<uint8_t> getBytes() override;
   std::string toString() override;
 };

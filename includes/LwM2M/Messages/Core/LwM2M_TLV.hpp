@@ -33,7 +33,7 @@ struct TLV_Header {
   uint8_t toByte();
 };
 
-class TLV : public DataFormat {
+class TLV {
   std::shared_ptr<TLV_Header> header_;
   uint16_t identifier_;
   uint32_t length_;
@@ -43,7 +43,18 @@ public:
   TLV();
   TLV(std::vector<uint8_t> bytestream);
 
-  std::vector<uint8_t> getValue() override;
+  std::vector<uint8_t> getValue();
+  std::vector<uint8_t> getBytes();
+  std::string toString();
+};
+
+class TLV_Pack : public DataFormat {
+  std::vector<TLV> values_;
+
+public:
+  TLV_Pack(std::vector<uint8_t> bytestream);
+
+  std::vector<TLV> getValue();
   std::vector<uint8_t> getBytes() override;
   std::string toString() override;
 };
