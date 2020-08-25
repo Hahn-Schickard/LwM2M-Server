@@ -74,7 +74,7 @@ ContentFormat::ContentFormat()
 
 ContentFormat::ContentFormat(ContentFormatType format_type)
     : Option(OptionNumber::CONTENT_FORMAT, 2, false, false, false, 2),
-      value_(format_type) {}
+      value_(static_cast<uint16_t>(format_type)) {}
 
 ContentFormat::ContentFormat(vector<uint8_t> value)
     : Option(OptionNumber::CONTENT_FORMAT, value.size(), false, false, false,
@@ -86,16 +86,22 @@ ContentFormat::ContentFormat(vector<uint8_t> value)
       concat_value = concat_value | byte << offset;
       offset += 8;
     }
-    value_ = toContentFormatType(concat_value);
+    value_ = concat_value;
   }
 }
 
+ContentFormat::ContentFormat(uint16_t value)
+    : Option(OptionNumber::CONTENT_FORMAT, 2, false, false, false, 2),
+      value_(static_cast<uint16_t>(value)) {}
+
 vector<uint8_t> ContentFormat::getValue() { return toBytes(getAsShort()); }
 
-string ContentFormat::getAsString() { return toString(value_); }
+string ContentFormat::getAsString() { return toString(getContentFormatType()); }
 
-uint16_t ContentFormat::getAsShort() { return static_cast<uint16_t>(value_); }
+uint16_t ContentFormat::getAsShort() { return value_; }
 
-ContentFormatType ContentFormat::getContentFormatType() { return value_; }
+ContentFormatType ContentFormat::getContentFormatType() {
+  return toContentFormatType(value_);
+}
 
 } // namespace CoAP
