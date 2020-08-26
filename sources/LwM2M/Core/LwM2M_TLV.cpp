@@ -234,5 +234,6 @@ string TLV_Pack::toString() {
   for (auto value : values_) {
     result += value.second->toString();
   }
+  return result;
 }
 } // namespace LwM2M
