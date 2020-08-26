@@ -2,7 +2,6 @@
 #define __LWM2M_RESPONSE_HANDLER_HPP
 
 #include "LwM2M_DataFormat.hpp"
-#include "LwM2M_DataTypes.hpp"
 #include "Message_Encoder.hpp"
 #include "RegistrationMessages.hpp"
 

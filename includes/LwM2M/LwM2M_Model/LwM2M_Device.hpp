@@ -2,9 +2,9 @@
 #define __LWM2M_DEVICE_HPP
 
 #include "LwM2M_Endpoint.hpp"
+#include "LwM2M_ModelType.hpp"
 #include "LwM2M_Object.hpp"
 #include "LwM2M_ObjectDescriptor.hpp"
-#include "LwM2M_Type.hpp"
 
 #include <string>
 #include <unordered_map>

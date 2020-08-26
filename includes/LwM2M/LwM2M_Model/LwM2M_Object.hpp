@@ -3,6 +3,7 @@
 
 #include "LwM2M_Endpoint.hpp"
 #include "LwM2M_ObjectDescriptor.hpp"
+#include "LwM2M_ObjectLink.hpp"
 #include "LwM2M_Resource.hpp"
 
 #include <memory>

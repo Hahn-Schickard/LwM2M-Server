@@ -18,6 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
+                              LwM2M_Core
                               Utility
 )
 

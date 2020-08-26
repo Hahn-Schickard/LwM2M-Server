@@ -1,7 +1,7 @@
 #ifndef __LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP
 #define __LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP
 
-#include "LwM2M_DataTypes.hpp"
+#include "LwM2M_RangeEnumeration.hpp"
 
 #include <cstdint>
 #include <optional>

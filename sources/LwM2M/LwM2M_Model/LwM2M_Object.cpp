@@ -63,7 +63,7 @@ Object::Object(std::shared_ptr<Endpoint> endpoint,
     case DataType::TIME: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<uint64_t>(endpoint, resource_pair.second));
+          makeResourcePtr<time_t>(endpoint, resource_pair.second));
       break;
     }
     case DataType::BOOLEAN:

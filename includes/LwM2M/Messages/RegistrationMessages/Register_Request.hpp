@@ -1,7 +1,7 @@
 #ifndef __LWM2M_REGISTRATION_INTERFACE_REGISTER_REQUEST_HPP
 #define __LWM2M_REGISTRATION_INTERFACE_REGISTER_REQUEST_HPP
 
-#include "LwM2M_Type.hpp"
+#include "LwM2M_ModelType.hpp"
 #include "RegistrationInterfaceMessage.hpp"
 
 #include <unordered_map>
