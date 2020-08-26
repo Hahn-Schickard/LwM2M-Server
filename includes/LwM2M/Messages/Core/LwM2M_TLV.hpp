@@ -3,7 +3,9 @@
 
 #include "LwM2M_DataFormat.hpp"
 
+#include <exception>
 #include <memory>
+#include <unordered_map>
 
 namespace LwM2M {
 
@@ -43,18 +45,25 @@ public:
   TLV();
   TLV(std::vector<uint8_t> bytestream);
 
+  uint16_t getIdentifier();
   std::vector<uint8_t> getValue();
   std::vector<uint8_t> getBytes();
   std::string toString();
 };
 
 class TLV_Pack : public DataFormat {
-  std::vector<TLV> values_;
+  using TLV_ptr = std::shared_ptr<TLV>;
+  std::unordered_map<uint16_t, TLV_ptr> values_;
+
+  TLV_ptr getTLV(uint16_t identifier);
 
 public:
   TLV_Pack(std::vector<uint8_t> bytestream);
 
-  std::vector<TLV> getValue();
+  template <typename T> T getValue(uint16_t identifier) {
+    throw std::runtime_error("Can not get value of an unsupported data type!");
+  }
+
   std::vector<uint8_t> getBytes() override;
   std::string toString() override;
 };

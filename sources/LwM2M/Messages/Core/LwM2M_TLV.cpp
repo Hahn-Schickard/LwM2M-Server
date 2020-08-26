@@ -1,4 +1,6 @@
 #include "LwM2M_TLV.hpp"
+#include "LwM2M_CoreLink.hpp"
+#include "LwM2M_ObjectLink.hpp"
 
 using namespace std;
 
@@ -71,6 +73,8 @@ TLV::TLV(vector<uint8_t> bytestream) {
   bytestream.erase(bytestream.begin(), it + length_);
 }
 
+uint16_t TLV::getIdentifier() { return identifier_; }
+
 vector<uint8_t> TLV::getValue() { return value_; }
 
 vector<uint8_t> TLV::getBytes() {
@@ -123,16 +127,92 @@ string TLV::toString() {
 TLV_Pack::TLV_Pack(vector<uint8_t> bytestream)
     : DataFormat(ContentFormatType::TLV) {
   do {
-    values_.push_back(TLV(bytestream));
+    TLV_ptr tlv = make_shared<TLV>(bytestream);
+    values_.emplace(tlv->getIdentifier(), tlv);
   } while (!bytestream.empty());
 }
 
-vector<TLV> TLV_Pack::getValue() { return values_; }
+shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
+  auto it = values_.find(identifier);
+  if (it != values_.end()) {
+    return it->second;
+  } else {
+    throw runtime_error("TLV has no value for identifier:" +
+                        to_string(identifier));
+  }
+}
+
+template <> void TLV_Pack::getValue<void>(uint16_t identifier) {}
+
+template <>
+vector<uint8_t> TLV_Pack::getValue<vector<uint8_t>>(uint16_t identifier) {
+  return getTLV(identifier)->getValue();
+}
+
+template <> string TLV_Pack::getValue<string>(uint16_t identifier) {
+  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+  return string(tlv_value.begin(), tlv_value.end());
+}
+
+template <> bool TLV_Pack::getValue<bool>(uint16_t identifier) {
+  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+  if (!tlv_value.empty() && tlv_value.size() < 2) {
+    return (bool)tlv_value[0];
+  } else {
+    throw logic_error("Bool type can not be empty or larger than 8bits!");
+  }
+}
+
+template <> int64_t TLV_Pack::getValue<int64_t>(uint16_t identifier) {
+  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+  if (!tlv_value.empty() && tlv_value.size() < 8) {
+    int64_t concat_value = 0;
+    uint8_t offset = 0;
+    for (auto byte : tlv_value) {
+      concat_value = concat_value | byte << offset;
+      offset += 8;
+    }
+    return concat_value;
+  } else {
+    throw logic_error("Intiger type can not be empty or larger than 64bits!");
+  }
+}
+
+template <> uint64_t TLV_Pack::getValue<uint64_t>(uint16_t identifier) {
+  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+  if (!tlv_value.empty() && tlv_value.size() < 8) {
+    uint64_t concat_value = 0;
+    uint8_t offset = 0;
+    for (auto byte : tlv_value) {
+      concat_value = concat_value | byte << offset;
+      offset += 8;
+    }
+    return concat_value;
+  } else {
+    throw logic_error(
+        "Unsigned Intiger type can not be empty or larger than 64bits!");
+  }
+}
+
+template <>
+vector<double> TLV_Pack::getValue<vector<double>>(uint16_t identifier) {
+  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+}
+
+template <> ObjectLink TLV_Pack::getValue<ObjectLink>(uint16_t identifier) {
+  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+}
+
+template <> CoRE_Link TLV_Pack::getValue<CoRE_Link>(uint16_t identifier) {
+  string value = getValue<string>(identifier);
+  auto link_value = CoRE_Link(value);
+  return link_value;
+}
 
 vector<uint8_t> TLV_Pack::getBytes() {
   vector<uint8_t> result;
   for (auto value : values_) {
-    auto byte_pack = value.getBytes();
+    auto byte_pack = value.second->getBytes();
     result.insert(result.end(), byte_pack.begin(), byte_pack.end());
   }
   return result;
@@ -141,7 +221,7 @@ vector<uint8_t> TLV_Pack::getBytes() {
 string TLV_Pack::toString() {
   string result;
   for (auto value : values_) {
-    result += value.toString();
+    result += value.second->toString();
   }
 }
 } // namespace LwM2M
