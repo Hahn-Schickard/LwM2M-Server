@@ -12,6 +12,7 @@ struct ObjectLink {
   const uint16_t object_id_;
   const uint16_t instance_id_;
 
+  ObjectLink();
   ObjectLink(uint16_t object_id, uint16_t instance_id);
 };
 } // namespace LwM2M

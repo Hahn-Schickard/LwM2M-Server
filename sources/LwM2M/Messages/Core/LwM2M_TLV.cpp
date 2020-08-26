@@ -201,6 +201,8 @@ vector<double> TLV_Pack::getValue<vector<double>>(uint16_t identifier) {
 
 template <> ObjectLink TLV_Pack::getValue<ObjectLink>(uint16_t identifier) {
   vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+  //@TODO: check how ObjectLink works
+  return ObjectLink();
 }
 
 template <> CoRE_Link TLV_Pack::getValue<CoRE_Link>(uint16_t identifier) {
