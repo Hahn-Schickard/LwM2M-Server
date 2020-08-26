@@ -17,8 +17,11 @@ struct ObjectDescriptorNotSupported : runtime_error {
 
 RegistrationInterface::RegistrationInterface(
     shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
-    shared_ptr<MessageEncoder> encoder, const string &configuration_path)
+    shared_ptr<MessageEncoder> encoder,
+    shared_ptr<ResponseHandler> response_handler,
+    const string &configuration_path)
     : device_registery_(device_registery), encoder_(encoder),
+      response_handler_(response_handler),
       event_source_(
           make_shared<
               ObserverPattern::EventSource<RegistrationInterfaceEvent>>()),
@@ -32,16 +35,16 @@ RegistrationInterface::RegistrationInterface(
   }
 }
 
-unordered_map<uint32_t, shared_ptr<ObjectDescriptor>>
+unordered_map<uint32_t, ObjectDescriptorPair>
 RegistrationInterface::assignObjectInstances(
-    unordered_map<unsigned int, unsigned int> objects) {
-  unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> result;
+    unordered_map<unsigned int, vector<unsigned int>> objects) {
+  unordered_map<uint32_t, ObjectDescriptorPair> result;
   for (auto &object : objects) {
-    uint32_t object_id = object.first;
-    uint32_t instance_id = object.second;
+    auto object_id = object.first;
+    auto instance_ids = object.second;
     auto it = supported_descriptors_.find(object_id);
     if (it != supported_descriptors_.end()) {
-      result.emplace(instance_id, it->second);
+      result.emplace(object_id, ObjectDescriptorPair(it->second, instance_ids));
     } else {
       string error_msg = "Object ID " + to_string(object_id) +
                          " is not supported by the server.";
@@ -61,10 +64,10 @@ bool RegistrationInterface::handleRequest(
     unique_ptr<Register_Request> request) {
   unique_ptr<Register_Response> result;
   try {
-    unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> object_instances =
+    auto object_instances =
         assignObjectInstances(request->object_instances_map_);
     auto new_device = make_shared<Device>(
-        request->endpoint_name_, request->endpoint_address_,
+        response_handler_, request->endpoint_name_, request->endpoint_address_,
         request->endpoint_port_, request->life_time_, request->version_,
         request->binding_, request->queue_mode_, request->sms_number_,
         object_instances);
@@ -108,7 +111,7 @@ bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
         updated = true;
       }
       if (!request->object_instances_map_.empty()) {
-        unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> object_instances =
+        auto object_instances =
             assignObjectInstances(request->object_instances_map_);
         device->updateObjectsMap(object_instances);
         updated = true;

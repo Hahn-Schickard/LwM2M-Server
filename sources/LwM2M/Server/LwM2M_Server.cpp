@@ -55,9 +55,10 @@ Server::Server(Configuration config)
                                           config.read_timeout);
   shared_ptr<MessageEncoder> encoder =
       make_shared<CoAP_Encoder>(server->getOutgoingMessagesQueue());
-  registration_ = make_shared<RegistrationInterface>(
-      device_registery_, encoder, config.object_descriptors_location);
   auto response_handler = make_shared<ResponseHandler>(encoder);
+  registration_ = make_shared<RegistrationInterface>(
+      device_registery_, encoder, response_handler,
+      config.object_descriptors_location);
   processes_.emplace_back(
       make_unique<CoAP_Decoder>(
           registration_, server->getIncomingMessagesQueue(), response_handler),

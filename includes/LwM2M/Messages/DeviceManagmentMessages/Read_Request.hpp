@@ -11,10 +11,13 @@ struct Read_Request : public DeviceManagment_Interface_Message {
   std::optional<unsigned int> resoruce_instance_id_;
 
   Read_Request(std::string endpoint_address, unsigned int endpoint_port,
-               unsigned int object_id,
-               std::optional<unsigned int> object_instance_id,
-               std::optional<unsigned int> resource_id,
-               std::optional<unsigned int> resoruce_instance_id);
+               unsigned int object_id, unsigned int object_instance_id);
+  Read_Request(std::string endpoint_address, unsigned int endpoint_port,
+               unsigned int object_id, unsigned int object_instance_id,
+               unsigned int resource_id);
+  Read_Request(std::string endpoint_address, unsigned int endpoint_port,
+               unsigned int object_id, unsigned int object_instance_id,
+               unsigned int resource_id, unsigned int resoruce_instance_id);
 };
 } // namespace LwM2M
 

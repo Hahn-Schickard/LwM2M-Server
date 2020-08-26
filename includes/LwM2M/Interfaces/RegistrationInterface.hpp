@@ -8,6 +8,7 @@
 #include "Observer_Pattern.hpp"
 #include "RegistrationInterfaceEvent.hpp"
 #include "RegistrationMessages.hpp"
+#include "Response_Handler.hpp"
 
 #include <memory>
 #include <string>
@@ -17,6 +18,8 @@ namespace LwM2M {
 
 using RegistrationEventSourcePtr =
     std::shared_ptr<ObserverPattern::EventSource<RegistrationInterfaceEvent>>;
+using ObjectDescriptorPair =
+    std::pair<std::shared_ptr<ObjectDescriptor>, std::vector<uint32_t>>;
 
 class RegistrationInterface {
   std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
@@ -24,19 +27,21 @@ class RegistrationInterface {
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
   std::shared_ptr<MessageEncoder> encoder_;
+  std::shared_ptr<ResponseHandler> response_handler_;
   RegistrationEventSourcePtr event_source_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
   bool isRegistered(std::string device_id);
 
-  std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
-  assignObjectInstances(std::unordered_map<unsigned int, unsigned int> objects);
+  std::unordered_map<uint32_t, ObjectDescriptorPair> assignObjectInstances(
+      std::unordered_map<unsigned int, std::vector<unsigned int>> objects);
 
 public:
   RegistrationInterface(
       std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
           device_registery,
       std::shared_ptr<MessageEncoder> encoder,
+      std::shared_ptr<ResponseHandler> response_handler,
       const std::string &configuration_path);
 
   bool handleRequest(std::unique_ptr<Register_Request> request);

@@ -19,6 +19,9 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC
                               LwM2M_Core
+                              LwM2M_Device_Managment_Messages
+                              Message_Encoder
+                              Response_Handler
                               Threadsafe_Queue
                               Utility
 )

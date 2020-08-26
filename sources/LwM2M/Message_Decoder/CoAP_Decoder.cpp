@@ -19,9 +19,9 @@ using namespace CoAP;
 using namespace HaSLL;
 
 namespace LwM2M {
-unordered_map<unsigned int, unsigned int>
+unordered_map<unsigned int, vector<unsigned int>>
 getObjectList(shared_ptr<PayloadFormat> payload) {
-  unordered_map<unsigned int, unsigned int> result;
+  unordered_map<unsigned int, vector<unsigned int>> result;
   if (payload) {
     switch (payload->getContentFormatType().getContentFormatType()) {
     case CoAP::ContentFormatType::CORE_LINK: {
@@ -63,8 +63,8 @@ unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
         BindingType binding_ = BindingType::MALFORMED;
         bool queue_mode_ = false;
         string sms_number_;
-        unordered_map<unsigned int, unsigned int> object_instances_map_ =
-            getObjectList(input->getBody());
+        unordered_map<unsigned int, vector<unsigned int>>
+            object_instances_map_ = getObjectList(input->getBody());
         for (auto option : input->getOptions()) {
           if (option->getOptionNumber() == OptionNumber::URI_QUERY) {
             if (option->getAsString().substr(0, 2) == "b=") {

@@ -7,7 +7,7 @@ Update_Request::Update_Request(
     string endpoint_address, unsigned int endpoint_port, uint16_t message_id,
     vector<uint8_t> token, string location, optional<size_t> lifetime,
     optional<BindingType> binding, optional<string> sms_number,
-    unordered_map<unsigned int, unsigned int> object_instances_map)
+    unordered_map<unsigned int, vector<unsigned int>> object_instances_map)
     : Regirstration_Interface_Message(endpoint_address, endpoint_port,
                                       message_id, token, MessageType::UPDATE),
       location_(move(location)), lifetime_(move(lifetime)),
