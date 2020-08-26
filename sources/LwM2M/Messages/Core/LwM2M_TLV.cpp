@@ -2,6 +2,8 @@
 #include "LwM2M_CoreLink.hpp"
 #include "LwM2M_ObjectLink.hpp"
 
+#include <algorithm>
+
 using namespace std;
 
 namespace LwM2M {
@@ -194,9 +196,16 @@ template <> uint64_t TLV_Pack::getValue<uint64_t>(uint16_t identifier) {
   }
 }
 
-template <>
-vector<double> TLV_Pack::getValue<vector<double>>(uint16_t identifier) {
+template <> double TLV_Pack::getValue<double>(uint16_t identifier) {
   vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
+  double result;
+  if (tlv_value.size() <= 8) {
+    copy(tlv_value.begin(), tlv_value.end(),
+         reinterpret_cast<uint8_t *>(&result));
+  } else {
+    throw logic_error("Floating point type can not be smaller than 32bits!");
+  }
+  return result;
 }
 
 template <> ObjectLink TLV_Pack::getValue<ObjectLink>(uint16_t identifier) {
