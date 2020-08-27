@@ -19,23 +19,40 @@ using namespace CoAP;
 using namespace HaSLL;
 
 namespace LwM2M {
+
+pair<unsigned int, unsigned int> makeObjectInstancePair(CoRE_Link link) {
+  vector<string> uri_targets = utility::split(link.getTarget(), '/');
+  if (uri_targets.size() == 2) {
+    return make_pair<unsigned int, unsigned int>(
+        atoi(uri_targets.at(0).c_str()), atoi(uri_targets.at(1).c_str()));
+  } else {
+    string error_msg = "CoRE Link conatins more than 2 uri targets";
+    throw logic_error(move(error_msg));
+  }
+}
+
+void addToMap(unordered_map<unsigned int, vector<unsigned int>> &map,
+              pair<unsigned int, unsigned int> instance) {
+  auto it = map.find(instance.first);
+  if (it != map.end()) {
+    it->second.push_back(instance.second);
+  } else {
+    map.emplace(instance.first, vector<unsigned int>{instance.second});
+  }
+}
+
 unordered_map<unsigned int, vector<unsigned int>>
 getObjectList(shared_ptr<PayloadFormat> payload) {
   unordered_map<unsigned int, vector<unsigned int>> result;
   if (payload) {
     switch (payload->getContentFormatType().getContentFormatType()) {
     case CoAP::ContentFormatType::CORE_LINK: {
-      shared_ptr<CoRE_Links> core_links =
-          static_pointer_cast<CoRE_Links>(payload);
-      for (auto link : core_links->getLinks()) {
+      auto core_links_payload = static_pointer_cast<CoRE_Links>(payload);
+      for (auto core_link : core_links_payload->getLinks()) {
         // ignore content attributes
-        if (link.getTarget() != "/") {
-          vector<string> object_instance_pair =
-              utility::split(link.getTarget(), '/');
-          if (object_instance_pair.size() == 2) {
-            result.emplace(atoi(object_instance_pair.at(0).c_str()),
-                           atoi(object_instance_pair.at(1).c_str()));
-          }
+        if (core_link.getTarget() != "/" && !core_link.getTarget().empty()) {
+          auto object_instance = makeObjectInstancePair(core_link);
+          addToMap(result, object_instance);
         }
       }
       break;
@@ -155,8 +172,7 @@ unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {
   optional<size_t> life_time_ = nullopt;
   optional<BindingType> binding_ = nullopt;
   optional<string> sms_number_ = nullopt;
-  unordered_map<unsigned int, unsigned int> object_instances_map =
-      getObjectList(input->getBody());
+  auto object_instances_map = getObjectList(input->getBody());
   for (auto it = options.begin() + 2; it != options.end(); it++) {
     if ((*it)->getOptionNumber() == OptionNumber::URI_QUERY) {
       if ((*it)->getAsString().substr(0, 2) == "b=") {

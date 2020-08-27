@@ -22,15 +22,16 @@ Device::Device(shared_ptr<ResponseHandler> response_handler, string name,
       name_(name), life_time_(life_time), version_(version), binding_(binding),
       queue_mode_(queue_mode),
       endpoint_(make_shared<Endpoint>(
-          Endpoint{endpoint_address, endpoint_port, sms_number})),
-      object_instances_(makeObjects(object_descriptors_map)) {}
+          Endpoint{endpoint_address, endpoint_port, sms_number})) {
+  makeObjects(object_descriptors_map);
+}
 
-ObjectsMap Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
+void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
   for (auto object_descriptor_pair : object_descriptors_map) {
-    vector<uint32_t> instance_ids;
-    auto object_descriptor = object_descriptor_pair.second;
-    auto object = make_shared<Object>(
-        endpoint_, instance_ids, response_handler_, object_descriptor.second);
+    auto object_instance_pair = object_descriptor_pair.second;
+    auto object =
+        make_shared<Object>(endpoint_, object_instance_pair.second,
+                            response_handler_, object_instance_pair.first);
     object_instances_.emplace(object_descriptor_pair.first, move(object));
   }
 }

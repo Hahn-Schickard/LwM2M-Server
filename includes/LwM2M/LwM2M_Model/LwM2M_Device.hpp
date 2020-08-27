@@ -29,7 +29,7 @@ class Device {
   ObjectsMap object_instances_;
 
 private:
-  ObjectsMap makeObjects(ObjectDescriptorsMap object_descriptors_map);
+  void makeObjects(ObjectDescriptorsMap object_descriptors_map);
 
 public:
   Device();
