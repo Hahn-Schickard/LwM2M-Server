@@ -15,8 +15,6 @@ enum class ContentFormatType : uint16_t {
   CBOR = 60,
   SENML_JSON = 110,
   SENML_CBOR = 112,
-  TLV = 11542,
-  JSON = 11543,
   UNRECOGNIZED
 };
 

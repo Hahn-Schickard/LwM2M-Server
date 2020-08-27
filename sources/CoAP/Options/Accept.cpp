@@ -8,7 +8,7 @@ Accept::Accept() : Accept(ContentFormatType::UNRECOGNIZED) {}
 
 Accept::Accept(ContentFormatType format_type)
     : Option(OptionNumber::ACCEPT, 2, true, false, false, 2),
-      value_(format_type) {}
+      value_(static_cast<uint16_t>(format_type)) {}
 
 Accept::Accept(vector<uint8_t> value)
     : Option(OptionNumber::ACCEPT, value.size(), true, false, false, 2) {
@@ -19,15 +19,22 @@ Accept::Accept(vector<uint8_t> value)
       concat_value = concat_value | byte << offset;
       offset = 8;
     }
-    value_ = toContentFormatType(concat_value);
+    value_ = concat_value;
   }
 }
 
-vector<uint8_t> Accept::getValue() { return toBytes(getAsShort()); }
+Accept::Accept(uint16_t value)
+    : Option(OptionNumber::ACCEPT, 2, true, false, false, 2), value_(value) {}
 
-string Accept::getAsString() { return toString(value_); }
+vector<uint8_t> Accept::getValue() { return toBytes(value_); }
 
-uint16_t Accept::getAsShort() { return static_cast<uint16_t>(value_); }
+string Accept::getAsString() {
+  return toString(getAcceptableContentFormatType());
+}
 
-ContentFormatType Accept::getAcceptableContentFormatType() { return value_; }
+uint16_t Accept::getAsShort() { return value_; }
+
+ContentFormatType Accept::getAcceptableContentFormatType() {
+  return toContentFormatType(value_);
+}
 } // namespace CoAP

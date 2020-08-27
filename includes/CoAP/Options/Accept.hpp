@@ -10,12 +10,13 @@
 
 namespace CoAP {
 class Accept : public Option {
-  ContentFormatType value_;
+  uint16_t value_;
 
 public:
   Accept();
   Accept(ContentFormatType format_type);
   Accept(std::vector<uint8_t> value);
+  Accept(uint16_t value);
 
   std::vector<uint8_t> getValue() override;
   std::string getAsString() override;

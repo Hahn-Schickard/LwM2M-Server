@@ -26,12 +26,6 @@ ContentFormatType toContentFormatType(uint16_t value) {
   case 112: {
     return ContentFormatType::SENML_CBOR;
   }
-  case 11542: {
-    return ContentFormatType::TLV;
-  }
-  case 11543: {
-    return ContentFormatType::JSON;
-  }
   default: {
     string error_msg = "Unsupported content format type: " + to_string(value);
     throw domain_error(move(error_msg));
@@ -49,12 +43,6 @@ string toString(ContentFormatType type) {
   }
   case ContentFormatType::OPAQUE: {
     return "Opaque";
-  }
-  case ContentFormatType::TLV: {
-    return "Type-Length-Value";
-  }
-  case ContentFormatType::JSON: {
-    return "JavaScript Object Notation";
   }
   case ContentFormatType::CBOR: {
     return "Concise Binary Object Representation";

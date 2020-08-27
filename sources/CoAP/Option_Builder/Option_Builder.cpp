@@ -201,10 +201,6 @@ static ContentFormatHash SENML_JSON =
     ContentFormatHash("SENML_JSON", toString(ContentFormatType::SENML_JSON));
 static ContentFormatHash SENML_CBOR =
     ContentFormatHash("SENML_CBOR", toString(ContentFormatType::SENML_CBOR));
-static ContentFormatHash TLV =
-    ContentFormatHash("TLV", toString(ContentFormatType::TLV));
-static ContentFormatHash JSON =
-    ContentFormatHash("JSON", toString(ContentFormatType::JSON));
 
 ContentFormatType getContentTypeFromString(const string &value) {
   size_t value_hash = oneAtATimeHash(value);
@@ -226,11 +222,6 @@ ContentFormatType getContentTypeFromString(const string &value) {
   } else if (value_hash == SENML_CBOR.long_hash() ||
              value_hash == SENML_CBOR.short_hash()) {
     return ContentFormatType::SENML_CBOR;
-  } else if (value_hash == TLV.long_hash() || value_hash == TLV.short_hash()) {
-    return ContentFormatType::TLV;
-  } else if (value_hash == JSON.long_hash() ||
-             value_hash == JSON.short_hash()) {
-    return ContentFormatType::JSON;
   } else {
     string error_msg = "Unrecognized content format type: " + value;
     throw domain_error(move(error_msg));
@@ -264,7 +255,7 @@ shared_ptr<Option> build(OptionNumber option, string value) {
     break;
   }
   case OptionNumber::CONTENT_FORMAT: {
-    result = make_shared<ContentFormat>(getContentTypeFromString(move(value)));
+    result = make_shared<ContentFormat>(stoi(move(value)));
     break;
   }
   case OptionNumber::MAX_AGE: {
@@ -276,7 +267,7 @@ shared_ptr<Option> build(OptionNumber option, string value) {
     break;
   }
   case OptionNumber::ACCEPT: {
-    result = make_shared<Accept>(getContentTypeFromString(move(value)));
+    result = make_shared<Accept>(stoi(move(value)));
     break;
   }
   case OptionNumber::LOCATION_QUERY: {

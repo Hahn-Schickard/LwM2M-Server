@@ -39,12 +39,6 @@ shared_ptr<PayloadFormat> decodeSenMLJSON(vector<uint8_t> payload) {
 shared_ptr<PayloadFormat> decodeSenMLCBOR(vector<uint8_t> payload) {
   throwCodingError("SenML CBOR", true);
 }
-shared_ptr<PayloadFormat> decodeTLV(vector<uint8_t> payload) {
-  throwCodingError("TLV", true);
-}
-shared_ptr<PayloadFormat> decodeJSON(vector<uint8_t> payload) {
-  throwCodingError("JSON", true);
-}
 
 shared_ptr<PayloadFormat> decode(shared_ptr<ContentFormat> format,
                                  vector<uint8_t> payload) {
@@ -72,14 +66,6 @@ shared_ptr<PayloadFormat> decode(shared_ptr<ContentFormat> format,
   }
   case ContentFormatType::SENML_CBOR: {
     result = decodeSenMLCBOR(payload);
-    break;
-  }
-  case ContentFormatType::TLV: {
-    result = decodeTLV(payload);
-    break;
-  }
-  case ContentFormatType::JSON: {
-    result = decodeJSON(payload);
     break;
   }
   case ContentFormatType::UNRECOGNIZED: {
