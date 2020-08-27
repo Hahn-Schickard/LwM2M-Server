@@ -17,7 +17,6 @@ CoAP_Encoder::CoAP_Encoder(
 void CoAP_Encoder::encode(std::unique_ptr<Read_Request> input) {
   try {
     vector<shared_ptr<CoAP::Option>> options;
-    options.emplace_back(build(CoAP::OptionNumber::ACCEPT, "CORE_LINK"));
     options.emplace_back(
         build(CoAP::OptionNumber::LOCATION_PATH, to_string(input->object_id_)));
     if (input->object_instance_id_) {
@@ -33,9 +32,12 @@ void CoAP_Encoder::encode(std::unique_ptr<Read_Request> input) {
                     to_string(input->resoruce_instance_id_.value())));
         }
       }
+      options.emplace_back(
+          build(CoAP::OptionNumber::ACCEPT,
+                to_string(static_cast<uint16_t>(ContentFormatType::TLV))));
     }
     auto header =
-        CoAP::Header(CoAP::MessageType::ACKNOWLEDGMENT, 8, CodeType::GET);
+        CoAP::Header(CoAP::MessageType::CONFIRMABLE, 8, CodeType::GET);
     auto msg = make_unique<CoAP::Message>(input->endpoint_address_,
                                           input->endpoint_port_, header,
                                           options, shared_ptr<PayloadFormat>());
