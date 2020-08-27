@@ -12,7 +12,8 @@
 
 namespace LwM2M {
 
-using ObjectsMap = std::unordered_map<uint32_t, std::shared_ptr<Object>>;
+using ObjectPtr = std::shared_ptr<Object>;
+using ObjectsMap = std::unordered_map<uint32_t, ObjectPtr>;
 using ObjectDescriptorPair =
     std::pair<std::shared_ptr<ObjectDescriptor>, std::vector<uint32_t>>;
 using ObjectDescriptorsMap = std::unordered_map<uint32_t, ObjectDescriptorPair>;
@@ -40,6 +41,8 @@ public:
          ObjectDescriptorsMap object_descriptors_map);
 
   std::string getDeviceId();
+  ObjectPtr getObject(uint32_t id);
+
   void updateBinding(BindingType binding);
   void updateLifetime(size_t life_time);
   void updateSMS_Number(std::string sms_number);

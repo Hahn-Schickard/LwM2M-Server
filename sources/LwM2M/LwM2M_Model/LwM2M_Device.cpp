@@ -38,6 +38,15 @@ void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
 
 string Device::getDeviceId() { return device_id_; }
 
+ObjectPtr Device::getObject(uint32_t id) {
+  auto it = object_instances_.find(id);
+  if (it != object_instances_.end()) {
+    return it->second;
+  } else {
+    return ObjectPtr();
+  }
+}
+
 void Device::updateBinding(BindingType binding) { binding_ = binding; }
 
 void Device::updateLifetime(size_t life_time) { life_time_ = life_time; }
