@@ -3,6 +3,7 @@
 
 #include "LwM2M_Endpoint.hpp"
 #include "LwM2M_ResourceDescriptor.hpp"
+#include "LwM2M_TLV.hpp"
 #include "Read_Request.hpp"
 #include "Response_Handler.hpp"
 
@@ -78,6 +79,10 @@ public:
         this->parent_id_, this->parent_instance_id_, this->descriptor_->id_);
     ResponseFuture future =
         this->response_handler_->generateRequest(std::move(request));
+    auto payload = future.get();
+    std::shared_ptr<TLV_Pack> tlv_payload =
+        std::static_pointer_cast<TLV_Pack>(payload);
+    return tlv_payload->getValue<T>(this->descriptor_->id_);
   }
   std::future<T> read(size_t timeout) override {}
 };
