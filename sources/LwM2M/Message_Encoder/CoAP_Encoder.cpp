@@ -18,17 +18,17 @@ void CoAP_Encoder::encode(std::unique_ptr<Read_Request> input) {
   try {
     vector<shared_ptr<CoAP::Option>> options;
     options.emplace_back(
-        build(CoAP::OptionNumber::LOCATION_PATH, to_string(input->object_id_)));
+        build(CoAP::OptionNumber::URI_PATH, to_string(input->object_id_)));
     if (input->object_instance_id_) {
       options.emplace_back(
-          build(CoAP::OptionNumber::LOCATION_PATH,
+          build(CoAP::OptionNumber::URI_PATH,
                 to_string(input->object_instance_id_.value())));
       if (input->resource_id_) {
-        options.emplace_back(build(CoAP::OptionNumber::LOCATION_PATH,
+        options.emplace_back(build(CoAP::OptionNumber::URI_PATH,
                                    to_string(input->resource_id_.value())));
         if (input->resoruce_instance_id_) {
           options.emplace_back(
-              build(CoAP::OptionNumber::LOCATION_PATH,
+              build(CoAP::OptionNumber::URI_PATH,
                     to_string(input->resoruce_instance_id_.value())));
         }
       }
