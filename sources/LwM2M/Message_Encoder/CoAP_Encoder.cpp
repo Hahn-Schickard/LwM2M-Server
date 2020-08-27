@@ -34,10 +34,12 @@ void CoAP_Encoder::encode(std::unique_ptr<Read_Request> input) {
         }
       }
     }
-    output_queue_->push(make_unique<CoAP::Message>(
-        input->endpoint_address_, input->endpoint_port_,
-        CoAP::Header(CoAP::MessageType::ACKNOWLEDGMENT, 8, CodeType::GET),
-        options, shared_ptr<PayloadFormat>()));
+    auto header =
+        CoAP::Header(CoAP::MessageType::ACKNOWLEDGMENT, 8, CodeType::GET);
+    auto msg = make_unique<CoAP::Message>(input->endpoint_address_,
+                                          input->endpoint_port_, header,
+                                          options, shared_ptr<PayloadFormat>());
+    output_queue_->push(move(msg));
   } catch (exception &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
   }
@@ -64,13 +66,14 @@ void CoAP_Encoder::encode(unique_ptr<Register_Response> input) {
 
 void CoAP_Encoder::encode(std::unique_ptr<Response> input) {
   try {
-    output_queue_->push(make_unique<CoAP::Message>(
-        input->endpoint_address_, input->endpoint_port_,
+    auto header =
         CoAP::Header(CoAP::MessageType::ACKNOWLEDGMENT, input->token_.size(),
                      static_cast<CoAP::CodeType>(input->response_code_),
-                     input->message_id_.value()),
-        input->token_, vector<shared_ptr<CoAP::Option>>(),
-        shared_ptr<PayloadFormat>()));
+                     input->message_id_.value());
+    auto msg = make_unique<CoAP::Message>(
+        input->endpoint_address_, input->endpoint_port_, header, input->token_,
+        vector<shared_ptr<CoAP::Option>>(), shared_ptr<PayloadFormat>());
+    output_queue_->push(move(msg));
   } catch (exception &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
   }
