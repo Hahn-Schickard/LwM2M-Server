@@ -99,4 +99,13 @@ ObjectInstance::ObjectInstance(
   }
 }
 
+ResourceVariant ObjectInstance::getResource(uint32_t id) {
+  auto it = resources_.find(id);
+  if (it != resources_.end()) {
+    return it->second;
+  } else {
+    return ResourceVariant();
+  }
+}
+
 } // namespace LwM2M

@@ -31,14 +31,7 @@ public:
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
 
-  template <typename T> std::shared_ptr<Resource<T>> getResource(uint32_t id) {
-    auto it = resources_.find(id);
-    if (it != resources_.end()) {
-      return it->second;
-    } else {
-      return std::shared_ptr<Resource<T>>();
-    }
-  }
+  ResourceVariant getResource(uint32_t id);
 };
 } // namespace LwM2M
 

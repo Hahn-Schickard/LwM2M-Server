@@ -27,17 +27,7 @@ public:
 
   ObjectDescriptorPtr getDescriptor();
 
-  template <typename T>
-  std::shared_ptr<Resource<T>> getResource(uint32_t instance_id,
-                                           uint32_t resource_id) {
-    auto it = instances_.find(instance_id);
-    if (it != instances_.end()) {
-      auto object_instance = it->second;
-      return object_instance->getResource<T>(resource_id);
-    } else {
-      return std::shared_ptr<Resource<T>>();
-    }
-  }
+  ResourceVariant getResource(uint32_t instance_id, uint32_t resource_id);
 };
 } // namespace LwM2M
 
