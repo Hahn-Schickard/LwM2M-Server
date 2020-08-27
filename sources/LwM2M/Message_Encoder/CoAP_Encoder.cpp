@@ -49,12 +49,14 @@ void CoAP_Encoder::encode(unique_ptr<Register_Response> input) {
     for (auto location_part : input->location_)
       options.emplace_back(
           build(CoAP::OptionNumber::LOCATION_PATH, location_part));
-    output_queue_->push(make_unique<CoAP::Message>(
-        input->endpoint_address_, input->endpoint_port_,
+    auto header =
         CoAP::Header(CoAP::MessageType::ACKNOWLEDGMENT, input->token_.size(),
                      static_cast<CoAP::CodeType>(input->response_code_),
-                     input->message_id_.value()),
-        options, shared_ptr<PayloadFormat>()));
+                     input->message_id_.value());
+    auto msg = make_unique<CoAP::Message>(
+        input->endpoint_address_, input->endpoint_port_, header, input->token_,
+        options, shared_ptr<PayloadFormat>());
+    output_queue_->push(move(msg));
   } catch (exception &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
   }
