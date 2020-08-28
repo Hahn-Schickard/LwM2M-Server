@@ -63,6 +63,7 @@ bool RegistrationInterface::isRegistered(string device_id) {
 bool RegistrationInterface::handleRequest(
     unique_ptr<Register_Request> request) {
   unique_ptr<Register_Response> result;
+  shared_ptr<RegistrationInterfaceEvent> event;
   try {
     auto object_instances =
         assignObjectInstances(request->object_instances_map_);
@@ -75,9 +76,9 @@ bool RegistrationInterface::handleRequest(
       device_registery_->erase(
           device_registery_->find(new_device->getDeviceId()));
     device_registery_->emplace(new_device->getDeviceId(), new_device);
-    event_source_->notify(make_shared<RegistrationInterfaceEvent>(
+    event = make_shared<RegistrationInterfaceEvent>(
         RegistrationInterfaceEvent{RegistrationInterfaceEventType::REGISTERED,
-                                   new_device->getDeviceId(), new_device}));
+                                   new_device->getDeviceId(), new_device});
     result = make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_.value(), request->token_, MessageType::REGISTER,
@@ -90,6 +91,8 @@ bool RegistrationInterface::handleRequest(
         ResponseCode::BAD_REQUEST);
   }
   encoder_->encode(move(result));
+  if (event)
+    event_source_->notify(move(event));
   return true;
 }
 
