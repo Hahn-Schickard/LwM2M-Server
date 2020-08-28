@@ -59,13 +59,16 @@ future<string> stringifyResourceValue(LwM2M::ResourceVariant variant) {
 }
 
 void asyncRead(shared_ptr<LwM2M::Device> device) {
-  thread([&] {
-    auto future =
-        stringifyResourceValue(device->getObject(3)->getResource(0, 2));
-    future.wait();
-    cout << "Device: " << device->getDeviceId()
-         << " Model Number of this device is: " << future.get() << endl;
-  })
+  //@TODO: this leaks memory, REWORK IT!
+  thread(
+      [](shared_ptr<LwM2M::Device> device) {
+        auto future =
+            stringifyResourceValue(device->getObject(3)->getResource(0, 2));
+        future.wait();
+        cout << "Device: " << device->getDeviceId()
+             << " Model Number of this device is: " << future.get() << endl;
+      },
+      device)
       .detach();
 }
 
