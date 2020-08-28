@@ -20,12 +20,30 @@ struct UnsupportedMethod : public std::runtime_error {
 };
 
 template <typename T> class Resource {
-protected:
   std::shared_ptr<Endpoint> endpoint_;
   uint32_t parent_id_;
   uint32_t parent_instance_id_;
   std::shared_ptr<ResponseHandler> response_handler_;
   ResourceDescriptorPtr descriptor_;
+
+  T decode(ReturnType payload) {
+    std::shared_ptr<TLV_Pack> tlv_payload =
+        std::static_pointer_cast<TLV_Pack>(payload);
+    return tlv_payload->getValue<T>(descriptor_->id_);
+  }
+
+protected:
+  std::future<T> asyncRead() {
+    auto request = std::make_unique<Read_Request>(
+        endpoint_->endpoint_address_, endpoint_->endpoint_port_, parent_id_,
+        parent_instance_id_, descriptor_->id_);
+    std::future<T> result = std::async(std::launch::async, [&]() -> T {
+      auto future = response_handler_->setRequest(std::move(request));
+      future.wait();
+      return decode(future.get());
+    });
+    return result;
+  }
 
 public:
   Resource(std::shared_ptr<Endpoint> endpoint, uint32_t parent_id,
@@ -74,17 +92,11 @@ public:
                     descriptor) {}
 
   T read() override {
-    auto request = std::make_unique<Read_Request>(
-        this->endpoint_->endpoint_address_, this->endpoint_->endpoint_port_,
-        this->parent_id_, this->parent_instance_id_, this->descriptor_->id_);
-    ResponseFuture future =
-        this->response_handler_->generateRequest(std::move(request));
-    auto payload = future.get();
-    std::shared_ptr<TLV_Pack> tlv_payload =
-        std::static_pointer_cast<TLV_Pack>(payload);
-    return tlv_payload->getValue<T>(this->descriptor_->id_);
+    auto value = this->asyncRead();
+    return value.get();
   }
-  std::future<T> read(size_t timeout) override {}
+
+  std::future<T> read(size_t timeout) override { return this->asyncRead(); }
 };
 
 template <typename T> class Writable : public Resource<T> {
