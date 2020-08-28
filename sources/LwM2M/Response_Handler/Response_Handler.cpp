@@ -7,11 +7,11 @@ namespace LwM2M {
 ResponseHandler::ResponseHandler(shared_ptr<MessageEncoder> encoder)
     : encoder_(encoder) {}
 
-ResponseFuture
-ResponseHandler::generateRequest(unique_ptr<Read_Request> request) {
+ResponseFuture ResponseHandler::setRequest(unique_ptr<Read_Request> request) {
   auto result_promise = ResponsePromise();
   auto result_future = result_promise.get_future();
-  responses_.emplace(request->token_, move(result_promise));
+  auto token = request->token_;
+  responses_.emplace(token, move(result_promise));
   encoder_->encode(move(request));
   return result_future;
 }

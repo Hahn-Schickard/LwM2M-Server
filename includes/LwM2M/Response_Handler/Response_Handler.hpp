@@ -26,7 +26,7 @@ class ResponseHandler {
 public:
   ResponseHandler(std::shared_ptr<MessageEncoder> encoder);
 
-  ResponseFuture generateRequest(std::unique_ptr<Read_Request> request);
+  ResponseFuture setRequest(std::unique_ptr<Read_Request> request);
   void setResponse(std::unique_ptr<Response> response);
 };
 } // namespace LwM2M
