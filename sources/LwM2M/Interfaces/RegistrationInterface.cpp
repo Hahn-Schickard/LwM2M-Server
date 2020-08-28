@@ -17,11 +17,8 @@ struct ObjectDescriptorNotSupported : runtime_error {
 
 RegistrationInterface::RegistrationInterface(
     shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
-    shared_ptr<MessageEncoder> encoder,
-    shared_ptr<ResponseHandler> response_handler,
-    const string &configuration_path)
+    shared_ptr<MessageEncoder> encoder, const string &configuration_path)
     : device_registery_(device_registery), encoder_(encoder),
-      response_handler_(response_handler),
       event_source_(
           make_shared<
               ObserverPattern::EventSource<RegistrationInterfaceEvent>>()),
@@ -68,7 +65,7 @@ bool RegistrationInterface::handleRequest(
     auto object_instances =
         assignObjectInstances(request->object_instances_map_);
     auto new_device = make_shared<Device>(
-        response_handler_, request->endpoint_name_, request->endpoint_address_,
+        encoder_, request->endpoint_name_, request->endpoint_address_,
         request->endpoint_port_, request->life_time_, request->version_,
         request->binding_, request->queue_mode_, request->sms_number_,
         object_instances);

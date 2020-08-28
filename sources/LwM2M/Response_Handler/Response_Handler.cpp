@@ -4,19 +4,15 @@
 using namespace std;
 
 namespace LwM2M {
-ResponseHandler::ResponseHandler(shared_ptr<MessageEncoder> encoder)
-    : encoder_(encoder) {}
 
-ResponseFuture ResponseHandler::setRequest(unique_ptr<Read_Request> request) {
+ResponseFuture ResponseHandler::getFuture(vector<uint8_t> token) {
   auto result_promise = ResponsePromise();
   auto result_future = result_promise.get_future();
-  vector<uint8_t> token(request->token_);
   responses_.emplace(token, move(result_promise));
-  encoder_->encode(move(request));
   return result_future;
 }
 
-void ResponseHandler::setResponse(unique_ptr<Response> response) {
+void ResponseHandler::setFuture(unique_ptr<Response> response) {
   auto it = responses_.find(response->token_);
   if (it != responses_.end()) {
     auto value = response->payload_;

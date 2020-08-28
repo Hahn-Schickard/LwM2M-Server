@@ -5,14 +5,13 @@ using namespace std;
 namespace LwM2M {
 
 Object::Object(std::shared_ptr<Endpoint> endpoint, vector<uint32_t> instances,
-               shared_ptr<ResponseHandler> response_handler,
+               shared_ptr<MessageEncoder> encoder,
                ObjectDescriptorPtr descriptor)
     : endpoint_(endpoint), descriptor_(descriptor) {
   for (auto instance : instances) {
-    instances_.emplace(instance,
-                       make_shared<ObjectInstance>(endpoint, descriptor->id_,
-                                                   instance, response_handler,
-                                                   descriptor_->resources_));
+    instances_.emplace(instance, make_shared<ObjectInstance>(
+                                     endpoint, descriptor->id_, instance,
+                                     encoder, descriptor_->resources_));
   }
 }
 

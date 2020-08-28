@@ -5,7 +5,7 @@
 #include "LwM2M_ModelType.hpp"
 #include "LwM2M_Object.hpp"
 #include "LwM2M_ObjectDescriptor.hpp"
-#include "Response_Handler.hpp"
+#include "Message_Encoder.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -19,7 +19,7 @@ using ObjectDescriptorPair =
 using ObjectDescriptorsMap = std::unordered_map<uint32_t, ObjectDescriptorPair>;
 
 class Device {
-  std::shared_ptr<ResponseHandler> response_handler_;
+  std::shared_ptr<MessageEncoder> encoder_;
   std::string device_id_;
   std::string name_;
   size_t life_time_;
@@ -34,7 +34,7 @@ private:
 
 public:
   Device();
-  Device(std::shared_ptr<ResponseHandler> response_handler, std::string name,
+  Device(std::shared_ptr<MessageEncoder> encoder, std::string name,
          std::string endpoint_address, unsigned int endpoint_port,
          size_t life_time, LwM2M_Version version, BindingType binding,
          bool queue_mode, std::string sms_number,

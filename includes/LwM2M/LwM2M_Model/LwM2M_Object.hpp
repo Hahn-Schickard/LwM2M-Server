@@ -5,7 +5,7 @@
 #include "LwM2M_ObjectDescriptor.hpp"
 #include "LwM2M_ObjectInstance.hpp"
 #include "LwM2M_Resource.hpp"
-#include "Response_Handler.hpp"
+#include "Message_Encoder.hpp"
 
 #include <memory>
 #include <vector>
@@ -22,7 +22,7 @@ class Object {
 
 public:
   Object(std::shared_ptr<Endpoint> endpoint, std::vector<uint32_t> instances,
-         std::shared_ptr<ResponseHandler> response_handler,
+         std::shared_ptr<MessageEncoder> encoder,
          ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();

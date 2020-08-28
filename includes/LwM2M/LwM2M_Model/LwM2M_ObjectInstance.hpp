@@ -4,7 +4,7 @@
 #include "LwM2M_Endpoint.hpp"
 #include "LwM2M_ObjectLink.hpp"
 #include "LwM2M_Resource.hpp"
-#include "Response_Handler.hpp"
+#include "Message_Encoder.hpp"
 
 #include <memory>
 #include <variant>
@@ -21,13 +21,13 @@ class ObjectInstance {
   std::shared_ptr<Endpoint> endpoint_;
   uint32_t parent_id_;
   uint32_t instance_id_;
-  std::shared_ptr<ResponseHandler> response_handler_;
+  std::shared_ptr<MessageEncoder> encoder_;
   std::unordered_map<uint32_t, ResourceVariant> resources_;
 
 public:
   ObjectInstance(
       std::shared_ptr<Endpoint> endpoint, uint32_t parent_id_,
-      uint32_t instance_id, std::shared_ptr<ResponseHandler> response_handler,
+      uint32_t instance_id, std::shared_ptr<MessageEncoder> encoder,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
 

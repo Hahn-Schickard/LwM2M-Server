@@ -12,12 +12,12 @@ string generateDeviceID(string name, string endpoint_address,
 
 Device::Device() {}
 
-Device::Device(shared_ptr<ResponseHandler> response_handler, string name,
+Device::Device(shared_ptr<MessageEncoder> encoder, string name,
                string endpoint_address, unsigned int endpoint_port,
                size_t life_time, LwM2M_Version version, BindingType binding,
                bool queue_mode, string sms_number,
                ObjectDescriptorsMap object_descriptors_map)
-    : response_handler_(response_handler),
+    : encoder_(encoder),
       device_id_(generateDeviceID(name, endpoint_address, endpoint_port)),
       name_(name), life_time_(life_time), version_(version), binding_(binding),
       queue_mode_(queue_mode),
@@ -29,9 +29,8 @@ Device::Device(shared_ptr<ResponseHandler> response_handler, string name,
 void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
   for (auto object_descriptor_pair : object_descriptors_map) {
     auto object_instance_pair = object_descriptor_pair.second;
-    auto object =
-        make_shared<Object>(endpoint_, object_instance_pair.second,
-                            response_handler_, object_instance_pair.first);
+    auto object = make_shared<Object>(endpoint_, object_instance_pair.second,
+                                      encoder_, object_instance_pair.first);
     object_instances_.emplace(object_descriptor_pair.first, move(object));
   }
 }

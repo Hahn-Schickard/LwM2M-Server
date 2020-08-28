@@ -10,11 +10,13 @@ using namespace HaSLL;
 
 namespace LwM2M {
 CoAP_Encoder::CoAP_Encoder(
+    shared_ptr<ResponseHandler> response_handler,
     shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> output_queue)
-    : MessageEncoder(), output_queue_(output_queue),
+    : MessageEncoder(response_handler), output_queue_(output_queue),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 
-void CoAP_Encoder::encode(std::unique_ptr<Read_Request> input) {
+ResponseFuture CoAP_Encoder::encode(unique_ptr<Read_Request> input) {
+  ResponseFuture future;
   try {
     vector<shared_ptr<CoAP::Option>> options;
     options.emplace_back(
@@ -41,10 +43,12 @@ void CoAP_Encoder::encode(std::unique_ptr<Read_Request> input) {
     auto msg = make_unique<CoAP::Message>(input->endpoint_address_,
                                           input->endpoint_port_, header,
                                           options, shared_ptr<PayloadFormat>());
+    future = getResponseHandler()->getFuture(msg->getToken());
     output_queue_->push(move(msg));
   } catch (exception &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
   }
+  return future;
 }
 
 void CoAP_Encoder::encode(unique_ptr<Register_Response> input) {

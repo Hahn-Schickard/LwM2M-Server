@@ -341,7 +341,7 @@ bool CoAP_Decoder::processIfResponse(const CoAP::Message *message) {
       CoAP::MessageType::ACKNOWLEDGMENT) {
     auto response = makeResponse(message);
     if (response) {
-      response_handler_->setResponse(move(response));
+      response_handler_->setFuture(move(response));
       return true;
     }
   }

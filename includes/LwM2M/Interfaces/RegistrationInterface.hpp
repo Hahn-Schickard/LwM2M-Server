@@ -27,7 +27,6 @@ class RegistrationInterface {
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
   std::shared_ptr<MessageEncoder> encoder_;
-  std::shared_ptr<ResponseHandler> response_handler_;
   RegistrationEventSourcePtr event_source_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
@@ -41,7 +40,6 @@ public:
       std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
           device_registery,
       std::shared_ptr<MessageEncoder> encoder,
-      std::shared_ptr<ResponseHandler> response_handler,
       const std::string &configuration_path);
 
   bool handleRequest(std::unique_ptr<Register_Request> request);

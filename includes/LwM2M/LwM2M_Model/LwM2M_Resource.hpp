@@ -4,8 +4,8 @@
 #include "LwM2M_Endpoint.hpp"
 #include "LwM2M_ResourceDescriptor.hpp"
 #include "LwM2M_TLV.hpp"
+#include "Message_Encoder.hpp"
 #include "Read_Request.hpp"
-#include "Response_Handler.hpp"
 
 #include <future>
 #include <memory>
@@ -23,7 +23,7 @@ template <typename T> class Resource {
   std::shared_ptr<Endpoint> endpoint_;
   uint32_t parent_id_;
   uint32_t parent_instance_id_;
-  std::shared_ptr<ResponseHandler> response_handler_;
+  std::shared_ptr<MessageEncoder> encoder_;
   ResourceDescriptorPtr descriptor_;
 
   T decode(ReturnType payload) {
@@ -34,25 +34,23 @@ template <typename T> class Resource {
 
 protected:
   std::future<T> asyncRead() {
-    auto request = std::make_unique<Read_Request>(
-        endpoint_->endpoint_address_, endpoint_->endpoint_port_, parent_id_,
-        parent_instance_id_, descriptor_->id_);
-    std::future<T> result = std::async(std::launch::async, [&]() -> T {
-      auto future = response_handler_->setRequest(std::move(request));
+    return std::async(std::launch::async, [&]() -> T {
+      auto request = std::make_unique<Read_Request>(
+          endpoint_->endpoint_address_, endpoint_->endpoint_port_, parent_id_,
+          parent_instance_id_, descriptor_->id_);
+      auto future = encoder_->encode(std::move(request));
       future.wait();
       return decode(future.get());
     });
-    return result;
   }
 
 public:
   Resource(std::shared_ptr<Endpoint> endpoint, uint32_t parent_id,
-           uint32_t parent_instance_id,
-           std::shared_ptr<ResponseHandler> response_handler,
+           uint32_t parent_instance_id, std::shared_ptr<MessageEncoder> encoder,
            ResourceDescriptorPtr descriptor)
       : endpoint_(endpoint), parent_id_(parent_id),
-        parent_instance_id_(parent_instance_id),
-        response_handler_(response_handler), descriptor_(descriptor) {}
+        parent_instance_id_(parent_instance_id), encoder_(encoder),
+        descriptor_(descriptor) {}
 
   virtual T read() {
     throw UnsupportedMethod("This resource is not Readable!");
@@ -74,9 +72,9 @@ template <typename T> class Executable : public Resource<T> {
 public:
   Executable(std::shared_ptr<Endpoint> endpoint, uint32_t parent_id,
              uint32_t parent_instance_id,
-             std::shared_ptr<ResponseHandler> response_handler,
+             std::shared_ptr<MessageEncoder> encoder,
              ResourceDescriptorPtr descriptor)
-      : Resource<T>(endpoint, parent_id, parent_instance_id, response_handler,
+      : Resource<T>(endpoint, parent_id, parent_instance_id, encoder,
                     descriptor) {}
 
   std::future<T> execute(T values...) override {}
@@ -85,10 +83,9 @@ public:
 template <typename T> class Readable : public Resource<T> {
 public:
   Readable(std::shared_ptr<Endpoint> endpoint, uint32_t parent_id,
-           uint32_t parent_instance_id,
-           std::shared_ptr<ResponseHandler> response_handler,
+           uint32_t parent_instance_id, std::shared_ptr<MessageEncoder> encoder,
            ResourceDescriptorPtr descriptor)
-      : Resource<T>(endpoint, parent_id, parent_instance_id, response_handler,
+      : Resource<T>(endpoint, parent_id, parent_instance_id, encoder,
                     descriptor) {}
 
   T read() override {
@@ -102,10 +99,9 @@ public:
 template <typename T> class Writable : public Resource<T> {
 public:
   Writable(std::shared_ptr<Endpoint> endpoint, uint32_t parent_id,
-           uint32_t parent_instance_id,
-           std::shared_ptr<ResponseHandler> response_handler,
+           uint32_t parent_instance_id, std::shared_ptr<MessageEncoder> encoder,
            ResourceDescriptorPtr descriptor)
-      : Resource<T>(endpoint, parent_id, parent_instance_id, response_handler,
+      : Resource<T>(endpoint, parent_id, parent_instance_id, encoder,
                     descriptor) {}
 
   std::future<T> write(T value) override {}
@@ -115,9 +111,9 @@ template <typename T> class ReadAndWritable : public Resource<T> {
 public:
   ReadAndWritable(std::shared_ptr<Endpoint> endpoint, uint32_t parent_id,
                   uint32_t parent_instance_id,
-                  std::shared_ptr<ResponseHandler> response_handler,
+                  std::shared_ptr<MessageEncoder> encoder,
                   ResourceDescriptorPtr descriptor)
-      : Resource<T>(endpoint, parent_id, parent_instance_id, response_handler,
+      : Resource<T>(endpoint, parent_id, parent_instance_id, encoder,
                     descriptor) {}
 
   T read() override {}
