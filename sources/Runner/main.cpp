@@ -58,6 +58,17 @@ future<string> stringifyResourceValue(LwM2M::ResourceVariant variant) {
   return result.get_future();
 }
 
+void asyncRead(shared_ptr<LwM2M::Device> device) {
+  thread([&] {
+    auto future =
+        stringifyResourceValue(device->getObject(3)->getResource(0, 2));
+    future.wait();
+    cout << "Device: " << device->getDeviceId()
+         << " Model Number of this device is: " << future.get() << endl;
+  })
+      .detach();
+}
+
 class RegistrationListener
     : public ObserverPattern::EventListener<LwM2M::RegistrationInterfaceEvent> {
 public:
@@ -71,15 +82,9 @@ public:
       cout << "A new device with id: " << event->identifier
            << " has been registered!" << endl;
       auto device = event->device;
-      async(launch::async, [&] {
-        auto future =
-            stringifyResourceValue(device->getObject(3)->getResource(0, 2));
-        future.wait();
-        cout << "Device: " + device->getDeviceId() +
-                    " Model Number of this device is: " + future.get()
-             << endl;
-      });
-
+      asyncRead(device);
+      cout << "Sent a read request to Device: " << device->getDeviceId()
+           << endl;
       break;
     }
     case LwM2M::RegistrationInterfaceEventType::UPDATED: {
