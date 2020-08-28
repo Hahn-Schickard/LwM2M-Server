@@ -9,20 +9,20 @@ using namespace std;
 namespace LwM2M {
 
 Identifier_Type getIdentifierType(uint8_t byte) {
-  return static_cast<Identifier_Type>(byte & 0xC0 >> 6);
+  return static_cast<Identifier_Type>((byte & 0xC0) >> 6);
 }
 
-bool isIdentifierSHortLong(uint8_t byte) { return byte & 0x20 >> 5; }
+bool isIdentifierShortLong(uint8_t byte) { return ((byte & 0x20) >> 5); }
 
 Length_Type getLengthType(uint8_t byte) {
-  return static_cast<Length_Type>(byte & 0x18 >> 3);
+  return static_cast<Length_Type>((byte & 0x18) >> 3);
 }
 
 uint8_t getSmallLengthValue(uint8_t byte) { return byte & 0x7; }
 
 TLV_Header::TLV_Header(uint8_t byte)
     : identifier_(getIdentifierType(byte)),
-      is_identifier_short_long_(isIdentifierSHortLong(byte)),
+      is_identifier_short_long_(isIdentifierShortLong(byte)),
       length_type_(getLengthType(byte)),
       value_length_(getSmallLengthValue(byte)) {}
 
@@ -35,9 +35,9 @@ uint8_t TLV_Header::toByte() {
   return result;
 }
 
-TLV::TLV() : TLV(vector<uint8_t>()) {}
+TLV::TLV() {}
 
-TLV::TLV(vector<uint8_t> bytestream) {
+TLV::TLV(vector<uint8_t> &bytestream) {
   auto it = bytestream.begin();
   header_ = make_shared<TLV_Header>(*it);
   it++;

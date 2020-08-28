@@ -43,7 +43,7 @@ class TLV {
 
 public:
   TLV();
-  TLV(std::vector<uint8_t> bytestream);
+  TLV(std::vector<uint8_t> &bytestream);
 
   uint16_t getIdentifier();
   std::vector<uint8_t> getValue();
