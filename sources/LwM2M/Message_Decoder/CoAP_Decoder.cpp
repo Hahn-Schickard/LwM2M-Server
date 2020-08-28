@@ -312,10 +312,19 @@ unique_ptr<Response> makeResponse(const CoAP::Message *message) {
   unique_ptr<Response> response;
   if (message->getHeader().getCodeType() == CoAP::CodeType::CONTENT) {
     auto payload = decodeResponsePayload(message->getBody());
-    response = make_unique<Response>(
-        message->getReceiverIP(), message->getReceiverPort(),
-        message->getHeader().getMessageID(), message->getToken(),
-        MessageType::NOT_RECOGNIZED, ResponseCode::CONTENT, payload);
+    if (payload) {
+      response = make_unique<Response>(
+          message->getReceiverIP(), message->getReceiverPort(),
+          message->getHeader().getMessageID(), message->getToken(),
+          MessageType::NOT_RECOGNIZED, ResponseCode::CONTENT, payload);
+    } else {
+      string error_msg =
+          "Received a Content message with unrecognized payload: " +
+          to_string(message->getBody()->getContentFormatType().getAsShort()) +
+          " from " + message->getReceiverIP() + ":" +
+          to_string(message->getReceiverPort());
+      throw runtime_error(move(error_msg));
+    }
   } else if (message->getHeader().getCodeType() == CoAP::CodeType::CONTINUE) {
     // @TODO: handle segmented packets
   } else if (message->getHeader().getCodeType() != CoAP::CodeType::UNHANDLED) {
