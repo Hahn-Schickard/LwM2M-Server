@@ -117,6 +117,11 @@ Option::Option(OptionNumber option_number, size_t option_size, bool critical,
   }
 }
 
+bool operator==(Option &lhs, Option &rhs) {
+  return (lhs.getOptionNumber() == rhs.getOptionNumber() &&
+          lhs.getValue() == rhs.getValue());
+}
+
 OptionNumber Option::getOptionNumber() { return option_number_; }
 
 vector<uint8_t> Option::getValue() { return vector<uint8_t>(); }

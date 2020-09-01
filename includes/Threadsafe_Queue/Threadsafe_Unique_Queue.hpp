@@ -25,9 +25,11 @@ template <typename T> class ThreadsafeUniqueQueue {
   public:
     bool operator()(std::weak_ptr<T> weak_ptr1,
                     std::weak_ptr<T> weak_ptr2) const {
-      auto ptr1 = weak_ptr1.lock();
-      auto ptr2 = weak_ptr2.lock();
-      return std::hash<T>()(*ptr1) == std::hash<T>()(*ptr2) ? true : false;
+      std::shared_ptr<T> ptr1 = weak_ptr1.lock();
+      std::shared_ptr<T> ptr2 = weak_ptr2.lock();
+      T value1 = *(ptr1.get());
+      T value2 = *(ptr2.get());
+      return value1 == value2;
     }
   };
 

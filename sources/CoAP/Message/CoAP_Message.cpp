@@ -106,6 +106,10 @@ Message::Message(string receiver_ip, unsigned int receiver_port,
       header_(move(header_data)), token_(move(token)), options_(move(options)),
       body_(move(body)) {}
 
+bool operator==(const Message &lhs, const Message &rhs) {
+  return (lhs.toPacket() == rhs.toPacket());
+}
+
 vector<uint8_t> Message::toPacket() const {
   auto result = header_.toPacket();
 

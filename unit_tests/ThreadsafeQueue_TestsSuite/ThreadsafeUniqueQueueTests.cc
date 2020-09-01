@@ -119,6 +119,10 @@ public:
     return hash<string>{}(value.name) + hash<int>{}(value.age);
   }
 };
+
+bool operator==(const Custom &lhs, const Custom &rhs) {
+  return (lhs.name == rhs.name && lhs.age == rhs.age);
+}
 } // namespace std
 
 class ThreadsafeUniqueQueueWithCustomClassTests : public ::testing::Test {

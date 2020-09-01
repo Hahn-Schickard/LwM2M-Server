@@ -70,6 +70,8 @@ public:
   Header(MessageType type, uint8_t message_length, CodeType code_type,
          uint16_t message_id);
 
+  friend bool operator==(const Header &lhs, const Header &rhs);
+
   std::vector<uint8_t> toPacket() const;
   MessageType getMesageType() const;
   uint8_t getTokenLenght() const;

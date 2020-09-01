@@ -15,6 +15,11 @@ public:
   PayloadFormat(ContentFormat format_type) : format_type_(format_type) {}
   virtual ~PayloadFormat() = default;
 
+  friend bool operator==(PayloadFormat &lhs, PayloadFormat &rhs) {
+    return (lhs.format_type_ == rhs.format_type_ &&
+            lhs.getBytes() == rhs.getBytes());
+  }
+
   ContentFormat getContentFormatType() { return format_type_; }
 
   virtual std::vector<uint8_t> getBytes() = 0;

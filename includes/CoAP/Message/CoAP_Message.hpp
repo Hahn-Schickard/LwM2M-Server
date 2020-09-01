@@ -37,6 +37,8 @@ public:
           std::vector<std::shared_ptr<Option>> options,
           std::shared_ptr<PayloadFormat> body);
 
+  friend bool operator==(const Message &lhs, const Message &rhs);
+
   std::vector<uint8_t> toPacket() const;
   std::string getReceiverIP() const;
   unsigned int getReceiverPort() const;
