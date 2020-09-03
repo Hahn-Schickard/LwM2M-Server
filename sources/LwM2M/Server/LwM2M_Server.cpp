@@ -101,8 +101,6 @@ shared_ptr<Device> Server::getDevice(string device_id) {
   return result;
 }
 
-RegistrationEventSourcePtr Server::getEventSource() {
-  return registration_->getEventSource();
-}
+RegistrationEventSourcePtr Server::getEventSource() { return registration_; }
 
 } // namespace LwM2M

@@ -16,18 +16,16 @@
 
 namespace LwM2M {
 
-using RegistrationEventSourcePtr =
-    std::shared_ptr<ObserverPattern::EventSource<RegistrationInterfaceEvent>>;
 using ObjectDescriptorPair =
     std::pair<std::shared_ptr<ObjectDescriptor>, std::vector<uint32_t>>;
 
-class RegistrationInterface {
+class RegistrationInterface
+    : public ObserverPattern::EventSource<RegistrationInterfaceEvent> {
   std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
       supported_descriptors_;
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
   std::shared_ptr<MessageEncoder> encoder_;
-  RegistrationEventSourcePtr event_source_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
   bool isRegistered(std::string device_id);
@@ -47,8 +45,6 @@ public:
   bool handleRequest(std::unique_ptr<Update_Request> request);
 
   bool handleRequest(std::unique_ptr<Deregister_Request> request);
-
-  RegistrationEventSourcePtr getEventSource();
 };
 
 } // namespace LwM2M

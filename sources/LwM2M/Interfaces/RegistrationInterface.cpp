@@ -18,10 +18,8 @@ struct ObjectDescriptorNotSupported : runtime_error {
 RegistrationInterface::RegistrationInterface(
     shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
     shared_ptr<MessageEncoder> encoder, const string &configuration_path)
-    : device_registery_(device_registery), encoder_(encoder),
-      event_source_(
-          make_shared<
-              ObserverPattern::EventSource<RegistrationInterfaceEvent>>()),
+    : ObserverPattern::EventSource<RegistrationInterfaceEvent>(),
+      device_registery_(device_registery), encoder_(encoder),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
@@ -89,7 +87,7 @@ bool RegistrationInterface::handleRequest(
   }
   encoder_->encode(move(result));
   if (event)
-    event_source_->notify(move(event));
+    notify(move(event));
   return true;
 }
 
@@ -117,7 +115,7 @@ bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
         updated = true;
       }
       if (updated)
-        event_source_->notify(make_shared<RegistrationInterfaceEvent>(
+        notify(make_shared<RegistrationInterfaceEvent>(
             RegistrationInterfaceEvent{RegistrationInterfaceEventType::UPDATED,
                                        request->location_, device}));
       encoder_->encode(make_unique<Response>(
@@ -144,10 +142,9 @@ bool RegistrationInterface::handleRequest(
   try {
     if (isRegistered(request->location_)) {
       device_registery_->erase(device_registery_->find(request->location_));
-      event_source_->notify(
-          make_shared<RegistrationInterfaceEvent>(RegistrationInterfaceEvent{
-              RegistrationInterfaceEventType::DEREGISTERED, request->location_,
-              shared_ptr<Device>()}));
+      notify(make_shared<RegistrationInterfaceEvent>(RegistrationInterfaceEvent{
+          RegistrationInterfaceEventType::DEREGISTERED, request->location_,
+          shared_ptr<Device>()}));
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
           request->message_id_.value(), request->token_,
@@ -165,9 +162,5 @@ bool RegistrationInterface::handleRequest(
         ResponseCode::BAD_REQUEST));
   }
   return true;
-}
-
-RegistrationEventSourcePtr RegistrationInterface::getEventSource() {
-  return event_source_;
 }
 } // namespace LwM2M

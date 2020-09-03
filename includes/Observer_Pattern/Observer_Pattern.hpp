@@ -38,6 +38,8 @@ public:
 
   virtual void attach(EventListenerPtr<EventType> listener) = 0;
   virtual void detach(EventListenerPtr<EventType> listener) = 0;
+
+protected:
   virtual void notify(std::shared_ptr<EventType> event) = 0;
 };
 
@@ -46,15 +48,16 @@ class EventSource : public EventSourceInterface<EventType> {
   std::unordered_set<EventListenerPtr<EventType>> listeners_;
 
 public:
-  void attach(EventListenerPtr<EventType> listener) override {
+  void attach(EventListenerPtr<EventType> listener) final {
     listeners_.insert(listener);
   }
 
-  void detach(EventListenerPtr<EventType> listener) override {
+  void detach(EventListenerPtr<EventType> listener) final {
     listeners_.erase(listeners_.find(listener));
   }
 
-  void notify(std::shared_ptr<EventType> event) override {
+protected:
+  void notify(std::shared_ptr<EventType> event) final {
     for (auto listener : listeners_) {
       listener->handleEvent(event);
     }
