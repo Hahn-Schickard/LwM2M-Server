@@ -3,7 +3,6 @@
 #include "CoAP_Encoder.hpp"
 #include "CoAP_Server.hpp"
 #include "LoggerRepository.hpp"
-#include "RegistrationInterface.hpp"
 #include "Threadsafe_Unique_Queue.hpp"
 
 using namespace std;
@@ -56,11 +55,12 @@ Server::Server(Configuration config)
                                           config.read_timeout);
   shared_ptr<MessageEncoder> encoder =
       make_shared<CoAP_Encoder>(server->getOutgoingMessagesQueue());
-  auto registration = make_shared<RegistrationInterface>(
+  registration_ = make_shared<RegistrationInterface>(
       device_registery_, encoder, config.object_descriptors_location);
-  processes_.emplace_back(make_unique<CoAP_Decoder>(
-                              registration, server->getIncomingMessagesQueue()),
-                          "Incoming Message Processor");
+  processes_.emplace_back(
+      make_unique<CoAP_Decoder>(registration_,
+                                server->getIncomingMessagesQueue()),
+      "Incoming Message Processor");
   processes_.emplace_back(move(server), "CoAP Server");
 };
 
@@ -98,6 +98,10 @@ shared_ptr<Device> Server::getDevice(string device_id) {
   if (it != device_registery_->end())
     result = it->second;
   return result;
+}
+
+RegistrationEventSourcePtr Server::getEventSource() {
+  return registration_->getEventSource();
 }
 
 } // namespace LwM2M
