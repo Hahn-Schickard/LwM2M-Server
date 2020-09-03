@@ -50,6 +50,8 @@ public:
   Option();
   virtual ~Option() = default;
 
+  friend bool operator==(Option &lhs, Option &rhs);
+
   virtual std::vector<uint8_t> getValue();
   virtual std::string getAsString();
 

@@ -12,8 +12,6 @@ namespace CoAP {
 
 std::shared_ptr<PayloadFormat> decode(std::shared_ptr<ContentFormat> format,
                                       std::vector<uint8_t> payload);
-std::vector<uint8_t> encode(std::shared_ptr<PayloadFormat> format);
-
 } // namespace CoAP
 
 #endif //__COAP_MESSAGE_PAYLOAD_DECODER_HPP

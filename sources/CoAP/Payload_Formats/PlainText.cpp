@@ -12,7 +12,9 @@ PlainText::PlainText(vector<uint8_t> bytestream)
 PlainText::PlainText(string utf_8_string)
     : PayloadFormat(ContentFormatType::PLAIN_TEXT), text_(utf_8_string) {}
 
-string PlainText::toString() { return text_; }
+vector<uint8_t> PlainText::getBytes() {
+  return vector<uint8_t>(text_.begin(), text_.end());
+}
 
-size_t PlainText::size() { return text_.length(); }
+string PlainText::toString() { return text_; }
 } // namespace CoAP

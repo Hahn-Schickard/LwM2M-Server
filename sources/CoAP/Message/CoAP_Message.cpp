@@ -3,13 +3,28 @@
 #include "PayloadDecoder.hpp"
 
 #include <deque>
+#include <random>
 
 #define HEADER_SIZE 4
 #define PAYLOAD_MARKER 0xFF
 #define PAYLOAD_MARKER_SIZE 1
+#define MAX_BYTE_VALUE 255
+#define MAX_TOKEN_SIZE 8
 
 using namespace std;
 namespace CoAP {
+
+vector<uint8_t> generateToken() {
+  random_device randomization_device;
+  mt19937 generator(randomization_device());
+
+  uniform_int_distribution<> token_part_value(0, MAX_BYTE_VALUE);
+  vector<uint8_t> token(MAX_TOKEN_SIZE);
+  for (int i = 0; i < MAX_TOKEN_SIZE; i++) {
+    token[i] = token_part_value(generator);
+  }
+  return token;
+}
 
 vector<uint8_t> removeSubvector(vector<uint8_t> &parent, size_t end_index,
                                 size_t start_index = 0) {
@@ -78,12 +93,22 @@ Message::Message(string receiver_ip, unsigned int receiver_port,
 }
 
 Message::Message(string receiver_ip, unsigned int receiver_port,
+                 Header header_data, vector<shared_ptr<Option>> options,
+                 shared_ptr<PayloadFormat> body)
+    : Message(receiver_ip, receiver_port, header_data, generateToken(), options,
+              body) {}
+
+Message::Message(string receiver_ip, unsigned int receiver_port,
                  Header header_data, vector<uint8_t> token,
                  vector<shared_ptr<Option>> options,
                  shared_ptr<PayloadFormat> body)
     : receiver_ip_(receiver_ip), receiver_port_(receiver_port),
       header_(move(header_data)), token_(move(token)), options_(move(options)),
       body_(move(body)) {}
+
+bool operator==(const Message &lhs, const Message &rhs) {
+  return (lhs.toPacket() == rhs.toPacket());
+}
 
 vector<uint8_t> Message::toPacket() const {
   auto result = header_.toPacket();
@@ -94,7 +119,7 @@ vector<uint8_t> Message::toPacket() const {
   result.insert(result.end(), option_pack.begin(), option_pack.end());
 
   if (body_) {
-    vector<uint8_t> payload = encode(body_);
+    vector<uint8_t> payload = body_->getBytes();
     if (!options_.empty())
       result.push_back(PAYLOAD_MARKER);
     result.insert(result.end(), payload.begin(), payload.end());

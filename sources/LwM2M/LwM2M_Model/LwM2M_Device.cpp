@@ -12,30 +12,49 @@ string generateDeviceID(string name, string endpoint_address,
 
 Device::Device() {}
 
-Device::Device(
-    string name, string endpoint_address, unsigned int endpoint_port,
-    size_t life_time, LwM2M_Version version, BindingType binding,
-    bool queue_mode, optional<string> sms_number,
-    unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> object_instances_map)
-    : device_id_(generateDeviceID(name, endpoint_address, endpoint_port)),
-      name_(name), endpoint_address_(endpoint_address),
-      endpoint_port_(endpoint_port), life_time_(life_time), version_(version),
-      binding_(binding), queue_mode_(queue_mode), sms_number_(sms_number),
-      object_instances_(object_instances_map) {}
+Device::Device(shared_ptr<MessageEncoder> encoder, string name,
+               string endpoint_address, unsigned int endpoint_port,
+               size_t life_time, LwM2M_Version version, BindingType binding,
+               bool queue_mode, string sms_number,
+               ObjectDescriptorsMap object_descriptors_map)
+    : encoder_(encoder),
+      device_id_(generateDeviceID(name, endpoint_address, endpoint_port)),
+      name_(name), life_time_(life_time), version_(version), binding_(binding),
+      queue_mode_(queue_mode),
+      endpoint_(make_shared<Endpoint>(
+          Endpoint{endpoint_address, endpoint_port, sms_number})) {
+  makeObjects(object_descriptors_map);
+}
+
+void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
+  for (auto object_descriptor_pair : object_descriptors_map) {
+    auto object_instance_pair = object_descriptor_pair.second;
+    auto object = make_shared<Object>(endpoint_, object_instance_pair.second,
+                                      encoder_, object_instance_pair.first);
+    object_instances_.emplace(object_descriptor_pair.first, move(object));
+  }
+}
 
 string Device::getDeviceId() { return device_id_; }
+
+ObjectPtr Device::getObject(uint32_t id) {
+  auto it = object_instances_.find(id);
+  if (it != object_instances_.end()) {
+    return it->second;
+  } else {
+    return ObjectPtr();
+  }
+}
 
 void Device::updateBinding(BindingType binding) { binding_ = binding; }
 
 void Device::updateLifetime(size_t life_time) { life_time_ = life_time; }
 
 void Device::updateSMS_Number(std::string sms_number) {
-  sms_number_ = sms_number;
+  endpoint_->sms_number_ = sms_number;
 }
 
-void Device::updateObjectsMap(
-    std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
-        object_instances) {
-  object_instances_ = object_instances;
+void Device::updateObjectsMap(ObjectDescriptorsMap object_descriptors_map) {
+  makeObjects(object_descriptors_map);
 }
 } // namespace LwM2M

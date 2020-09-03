@@ -6,16 +6,24 @@
 namespace CoAP {
 
 class PayloadFormat {
-  ContentFormatType format_type_;
+  ContentFormat format_type_;
 
 public:
-  PayloadFormat() : PayloadFormat(ContentFormatType::UNRECOGNIZED) {}
-  PayloadFormat(ContentFormatType format_type) : format_type_(format_type) {}
+  PayloadFormat() : PayloadFormat(ContentFormat()) {}
+  PayloadFormat(uint16_t format_type)
+      : PayloadFormat(ContentFormat(format_type)) {}
+  PayloadFormat(ContentFormat format_type) : format_type_(format_type) {}
   virtual ~PayloadFormat() = default;
 
-  ContentFormatType getContentFormatType() { return format_type_; }
+  friend bool operator==(PayloadFormat &lhs, PayloadFormat &rhs) {
+    return (lhs.format_type_ == rhs.format_type_ &&
+            lhs.getBytes() == rhs.getBytes());
+  }
+
+  ContentFormat getContentFormatType() { return format_type_; }
+
+  virtual std::vector<uint8_t> getBytes() = 0;
   virtual std::string toString() = 0;
-  virtual size_t size() = 0;
 };
 } // namespace CoAP
 

@@ -1,43 +1,52 @@
 #ifndef __LWM2M_DEVICE_HPP
 #define __LWM2M_DEVICE_HPP
 
+#include "LwM2M_Endpoint.hpp"
+#include "LwM2M_ModelType.hpp"
+#include "LwM2M_Object.hpp"
 #include "LwM2M_ObjectDescriptor.hpp"
-#include "RegistrationInterfaceMessages.hpp"
+#include "Message_Encoder.hpp"
 
-#include <optional>
 #include <string>
 #include <unordered_map>
 
 namespace LwM2M {
+
+using ObjectPtr = std::shared_ptr<Object>;
+using ObjectsMap = std::unordered_map<uint32_t, ObjectPtr>;
+using ObjectDescriptorPair =
+    std::pair<std::shared_ptr<ObjectDescriptor>, std::vector<uint32_t>>;
+using ObjectDescriptorsMap = std::unordered_map<uint32_t, ObjectDescriptorPair>;
+
 class Device {
+  std::shared_ptr<MessageEncoder> encoder_;
   std::string device_id_;
   std::string name_;
-  std::string endpoint_address_;
-  unsigned int endpoint_port_;
   size_t life_time_;
   LwM2M_Version version_;
   BindingType binding_;
   bool queue_mode_;
-  std::optional<std::string> sms_number_;
-  std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
-      object_instances_;
+  std::shared_ptr<Endpoint> endpoint_;
+  ObjectsMap object_instances_;
+
+private:
+  void makeObjects(ObjectDescriptorsMap object_descriptors_map);
 
 public:
   Device();
-  Device(std::string name, std::string endpoint_address,
-         unsigned int endpoint_port, size_t life_time, LwM2M_Version version,
-         BindingType binding, bool queue_mode,
-         std::optional<std::string> sms_number,
-         std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
-             object_instances_map);
+  Device(std::shared_ptr<MessageEncoder> encoder, std::string name,
+         std::string endpoint_address, unsigned int endpoint_port,
+         size_t life_time, LwM2M_Version version, BindingType binding,
+         bool queue_mode, std::string sms_number,
+         ObjectDescriptorsMap object_descriptors_map);
 
   std::string getDeviceId();
+  ObjectPtr getObject(uint32_t id);
+
   void updateBinding(BindingType binding);
   void updateLifetime(size_t life_time);
   void updateSMS_Number(std::string sms_number);
-  void updateObjectsMap(
-      std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
-          object_instances);
+  void updateObjectsMap(ObjectDescriptorsMap object_instances);
 };
 }; // namespace LwM2M
 

@@ -1,7 +1,8 @@
-#ifndef __LWM2M_MODEL_RESOURCE_HPP
-#define __LWM2M_MODEL_RESOURCE_HPP
+#ifndef __LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP
+#define __LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP
 
-#include <algorithm>
+#include "LwM2M_RangeEnumeration.hpp"
+
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -47,7 +48,7 @@ enum class DataType {
   BOOLEAN, /*<! An 8 bit unsigned integer value containign 0 for FALSE or 1 for
               TRUE, Represented as 0 or 1 ASCII charater in Text and as an 8 bit
               unsigned integer with value of 0 or 1 in TLV format */
-  OPAQUE,  /*<! A sequence of binary octets. Represented as Bas64 encoding of
+  OPAQUE,  /*<! A sequence of binary octets. Represented as Base64 encoding of
               binary data as defined per RFC4648 in ASCII format and as a
               sequence of binary data limited by the length field in TLV format.
             */
@@ -60,40 +61,6 @@ enum class DataType {
                  UTF-8 string containign 2 16-bit ASCII integers seperated by
                  ':' in Text format or as two 16 bit unsigned integers in TLV
                  Format*/
-};
-
-/**
- * @brief ObjectLink - indicates a link to another object
- *
- */
-struct ObjectLink {
-  const uint16_t object_id_;
-  const uint16_t instance_id_;
-
-  ObjectLink(uint16_t object_id, uint16_t instance_id);
-};
-
-/**
- * @brief RangeEnumeration - represents a range of supported value types by the
- * LwM2M Resource
- *
- */
-class RangeEnumeration {
-  const std::vector<std::string> available_string_values_;
-  const std::optional<long int> minimum_integer_value_;
-  const std::optional<long int> maximum_integer_value_;
-  const std::optional<double> minimum_floating_value_;
-  const std::optional<double> maximum_floating_value_;
-
-public:
-  RangeEnumeration();
-  RangeEnumeration(std::vector<std::string> available_values);
-  RangeEnumeration(long int minimum_value, long int maximum_value);
-  RangeEnumeration(double minimum_value, double maximum_value);
-
-  bool inRange(std::string value);
-  bool inRange(long int value);
-  bool inRange(double value);
 };
 
 /**
@@ -126,4 +93,4 @@ struct ResourceDescriptor {
 };
 
 } // namespace LwM2M
-#endif //__LWM2M_MODEL_RESOURCE_HPP
+#endif //__LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP

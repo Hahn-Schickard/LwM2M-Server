@@ -5,61 +5,6 @@
 using namespace std;
 namespace LwM2M {
 
-ObjectLink::ObjectLink(uint16_t object_id, uint16_t instance_id)
-    : object_id_(object_id), instance_id_(instance_id) {}
-
-RangeEnumeration::RangeEnumeration()
-    : available_string_values_(), minimum_integer_value_(nullopt),
-      maximum_integer_value_(nullopt), minimum_floating_value_(nullopt),
-      maximum_floating_value_(nullopt) {}
-
-RangeEnumeration::RangeEnumeration(vector<string> available_values)
-    : available_string_values_(move(available_values)),
-      minimum_integer_value_(nullopt), maximum_integer_value_(nullopt),
-      minimum_floating_value_(nullopt), maximum_floating_value_(nullopt) {}
-
-RangeEnumeration::RangeEnumeration(long int minimum_value,
-                                   long int maximum_value)
-    : available_string_values_(), minimum_integer_value_(minimum_value),
-      maximum_integer_value_(maximum_value), minimum_floating_value_(nullopt),
-      maximum_floating_value_(nullopt) {}
-
-RangeEnumeration::RangeEnumeration(double minimum_value, double maximum_value)
-    : available_string_values_(), minimum_integer_value_(nullopt),
-      maximum_integer_value_(nullopt), minimum_floating_value_(minimum_value),
-      maximum_floating_value_(maximum_value) {}
-
-bool RangeEnumeration::inRange(string value) {
-  for (string supported_value : available_string_values_) {
-    if (transform(supported_value.begin(), supported_value.end(),
-                  supported_value.begin(), ::toupper) ==
-        transform(value.begin(), value.end(), value.begin(), ::toupper)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool RangeEnumeration::inRange(long int value) {
-  if (minimum_integer_value_ && maximum_integer_value_) {
-    if (value <= maximum_integer_value_.value() &&
-        value >= minimum_integer_value_.value()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool RangeEnumeration::inRange(double value) {
-  if (minimum_floating_value_ && minimum_floating_value_) {
-    if (value <= minimum_floating_value_.value() &&
-        value >= minimum_floating_value_.value()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 ResourceDescriptor::ResourceDescriptor(const ResourceDescriptor &instance)
     : id_(instance.id_), name_(instance.name_),
       operations_(instance.operations_),

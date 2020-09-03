@@ -22,6 +22,7 @@ target_link_libraries(${THIS} PUBLIC
                               Stoppable_Task
                               Observer_Pattern
                               Message_Encoder
+                              LwM2M_Registration_Messages
                               HaSLL::HaSLL
                               PRIVATE
                               XML_Parser

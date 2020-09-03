@@ -104,7 +104,7 @@ InterfaceType getInterfaceType(MessageType message_type) {
   return result;
 }
 
-Notify_Attripube::Notify_Attripube(
+Notify_Attribute::Notify_Attribute(
     optional<unsigned int> minimum_period,
     optional<unsigned int> maximum_period, optional<unsigned int> greater_than,
     optional<unsigned int> less_than, optional<unsigned int> step,
@@ -117,6 +117,13 @@ Notify_Attripube::Notify_Attripube(
       maximum_evaluation_period_(move(maximum_evaluation_period)) {}
 
 Message::Message() {}
+
+Message::Message(string endpoint_address, unsigned int endpoint_port,
+                 MessageType message_type)
+    : message_type_(message_type),
+      interface_type_(getInterfaceType(message_type_)), response_(false),
+      endpoint_address_(endpoint_address), endpoint_port_(endpoint_port),
+      message_id_(nullopt) {}
 
 Message::Message(string endpoint_address, unsigned int endpoint_port,
                  uint16_t message_id, vector<uint8_t> token,
@@ -135,7 +142,8 @@ Message::Message(string endpoint_address, unsigned int endpoint_port,
 
 Response::Response()
     : Message(string(), 0, 0, vector<uint8_t>(), MessageType::NOT_RECOGNIZED),
-      response_code_(ResponseCode::UNHANDLED), payload_(vector<uint8_t>()) {
+      response_code_(ResponseCode::UNHANDLED),
+      payload_(shared_ptr<DataFormat>()) {
   response_ = true;
 }
 
@@ -143,14 +151,14 @@ Response::Response(string endpoint_address, unsigned int endpoint_port,
                    uint16_t message_id, vector<uint8_t> token,
                    MessageType message_type, ResponseCode response_code)
     : Message(endpoint_address, endpoint_port, message_id, token, message_type),
-      response_code_(response_code), payload_(vector<uint8_t>()) {
+      response_code_(response_code), payload_(shared_ptr<DataFormat>()) {
   response_ = true;
 }
 
 Response::Response(string endpoint_address, unsigned int endpoint_port,
                    uint16_t message_id, vector<uint8_t> token,
                    MessageType message_type, ResponseCode response_code,
-                   vector<uint8_t> payload)
+                   shared_ptr<DataFormat> payload)
     : Message(endpoint_address, endpoint_port, message_id, token, message_type),
       response_code_(response_code), payload_(payload) {
   response_ = true;

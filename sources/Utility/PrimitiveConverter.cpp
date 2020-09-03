@@ -14,27 +14,28 @@ enum class integer_size : uint8_t { SHORT = 2, WORD = 4, LONG = 8 };
 
 vector<uint8_t> unpack_int(uint64_t value, integer_size type) {
   vector<uint8_t> result;
-  uint64_t mask;
+  uint8_t offset;
   uint8_t bytes_to_iterate = static_cast<uint8_t>(type);
   switch (type) {
   case integer_size::SHORT: {
-    mask = 0xFF;
+    offset = 8;
     break;
   }
   case integer_size::WORD: {
-    mask = 0x0000FF;
+    offset = 24;
     break;
   }
   case integer_size::LONG: {
-    mask = 0x00000000000000FF;
+    offset = 56;
     break;
   }
   default: { break; }
   }
 
   for (int i = 0; i < bytes_to_iterate; i++) {
-    result.push_back(value & mask);
-    value = value >> 8;
+    uint8_t byte = (value >> offset) & 0xFF;
+    offset = offset - 8;
+    result.push_back(byte);
   }
 
   return result;

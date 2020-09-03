@@ -26,16 +26,7 @@ ContentFormatType toContentFormatType(uint16_t value) {
   case 112: {
     return ContentFormatType::SENML_CBOR;
   }
-  case 11542: {
-    return ContentFormatType::TLV;
-  }
-  case 11543: {
-    return ContentFormatType::JSON;
-  }
-  default: {
-    string error_msg = "Unsupported content format type: " + to_string(value);
-    throw domain_error(move(error_msg));
-  }
+  default: { return ContentFormatType::UNRECOGNIZED; }
   }
 }
 
@@ -49,12 +40,6 @@ string toString(ContentFormatType type) {
   }
   case ContentFormatType::OPAQUE: {
     return "Opaque";
-  }
-  case ContentFormatType::TLV: {
-    return "Type-Length-Value";
-  }
-  case ContentFormatType::JSON: {
-    return "JavaScript Object Notation";
   }
   case ContentFormatType::CBOR: {
     return "Concise Binary Object Representation";
@@ -74,28 +59,32 @@ ContentFormat::ContentFormat()
 
 ContentFormat::ContentFormat(ContentFormatType format_type)
     : Option(OptionNumber::CONTENT_FORMAT, 2, false, false, false, 2),
-      value_(format_type) {}
+      value_(static_cast<uint16_t>(format_type)) {}
 
 ContentFormat::ContentFormat(vector<uint8_t> value)
     : Option(OptionNumber::CONTENT_FORMAT, value.size(), false, false, false,
              2) {
   if (!value.empty()) {
-    uint16_t concat_value = 0;
-    uint8_t offset = 0;
-    for (auto byte : value) {
-      concat_value = concat_value | byte << offset;
-      offset += 8;
+    if (value.size() == 2) {
+      value_ = value[0] << 8 | value[1];
+    } else {
+      value_ = value[0];
     }
-    value_ = toContentFormatType(concat_value);
   }
 }
 
+ContentFormat::ContentFormat(uint16_t value)
+    : Option(OptionNumber::CONTENT_FORMAT, 2, false, false, false, 2),
+      value_(static_cast<uint16_t>(value)) {}
+
 vector<uint8_t> ContentFormat::getValue() { return toBytes(getAsShort()); }
 
-string ContentFormat::getAsString() { return toString(value_); }
+string ContentFormat::getAsString() { return toString(getContentFormatType()); }
 
-uint16_t ContentFormat::getAsShort() { return static_cast<uint16_t>(value_); }
+uint16_t ContentFormat::getAsShort() { return value_; }
 
-ContentFormatType ContentFormat::getContentFormatType() { return value_; }
+ContentFormatType ContentFormat::getContentFormatType() {
+  return toContentFormatType(value_);
+}
 
 } // namespace CoAP

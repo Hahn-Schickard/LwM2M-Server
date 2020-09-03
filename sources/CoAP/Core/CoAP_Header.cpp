@@ -1,5 +1,9 @@
 #include "CoAP_Header.hpp"
 
+#include <random>
+
+#define MAX_MESSAGE_ID 65535
+
 using namespace std;
 namespace CoAP {
 
@@ -149,6 +153,14 @@ string toString(CodeType type) {
   return result;
 }
 
+uint16_t generateMessageID() {
+  random_device randomization_device;
+  mt19937 generator(randomization_device());
+
+  uniform_int_distribution<> random_number_pool_(0, MAX_MESSAGE_ID);
+  return random_number_pool_(generator);
+}
+
 Header::Header() {}
 
 Header::Header(vector<uint8_t> data) {
@@ -172,10 +184,17 @@ Header::Header(vector<uint8_t> data) {
   }
 }
 
+Header::Header(MessageType type, uint8_t message_length, CodeType code_type)
+    : Header(type, message_length, code_type, generateMessageID()) {}
+
 Header::Header(MessageType type, uint8_t message_length, CodeType code_type,
                uint16_t message_id)
     : type_(type), token_length_(message_length), code_(code_type),
       message_id_(message_id) {}
+
+bool operator==(const Header &lhs, const Header &rhs) {
+  return lhs.toPacket() == rhs.toPacket();
+}
 
 vector<uint8_t> Header::toPacket() const {
   vector<uint8_t> result(4);

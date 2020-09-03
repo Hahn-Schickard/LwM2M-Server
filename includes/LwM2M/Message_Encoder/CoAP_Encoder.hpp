@@ -4,6 +4,7 @@
 #include "CoAP_Message.hpp"
 #include "Logger.hpp"
 #include "Message_Encoder.hpp"
+#include "RegistrationMessages.hpp"
 #include "Threadsafe_Unique_Queue.hpp"
 
 namespace LwM2M {
@@ -14,7 +15,10 @@ class CoAP_Encoder : public MessageEncoder {
 
 public:
   CoAP_Encoder(
+      std::shared_ptr<ResponseHandler> response_handler,
       std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> output_queue);
+
+  ResponseFuture encode(std::unique_ptr<Read_Request> input) override;
 
   void encode(std::unique_ptr<Register_Response> input) override;
   void encode(std::unique_ptr<Response> input) override;

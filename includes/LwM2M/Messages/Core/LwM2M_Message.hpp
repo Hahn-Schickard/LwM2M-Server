@@ -1,12 +1,13 @@
-#ifndef __Message_HPP
-#define __Message_HPP
+#ifndef __LWM2M_MESSAGE_HPP
+#define __LWM2M_MESSAGE_HPP
 
 #include "Hashers.hpp"
+#include "LwM2M_DataFormat.hpp"
 
+#include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace LwM2M {
@@ -53,7 +54,7 @@ enum class MessageType {
 
 std::string toString(MessageType type);
 
-struct Notify_Attripube {
+struct Notify_Attribute {
   std::optional<unsigned int> minimum_period_;
   std::optional<unsigned int> maximum_period_;
   std::optional<unsigned int> greater_than_;
@@ -62,7 +63,7 @@ struct Notify_Attripube {
   std::optional<unsigned int> minimum_evaluation_period_;
   std::optional<unsigned int> maximum_evaluation_period_;
 
-  Notify_Attripube(std::optional<unsigned int> minimum_period,
+  Notify_Attribute(std::optional<unsigned int> minimum_period,
                    std::optional<unsigned int> maximum_period,
                    std::optional<unsigned int> greater_than,
                    std::optional<unsigned int> less_than,
@@ -77,10 +78,12 @@ struct Message {
   bool response_;
   std::string endpoint_address_;
   unsigned int endpoint_port_;
-  uint16_t message_id_;
+  std::optional<uint16_t> message_id_;
   std::vector<uint8_t> token_;
 
   Message();
+  Message(std::string endpoint_address, unsigned int endpoint_port,
+          MessageType message_type);
   Message(std::string endpoint_address, unsigned int endpoint_port,
           uint16_t message_id_, std::vector<uint8_t> token,
           MessageType message_type);
@@ -108,7 +111,7 @@ enum class ResponseCode : int {
 
 struct Response : Message {
   ResponseCode response_code_;
-  std::vector<uint8_t> payload_;
+  std::shared_ptr<DataFormat> payload_;
 
   Response();
   Response(std::string endpoint_address, unsigned int endpoint_port,
@@ -117,7 +120,7 @@ struct Response : Message {
   Response(std::string endpoint_address, unsigned int endpoint_port,
            uint16_t message_id, std::vector<uint8_t> token,
            MessageType message_type, ResponseCode response_code,
-           std::vector<uint8_t> payload);
+           std::shared_ptr<DataFormat> payload);
 
   virtual ~Response() = default;
 };
@@ -132,10 +135,10 @@ template <> struct hash<LwM2M::Message> {
            hash<bool>{}(value.response_) +
            hash<string>{}(value.endpoint_address_) +
            hash<unsigned int>{}(value.endpoint_port_) +
-           hash<uint16_t>{}(value.message_id_) +
+           hash<uint16_t>{}(value.message_id_ ? value.message_id_.value() : 0) +
            hash<vector<uint8_t>>{}(value.token_);
   }
 };
 } // namespace std
 
-#endif //__Message_HPP
+#endif //__LWM2M_MESSAGE_HPP

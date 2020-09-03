@@ -1,6 +1,7 @@
 #include "PayloadDecoder.hpp"
 #include "CoRE_Link.hpp"
 #include "PlainText.hpp"
+#include "RawBytePack.hpp"
 
 using namespace std;
 
@@ -38,12 +39,6 @@ shared_ptr<PayloadFormat> decodeSenMLJSON(vector<uint8_t> payload) {
 shared_ptr<PayloadFormat> decodeSenMLCBOR(vector<uint8_t> payload) {
   throwCodingError("SenML CBOR", true);
 }
-shared_ptr<PayloadFormat> decodeTLV(vector<uint8_t> payload) {
-  throwCodingError("TLV", true);
-}
-shared_ptr<PayloadFormat> decodeJSON(vector<uint8_t> payload) {
-  throwCodingError("JSON", true);
-}
 
 shared_ptr<PayloadFormat> decode(shared_ptr<ContentFormat> format,
                                  vector<uint8_t> payload) {
@@ -73,73 +68,11 @@ shared_ptr<PayloadFormat> decode(shared_ptr<ContentFormat> format,
     result = decodeSenMLCBOR(payload);
     break;
   }
-  case ContentFormatType::TLV: {
-    result = decodeTLV(payload);
-    break;
+  case ContentFormatType::UNRECOGNIZED: {
+    result = make_shared<RawBytePack>(format->getAsShort(), payload);
   }
-  case ContentFormatType::JSON: {
-    result = decodeJSON(payload);
-    break;
-  }
-  case ContentFormatType::UNRECOGNIZED:
   default: { break; }
-    return result;
   }
+  return result;
 }
-
-vector<uint8_t> encodePlainText(string payload) {
-  return vector<uint8_t>(payload.begin(), payload.end());
-}
-
-vector<uint8_t> encodeOpaque(string payload) {
-  throwCodingError("Opaque", false);
-}
-vector<uint8_t> encodeCBOR(string payload) { throwCodingError("CBOR", false); }
-vector<uint8_t> encodeSenMLJSON(string payload) {
-  throwCodingError("SehML JSON", false);
-}
-vector<uint8_t> encodeSenMLCBOR(string payload) {
-  throwCodingError("SenML CBOR", false);
-}
-vector<uint8_t> encodeTLV(string payload) { throwCodingError("TLV", false); }
-vector<uint8_t> encodeJSON(string payload) { throwCodingError("JSON", false); }
-
-vector<uint8_t> encode(shared_ptr<PayloadFormat> format) {
-  vector<uint8_t> result;
-  switch (format->getContentFormatType()) {
-  case ContentFormatType::PLAIN_TEXT:
-  case ContentFormatType::CORE_LINK: {
-    result = encodePlainText(format->toString());
-    break;
-  }
-  case ContentFormatType::OPAQUE: {
-    result = encodeOpaque(format->toString());
-    break;
-  }
-  case ContentFormatType::CBOR: {
-    result = encodeCBOR(format->toString());
-    break;
-  }
-  case ContentFormatType::SENML_JSON: {
-    result = encodeSenMLJSON(format->toString());
-    break;
-  }
-  case ContentFormatType::SENML_CBOR: {
-    result = encodeSenMLCBOR(format->toString());
-    break;
-  }
-  case ContentFormatType::TLV: {
-    result = encodeTLV(format->toString());
-    break;
-  }
-  case ContentFormatType::JSON: {
-    result = encodeJSON(format->toString());
-    break;
-  }
-  case ContentFormatType::UNRECOGNIZED:
-  default: { break; }
-    return result;
-  }
-}
-
 } // namespace CoAP

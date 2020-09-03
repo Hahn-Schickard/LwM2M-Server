@@ -30,9 +30,14 @@ public:
   Message(std::string receiver_ip, unsigned int receiver_port,
           std::vector<uint8_t> udp_datagram);
   Message(std::string receiver_ip, unsigned int receiver_port,
+          Header header_data, std::vector<std::shared_ptr<Option>> options,
+          std::shared_ptr<PayloadFormat> body);
+  Message(std::string receiver_ip, unsigned int receiver_port,
           Header header_data, std::vector<uint8_t> token,
           std::vector<std::shared_ptr<Option>> options,
           std::shared_ptr<PayloadFormat> body);
+
+  friend bool operator==(const Message &lhs, const Message &rhs);
 
   std::vector<uint8_t> toPacket() const;
   std::string getReceiverIP() const;

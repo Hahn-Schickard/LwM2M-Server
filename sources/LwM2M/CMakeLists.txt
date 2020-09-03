@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.6) 
 
+add_subdirectory(Core)
+add_subdirectory(Messages)
 add_subdirectory(LwM2M_Model)
 add_subdirectory(XML_Parser)
+add_subdirectory(Response_Handler)
 add_subdirectory(Message_Encoder)
 add_subdirectory(Message_Decoder)
 add_subdirectory(Interfaces)

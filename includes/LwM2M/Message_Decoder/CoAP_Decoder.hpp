@@ -5,6 +5,7 @@
 #include "Logger.hpp"
 #include "LwM2M_Message.hpp"
 #include "RegistrationInterface.hpp"
+#include "Response_Handler.hpp"
 #include "Stoppable.hpp"
 #include "Threadsafe_Unique_Queue.hpp"
 
@@ -14,8 +15,10 @@ namespace LwM2M {
 class CoAP_Decoder : public Stoppable {
   std::shared_ptr<RegistrationInterface> registration_;
   std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer_;
+  std::shared_ptr<ResponseHandler> response_handler_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
+  bool processIfResponse(const CoAP::Message *message);
   bool processIfBootrstrapInterface(const CoAP::Message *message);
   bool processIfDeviceRegistrationInteraface(const CoAP::Message *message);
   bool processIfDeviceManagmentInterface(const CoAP::Message *message);
@@ -25,7 +28,8 @@ class CoAP_Decoder : public Stoppable {
 public:
   CoAP_Decoder(
       std::shared_ptr<RegistrationInterface> registration,
-      std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer);
+      std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer,
+      std::shared_ptr<ResponseHandler> response_handler);
 
   void run() override;
 };

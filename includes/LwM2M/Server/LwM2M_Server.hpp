@@ -13,6 +13,8 @@
 #include <vector>
 
 namespace LwM2M {
+using RegistrationEventSourcePtr =
+    std::shared_ptr<ObserverPattern::EventSource<RegistrationInterfaceEvent>>;
 
 class Process {
   std::unique_ptr<Stoppable> task_;

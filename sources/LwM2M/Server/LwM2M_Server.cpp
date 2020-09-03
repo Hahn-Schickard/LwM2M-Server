@@ -53,13 +53,14 @@ Server::Server(Configuration config)
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,
                                           config.read_timeout);
-  shared_ptr<MessageEncoder> encoder =
-      make_shared<CoAP_Encoder>(server->getOutgoingMessagesQueue());
+  auto response_handler = make_shared<ResponseHandler>();
+  shared_ptr<MessageEncoder> encoder = make_shared<CoAP_Encoder>(
+      response_handler, server->getOutgoingMessagesQueue());
   registration_ = make_shared<RegistrationInterface>(
       device_registery_, encoder, config.object_descriptors_location);
   processes_.emplace_back(
-      make_unique<CoAP_Decoder>(registration_,
-                                server->getIncomingMessagesQueue()),
+      make_unique<CoAP_Decoder>(
+          registration_, server->getIncomingMessagesQueue(), response_handler),
       "Incoming Message Processor");
   processes_.emplace_back(move(server), "CoAP Server");
 };
@@ -100,8 +101,6 @@ shared_ptr<Device> Server::getDevice(string device_id) {
   return result;
 }
 
-RegistrationEventSourcePtr Server::getEventSource() {
-  return registration_->getEventSource();
-}
+RegistrationEventSourcePtr Server::getEventSource() { return registration_; }
 
 } // namespace LwM2M
