@@ -56,7 +56,7 @@ Server::Server(Configuration config)
   auto response_handler = make_shared<ResponseHandler>();
   shared_ptr<MessageEncoder> encoder = make_shared<CoAP_Encoder>(
       response_handler, server->getOutgoingMessagesQueue());
-  registration_ = make_shared<RegistrationInterface>(
+  registration_ = make_shared<RegistryHandler>(
       device_registery_, encoder, config.object_descriptors_location);
   processes_.emplace_back(
       make_unique<CoAP_Decoder>(
@@ -101,6 +101,6 @@ shared_ptr<Device> Server::getDevice(string device_id) {
   return result;
 }
 
-RegistrationEventSourcePtr Server::getEventSource() { return registration_; }
+RegistryEventSourcePtr Server::getEventSource() { return registration_; }
 
 } // namespace LwM2M

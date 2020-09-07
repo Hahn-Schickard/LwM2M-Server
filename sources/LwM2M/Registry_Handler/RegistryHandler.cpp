@@ -1,4 +1,4 @@
-#include "RegistrationInterface.hpp"
+#include "RegistryHandler.hpp"
 #include "LoggerRepository.hpp"
 #include "StringSpliter.hpp"
 #include "XmlParser.hpp"
@@ -15,10 +15,10 @@ struct ObjectDescriptorNotSupported : runtime_error {
       : runtime_error(message) {}
 };
 
-RegistrationInterface::RegistrationInterface(
+RegistryHandler::RegistryHandler(
     shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
     shared_ptr<MessageEncoder> encoder, const string &configuration_path)
-    : ObserverPattern::EventSource<RegistrationInterfaceEvent>(),
+    : ObserverPattern::EventSource<RegistryEvent>(),
       device_registery_(device_registery), encoder_(encoder),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
@@ -31,7 +31,7 @@ RegistrationInterface::RegistrationInterface(
 }
 
 unordered_map<uint32_t, ObjectDescriptorPair>
-RegistrationInterface::assignObjectInstances(
+RegistryHandler::assignObjectInstances(
     unordered_map<unsigned int, vector<unsigned int>> objects) {
   unordered_map<uint32_t, ObjectDescriptorPair> result;
   for (auto &object : objects) {
@@ -49,16 +49,15 @@ RegistrationInterface::assignObjectInstances(
   return result;
 }
 
-bool RegistrationInterface::isRegistered(string device_id) {
+bool RegistryHandler::isRegistered(string device_id) {
   return (device_registery_->find(device_id) != device_registery_->end())
              ? true
              : false;
 }
 
-bool RegistrationInterface::handleRequest(
-    unique_ptr<Register_Request> request) {
+bool RegistryHandler::handleRequest(unique_ptr<Register_Request> request) {
   unique_ptr<Register_Response> result;
-  shared_ptr<RegistrationInterfaceEvent> event;
+  shared_ptr<RegistryEvent> event;
   try {
     auto object_instances =
         assignObjectInstances(request->object_instances_map_);
@@ -71,9 +70,8 @@ bool RegistrationInterface::handleRequest(
       device_registery_->erase(
           device_registery_->find(new_device->getDeviceId()));
     device_registery_->emplace(new_device->getDeviceId(), new_device);
-    event = make_shared<RegistrationInterfaceEvent>(
-        RegistrationInterfaceEvent{RegistrationInterfaceEventType::REGISTERED,
-                                   new_device->getDeviceId(), new_device});
+    event = make_shared<RegistryEvent>(RegistryEvent{
+        RegistryEventType::REGISTERED, new_device->getDeviceId(), new_device});
     result = make_unique<Register_Response>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_.value(), request->token_, MessageType::REGISTER,
@@ -91,7 +89,7 @@ bool RegistrationInterface::handleRequest(
   return true;
 }
 
-bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
+bool RegistryHandler::handleRequest(unique_ptr<Update_Request> request) {
   try {
     auto device = device_registery_->at(request->location_);
     bool updated = false;
@@ -115,9 +113,8 @@ bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
         updated = true;
       }
       if (updated)
-        notify(make_shared<RegistrationInterfaceEvent>(
-            RegistrationInterfaceEvent{RegistrationInterfaceEventType::UPDATED,
-                                       request->location_, device}));
+        notify(make_shared<RegistryEvent>(RegistryEvent{
+            RegistryEventType::UPDATED, request->location_, device}));
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
           request->message_id_.value(), request->token_, MessageType::UPDATE,
@@ -137,14 +134,13 @@ bool RegistrationInterface::handleRequest(unique_ptr<Update_Request> request) {
   return true;
 }
 
-bool RegistrationInterface::handleRequest(
-    unique_ptr<Deregister_Request> request) {
+bool RegistryHandler::handleRequest(unique_ptr<Deregister_Request> request) {
   try {
     if (isRegistered(request->location_)) {
       device_registery_->erase(device_registery_->find(request->location_));
-      notify(make_shared<RegistrationInterfaceEvent>(RegistrationInterfaceEvent{
-          RegistrationInterfaceEventType::DEREGISTERED, request->location_,
-          shared_ptr<Device>()}));
+      notify(make_shared<RegistryEvent>(
+          RegistryEvent{RegistryEventType::DEREGISTERED, request->location_,
+                        shared_ptr<Device>()}));
       encoder_->encode(make_unique<Response>(
           request->endpoint_address_, request->endpoint_port_,
           request->message_id_.value(), request->token_,

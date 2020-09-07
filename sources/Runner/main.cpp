@@ -1,7 +1,7 @@
 #include "LoggerRepository.hpp"
 #include "LwM2M_Server.hpp"
 #include "Observer_Pattern.hpp"
-#include "RegistrationInterfaceEvent.hpp"
+#include "RegistryEvent.hpp"
 #include "Variant_Visitor.hpp"
 
 #include <chrono>
@@ -73,15 +73,14 @@ void asyncRead(shared_ptr<LwM2M::Device> device) {
 }
 
 class RegistrationListener
-    : public ObserverPattern::EventListener<LwM2M::RegistrationInterfaceEvent> {
+    : public ObserverPattern::EventListener<LwM2M::RegistryEvent> {
 public:
-  RegistrationListener(LwM2M::RegistrationEventSourcePtr registration)
+  RegistrationListener(LwM2M::RegistryEventSourcePtr registration)
       : EventListener(registration) {}
 
-  void
-  handleEvent(shared_ptr<LwM2M::RegistrationInterfaceEvent> event) override {
+  void handleEvent(shared_ptr<LwM2M::RegistryEvent> event) override {
     switch (event->type) {
-    case LwM2M::RegistrationInterfaceEventType::REGISTERED: {
+    case LwM2M::RegistryEventType::REGISTERED: {
       cout << "A new device with id: " << event->identifier
            << " has been registered!" << endl;
       auto device = event->device;
@@ -90,12 +89,12 @@ public:
            << endl;
       break;
     }
-    case LwM2M::RegistrationInterfaceEventType::UPDATED: {
+    case LwM2M::RegistryEventType::UPDATED: {
       cout << "Device with id: " << event->identifier << " has been updated!"
            << endl;
       break;
     }
-    case LwM2M::RegistrationInterfaceEventType::DEREGISTERED: {
+    case LwM2M::RegistryEventType::DEREGISTERED: {
       cout << "Device with id: " << event->identifier
            << " has been deregistered!" << endl;
       break;

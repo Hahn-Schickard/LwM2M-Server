@@ -4,7 +4,7 @@
 #include "CoAP_Message.hpp"
 #include "Logger.hpp"
 #include "LwM2M_Message.hpp"
-#include "RegistrationInterface.hpp"
+#include "RegistryHandler.hpp"
 #include "Response_Handler.hpp"
 #include "Stoppable.hpp"
 #include "Threadsafe_Unique_Queue.hpp"
@@ -13,7 +13,7 @@
 
 namespace LwM2M {
 class CoAP_Decoder : public Stoppable {
-  std::shared_ptr<RegistrationInterface> registration_;
+  std::shared_ptr<RegistryHandler> registration_;
   std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer_;
   std::shared_ptr<ResponseHandler> response_handler_;
   std::shared_ptr<HaSLL::Logger> logger_;
@@ -27,7 +27,7 @@ class CoAP_Decoder : public Stoppable {
 
 public:
   CoAP_Decoder(
-      std::shared_ptr<RegistrationInterface> registration,
+      std::shared_ptr<RegistryHandler> registration,
       std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer,
       std::shared_ptr<ResponseHandler> response_handler);
 

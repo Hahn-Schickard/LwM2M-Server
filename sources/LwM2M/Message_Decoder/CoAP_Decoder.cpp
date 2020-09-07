@@ -338,7 +338,7 @@ unique_ptr<Response> makeResponse(const CoAP::Message *message) {
 }
 
 CoAP_Decoder::CoAP_Decoder(
-    shared_ptr<RegistrationInterface> registration,
+    shared_ptr<RegistryHandler> registration,
     shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> message_buffer,
     shared_ptr<ResponseHandler> response_handler)
     : registration_(registration), message_buffer_(message_buffer),

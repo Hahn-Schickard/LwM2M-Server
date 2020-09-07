@@ -7,10 +7,10 @@
 #include <string>
 
 namespace LwM2M {
-enum class RegistrationInterfaceEventType { REGISTERED, UPDATED, DEREGISTERED };
+enum class RegistryEventType { REGISTERED, UPDATED, DEREGISTERED };
 
-struct RegistrationInterfaceEvent {
-  RegistrationInterfaceEventType type;
+struct RegistryEvent {
+  RegistryEventType type;
   std::string identifier;
   std::shared_ptr<Device> device;
 };

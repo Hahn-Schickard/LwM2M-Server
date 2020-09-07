@@ -6,8 +6,8 @@
 #include "LwM2M_ObjectDescriptor.hpp"
 #include "Message_Encoder.hpp"
 #include "Observer_Pattern.hpp"
-#include "RegistrationInterfaceEvent.hpp"
 #include "RegistrationMessages.hpp"
+#include "RegistryEvent.hpp"
 #include "Response_Handler.hpp"
 
 #include <memory>
@@ -19,8 +19,7 @@ namespace LwM2M {
 using ObjectDescriptorPair =
     std::pair<std::shared_ptr<ObjectDescriptor>, std::vector<uint32_t>>;
 
-class RegistrationInterface
-    : public ObserverPattern::EventSource<RegistrationInterfaceEvent> {
+class RegistryHandler : public ObserverPattern::EventSource<RegistryEvent> {
   std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
       supported_descriptors_;
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
@@ -34,7 +33,7 @@ class RegistrationInterface
       std::unordered_map<unsigned int, std::vector<unsigned int>> objects);
 
 public:
-  RegistrationInterface(
+  RegistryHandler(
       std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
           device_registery,
       std::shared_ptr<MessageEncoder> encoder,

@@ -21,7 +21,7 @@ target_link_libraries(${THIS} PUBLIC
                               Stoppable_Task
                               Threads::Threads
                               LwM2M_Model
-                              LwM2M_Interfaces
+                              Registry_Handler
                               HaSLL::HaSLL
                               PRIVATE
                               CoAP_Server
