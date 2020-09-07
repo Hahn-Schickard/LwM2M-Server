@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace CoAP {
-enum class OptionNumber {
+enum class OptionNumber : uint16_t {
   RESERVED = 0,        // RFC7252
   IF_MATCH = 1,        // RFC7252
   URI_HOST = 3,        // RFC7252
@@ -61,6 +61,22 @@ public:
   bool isRepeatable();
   bool isUnsafe();
 };
-
 } // namespace CoAP
+
+namespace std {
+template <> struct hash<CoAP::Option> {
+  size_t operator()(CoAP::Option &value) const {
+    size_t opt_number_hash =
+        hash<uint16_t>{}((static_cast<uint16_t>(value.getOptionNumber())));
+    auto bytes = value.getValue();
+    size_t value_hash = 0;
+    for (size_t i = 0; i < bytes.size(); i++) {
+      auto hashed_byte = hash<uint8_t>{}(bytes[i]);
+      value_hash |= hashed_byte << (i * 8);
+    }
+    return (opt_number_hash << bytes.size() * 8) | value_hash;
+  }
+};
+} // namespace std
+
 #endif //__COAP_OPTION_DEFINITIONS_HPP
