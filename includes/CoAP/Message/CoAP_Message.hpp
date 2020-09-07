@@ -38,6 +38,7 @@ public:
           std::shared_ptr<PayloadFormat> body);
 
   friend bool operator==(const Message &lhs, const Message &rhs);
+  friend bool operator!=(const Message &lhs, const Message &rhs);
 
   std::vector<uint8_t> toPacket() const;
   std::string getReceiverIP() const;
@@ -52,7 +53,33 @@ public:
 namespace std {
 template <> struct hash<CoAP::Message> {
   size_t operator()(const CoAP::Message &value) const {
-    return hash<vector<uint8_t>>{}(value.toPacket());
+    size_t ip_hash = hash<string>{}(value.getReceiverIP());
+    size_t port_hash = hash<unsigned int>{}(value.getReceiverPort());
+    size_t header_hash = hash<CoAP::Header>{}(value.getHeader());
+    size_t token_hash = hash<vector<uint8_t>>{}(value.getToken());
+    auto options = value.getOptions();
+    size_t options_hash = 0;
+    for (size_t i = 0; i < options.size(); i++) {
+      options_hash |= hash<CoAP::Option>{}(*options[i])
+                      << (i * options[i]->size());
+    }
+    auto payload = value.getBody();
+    size_t payload_hash = 0;
+    size_t payload_size = 0;
+    if (payload) {
+      payload_hash = hash<vector<uint8_t>>{}(payload->getBytes());
+      payload_size = payload->getBytes().size();
+    }
+
+    size_t options_offset = payload_size;
+    size_t token_offset = options.size() + options_offset;
+    size_t header_offset = value.getToken().size() + token_offset;
+    size_t port_offset = 4 + header_offset;
+    size_t ip_offset = sizeof(unsigned int) + port_offset;
+
+    return (ip_hash << ip_offset) | (port_hash | port_offset) |
+           (header_hash << header_offset) | (token_hash << token_offset) |
+           (options_hash << options_offset) | payload_hash;
   }
 };
 } // namespace std

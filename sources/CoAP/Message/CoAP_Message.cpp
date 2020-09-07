@@ -107,7 +107,13 @@ Message::Message(string receiver_ip, unsigned int receiver_port,
       body_(move(body)) {}
 
 bool operator==(const Message &lhs, const Message &rhs) {
-  return (lhs.toPacket() == rhs.toPacket());
+  return (lhs.receiver_ip_ == rhs.receiver_ip_) &&
+         (lhs.receiver_port_ == rhs.receiver_port_) &&
+         (lhs.toPacket() == rhs.toPacket());
+}
+
+bool operator!=(const Message &lhs, const Message &rhs) {
+  return !(lhs == rhs);
 }
 
 vector<uint8_t> Message::toPacket() const {
