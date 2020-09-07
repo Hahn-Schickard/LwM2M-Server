@@ -13,7 +13,7 @@ struct Network_IO_Exception : public std::runtime_error {
       : std::runtime_error(message) {}
 };
 
-enum class MessageType {
+enum class MessageType : uint8_t {
   CONFIRMABLE = 0,
   NON_CONFIRMABLE = 1,
   ACKNOWLEDGMENT = 2,
@@ -22,7 +22,7 @@ enum class MessageType {
 
 std::string toString(MessageType type);
 
-enum class CodeType : int {
+enum class CodeType : uint8_t {
   // Requests
   GET = 0x01,
   POST = 0x02,
@@ -79,5 +79,19 @@ public:
   uint16_t getMessageID() const;
 };
 } // namespace CoAP
+
+namespace std {
+template <> struct hash<CoAP::Header> {
+  size_t operator()(const CoAP::Header &value) const {
+    auto bytes = value.toPacket();
+    size_t result = 0;
+    for (size_t i = 0; i < bytes.size(); i++) {
+      auto hashed_byte = hash<uint8_t>{}(bytes[i]);
+      result |= hashed_byte << (i * 8);
+    }
+    return result;
+  }
+};
+} // namespace std
 
 #endif //__COAP_HEADER_DEFINITION_HPP
