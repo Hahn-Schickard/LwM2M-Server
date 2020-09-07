@@ -4,10 +4,10 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "Information Model Builder"
+PROJECT_NAME           = "LwM2M Server"
 PROJECT_NUMBER         =
-PROJECT_BRIEF          = "This module provides the Information Model Building API as well as implemntations of the classes defined within the Information Model."
-PROJECT_LOGO           = 
+PROJECT_BRIEF          = "C++17 based multithreaded Lightweight Machine to Machine Server implementation."
+PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = docs/code_documentation
 CREATE_SUBDIRS         = YES
 ALLOW_UNICODE_NAMES    = NO
@@ -176,7 +176,7 @@ INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = YES
 FILTER_SOURCE_PATTERNS =
-USE_MDFILE_AS_MAINPAGE = README.md
+USE_MDFILE_AS_MAINPAGE = docs/code_documentation/main.md
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
 #---------------------------------------------------------------------------
