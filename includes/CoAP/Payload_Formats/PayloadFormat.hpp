@@ -2,6 +2,7 @@
 #define __COAP_MESSAGE_PAYLOAD_FORMAT_HPP
 
 #include "ContentFormat.hpp"
+#include "Hashers.hpp"
 
 namespace CoAP {
 
@@ -26,5 +27,13 @@ public:
   virtual std::string toString() = 0;
 };
 } // namespace CoAP
+
+namespace std {
+template <> struct hash<CoAP::PayloadFormat> {
+  size_t operator()(CoAP::PayloadFormat &value) const {
+    return hash<vector<uint8_t>>{}(value.getBytes());
+  }
+};
+} // namespace std
 
 #endif //__COAP_MESSAGE_PAYLOAD_FORMAT_HPP
