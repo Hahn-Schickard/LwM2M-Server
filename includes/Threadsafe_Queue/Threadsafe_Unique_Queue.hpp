@@ -163,6 +163,9 @@ public:
     } // namespace std
    * @endcode
    *
+   * as well as comparison operator==(T&lhs, T&rhs), OOP example can be found:
+   https://www.learncpp.com/cpp-tutorial/96-overloading-the-comparison-operators/
+   *
    * @param new_value
    */
   void push(T new_value) {
