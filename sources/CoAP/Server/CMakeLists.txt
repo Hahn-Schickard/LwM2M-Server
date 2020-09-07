@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              CoAP
+                              CoAP_Message
                               Stoppable_Task
                               HaSLL::HaSLL
                               Threadsafe_Queue

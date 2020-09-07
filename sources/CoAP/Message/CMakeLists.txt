@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS CoAP)
+set(THIS CoAP_Message)
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/CoAP/Message
