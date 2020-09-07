@@ -21,6 +21,7 @@ target_link_libraries(${THIS} PUBLIC
                               XML_Parser
                               Threadsafe_Queue
                               Observer_Pattern
+                              CoAP_Message
 )
 
 add_test(
