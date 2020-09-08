@@ -163,10 +163,9 @@ FILE_PATTERNS          = *.c \
                          *.ice
 RECURSIVE              = YES
 EXCLUDE                = libs/
-EXCLUDE               += tests/googletestsrc
 EXCLUDE               += sources/
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = */tests/*
+EXCLUDE_PATTERNS       = */unit_tests/*
 EXCLUDE_PATTERNS      += */utility/*
 EXCLUDE_PATTERNS      += */conan/*
 EXCLUDE_PATTERNS      += */conanfile.txt
