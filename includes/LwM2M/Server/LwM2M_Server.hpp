@@ -37,20 +37,19 @@ struct Configuration {
   unsigned int read_timeout;
 };
 
-class Server : public Stoppable {
+class Server {
   std::vector<Process> processes_;
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
   std::shared_ptr<RegistryHandler> registration_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
-  void run() override;
-
 public:
   Server();
   Server(Configuration config);
 
   void stop();
+  void start();
   std::shared_ptr<Device> getDevice(std::string device_id);
   RegistryEventSourcePtr getEventSource();
 };

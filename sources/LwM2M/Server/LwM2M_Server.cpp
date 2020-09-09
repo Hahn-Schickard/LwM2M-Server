@@ -65,7 +65,7 @@ Server::Server(Configuration config)
   processes_.emplace_back(move(server), "CoAP Server");
 };
 
-void Server::run() {
+void Server::start() {
   for (auto &process : processes_) {
     try {
       process.startTask();
