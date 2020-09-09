@@ -8,6 +8,7 @@
 #include "ServerRequest_Execute.hpp"
 #include "ServerRequest_Read.hpp"
 #include "ServerRequest_ReadComoposite.hpp"
+#include "ServerRequest_Write.hpp"
 #include "WriteAttributes_Request.hpp"
 #include "WriteComoposite_Request.hpp"
 
