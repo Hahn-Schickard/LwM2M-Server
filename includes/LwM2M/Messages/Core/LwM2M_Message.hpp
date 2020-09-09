@@ -54,24 +54,6 @@ enum class MessageType {
 
 std::string toString(MessageType type);
 
-struct Notify_Attribute {
-  std::optional<unsigned int> minimum_period_;
-  std::optional<unsigned int> maximum_period_;
-  std::optional<unsigned int> greater_than_;
-  std::optional<unsigned int> less_than_;
-  std::optional<unsigned int> step_;
-  std::optional<unsigned int> minimum_evaluation_period_;
-  std::optional<unsigned int> maximum_evaluation_period_;
-
-  Notify_Attribute(std::optional<unsigned int> minimum_period,
-                   std::optional<unsigned int> maximum_period,
-                   std::optional<unsigned int> greater_than,
-                   std::optional<unsigned int> less_than,
-                   std::optional<unsigned int> step,
-                   std::optional<unsigned int> minimum_evaluation_period,
-                   std::optional<unsigned int> maximum_evaluation_period);
-};
-
 struct Message {
   MessageType message_type_;
   InterfaceType interface_type_;

@@ -3,6 +3,18 @@
 using namespace std;
 
 namespace LwM2M {
+Notify_Attribute::Notify_Attribute(
+    optional<unsigned int> minimum_period,
+    optional<unsigned int> maximum_period, optional<unsigned int> greater_than,
+    optional<unsigned int> less_than, optional<unsigned int> step,
+    optional<unsigned int> minimum_evaluation_period,
+    optional<unsigned int> maximum_evaluation_period)
+    : minimum_period_(move(minimum_period)),
+      maximum_period_(move(maximum_period)), greater_than_(move(greater_than)),
+      less_than_(move(less_than)), step_(move(step)),
+      minimum_evaluation_period_(move(minimum_evaluation_period)),
+      maximum_evaluation_period_(move(maximum_evaluation_period)) {}
+
 ServerRequest_WriteAttributes::ServerRequest_WriteAttributes(
     string endpoint_address, unsigned int endpoint_port, unsigned int object_id,
     optional<unsigned int> object_instance_id,
