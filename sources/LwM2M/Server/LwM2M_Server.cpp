@@ -10,40 +10,41 @@ using namespace HaSLL;
 
 namespace LwM2M {
 
-struct ProcessIsAlreadyRunning : public runtime_error {
-  ProcessIsAlreadyRunning(string const &message) : runtime_error(message) {}
+struct StoppableTaskIsAlreadyRunning : public runtime_error {
+  StoppableTaskIsAlreadyRunning(string const &message)
+      : runtime_error(message) {}
 };
 
-struct ProcessIsNotRunning : public runtime_error {
-  ProcessIsNotRunning(string const &message) : runtime_error(message) {}
+struct StoppableTaskIsNotRunning : public runtime_error {
+  StoppableTaskIsNotRunning(string const &message) : runtime_error(message) {}
 };
 
-Process::Process() : Process(unique_ptr<Stoppable>(), "") {}
+StoppableTask::StoppableTask() : StoppableTask(unique_ptr<Stoppable>(), "") {}
 
-Process::Process(unique_ptr<Stoppable> task, string task_name)
+StoppableTask::StoppableTask(unique_ptr<Stoppable> task, string task_name)
     : task_(move(task)), task_thread_(make_unique<thread>()),
       task_name_(task_name) {}
 
-void Process::startTask() {
+void StoppableTask::startTask() {
   if (!task_thread_->joinable())
     task_thread_ = make_unique<thread>([&]() { task_->start(); });
   else {
-    string error_msg = "Prcoess" + task_name_ + " is already running";
-    throw ProcessIsAlreadyRunning(move(error_msg));
+    string error_msg = "Task" + task_name_ + " is already running";
+    throw StoppableTaskIsAlreadyRunning(move(error_msg));
   }
 }
 
-void Process::stopTask() {
+void StoppableTask::stopTask() {
   if (task_thread_->joinable()) {
     task_->stop();
     task_thread_->join();
   } else {
-    string error_msg = "Prcoess" + task_name_ + " is not running";
-    throw ProcessIsNotRunning(move(error_msg));
+    string error_msg = "Task" + task_name_ + " is not running";
+    throw StoppableTaskIsNotRunning(move(error_msg));
   }
 }
 
-string Process::getName() { return task_name_; }
+string StoppableTask::getName() { return task_name_; }
 
 Server::Server() {}
 
@@ -58,18 +59,18 @@ Server::Server(Configuration config)
       response_handler, server->getOutgoingMessagesQueue());
   registration_ = make_shared<RegistryHandler>(
       device_registery_, encoder, config.object_descriptors_location);
-  processes_.emplace_back(
+  stoppabletaskes_.emplace_back(
       make_unique<CoAP_Decoder>(
           registration_, server->getIncomingMessagesQueue(), response_handler),
-      "Incoming Message Processor");
-  processes_.emplace_back(move(server), "CoAP Server");
+      "Incoming Message StoppableTaskor");
+  stoppabletaskes_.emplace_back(move(server), "CoAP Server");
 };
 
 void Server::start() {
-  for (auto &process : processes_) {
+  for (auto &stoppabletask : stoppabletaskes_) {
     try {
-      process.startTask();
-    } catch (ProcessIsAlreadyRunning &ex) {
+      stoppabletask.startTask();
+    } catch (StoppableTaskIsAlreadyRunning &ex) {
       logger_->log(SeverityLevel::TRACE, ex.what());
       continue;
     } catch (exception &ex) {
@@ -80,10 +81,10 @@ void Server::start() {
 }
 
 void Server::stop() {
-  for (auto &process : processes_) {
+  for (auto &stoppabletask : stoppabletaskes_) {
     try {
-      process.stopTask();
-    } catch (ProcessIsNotRunning &ex) {
+      stoppabletask.stopTask();
+    } catch (StoppableTaskIsNotRunning &ex) {
       logger_->log(SeverityLevel::TRACE, ex.what());
       continue;
     } catch (exception &ex) {

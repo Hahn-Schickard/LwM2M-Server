@@ -16,14 +16,14 @@ namespace LwM2M {
 using RegistryEventSourcePtr =
     std::shared_ptr<ObserverPattern::EventSource<RegistryEvent>>;
 
-class Process {
+class StoppableTask {
   std::unique_ptr<Stoppable> task_;
   std::unique_ptr<std::thread> task_thread_;
   std::string task_name_;
 
 public:
-  Process();
-  Process(std::unique_ptr<Stoppable> task, std::string task_name);
+  StoppableTask();
+  StoppableTask(std::unique_ptr<Stoppable> task, std::string task_name);
 
   void startTask();
   void stopTask();
@@ -38,7 +38,7 @@ struct Configuration {
 };
 
 class Server {
-  std::vector<Process> processes_;
+  std::vector<StoppableTask> stoppabletaskes_;
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
   std::shared_ptr<RegistryHandler> registration_;
