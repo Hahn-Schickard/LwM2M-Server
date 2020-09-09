@@ -1,9 +1,9 @@
-#include "CancelObserveComposite_Request.hpp"
+#include "ServerRequest_CancelObserveComposite.hpp"
 
 using namespace std;
 
 namespace LwM2M {
-CancelObserveComposite_Request::CancelObserveComposite_Request(
+ServerRequest_CancelObserveComposite::ServerRequest_CancelObserveComposite(
     string endpoint_address, unsigned int endpoint_port, uint16_t message_id,
     vector<uint8_t> token)
     : InformationReporting_Interface_Message(
