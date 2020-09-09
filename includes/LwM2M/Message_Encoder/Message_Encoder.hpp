@@ -20,7 +20,7 @@ public:
 
   ResponseHandlerPtr getResponseHandler() { return response_handler_; }
 
-  virtual ResponseFuture encode(std::unique_ptr<Read_Request> input) = 0;
+  virtual ResponseFuture encode(std::unique_ptr<ServerRequest_Read> input) = 0;
 
   virtual void encode(std::unique_ptr<Register_Response> input) = 0;
   virtual void encode(std::unique_ptr<Response> input) = 0;

@@ -5,7 +5,7 @@
 #include "LwM2M_ResourceDescriptor.hpp"
 #include "LwM2M_TLV.hpp"
 #include "Message_Encoder.hpp"
-#include "Read_Request.hpp"
+#include "ServerRequest_Read.hpp"
 
 #include <future>
 #include <memory>
@@ -35,7 +35,7 @@ template <typename T> class Resource {
 protected:
   std::future<T> asyncRead() {
     return std::async(std::launch::async, [&]() -> T {
-      auto request = std::make_unique<Read_Request>(
+      auto request = std::make_unique<ServerRequest_Read>(
           endpoint_->endpoint_address_, endpoint_->endpoint_port_, parent_id_,
           parent_instance_id_, descriptor_->id_);
       auto future = encoder_->encode(std::move(request));

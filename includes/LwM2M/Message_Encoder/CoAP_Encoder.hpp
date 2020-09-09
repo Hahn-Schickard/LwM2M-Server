@@ -18,7 +18,7 @@ public:
       std::shared_ptr<ResponseHandler> response_handler,
       std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> output_queue);
 
-  ResponseFuture encode(std::unique_ptr<Read_Request> input) override;
+  ResponseFuture encode(std::unique_ptr<ServerRequest_Read> input) override;
 
   void encode(std::unique_ptr<Register_Response> input) override;
   void encode(std::unique_ptr<Response> input) override;

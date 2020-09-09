@@ -15,7 +15,7 @@ CoAP_Encoder::CoAP_Encoder(
     : MessageEncoder(response_handler), output_queue_(output_queue),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 
-ResponseFuture CoAP_Encoder::encode(unique_ptr<Read_Request> input) {
+ResponseFuture CoAP_Encoder::encode(unique_ptr<ServerRequest_Read> input) {
   ResponseFuture future;
   try {
     vector<shared_ptr<CoAP::Option>> options;

@@ -3,11 +3,11 @@
 
 #include "DeviceManagmentInterfaceMessage.hpp"
 #include "ReadComoposite_Request.hpp"
-#include "Read_Request.hpp"
 #include "ServerRequest_Create.hpp"
 #include "ServerRequest_Delete.hpp"
 #include "ServerRequest_Discover.hpp"
 #include "ServerRequest_Execute.hpp"
+#include "ServerRequest_Read.hpp"
 #include "WriteAttributes_Request.hpp"
 #include "WriteComoposite_Request.hpp"
 
