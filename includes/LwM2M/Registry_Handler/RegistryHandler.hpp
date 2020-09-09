@@ -41,7 +41,7 @@ public:
 
   bool handleRequest(std::unique_ptr<ClientRequest_Register> request);
 
-  bool handleRequest(std::unique_ptr<Update_Request> request);
+  bool handleRequest(std::unique_ptr<ClientRequest_Update> request);
 
   bool handleRequest(std::unique_ptr<ClientRequest_Deregister> request);
 };

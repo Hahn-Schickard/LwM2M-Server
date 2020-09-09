@@ -1,9 +1,9 @@
-#include "Update_Request.hpp"
+#include "ClientRequest_Update.hpp"
 
 using namespace std;
 
 namespace LwM2M {
-Update_Request::Update_Request(
+ClientRequest_Update::ClientRequest_Update(
     string endpoint_address, unsigned int endpoint_port, uint16_t message_id,
     vector<uint8_t> token, string location, optional<size_t> lifetime,
     optional<BindingType> binding, optional<string> sms_number,

@@ -167,7 +167,7 @@ makeDeRegisterMessage(const CoAP::Message *input) {
       input->getOptions().at(1)->getAsString());
 }
 
-unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {
+unique_ptr<ClientRequest_Update> makeUpdateMessage(const CoAP::Message *input) {
   auto options = input->getOptions();
   string location = options.at(1)->getAsString();
   optional<size_t> life_time_ = nullopt;
@@ -213,7 +213,7 @@ unique_ptr<Update_Request> makeUpdateMessage(const CoAP::Message *input) {
       }
     }
   }
-  return make_unique<Update_Request>(
+  return make_unique<ClientRequest_Update>(
       input->getReceiverIP(), input->getReceiverPort(),
       input->getHeader().getMessageID(), input->getToken(), location,
       life_time_, binding_, sms_number_, object_instances_map);

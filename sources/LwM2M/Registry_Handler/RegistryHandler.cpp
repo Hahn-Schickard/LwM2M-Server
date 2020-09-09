@@ -90,7 +90,7 @@ bool RegistryHandler::handleRequest(
   return true;
 }
 
-bool RegistryHandler::handleRequest(unique_ptr<Update_Request> request) {
+bool RegistryHandler::handleRequest(unique_ptr<ClientRequest_Update> request) {
   try {
     auto device = device_registery_->at(request->location_);
     bool updated = false;
