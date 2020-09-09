@@ -10,6 +10,6 @@
 #include "ServerRequest_ReadComoposite.hpp"
 #include "ServerRequest_Write.hpp"
 #include "ServerRequest_WriteAttributes.hpp"
-#include "WriteComoposite_Request.hpp"
+#include "ServerRequest_WriteComoposite.hpp"
 
 #endif //__LWM2M_DEVICE_MANAGMENT_MESSAGES_HPP
