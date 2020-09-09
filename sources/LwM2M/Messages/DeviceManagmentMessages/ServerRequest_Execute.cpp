@@ -1,9 +1,9 @@
-#include "Execute_Request.hpp"
+#include "ServerRequest_Execute.hpp"
 
 using namespace std;
 
 namespace LwM2M {
-Execute_Request::Execute_Request(
+ServerRequest_Execute::ServerRequest_Execute(
     string endpoint_address, unsigned int endpoint_port, unsigned int object_id,
     unsigned int object_instance_id, unsigned int resource_id,
     unsigned int resoruce_instance_id, optional<string> arguments)
