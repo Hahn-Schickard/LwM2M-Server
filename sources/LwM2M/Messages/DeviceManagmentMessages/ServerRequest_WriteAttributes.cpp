@@ -1,9 +1,9 @@
-#include "WriteAttributes_Request.hpp"
+#include "ServerRequest_WriteAttributes.hpp"
 
 using namespace std;
 
 namespace LwM2M {
-WriteAttributes_Request::WriteAttributes_Request(
+ServerRequest_WriteAttributes::ServerRequest_WriteAttributes(
     string endpoint_address, unsigned int endpoint_port, unsigned int object_id,
     optional<unsigned int> object_instance_id,
     optional<unsigned int> resource_id,
