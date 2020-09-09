@@ -51,7 +51,7 @@ ResponseFuture CoAP_Encoder::encode(unique_ptr<ServerRequest_Read> input) {
   return future;
 }
 
-void CoAP_Encoder::encode(unique_ptr<Register_Response> input) {
+void CoAP_Encoder::encode(unique_ptr<ServerResponse_Register> input) {
   try {
     vector<shared_ptr<CoAP::Option>> options;
     for (auto location_part : input->location_)

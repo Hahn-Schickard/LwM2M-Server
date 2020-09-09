@@ -20,7 +20,7 @@ public:
 
   ResponseFuture encode(std::unique_ptr<ServerRequest_Read> input) override;
 
-  void encode(std::unique_ptr<Register_Response> input) override;
+  void encode(std::unique_ptr<ServerResponse_Register> input) override;
   void encode(std::unique_ptr<Response> input) override;
 };
 } // namespace LwM2M

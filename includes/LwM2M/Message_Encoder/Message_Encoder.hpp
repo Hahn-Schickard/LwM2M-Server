@@ -3,8 +3,8 @@
 
 #include "DeviceManagmentMessages.hpp"
 #include "LwM2M_Message.hpp"
-#include "Register_Response.hpp"
 #include "Response_Handler.hpp"
+#include "ServerResponse_Register.hpp"
 
 #include <memory>
 
@@ -22,7 +22,7 @@ public:
 
   virtual ResponseFuture encode(std::unique_ptr<ServerRequest_Read> input) = 0;
 
-  virtual void encode(std::unique_ptr<Register_Response> input) = 0;
+  virtual void encode(std::unique_ptr<ServerResponse_Register> input) = 0;
   virtual void encode(std::unique_ptr<Response> input) = 0;
 };
 } // namespace LwM2M

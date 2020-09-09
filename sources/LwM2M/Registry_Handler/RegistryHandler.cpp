@@ -57,7 +57,7 @@ bool RegistryHandler::isRegistered(string device_id) {
 
 bool RegistryHandler::handleRequest(
     unique_ptr<ClientRequest_Register> request) {
-  unique_ptr<Register_Response> result;
+  unique_ptr<ServerResponse_Register> result;
   shared_ptr<RegistryEvent> event;
   try {
     auto object_instances =
@@ -73,13 +73,13 @@ bool RegistryHandler::handleRequest(
     device_registery_->emplace(new_device->getDeviceId(), new_device);
     event = make_shared<RegistryEvent>(RegistryEvent{
         RegistryEventType::REGISTERED, new_device->getDeviceId(), new_device});
-    result = make_unique<Register_Response>(
+    result = make_unique<ServerResponse_Register>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_.value(), request->token_, MessageType::REGISTER,
         ResponseCode::CREATED, vector<string>{"rd", new_device->getDeviceId()});
   } catch (ObjectDescriptorNotSupported &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
-    result = make_unique<Register_Response>(
+    result = make_unique<ServerResponse_Register>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_.value(), request->token_, MessageType::REGISTER,
         ResponseCode::BAD_REQUEST);
@@ -127,7 +127,7 @@ bool RegistryHandler::handleRequest(unique_ptr<ClientRequest_Update> request) {
           ResponseCode::NOT_FOUND));
   } catch (ObjectDescriptorNotSupported &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
-    encoder_->encode(make_unique<Register_Response>(
+    encoder_->encode(make_unique<ServerResponse_Register>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_.value(), request->token_, MessageType::UPDATE,
         ResponseCode::BAD_REQUEST));
@@ -154,7 +154,7 @@ bool RegistryHandler::handleRequest(
           MessageType::DEREGISTER, ResponseCode::NOT_FOUND));
   } catch (ObjectDescriptorNotSupported &ex) {
     logger_->log(SeverityLevel::ERROR, ex.what());
-    encoder_->encode(make_unique<Register_Response>(
+    encoder_->encode(make_unique<ServerResponse_Register>(
         request->endpoint_address_, request->endpoint_port_,
         request->message_id_.value(), request->token_, MessageType::DEREGISTER,
         ResponseCode::BAD_REQUEST));
