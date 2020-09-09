@@ -39,7 +39,7 @@ public:
       std::shared_ptr<MessageEncoder> encoder,
       const std::string &configuration_path);
 
-  bool handleRequest(std::unique_ptr<Register_Request> request);
+  bool handleRequest(std::unique_ptr<ClientRequest_Register> request);
 
   bool handleRequest(std::unique_ptr<Update_Request> request);
 

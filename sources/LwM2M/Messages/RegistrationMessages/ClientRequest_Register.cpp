@@ -1,9 +1,9 @@
-#include "Register_Request.hpp"
+#include "ClientRequest_Register.hpp"
 
 using namespace std;
 
 namespace LwM2M {
-Register_Request::Register_Request(
+ClientRequest_Register::ClientRequest_Register(
     string endpoint_address, unsigned int endpoint_port, uint16_t message_id,
     vector<uint8_t> token, string endpoint_name, size_t life_time,
     LwM2M_Version version, BindingType binding, bool queue_mode,

@@ -55,7 +55,8 @@ bool RegistryHandler::isRegistered(string device_id) {
              : false;
 }
 
-bool RegistryHandler::handleRequest(unique_ptr<Register_Request> request) {
+bool RegistryHandler::handleRequest(
+    unique_ptr<ClientRequest_Register> request) {
   unique_ptr<Register_Response> result;
   shared_ptr<RegistryEvent> event;
   try {

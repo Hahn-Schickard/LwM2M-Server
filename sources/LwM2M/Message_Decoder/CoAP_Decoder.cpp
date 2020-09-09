@@ -69,8 +69,9 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
   return result;
 }
 
-unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
-  unique_ptr<Register_Request> result;
+unique_ptr<ClientRequest_Register>
+makeRegisterMessage(const CoAP::Message *input) {
+  unique_ptr<ClientRequest_Register> result;
   for (auto option : input->getOptions()) {
     if (option->getOptionNumber() == OptionNumber::URI_PATH) {
       if (option->getAsString() == "rd") {
@@ -147,7 +148,7 @@ unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
           }
         }
 
-        result = make_unique<Register_Request>(
+        result = make_unique<ClientRequest_Register>(
             input->getReceiverIP(), input->getReceiverPort(),
             input->getHeader().getMessageID(), input->getToken(),
             endpoint_name_, life_time_, version_, binding_, queue_mode_,
