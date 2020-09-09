@@ -158,9 +158,9 @@ unique_ptr<Register_Request> makeRegisterMessage(const CoAP::Message *input) {
   return result;
 }
 
-unique_ptr<Deregister_Request>
+unique_ptr<ClientRequest_Deregister>
 makeDeRegisterMessage(const CoAP::Message *input) {
-  return make_unique<Deregister_Request>(
+  return make_unique<ClientRequest_Deregister>(
       input->getReceiverIP(), input->getReceiverPort(),
       input->getHeader().getMessageID(), input->getToken(),
       input->getOptions().at(1)->getAsString());

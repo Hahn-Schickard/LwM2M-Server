@@ -43,7 +43,7 @@ public:
 
   bool handleRequest(std::unique_ptr<Update_Request> request);
 
-  bool handleRequest(std::unique_ptr<Deregister_Request> request);
+  bool handleRequest(std::unique_ptr<ClientRequest_Deregister> request);
 };
 
 } // namespace LwM2M

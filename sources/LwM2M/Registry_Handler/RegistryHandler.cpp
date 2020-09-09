@@ -134,7 +134,8 @@ bool RegistryHandler::handleRequest(unique_ptr<Update_Request> request) {
   return true;
 }
 
-bool RegistryHandler::handleRequest(unique_ptr<Deregister_Request> request) {
+bool RegistryHandler::handleRequest(
+    unique_ptr<ClientRequest_Deregister> request) {
   try {
     if (isRegistered(request->location_)) {
       device_registery_->erase(device_registery_->find(request->location_));
