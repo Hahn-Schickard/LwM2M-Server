@@ -4,7 +4,7 @@
 #include "RegistrationInterfaceMessage.hpp"
 
 namespace LwM2M {
-struct ClientRequest_Deregister : public Regirstration_Interface_Message {
+struct ClientRequest_Deregister : public RegirstrationInterfaceMessage {
   std::string location_;
 
   ClientRequest_Deregister(std::string endpoint_address,

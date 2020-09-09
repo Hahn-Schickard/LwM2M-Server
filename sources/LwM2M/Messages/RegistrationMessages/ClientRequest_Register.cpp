@@ -9,8 +9,8 @@ ClientRequest_Register::ClientRequest_Register(
     LwM2M_Version version, BindingType binding, bool queue_mode,
     string sms_number,
     unordered_map<unsigned int, vector<unsigned int>> object_instances_map)
-    : Regirstration_Interface_Message(endpoint_address, endpoint_port,
-                                      message_id, token, MessageType::REGISTER),
+    : RegirstrationInterfaceMessage(endpoint_address, endpoint_port, message_id,
+                                    token, MessageType::REGISTER),
       endpoint_name_(move(endpoint_name)), life_time_(life_time),
       version_(version), binding_(binding), queue_mode_(queue_mode),
       sms_number_(move(sms_number)),

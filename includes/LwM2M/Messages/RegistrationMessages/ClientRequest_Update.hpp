@@ -5,7 +5,7 @@
 #include "RegistrationInterfaceMessage.hpp"
 
 namespace LwM2M {
-struct ClientRequest_Update : public Regirstration_Interface_Message {
+struct ClientRequest_Update : public RegirstrationInterfaceMessage {
   std::string location_;
   std::optional<size_t> lifetime_;
   std::optional<BindingType> binding_;

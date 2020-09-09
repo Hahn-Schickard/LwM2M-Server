@@ -8,8 +8,8 @@ ClientRequest_Update::ClientRequest_Update(
     vector<uint8_t> token, string location, optional<size_t> lifetime,
     optional<BindingType> binding, optional<string> sms_number,
     unordered_map<unsigned int, vector<unsigned int>> object_instances_map)
-    : Regirstration_Interface_Message(endpoint_address, endpoint_port,
-                                      message_id, token, MessageType::UPDATE),
+    : RegirstrationInterfaceMessage(endpoint_address, endpoint_port, message_id,
+                                    token, MessageType::UPDATE),
       location_(move(location)), lifetime_(move(lifetime)),
       binding_(move(binding)), sms_number_(move(sms_number)),
       object_instances_map_(move(object_instances_map)) {}

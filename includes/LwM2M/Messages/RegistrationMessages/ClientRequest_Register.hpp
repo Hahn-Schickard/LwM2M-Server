@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 namespace LwM2M {
-struct ClientRequest_Register : public Regirstration_Interface_Message {
+struct ClientRequest_Register : public RegirstrationInterfaceMessage {
   std::string endpoint_name_;
   size_t life_time_;
   LwM2M_Version version_;

@@ -8,12 +8,11 @@
 #include <vector>
 
 namespace LwM2M {
-struct Regirstration_Interface_Message : Message {
-  Regirstration_Interface_Message(std::string endpoint_address,
-                                  unsigned int endpoint_port,
-                                  uint16_t message_id,
-                                  std::vector<uint8_t> token,
-                                  MessageType message_type);
+struct RegirstrationInterfaceMessage : Message {
+  RegirstrationInterfaceMessage(std::string endpoint_address,
+                                unsigned int endpoint_port, uint16_t message_id,
+                                std::vector<uint8_t> token,
+                                MessageType message_type);
 };
 }; // namespace LwM2M
 

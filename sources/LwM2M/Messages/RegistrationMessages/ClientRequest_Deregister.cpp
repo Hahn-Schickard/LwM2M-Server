@@ -8,9 +8,8 @@ ClientRequest_Deregister::ClientRequest_Deregister(string endpoint_address,
                                                    uint16_t message_id,
                                                    vector<uint8_t> token,
                                                    string location)
-    : Regirstration_Interface_Message(endpoint_address, endpoint_port,
-                                      message_id, token,
-                                      MessageType::DEREGISTER),
+    : RegirstrationInterfaceMessage(endpoint_address, endpoint_port, message_id,
+                                    token, MessageType::DEREGISTER),
       location_(move(location)) {}
 
 } // namespace LwM2M
