@@ -1,10 +1,10 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_READ_HPP
 #define __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_READ_HPP
 
-#include "DeviceManagmentInterfaceMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 namespace LwM2M {
-struct ServerRequest_Read : public DeviceManagment_Interface_Message {
+struct ServerRequest_Read : public DeviceManagmentMessage {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;

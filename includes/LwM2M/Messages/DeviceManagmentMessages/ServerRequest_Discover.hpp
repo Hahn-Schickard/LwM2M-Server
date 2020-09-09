@@ -1,10 +1,10 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_DISCOVER_HPP
 #define __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_DISCOVER_HPP
 
-#include "DeviceManagmentInterfaceMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 namespace LwM2M {
-struct ServerRequest_Discover : public DeviceManagment_Interface_Message {
+struct ServerRequest_Discover : public DeviceManagmentMessage {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;

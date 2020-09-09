@@ -21,9 +21,9 @@ ServerRequest_WriteAttributes::ServerRequest_WriteAttributes(
     optional<unsigned int> resource_id,
     optional<unsigned int> resoruce_instance_id,
     optional<Notify_Attribute> notify_attribute)
-    : DeviceManagment_Interface_Message(endpoint_address, endpoint_port,
+    : DeviceManagmentMessage(endpoint_address, endpoint_port,
 
-                                        MessageType::WRITE_ATTRIBUTES),
+                             MessageType::WRITE_ATTRIBUTES),
       object_id_(object_id), object_instance_id_(move(object_instance_id)),
       resource_id_(move(resource_id)),
       resoruce_instance_id_(resoruce_instance_id),

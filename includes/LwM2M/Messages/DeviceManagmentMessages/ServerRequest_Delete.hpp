@@ -1,10 +1,10 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_DELETE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_DELETE_HPP
 
-#include "DeviceManagmentInterfaceMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 namespace LwM2M {
-struct ServerRequest_Delete : public DeviceManagment_Interface_Message {
+struct ServerRequest_Delete : public DeviceManagmentMessage {
   unsigned int object_id_;
   unsigned int object_instance_id_;
 

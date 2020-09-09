@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_WRITE_ATTRIBUTE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_WRITE_ATTRIBUTE_HPP
 
-#include "DeviceManagmentInterfaceMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 namespace LwM2M {
 
@@ -23,8 +23,7 @@ struct Notify_Attribute {
                    std::optional<unsigned int> maximum_evaluation_period);
 };
 
-struct ServerRequest_WriteAttributes
-    : public DeviceManagment_Interface_Message {
+struct ServerRequest_WriteAttributes : public DeviceManagmentMessage {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;

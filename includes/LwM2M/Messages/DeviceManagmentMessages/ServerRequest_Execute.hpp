@@ -1,10 +1,10 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_EXECUTE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_SERVER_REQUEST_EXECUTE_HPP
 
-#include "DeviceManagmentInterfaceMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 namespace LwM2M {
-struct ServerRequest_Execute : public DeviceManagment_Interface_Message {
+struct ServerRequest_Execute : public DeviceManagmentMessage {
   unsigned int object_id_;
   unsigned int object_instance_id_;
   unsigned int resource_id_;

@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_MESSAGES_HPP
 #define __LWM2M_DEVICE_MANAGMENT_MESSAGES_HPP
 
-#include "DeviceManagmentInterfaceMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
 #include "ServerRequest_Create.hpp"
 #include "ServerRequest_Delete.hpp"
 #include "ServerRequest_Discover.hpp"
