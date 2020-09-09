@@ -1,10 +1,10 @@
 #ifndef __LWM2M_INFORMATION_REPORTING_INTERFACE_CLIENT_MESSAGE_NOTIFY_HPP
 #define __LWM2M_INFORMATION_REPORTING_INTERFACE_CLIENT_MESSAGE_NOTIFY_HPP
 
-#include "InformationReportingInterfaceMessage.hpp"
+#include "InformationReportingMessage.hpp"
 
 namespace LwM2M {
-struct ClientMessage_Notify : public InformationReporting_Interface_Message {
+struct ClientMessage_Notify : public InformationReportingMessage {
   std::string value_;
 
   ClientMessage_Notify(std::string endpoint_address, unsigned int endpoint_port,

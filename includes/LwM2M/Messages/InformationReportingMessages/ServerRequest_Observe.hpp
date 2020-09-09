@@ -1,10 +1,10 @@
 #ifndef __LWM2M_INFORMATION_REPORTING_INTERFACE_SERVER_REQUEST_OBSERVE_HPP
 #define __LWM2M_INFORMATION_REPORTING_INTERFACE_SERVER_REQUEST_OBSERVE_HPP
 
-#include "InformationReportingInterfaceMessage.hpp"
+#include "InformationReportingMessage.hpp"
 
 namespace LwM2M {
-struct ServerRequest_Observe : public InformationReporting_Interface_Message {
+struct ServerRequest_Observe : public InformationReportingMessage {
   unsigned int object_id_;
   std::optional<unsigned int> object_instance_id_;
   std::optional<unsigned int> resource_id_;

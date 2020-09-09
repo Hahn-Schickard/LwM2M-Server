@@ -9,9 +9,8 @@ ServerRequest_Observe::ServerRequest_Observe(
     optional<unsigned int> object_instance_id,
     optional<unsigned int> resource_id,
     optional<unsigned int> resoruce_instance_id)
-    : InformationReporting_Interface_Message(endpoint_address, endpoint_port,
-                                             message_id, token,
-                                             MessageType::OBSERVE),
+    : InformationReportingMessage(endpoint_address, endpoint_port, message_id,
+                                  token, MessageType::OBSERVE),
       object_id_(object_id), object_instance_id_(move(object_instance_id)),
       resource_id_(move(resource_id)),
       resoruce_instance_id_(move(resoruce_instance_id)) {}

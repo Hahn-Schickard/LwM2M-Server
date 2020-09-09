@@ -3,7 +3,7 @@
 
 #include "ClientMessage_Notify.hpp"
 #include "ClientRequest_Send.hpp"
-#include "InformationReportingInterfaceMessage.hpp"
+#include "InformationReportingMessage.hpp"
 #include "ServerRequest_CancelObservation.hpp"
 #include "ServerRequest_CancelObserveComposite.hpp"
 #include "ServerRequest_Observe.hpp"
