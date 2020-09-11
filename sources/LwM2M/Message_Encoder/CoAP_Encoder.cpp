@@ -11,7 +11,7 @@ using namespace HaSLL;
 namespace LwM2M {
 CoAP_Encoder::CoAP_Encoder(
     shared_ptr<ResponseHandler> response_handler,
-    shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> output_queue)
+    shared_ptr<ThreadsafeHashSet<CoAP::Message>> output_queue)
     : MessageEncoder(response_handler), output_queue_(output_queue),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 

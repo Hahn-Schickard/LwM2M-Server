@@ -1,4 +1,5 @@
 #include "CoAP_Message.hpp"
+#include "Threadsafe_HashSet.hpp"
 #include "Threadsafe_Unique_Queue.hpp"
 
 #include "gtest/gtest.h"
@@ -121,4 +122,63 @@ TEST_F(CoAPMessageQueueTests, canNotPushDuplicateUniqueValue) {
   EXPECT_TRUE(queue->try_pop(tested));
   EXPECT_NE(tested, expected);
   EXPECT_FALSE(queue->try_pop(tested));
+}
+
+class CoAPMessageHashSetTests : public ::testing::Test {
+protected:
+  void SetUp() override {
+    hash_set = make_unique<ThreadsafeHashSet<Message>>();
+  }
+  unique_ptr<ThreadsafeHashSet<Message>> hash_set;
+};
+
+TEST_F(CoAPMessageHashSetTests, canPushNewValue) {
+  Message expected =
+      makeMessage("1.1.1.1", 8080, vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8}, 12,
+                  MessageType::ACKNOWLEDGMENT, CodeType::POST);
+  EXPECT_NO_THROW(hash_set->push(make_unique<Message>(expected)));
+  shared_ptr<Message> tested = hash_set->front();
+  EXPECT_EQ(*tested.get(), expected);
+  hash_set->pop(tested);
+  EXPECT_TRUE(hash_set->empty());
+}
+
+TEST_F(CoAPMessageHashSetTests, canNotPushDuplicateValue) {
+  Message expected =
+      makeMessage("1.1.1.1", 8080, vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8}, 12,
+                  MessageType::ACKNOWLEDGMENT, CodeType::POST);
+  EXPECT_NO_THROW(hash_set->push(expected));
+  EXPECT_NO_THROW(hash_set->push(expected));
+  EXPECT_NO_THROW(hash_set->push(makeMessage(
+      "1.1.1.1", 8080, vector<uint8_t>{9, 10, 11, 12, 13, 14, 15, 16}, 40,
+      MessageType::ACKNOWLEDGMENT, CodeType::GET)));
+  EXPECT_EQ(2, hash_set->size());
+
+  shared_ptr<Message> tested = hash_set->front();
+  EXPECT_EQ(*tested.get(), expected);
+  hash_set->pop(tested);
+  tested = hash_set->front();
+  EXPECT_NE(*tested.get(), expected);
+  hash_set->pop(tested);
+  EXPECT_TRUE(hash_set->empty());
+}
+
+TEST_F(CoAPMessageHashSetTests, canNotPushDuplicateUniqueValue) {
+  Message expected =
+      makeMessage("1.1.1.1", 8080, vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8}, 12,
+                  MessageType::ACKNOWLEDGMENT, CodeType::POST);
+  EXPECT_NO_THROW(hash_set->push(make_unique<Message>(expected)));
+  EXPECT_NO_THROW(hash_set->push(make_unique<Message>(expected)));
+  EXPECT_NO_THROW(hash_set->push(make_unique<Message>(makeMessage(
+      "1.1.1.1", 8080, vector<uint8_t>{9, 10, 11, 12, 13, 14, 15, 16}, 40,
+      MessageType::ACKNOWLEDGMENT, CodeType::GET))));
+  EXPECT_EQ(2, hash_set->size());
+
+  shared_ptr<Message> tested = hash_set->front();
+  EXPECT_EQ(*tested.get(), expected);
+  hash_set->pop(tested);
+  tested = hash_set->front();
+  EXPECT_NE(*tested.get(), expected);
+  hash_set->pop(tested);
+  EXPECT_TRUE(hash_set->empty());
 }

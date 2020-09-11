@@ -1,5 +1,5 @@
-#ifndef __MULTITHREADING_STOPABLE_TASK_HPP
-#define __MULTITHREADING_STOPABLE_TASK_HPP
+#ifndef __MULTITHREADING_STOPABLE_HPP
+#define __MULTITHREADING_STOPABLE_HPP
 
 #include <chrono>
 #include <future>
@@ -35,4 +35,4 @@ public:
   void stop() { exitSignal_.set_value(); }
 };
 
-#endif //__MULTITHREADING_STOPABLE_TASK_HPP
+#endif //__MULTITHREADING_STOPABLE_HPP

@@ -5,18 +5,17 @@
 #include "Logger.hpp"
 #include "Message_Encoder.hpp"
 #include "RegistrationMessages.hpp"
-#include "Threadsafe_Unique_Queue.hpp"
+#include "Threadsafe_HashSet.hpp"
 
 namespace LwM2M {
 
 class CoAP_Encoder : public MessageEncoder {
-  std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> output_queue_;
+  std::shared_ptr<ThreadsafeHashSet<CoAP::Message>> output_queue_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
 public:
-  CoAP_Encoder(
-      std::shared_ptr<ResponseHandler> response_handler,
-      std::shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> output_queue);
+  CoAP_Encoder(std::shared_ptr<ResponseHandler> response_handler,
+               std::shared_ptr<ThreadsafeHashSet<CoAP::Message>> output_queue);
 
   ResponseFuture encode(std::unique_ptr<ServerRequest_Read> input) override;
 

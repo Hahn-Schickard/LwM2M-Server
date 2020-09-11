@@ -4,7 +4,7 @@
 #include "Logger.hpp"
 #include "LwM2M_Device.hpp"
 #include "RegistryHandler.hpp"
-#include "Stoppable.hpp"
+#include "StoppableTask.hpp"
 
 #include <memory>
 #include <string>
@@ -16,20 +16,6 @@ namespace LwM2M {
 using RegistryEventSourcePtr =
     std::shared_ptr<ObserverPattern::EventSource<RegistryEvent>>;
 
-class StoppableTask {
-  std::unique_ptr<Stoppable> task_;
-  std::unique_ptr<std::thread> task_thread_;
-  std::string task_name_;
-
-public:
-  StoppableTask();
-  StoppableTask(std::unique_ptr<Stoppable> task, std::string task_name);
-
-  void startTask();
-  void stopTask();
-  std::string getName();
-};
-
 struct Configuration {
   std::string object_descriptors_location;
   std::string ip_address;
@@ -38,7 +24,7 @@ struct Configuration {
 };
 
 class Server {
-  std::vector<StoppableTask> stoppabletaskes_;
+  std::vector<StoppableTask> tasks_;
   std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
       device_registery_;
   std::shared_ptr<RegistryHandler> registration_;

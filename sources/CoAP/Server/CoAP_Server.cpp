@@ -5,7 +5,6 @@
 #include <deque>
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <vector>
 
@@ -46,16 +45,14 @@ void handleReturnCode(string failure_message, asio::error_code return_code) {
 }
 
 class Socket : public SocketInterface {
-  mutex socket_lock_;
   io_context io_context_;
   udp::socket socket_;
   unsigned int task_execution_period_;
-  shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> incominng_messages_;
-  shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> outgoing_messages_;
+  shared_ptr<ThreadsafeHashSet<CoAP::Message>> incominng_messages_;
+  shared_ptr<ThreadsafeHashSet<CoAP::Message>> outgoing_messages_;
   shared_ptr<Logger> logger_;
 
   void receive() {
-    lock_guard<std::mutex> lock(socket_lock_);
     vector<uint8_t> udp_datagram(PACKET_SIZE_UPPER_BOUND);
     udp::endpoint remote_endpoint;
     asio::error_code return_code;
@@ -71,10 +68,9 @@ class Socket : public SocketInterface {
           !udp_datagram.empty()) {
         try {
           udp_datagram.resize(bytes_read.get());
-          auto message =
-              make_unique<Message>(remote_endpoint.address().to_string(),
-                                   remote_endpoint.port(), move(udp_datagram));
-          incominng_messages_->push(move(message));
+          auto message = Message(remote_endpoint.address().to_string(),
+                                 remote_endpoint.port(), move(udp_datagram));
+          incominng_messages_->push(message);
         } catch (const domain_error &ex) {
           logger_->log(SeverityLevel::ERROR, ex.what());
         }
@@ -82,8 +78,7 @@ class Socket : public SocketInterface {
     }
   }
 
-  void send(unique_ptr<Message> message) {
-    lock_guard<std::mutex> lock(socket_lock_);
+  void send(shared_ptr<Message> message) {
     asio::error_code return_code;
     try {
       vector<uint8_t> buffer = message->toPacket();
@@ -109,8 +104,8 @@ class Socket : public SocketInterface {
 
 public:
   Socket(udp::endpoint socket_endpoint, unsigned int task_execution_period,
-         shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> incominng_messages,
-         shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> outgoing_messages)
+         shared_ptr<ThreadsafeHashSet<CoAP::Message>> incominng_messages,
+         shared_ptr<ThreadsafeHashSet<CoAP::Message>> outgoing_messages)
       : io_context_(), socket_(io_context_, socket_endpoint),
         task_execution_period_(task_execution_period),
         incominng_messages_(incominng_messages),
@@ -123,15 +118,15 @@ public:
 
   Socket(const string &address, unsigned int port_id,
          unsigned int task_execution_period,
-         shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> incominng_messages,
-         shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> outgoing_messages)
+         shared_ptr<ThreadsafeHashSet<CoAP::Message>> incominng_messages,
+         shared_ptr<ThreadsafeHashSet<CoAP::Message>> outgoing_messages)
       : Socket(udp::endpoint(ip::make_address(address), port_id),
                task_execution_period, incominng_messages, outgoing_messages) {}
 
   Socket(bool ip_v6_handler, unsigned int port_id,
          unsigned int task_execution_period,
-         shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> incominng_messages,
-         shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>> outgoing_messages)
+         shared_ptr<ThreadsafeHashSet<CoAP::Message>> incominng_messages,
+         shared_ptr<ThreadsafeHashSet<CoAP::Message>> outgoing_messages)
       : Socket(udp::endpoint(selectProtocol(ip_v6_handler), port_id),
                task_execution_period, incominng_messages, outgoing_messages) {}
 
@@ -140,9 +135,10 @@ public:
   }
 
   void listen() override {
-    auto message = outgoing_messages_->try_pop();
+    auto message = outgoing_messages_->front();
     if (message) {
-      send(move(message));
+      send(message);
+      outgoing_messages_->pop(message);
     } else {
       receive();
     }
@@ -150,8 +146,8 @@ public:
 };
 
 Server::Server()
-    : incominng_messages_(make_shared<ThreadsafeUniqueQueue<CoAP::Message>>()),
-      outgoing_messages_(make_shared<ThreadsafeUniqueQueue<CoAP::Message>>()),
+    : incominng_messages_(make_shared<ThreadsafeHashSet<CoAP::Message>>()),
+      outgoing_messages_(make_shared<ThreadsafeHashSet<CoAP::Message>>()),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 
 Server::Server(const string &ip_address, unsigned int port_id,
@@ -182,21 +178,11 @@ void Server::run() {
   } while (!stopRequested());
 }
 
-unique_ptr<Message> Server::pullRequest() {
-  return incominng_messages_->wait_and_pop();
-}
-
-void Server::pushResponse(unique_ptr<Message> message) {
-  outgoing_messages_->push(move(message));
-}
-
-shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>>
-Server::getIncomingMessagesQueue() {
+shared_ptr<ThreadsafeHashSet<CoAP::Message>> Server::getIncomingMessages() {
   return incominng_messages_;
 }
 
-shared_ptr<ThreadsafeUniqueQueue<CoAP::Message>>
-Server::getOutgoingMessagesQueue() {
+shared_ptr<ThreadsafeHashSet<CoAP::Message>> Server::getOutgoingMessages() {
   return outgoing_messages_;
 }
 } // namespace CoAP

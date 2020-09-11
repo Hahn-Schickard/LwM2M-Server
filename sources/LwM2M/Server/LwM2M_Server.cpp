@@ -1,6 +1,7 @@
 #include "LwM2M_Server.hpp"
-#include "CoAP_Decoder.hpp"
+#include "CoAP_DeviceManagmentMessageDecoder.hpp"
 #include "CoAP_Encoder.hpp"
+#include "CoAP_RegistrationMessageDecoder.hpp"
 #include "CoAP_Server.hpp"
 #include "LoggerRepository.hpp"
 #include "Threadsafe_Unique_Queue.hpp"
@@ -9,42 +10,6 @@ using namespace std;
 using namespace HaSLL;
 
 namespace LwM2M {
-
-struct StoppableTaskIsAlreadyRunning : public runtime_error {
-  StoppableTaskIsAlreadyRunning(string const &message)
-      : runtime_error(message) {}
-};
-
-struct StoppableTaskIsNotRunning : public runtime_error {
-  StoppableTaskIsNotRunning(string const &message) : runtime_error(message) {}
-};
-
-StoppableTask::StoppableTask() : StoppableTask(unique_ptr<Stoppable>(), "") {}
-
-StoppableTask::StoppableTask(unique_ptr<Stoppable> task, string task_name)
-    : task_(move(task)), task_thread_(make_unique<thread>()),
-      task_name_(task_name) {}
-
-void StoppableTask::startTask() {
-  if (!task_thread_->joinable())
-    task_thread_ = make_unique<thread>([&]() { task_->start(); });
-  else {
-    string error_msg = "Task" + task_name_ + " is already running";
-    throw StoppableTaskIsAlreadyRunning(move(error_msg));
-  }
-}
-
-void StoppableTask::stopTask() {
-  if (task_thread_->joinable()) {
-    task_->stop();
-    task_thread_->join();
-  } else {
-    string error_msg = "Task" + task_name_ + " is not running";
-    throw StoppableTaskIsNotRunning(move(error_msg));
-  }
-}
-
-string StoppableTask::getName() { return task_name_; }
 
 Server::Server() {}
 
@@ -56,18 +21,20 @@ Server::Server(Configuration config)
                                           config.read_timeout);
   auto response_handler = make_shared<ResponseHandler>();
   shared_ptr<MessageEncoder> encoder = make_shared<CoAP_Encoder>(
-      response_handler, server->getOutgoingMessagesQueue());
+      response_handler, server->getOutgoingMessages());
   registration_ = make_shared<RegistryHandler>(
       device_registery_, encoder, config.object_descriptors_location);
-  stoppabletaskes_.emplace_back(
-      make_unique<CoAP_Decoder>(
-          registration_, server->getIncomingMessagesQueue(), response_handler),
-      "Incoming Message StoppableTaskor");
-  stoppabletaskes_.emplace_back(move(server), "CoAP Server");
+  tasks_.emplace_back(make_unique<CoAP_RegistrationMessageDecoder>(
+                          registration_, server->getIncomingMessages()),
+                      "Registration Message Decoder");
+  tasks_.emplace_back(make_unique<CoAP_DeviceManagmentMessageDecoder>(
+                          response_handler, server->getIncomingMessages()),
+                      "Device Managment Message Decoder");
+  tasks_.emplace_back(move(server), "CoAP Server");
 };
 
 void Server::start() {
-  for (auto &stoppabletask : stoppabletaskes_) {
+  for (auto &stoppabletask : tasks_) {
     try {
       stoppabletask.startTask();
     } catch (StoppableTaskIsAlreadyRunning &ex) {
@@ -81,7 +48,7 @@ void Server::start() {
 }
 
 void Server::stop() {
-  for (auto &stoppabletask : stoppabletaskes_) {
+  for (auto &stoppabletask : tasks_) {
     try {
       stoppabletask.stopTask();
     } catch (StoppableTaskIsNotRunning &ex) {

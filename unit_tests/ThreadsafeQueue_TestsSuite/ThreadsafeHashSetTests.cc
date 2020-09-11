@@ -29,6 +29,9 @@ TEST_F(ThreadsafeHashSetWithIntegersTests, canNotPushDuplicateValue) {
   int expected = 78;
   EXPECT_NO_THROW(hash_set->push(expected));
   EXPECT_NO_THROW(hash_set->push(expected));
+  EXPECT_NO_THROW(hash_set->push(expected));
+  EXPECT_NO_THROW(hash_set->push(expected));
+  EXPECT_NO_THROW(hash_set->push(expected));
   EXPECT_NO_THROW(hash_set->push(12));
   EXPECT_EQ(2, hash_set->size());
   shared_ptr<int> tested = hash_set->front();
