@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC 
-                              LwM2M_Model
+Device_Model
                               Stoppable_Task
                               Observer_Pattern
                               Message_Encoder

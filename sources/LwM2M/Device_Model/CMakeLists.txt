@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS LwM2M_Model)
+set(THIS Device_Model)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/LwM2M/LwM2M_Model
+            ${INCLUDES_DIR}/LwM2M/Device_Model
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -27,7 +27,7 @@ target_link_libraries(${THIS} PUBLIC
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/LwM2M_Model>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Device_Model>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

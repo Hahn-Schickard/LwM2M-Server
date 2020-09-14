@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              LwM2M_Model
+                              Device_Model
                               LwM2M_Core_Messages
                               PRIVATE
                               Utility

@@ -20,7 +20,7 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC 
                               Stoppable_Task
                               Threads::Threads
-                              LwM2M_Model
+                              Device_Model
                               Registry_Handler
                               HaSLL::HaSLL
                               PRIVATE
