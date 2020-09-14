@@ -25,8 +25,6 @@ struct Configuration {
 
 class Server {
   std::vector<StoppableTask> tasks_;
-  std::shared_ptr<std::unordered_map<std::string, std::shared_ptr<Device>>>
-      device_registery_;
   std::shared_ptr<RegistryHandler> registration_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
@@ -36,7 +34,7 @@ public:
 
   void stop();
   void start();
-  std::shared_ptr<Device> getDevice(std::string device_id);
+  DevicePtr getDevice(std::string device_id);
   RegistryEventSourcePtr getEventSource();
 };
 } // namespace LwM2M

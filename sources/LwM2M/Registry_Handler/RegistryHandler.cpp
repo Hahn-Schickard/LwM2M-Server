@@ -15,11 +15,9 @@ struct ObjectDescriptorNotSupported : runtime_error {
       : runtime_error(message) {}
 };
 
-RegistryHandler::RegistryHandler(
-    shared_ptr<unordered_map<string, shared_ptr<Device>>> device_registery,
-    shared_ptr<MessageEncoder> encoder, const string &configuration_path)
-    : ObserverPattern::EventSource<RegistryEvent>(),
-      device_registery_(device_registery), encoder_(encoder),
+RegistryHandler::RegistryHandler(shared_ptr<MessageEncoder> encoder,
+                                 const string &configuration_path)
+    : ObserverPattern::EventSource<RegistryEvent>(), encoder_(encoder),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
@@ -50,9 +48,17 @@ RegistryHandler::assignObjectInstances(
 }
 
 bool RegistryHandler::isRegistered(string device_id) {
-  return (device_registery_->find(device_id) != device_registery_->end())
-             ? true
-             : false;
+  return (device_registery_.find(device_id) != device_registery_.end()) ? true
+                                                                        : false;
+}
+
+DevicePtr RegistryHandler::getDevice(std::string identifier) {
+  auto it = device_registery_.find(identifier);
+  if (it != device_registery_.end()) {
+    return it->second;
+  } else {
+    return DevicePtr();
+  }
 }
 
 bool RegistryHandler::handleRequest(
@@ -68,9 +74,9 @@ bool RegistryHandler::handleRequest(
         request->binding_, request->queue_mode_, request->sms_number_,
         object_instances);
     if (isRegistered(new_device->getDeviceId()))
-      device_registery_->erase(
-          device_registery_->find(new_device->getDeviceId()));
-    device_registery_->emplace(new_device->getDeviceId(), new_device);
+      device_registery_.erase(
+          device_registery_.find(new_device->getDeviceId()));
+    device_registery_.emplace(new_device->getDeviceId(), new_device);
     event = make_shared<RegistryEvent>(RegistryEvent{
         RegistryEventType::REGISTERED, new_device->getDeviceId(), new_device});
     result = make_unique<ServerResponse_Register>(
@@ -92,7 +98,7 @@ bool RegistryHandler::handleRequest(
 
 bool RegistryHandler::handleRequest(unique_ptr<ClientRequest_Update> request) {
   try {
-    auto device = device_registery_->at(request->location_);
+    auto device = device_registery_.at(request->location_);
     bool updated = false;
     if (device) {
       if (request->binding_) {
@@ -139,7 +145,7 @@ bool RegistryHandler::handleRequest(
     unique_ptr<ClientRequest_Deregister> request) {
   try {
     if (isRegistered(request->location_)) {
-      device_registery_->erase(device_registery_->find(request->location_));
+      device_registery_.erase(device_registery_.find(request->location_));
       notify(make_shared<RegistryEvent>(
           RegistryEvent{RegistryEventType::DEREGISTERED, request->location_,
                         shared_ptr<Device>()}));

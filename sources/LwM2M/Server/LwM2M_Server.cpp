@@ -14,16 +14,14 @@ namespace LwM2M {
 Server::Server() {}
 
 Server::Server(Configuration config)
-    : device_registery_(
-          make_shared<unordered_map<string, shared_ptr<Device>>>()),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,
                                           config.read_timeout);
   auto response_handler = make_shared<ResponseHandler>();
   shared_ptr<MessageEncoder> encoder = make_shared<CoAP_Encoder>(
       response_handler, server->getOutgoingMessages());
-  registration_ = make_shared<RegistryHandler>(
-      device_registery_, encoder, config.object_descriptors_location);
+  registration_ =
+      make_shared<RegistryHandler>(encoder, config.object_descriptors_location);
   tasks_.emplace_back(make_unique<CoAP_RegistrationMessageDecoder>(
                           registration_, server->getIncomingMessages()),
                       "Registration Message Decoder");
@@ -61,12 +59,8 @@ void Server::stop() {
   }
 }
 
-shared_ptr<Device> Server::getDevice(string device_id) {
-  auto it = device_registery_->find(device_id);
-  shared_ptr<Device> result;
-  if (it != device_registery_->end())
-    result = it->second;
-  return result;
+DevicePtr Server::getDevice(string device_id) {
+  return registration_->getDevice(device_id);
 }
 
 RegistryEventSourcePtr Server::getEventSource() { return registration_; }
