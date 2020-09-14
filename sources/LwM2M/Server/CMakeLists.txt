@@ -21,7 +21,7 @@ target_link_libraries(${THIS} PUBLIC
                               Stoppable_Task
                               Threads::Threads
                               Device_Model
-                              Registry_Handler
+                              Device_Registry
                               HaSLL::HaSLL
                               PRIVATE
                               CoAP_Server

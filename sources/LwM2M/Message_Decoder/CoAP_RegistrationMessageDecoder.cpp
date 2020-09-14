@@ -64,7 +64,7 @@ getObjectList(shared_ptr<PayloadFormat> payload) {
 }
 
 CoAP_RegistrationMessageDecoder::CoAP_RegistrationMessageDecoder(
-    shared_ptr<RegistryHandler> registration,
+    shared_ptr<DeviceRegistry> registration,
     shared_ptr<ThreadsafeHashSet<CoAP::Message>> message_buffer)
     : registration_(registration), message_buffer_(message_buffer),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}

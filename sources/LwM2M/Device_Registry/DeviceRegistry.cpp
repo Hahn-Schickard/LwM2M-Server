@@ -1,4 +1,4 @@
-#include "RegistryHandler.hpp"
+#include "DeviceRegistry.hpp"
 #include "LoggerRepository.hpp"
 #include "StringSpliter.hpp"
 #include "XmlParser.hpp"
@@ -15,8 +15,8 @@ struct ObjectDescriptorNotSupported : runtime_error {
       : runtime_error(message) {}
 };
 
-RegistryHandler::RegistryHandler(shared_ptr<MessageEncoder> encoder,
-                                 const string &configuration_path)
+DeviceRegistry::DeviceRegistry(shared_ptr<MessageEncoder> encoder,
+                               const string &configuration_path)
     : ObserverPattern::EventSource<RegistryEvent>(), encoder_(encoder),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
@@ -29,7 +29,7 @@ RegistryHandler::RegistryHandler(shared_ptr<MessageEncoder> encoder,
 }
 
 unordered_map<uint32_t, ObjectDescriptorPair>
-RegistryHandler::assignObjectInstances(
+DeviceRegistry::assignObjectInstances(
     unordered_map<unsigned int, vector<unsigned int>> objects) {
   unordered_map<uint32_t, ObjectDescriptorPair> result;
   for (auto &object : objects) {
@@ -47,12 +47,12 @@ RegistryHandler::assignObjectInstances(
   return result;
 }
 
-bool RegistryHandler::isRegistered(string device_id) {
+bool DeviceRegistry::isRegistered(string device_id) {
   return (device_registery_.find(device_id) != device_registery_.end()) ? true
                                                                         : false;
 }
 
-DevicePtr RegistryHandler::getDevice(std::string identifier) {
+DevicePtr DeviceRegistry::getDevice(std::string identifier) {
   auto it = device_registery_.find(identifier);
   if (it != device_registery_.end()) {
     return it->second;
@@ -61,8 +61,7 @@ DevicePtr RegistryHandler::getDevice(std::string identifier) {
   }
 }
 
-bool RegistryHandler::handleRequest(
-    unique_ptr<ClientRequest_Register> request) {
+bool DeviceRegistry::handleRequest(unique_ptr<ClientRequest_Register> request) {
   unique_ptr<ServerResponse_Register> result;
   shared_ptr<RegistryEvent> event;
   try {
@@ -96,7 +95,7 @@ bool RegistryHandler::handleRequest(
   return true;
 }
 
-bool RegistryHandler::handleRequest(unique_ptr<ClientRequest_Update> request) {
+bool DeviceRegistry::handleRequest(unique_ptr<ClientRequest_Update> request) {
   try {
     auto device = device_registery_.at(request->location_);
     bool updated = false;
@@ -141,7 +140,7 @@ bool RegistryHandler::handleRequest(unique_ptr<ClientRequest_Update> request) {
   return true;
 }
 
-bool RegistryHandler::handleRequest(
+bool DeviceRegistry::handleRequest(
     unique_ptr<ClientRequest_Deregister> request) {
   try {
     if (isRegistered(request->location_)) {

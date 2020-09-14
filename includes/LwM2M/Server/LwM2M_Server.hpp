@@ -1,9 +1,9 @@
 #ifndef __LWM2M_SERVER_HPP
 #define __LWM2M_SERVER_HPP
 
+#include "DeviceRegistry.hpp"
 #include "Logger.hpp"
 #include "LwM2M_Device.hpp"
-#include "RegistryHandler.hpp"
 #include "StoppableTask.hpp"
 
 #include <memory>
@@ -25,7 +25,7 @@ struct Configuration {
 
 class Server {
   std::vector<StoppableTask> tasks_;
-  std::shared_ptr<RegistryHandler> registration_;
+  std::shared_ptr<DeviceRegistry> registration_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
 public:

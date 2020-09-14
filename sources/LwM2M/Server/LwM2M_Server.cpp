@@ -21,7 +21,7 @@ Server::Server(Configuration config)
   shared_ptr<MessageEncoder> encoder = make_shared<CoAP_Encoder>(
       response_handler, server->getOutgoingMessages());
   registration_ =
-      make_shared<RegistryHandler>(encoder, config.object_descriptors_location);
+      make_shared<DeviceRegistry>(encoder, config.object_descriptors_location);
   tasks_.emplace_back(make_unique<CoAP_RegistrationMessageDecoder>(
                           registration_, server->getIncomingMessages()),
                       "Registration Message Decoder");

@@ -21,7 +21,7 @@ using ObjectDescriptorPair =
 
 using DevicePtr = std::shared_ptr<Device>;
 
-class RegistryHandler : public ObserverPattern::EventSource<RegistryEvent> {
+class DeviceRegistry : public ObserverPattern::EventSource<RegistryEvent> {
   std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
       supported_descriptors_;
   std::unordered_map<std::string, std::shared_ptr<Device>> device_registery_;
@@ -34,8 +34,8 @@ class RegistryHandler : public ObserverPattern::EventSource<RegistryEvent> {
       std::unordered_map<unsigned int, std::vector<unsigned int>> objects);
 
 public:
-  RegistryHandler(std::shared_ptr<MessageEncoder> encoder,
-                  const std::string &configuration_path);
+  DeviceRegistry(std::shared_ptr<MessageEncoder> encoder,
+                 const std::string &configuration_path);
 
   DevicePtr getDevice(std::string identifier);
 

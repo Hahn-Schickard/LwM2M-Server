@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Registry_Handler)
+set(THIS Device_Registry)
 
 list(APPEND THIS_INCLUDES_DIRS
-            ${INCLUDES_DIR}/LwM2M/Registry_Handler
+            ${INCLUDES_DIR}/LwM2M/Device_Registry
 )
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
@@ -30,7 +30,7 @@ Device_Model
 )
 
 target_include_directories(${THIS} INTERFACE
-                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Registry_Handler>
+                           $<BUILD_INTERFACE:${INCLUDES_DIR}/LwM2M/Device_Registry>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

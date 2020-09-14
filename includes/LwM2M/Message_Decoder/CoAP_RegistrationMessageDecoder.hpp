@@ -2,9 +2,9 @@
 #define __LWM2M_COAP_REGISTRATION_MESSAGE_DECODER_HPP
 
 #include "CoAP_Message.hpp"
+#include "DeviceRegistry.hpp"
 #include "Logger.hpp"
 #include "LwM2M_Message.hpp"
-#include "RegistryHandler.hpp"
 #include "Stoppable.hpp"
 #include "Threadsafe_HashSet.hpp"
 
@@ -12,7 +12,7 @@
 
 namespace LwM2M {
 class CoAP_RegistrationMessageDecoder : public Stoppable {
-  std::shared_ptr<RegistryHandler> registration_;
+  std::shared_ptr<DeviceRegistry> registration_;
   std::shared_ptr<ThreadsafeHashSet<CoAP::Message>> message_buffer_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
@@ -26,7 +26,7 @@ class CoAP_RegistrationMessageDecoder : public Stoppable {
 
 public:
   CoAP_RegistrationMessageDecoder(
-      std::shared_ptr<RegistryHandler> registration,
+      std::shared_ptr<DeviceRegistry> registration,
       std::shared_ptr<ThreadsafeHashSet<CoAP::Message>> message_buffer);
 
   void run() override;
