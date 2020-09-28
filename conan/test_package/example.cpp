@@ -3,22 +3,20 @@
 
 #include <iomanip>
 #include <iostream>
-#include <memory>
 #include <thread>
-#include <vector>
 
 using namespace HaSLL;
 using namespace std;
 
 int main() {
-  auto logger = LoggerRepository::getInstance("loggerConfig.json")
-                    .registerLoger("Example_Runner");
+  LoggerRepository::initialise("loggerConfig.json");
+  auto logger = LoggerRepository::getInstance().registerLoger("Example_Runner");
   LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
   LwM2M::Server server;
   try {
     server = LwM2M::Server(LwM2M::Configuration{string("model/descriptors.xml"),
-                                                string("0.0.0.0"), 5683, 10});
+                                                string("0.0.0.0"), 5683, 5});
     server.start();
     logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
     this_thread::sleep(1s);
