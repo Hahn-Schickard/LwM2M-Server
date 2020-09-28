@@ -9,7 +9,10 @@ using namespace HaSLL;
 using namespace std;
 
 int main() {
-  LoggerRepository::initialise("loggerConfig.json");
+  auto config = HaSLL::Configuration(
+      "./log", "logfile.log", "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$",
+      HaSLL::SeverityLevel::TRACE, false, 8192, 2, 25, 100, 1);
+  LoggerRepository::initialise(config);
   auto logger = LoggerRepository::getInstance().registerLoger("Example_Runner");
   LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
@@ -19,7 +22,7 @@ int main() {
                                                 string("0.0.0.0"), 5683, 5});
     server.start();
     logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
-    this_thread::sleep(1s);
+    this_thread::sleep_for(1s);
 
   } catch (exception &e) {
     logger->log(SeverityLevel::ERROR, "Received an exception: {}", e.what());
