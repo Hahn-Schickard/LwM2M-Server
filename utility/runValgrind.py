@@ -66,11 +66,11 @@ def run_memory_analysis(analyzer: str, settings: list, error_marker: str, target
 parser = argparse.ArgumentParser()
 parser.add_argument("target", help="full path to the binary target that will be analyzed",
                     type=str)
-parser.add_argument('--nargs', nargs='+',
+parser.add_argument('arguments', nargs='?', default=[],
                     help="add an argument to the list of arguments, that are used by the target binary")
 
 target = parser.parse_args().target
-arguments = parser.parse_args().nargs
+arguments = parser.parse_args().arguments
 
 print("Runing memory analysis with valgrind for target: ",
       target, " with argument list:", arguments)
