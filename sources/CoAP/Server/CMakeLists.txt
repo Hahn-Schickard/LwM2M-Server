@@ -24,7 +24,6 @@ target_link_libraries(${THIS} PUBLIC
                               Threadsafe_Queue
                               PRIVATE 
                               asio::asio
-                              XML_Parser
 )
 
 target_include_directories(${THIS} INTERFACE
