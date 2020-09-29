@@ -1,0 +1,20 @@
+## [0.1.0] - 2020.09.29
+### Added 
+ - draft CoAP Server implementation
+ - LwM2M Core
+ - LwM2M Messages
+ - LwM2M Device Model
+ - XML Parser
+ - LwM2M Device Registry
+ - LwM2M Message Encoder 
+ - LwM2M Message Decoder
+ - LwM2M Response handler
+ - LwM2M Server
+ - Utility helpes for String Splitint, primitive convertions and hashing
+ - unit tests
+ - conan packaging
+ - conan package integration test
+ - documentation
+ - LICENSE and NOTICE files
+ - Contributing guide 
+ - Authors
