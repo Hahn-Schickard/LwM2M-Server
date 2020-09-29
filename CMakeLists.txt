@@ -25,6 +25,7 @@ list(APPEND DEPENDENCIES_LIST
             asio
             HaSLL
             TDC4CPP17
+            Variant_Visitor
             pugixml
             Threads
 )
