@@ -27,7 +27,7 @@ target_link_libraries(${THIS} PUBLIC
                               CoAP_Server
                               Message_Decoder
                               Message_Encoder
-                              Threadsafe_Queue
+                              TDC4CPP17::TDC4CPP17
 )
 
 target_include_directories(${THIS} INTERFACE

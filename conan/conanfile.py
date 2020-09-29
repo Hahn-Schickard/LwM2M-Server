@@ -12,6 +12,7 @@ class PackageConan(ConanFile):
     requires = [
         "asio/1.16.0",
         "HaSLL/0.2.2@hahn-schickard/stable",
+        "TDC4CPP17/0.1.0@hahn-schickard/stable",
         "nlohmann_json/3.7.3",
         "pugixml/1.10@bincrafters/stable"
     ]

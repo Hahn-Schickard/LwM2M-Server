@@ -21,7 +21,7 @@ target_link_libraries(${THIS} PUBLIC
                               CoAP_Message
                               Stoppable_Task
                               HaSLL::HaSLL
-                              Threadsafe_Queue
+                              TDC4CPP17::TDC4CPP17
                               PRIVATE 
                               asio::asio
 )

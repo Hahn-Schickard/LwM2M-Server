@@ -1,7 +1,6 @@
 add_subdirectory(Utility)
 add_subdirectory(Stoppable)
 add_subdirectory(Observer_Pattern)
-add_subdirectory(Threadsafe_Queue)
 add_subdirectory(Variant_Visitor)
 add_subdirectory(CoAP)
 add_subdirectory(LwM2M)

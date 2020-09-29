@@ -25,7 +25,7 @@ target_link_libraries(${THIS} PUBLIC
                               LwM2M_Information_Reporting_Messages
                               LwM2M_Device_Managment_Messages
                               Response_Handler
-                              Threadsafe_Queue
+                              TDC4CPP17::TDC4CPP17
                               HaSLL::HaSLL
 )
 

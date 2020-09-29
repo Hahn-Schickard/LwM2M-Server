@@ -24,6 +24,7 @@ execute_conan_install()
 list(APPEND DEPENDENCIES_LIST 
             asio
             HaSLL
+            TDC4CPP17
             pugixml
             Threads
 )
