@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              Stoppable_Task
+                              Stoppable::Stoppable
                               CoAP_Message
                               CoAP_Payload_Formats
                               LwM2M_Core_Messages

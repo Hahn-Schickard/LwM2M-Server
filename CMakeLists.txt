@@ -26,6 +26,7 @@ list(APPEND DEPENDENCIES_LIST
             HaSLL
             TDC4CPP17
             Variant_Visitor
+            Stoppable
             pugixml
             Threads
 )

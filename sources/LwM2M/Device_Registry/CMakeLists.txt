@@ -19,7 +19,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC 
                               Device_Model
-                              Stoppable_Task
+                              Stoppable::Stoppable
                               Observer_Pattern
                               Message_Encoder
                               LwM2M_Registration_Messages

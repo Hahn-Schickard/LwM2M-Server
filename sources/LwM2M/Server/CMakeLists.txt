@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC 
-                              Stoppable_Task
+                              Stoppable::Stoppable
                               Threads::Threads
                               Device_Model
                               Device_Registry

@@ -19,7 +19,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC
                               CoAP_Message
-                              Stoppable_Task
+                              Stoppable::Stoppable
                               HaSLL::HaSLL
                               TDC4CPP17::TDC4CPP17
                               PRIVATE 
