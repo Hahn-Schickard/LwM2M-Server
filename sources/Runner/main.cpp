@@ -1,6 +1,6 @@
+#include "Event_Model.hpp"
 #include "LoggerRepository.hpp"
 #include "LwM2M_Server.hpp"
-#include "Observer_Pattern.hpp"
 #include "RegistryEvent.hpp"
 #include "Variant_Visitor.hpp"
 
@@ -73,7 +73,7 @@ void asyncRead(shared_ptr<LwM2M::Device> device) {
 }
 
 class RegistrationListener
-    : public ObserverPattern::EventListener<LwM2M::RegistryEvent> {
+    : public Event_Model::EventListener<LwM2M::RegistryEvent> {
 public:
   RegistrationListener(LwM2M::RegistryEventSourcePtr registration)
       : EventListener(registration) {}

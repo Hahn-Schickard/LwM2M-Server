@@ -27,6 +27,7 @@ list(APPEND DEPENDENCIES_LIST
             TDC4CPP17
             Variant_Visitor
             Stoppable
+            Event_Model
             pugixml
             Threads
 )

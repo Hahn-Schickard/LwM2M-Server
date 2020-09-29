@@ -20,7 +20,7 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC 
                               Device_Model
                               Stoppable::Stoppable
-                              Observer_Pattern
+                              Event_Model::Event_Model
                               Message_Encoder
                               LwM2M_Registration_Messages
                               HaSLL::HaSLL

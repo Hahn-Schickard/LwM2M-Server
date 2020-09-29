@@ -1,11 +1,11 @@
 #ifndef __LWM2M_MODEL_REGISTRATION_INTERFACE_HPP
 #define __LWM2M_MODEL_REGISTRATION_INTERFACE_HPP
 
+#include "Event_Model.hpp"
 #include "Logger.hpp"
 #include "LwM2M_Device.hpp"
 #include "LwM2M_ObjectDescriptor.hpp"
 #include "Message_Encoder.hpp"
-#include "Observer_Pattern.hpp"
 #include "RegistrationMessages.hpp"
 #include "RegistryEvent.hpp"
 #include "Response_Handler.hpp"
@@ -21,7 +21,7 @@ using ObjectDescriptorPair =
 
 using DevicePtr = std::shared_ptr<Device>;
 
-class DeviceRegistry : public ObserverPattern::EventSource<RegistryEvent> {
+class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
   std::unordered_map<uint32_t, std::shared_ptr<ObjectDescriptor>>
       supported_descriptors_;
   std::unordered_map<std::string, std::shared_ptr<Device>> device_registery_;

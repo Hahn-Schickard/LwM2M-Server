@@ -12,7 +12,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PRIVATE
                               LwM2M_Server
-                              Observer_Pattern
+                              Event_Model::Event_Model
                               Variant_Visitor::Variant_Visitor
                               HaSLL::HaSLL
                               Threads::Threads

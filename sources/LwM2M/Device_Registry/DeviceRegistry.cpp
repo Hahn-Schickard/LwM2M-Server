@@ -17,7 +17,7 @@ struct ObjectDescriptorNotSupported : runtime_error {
 
 DeviceRegistry::DeviceRegistry(shared_ptr<MessageEncoder> encoder,
                                const string &configuration_path)
-    : ObserverPattern::EventSource<RegistryEvent>(), encoder_(encoder),
+    : Event_Model::EventSource<RegistryEvent>(), encoder_(encoder),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);

@@ -14,7 +14,7 @@
 
 namespace LwM2M {
 using RegistryEventSourcePtr =
-    std::shared_ptr<ObserverPattern::EventSource<RegistryEvent>>;
+    std::shared_ptr<Event_Model::EventSource<RegistryEvent>>;
 
 struct Configuration {
   std::string object_descriptors_location;
