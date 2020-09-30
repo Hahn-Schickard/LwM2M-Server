@@ -34,6 +34,7 @@ class PackageConan(ConanFile):
         "../CMakeLists.txt",
         "../conanfile.txt",
         "../loggerConfig.json",
+        "../serverConfig.json",
         "../README.md",
         "../LICENSE",
         "../NOTICE",
