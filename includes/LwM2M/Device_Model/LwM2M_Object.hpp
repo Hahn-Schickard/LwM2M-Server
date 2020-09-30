@@ -14,10 +14,11 @@ namespace LwM2M {
 
 using ObjectDescriptorPtr = std::shared_ptr<ObjectDescriptor>;
 using ObjectInstacePtr = std::shared_ptr<ObjectInstance>;
+using ObjectInstances = std::unordered_map<uint32_t, ObjectInstacePtr>;
 
 class Object {
   std::shared_ptr<Endpoint> endpoint_;
-  std::unordered_map<uint32_t, ObjectInstacePtr> instances_;
+  ObjectInstances instances_;
   ObjectDescriptorPtr descriptor_;
 
 public:
@@ -26,6 +27,7 @@ public:
          ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();
+  ObjectInstances getInstances();
 
   ResourceVariant getResource(uint32_t instance_id, uint32_t resource_id);
 };

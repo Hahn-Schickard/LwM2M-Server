@@ -27,4 +27,6 @@ ResourceVariant Object::getResource(uint32_t instance_id,
 }
 
 ObjectDescriptorPtr Object::getDescriptor() { return descriptor_; }
+
+ObjectInstances Object::getInstances() { return instances_; }
 } // namespace LwM2M

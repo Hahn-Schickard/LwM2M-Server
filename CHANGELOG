@@ -2,6 +2,7 @@
 ### Added 
  - ObjectsMap getter to Device
  - name getter to Device
+ - instances getter to Object
  - Server Config serialization
  - serverConfig.json
 
