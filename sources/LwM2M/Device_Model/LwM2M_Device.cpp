@@ -37,6 +37,8 @@ void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
 
 string Device::getDeviceId() { return device_id_; }
 
+string Device::getName() { return name_; }
+
 ObjectPtr Device::getObject(uint32_t id) {
   auto it = object_instances_.find(id);
   if (it != object_instances_.end()) {
@@ -45,6 +47,8 @@ ObjectPtr Device::getObject(uint32_t id) {
     return ObjectPtr();
   }
 }
+
+ObjectsMap Device::getObjects() { return object_instances_; }
 
 void Device::updateBinding(BindingType binding) { binding_ = binding; }
 

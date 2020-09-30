@@ -41,7 +41,9 @@ public:
          ObjectDescriptorsMap object_descriptors_map);
 
   std::string getDeviceId();
+  std::string getName();
   ObjectPtr getObject(uint32_t id);
+  ObjectsMap getObjects();
 
   void updateBinding(BindingType binding);
   void updateLifetime(size_t life_time);
