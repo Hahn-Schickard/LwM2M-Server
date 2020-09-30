@@ -29,6 +29,7 @@ list(APPEND DEPENDENCIES_LIST
             Stoppable
             Event_Model
             pugixml
+            nlohmann_json
             Threads
 )
 #@- ========================= END OF USER CONFIGURATION ============================

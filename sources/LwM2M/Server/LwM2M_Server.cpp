@@ -13,6 +13,8 @@ namespace LwM2M {
 
 Server::Server() {}
 
+Server::Server(const std::string filepath) : Server(deserialize(filepath)) {}
+
 Server::Server(Configuration config)
     : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   auto server = make_unique<CoAP::Server>(config.ip_address, config.server_port,

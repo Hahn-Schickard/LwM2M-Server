@@ -24,6 +24,7 @@ target_link_libraries(${THIS} PUBLIC
                               Device_Registry
                               HaSLL::HaSLL
                               PRIVATE
+                              nlohmann_json::nlohmann_json
                               CoAP_Server
                               Message_Decoder
                               Message_Encoder

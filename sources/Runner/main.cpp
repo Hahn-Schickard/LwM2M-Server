@@ -116,8 +116,7 @@ int main(int argc, const char *argv[]) {
 
     LwM2M::Server server;
     try {
-      server = LwM2M::Server(LwM2M::Configuration{
-          string("model/descriptors.xml"), string("0.0.0.0"), 5683, 5});
+      server = LwM2M::Server("serverConfig.json");
       auto registration_listener =
           make_unique<RegistrationListener>(server.getEventSource());
       server.start();

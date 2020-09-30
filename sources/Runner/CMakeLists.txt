@@ -35,3 +35,11 @@ add_custom_command(TARGET ${THIS} POST_BUILD
                     COMMENT "Copying Logger Configuration."
                         VERBATIM
 )
+
+add_custom_command(TARGET ${THIS} POST_BUILD 
+                    COMMAND ${CMAKE_COMMAND} -E copy
+                        "${PROJECT_SOURCE_DIR}/serverConfig.json"
+                        $<TARGET_FILE_DIR:${THIS}> 
+                    COMMENT "Copying Server Configuration."
+                        VERBATIM
+)
