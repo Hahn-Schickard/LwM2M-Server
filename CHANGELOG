@@ -3,6 +3,7 @@
  - ObjectsMap getter to Device
  - name getter to Device
  - instances getter to Object
+ - resources getter to ObjectInstance
  - Server Config serialization
  - serverConfig.json
 

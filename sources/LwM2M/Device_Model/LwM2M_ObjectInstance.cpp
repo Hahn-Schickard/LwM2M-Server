@@ -107,4 +107,6 @@ ResourceVariant ObjectInstance::getResource(uint32_t id) {
   }
 }
 
+Resources ObjectInstance::getResources() { return resources_; }
+
 } // namespace LwM2M
