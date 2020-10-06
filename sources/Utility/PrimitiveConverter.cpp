@@ -1,5 +1,7 @@
 #include "PrimitiveConverter.hpp"
 
+#include <stdexcept>
+
 using namespace std;
 namespace utility {
 
@@ -8,6 +10,12 @@ vector<uint8_t> toBytes(const string &value) {
   for (auto it = value.cbegin(); it != value.cend(); ++it)
     bytes.push_back(*it);
   return bytes;
+}
+
+vector<uint8_t> toBytes(bool value) { return vector<uint8_t>{value}; }
+
+vector<uint8_t> toBytes(double value) {
+  throw runtime_error("Convertion from double to bytes is not supported!");
 }
 
 enum class integer_size : uint8_t { SHORT = 2, WORD = 4, LONG = 8 };
@@ -44,11 +52,16 @@ vector<uint8_t> unpack_int(uint64_t value, integer_size type) {
 vector<uint8_t> toBytes(uint16_t value) {
   return unpack_int(value, integer_size::SHORT);
 }
+
 vector<uint8_t> toBytes(uint32_t value) {
   return unpack_int(value, integer_size::WORD);
 }
+
 vector<uint8_t> toBytes(uint64_t value) {
   return unpack_int(value, integer_size::LONG);
 }
 
+vector<uint8_t> toBytes(int64_t value) {
+  return unpack_int(value, integer_size::LONG);
+}
 } // namespace utility

@@ -25,6 +25,7 @@ public:
   DataFormat(ContentFormatType format) : data_format_(format) {}
   virtual ~DataFormat() = default;
 
+  ContentFormatType getContentFormatType() { return data_format_; }
   virtual std::vector<uint8_t> getBytes() = 0;
   virtual std::string toString() = 0;
 };

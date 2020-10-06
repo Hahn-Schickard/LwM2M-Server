@@ -1,12 +1,31 @@
 #include "LwM2M_TLV.hpp"
 #include "LwM2M_CoreLink.hpp"
-#include "LwM2M_ObjectLink.hpp"
 
 #include <algorithm>
 
 using namespace std;
 
+namespace utility {
+vector<uint8_t> toBytes(LwM2M::ObjectLink value) {
+  throw std::runtime_error(
+      "Convertion from ObjectLink to bytes is not supported!");
+}
+vector<uint8_t> toBytes(vector<uint8_t> value) { return value; }
+} // namespace utility
+
 namespace LwM2M {
+
+Length_Type getLengthType(vector<uint8_t> value) {
+  if (value.size() < 8) {
+    return Length_Type::No_Length;
+  } else if (value.size() < 16) {
+    return Length_Type::Byte_Long;
+  } else if (value.size() < 24) {
+    return Length_Type::Short_Long;
+  } else {
+    return Length_Type::Full_Length;
+  }
+}
 
 Identifier_Type getIdentifierType(uint8_t byte) {
   return static_cast<Identifier_Type>((byte & 0xC0) >> 6);
@@ -25,6 +44,13 @@ TLV_Header::TLV_Header(uint8_t byte)
       is_identifier_short_long_(isIdentifierShortLong(byte)),
       length_type_(getLengthType(byte)),
       value_length_(getSmallLengthValue(byte)) {}
+
+TLV_Header::TLV_Header(Identifier_Type identifier,
+                       bool is_identifier_short_long, Length_Type length_type,
+                       uint8_t value_length)
+    : identifier_(identifier),
+      is_identifier_short_long_(is_identifier_short_long),
+      length_type_(length_type), value_length_(value_length) {}
 
 uint8_t TLV_Header::toByte() {
   uint8_t result = 0;
@@ -73,6 +99,11 @@ TLV::TLV(vector<uint8_t> &bytestream) {
   it++;
   value_ = vector<uint8_t>(it, it + length_);
   bytestream.erase(bytestream.begin(), it + length_);
+}
+
+TLV::TLV(shared_ptr<TLV_Header> header, uint16_t identifier, uint32_t length,
+         vector<uint8_t> value)
+    : header_(header), identifier_(identifier), length_(length), value_(value) {
 }
 
 uint16_t TLV::getIdentifier() { return identifier_; }
@@ -133,6 +164,9 @@ TLV_Pack::TLV_Pack(vector<uint8_t> bytestream)
     values_.emplace(tlv->getIdentifier(), tlv);
   } while (!bytestream.empty());
 }
+
+TLV_Pack::TLV_Pack(TLV_ValueMap values)
+    : DataFormat(ContentFormatType::TLV), values_(values) {}
 
 shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
   auto it = values_.find(identifier);

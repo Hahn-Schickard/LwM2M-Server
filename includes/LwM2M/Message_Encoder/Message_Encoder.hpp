@@ -22,6 +22,7 @@ public:
 
   virtual ResponseFuture encode(std::unique_ptr<ServerRequest_Read> input) = 0;
 
+  virtual void encode(std::unique_ptr<ServerRequest_Write> input) = 0;
   virtual void encode(std::unique_ptr<ServerResponse_Register> input) = 0;
   virtual void encode(std::unique_ptr<Response> input) = 0;
 };

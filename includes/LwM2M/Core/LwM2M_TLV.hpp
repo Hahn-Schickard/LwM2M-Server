@@ -2,10 +2,17 @@
 #define __LWM2M_TLV_DATA_FORMAT_TYPE_HPP
 
 #include "LwM2M_DataFormat.hpp"
+#include "LwM2M_ObjectLink.hpp"
 
+#include <cstdint>
 #include <exception>
 #include <memory>
 #include <unordered_map>
+
+namespace utility {
+std::vector<uint8_t> toBytes(LwM2M::ObjectLink value);
+std::vector<uint8_t> toBytes(std::vector<uint8_t> value);
+} // namespace utility
 
 namespace LwM2M {
 
@@ -23,6 +30,8 @@ enum class Length_Type : uint8_t {
   Full_Length = 0b11
 };
 
+Length_Type getLengthType(std::vector<uint8_t> value);
+
 struct TLV_Header {
   Identifier_Type identifier_;
   bool is_identifier_short_long_;
@@ -31,6 +40,8 @@ struct TLV_Header {
 
   TLV_Header();
   TLV_Header(uint8_t byte);
+  TLV_Header(Identifier_Type identifier, bool is_identifier_short_long,
+             Length_Type length_type, uint8_t value_length);
 
   uint8_t toByte();
 };
@@ -44,6 +55,8 @@ class TLV {
 public:
   TLV();
   TLV(std::vector<uint8_t> &bytestream);
+  TLV(std::shared_ptr<TLV_Header> header, uint16_t identifier, uint32_t length,
+      std::vector<uint8_t> value);
 
   uint16_t getIdentifier();
   std::vector<uint8_t> getValue();
@@ -51,14 +64,17 @@ public:
   std::string toString();
 };
 
+using TLV_ptr = std::shared_ptr<TLV>;
+using TLV_ValueMap = std::unordered_map<uint16_t, TLV_ptr>;
+
 class TLV_Pack : public DataFormat {
-  using TLV_ptr = std::shared_ptr<TLV>;
-  std::unordered_map<uint16_t, TLV_ptr> values_;
+  TLV_ValueMap values_;
 
   TLV_ptr getTLV(uint16_t identifier);
 
 public:
   TLV_Pack(std::vector<uint8_t> bytestream);
+  TLV_Pack(TLV_ValueMap values);
 
   template <typename T> T getValue(uint16_t identifier) {
     throw std::runtime_error("Can not get value of an unsupported data type!");

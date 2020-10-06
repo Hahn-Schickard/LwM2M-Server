@@ -72,6 +72,25 @@ void asyncRead(shared_ptr<LwM2M::Device> device) {
       .detach();
 }
 
+void asyncWrite(LwM2M::ResourceVariant variant) {
+  match(variant,
+        [&](shared_ptr<LwM2M::Resource<bool>> resource) {
+          resource->write(true);
+        },
+        [&](shared_ptr<LwM2M::Resource<int64_t>> resource) {
+          resource->write(2);
+        },
+        [&](shared_ptr<LwM2M::Resource<double>> resource) {
+          resource->write(2.2);
+        },
+        [&](shared_ptr<LwM2M::Resource<string>> resource) {
+          resource->write(string("Hello"));
+        },
+        [&](shared_ptr<LwM2M::Resource<uint64_t>> resource) {},
+        [&](shared_ptr<LwM2M::Resource<LwM2M::ObjectLink>> resource) {},
+        [&](shared_ptr<LwM2M::Resource<vector<uint8_t>>> resource) {});
+}
+
 class RegistrationListener
     : public Event_Model::EventListener<LwM2M::RegistryEvent> {
 public:
@@ -84,6 +103,9 @@ public:
       cout << "A new device with id: " << event->identifier
            << " has been registered!" << endl;
       auto device = event->device;
+      cout << "Sent a write request to Device object 1 instance 0, resource 1"
+           << endl;
+      asyncWrite(device->getObject(1)->getResource(0, 1));
       asyncRead(device);
       cout << "Sent a read request to Device: " << device->getDeviceId()
            << endl;

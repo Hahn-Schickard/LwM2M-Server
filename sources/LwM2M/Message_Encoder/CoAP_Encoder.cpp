@@ -51,6 +51,51 @@ ResponseFuture CoAP_Encoder::encode(unique_ptr<ServerRequest_Read> input) {
   return future;
 }
 
+class DataFormat_Payload : public PayloadFormat {
+  shared_ptr<DataFormat> payload_;
+
+public:
+  DataFormat_Payload(shared_ptr<DataFormat> payload)
+      : PayloadFormat(static_cast<uint16_t>(payload->getContentFormatType())),
+        payload_(payload) {}
+
+  vector<uint8_t> getBytes() { return payload_->getBytes(); }
+
+  string toString() { return payload_->toString(); }
+};
+
+void CoAP_Encoder::encode(std::unique_ptr<ServerRequest_Write> input) {
+  try {
+    vector<shared_ptr<CoAP::Option>> options;
+    options.emplace_back(
+        build(CoAP::OptionNumber::URI_PATH, to_string(input->object_id_)));
+    options.emplace_back(build(CoAP::OptionNumber::URI_PATH,
+                               to_string(input->object_instance_id_)));
+    if (input->resource_id_) {
+      options.emplace_back(build(CoAP::OptionNumber::URI_PATH,
+                                 to_string(input->resource_id_.value())));
+      if (input->resoruce_instance_id_) {
+        options.emplace_back(
+            build(CoAP::OptionNumber::URI_PATH,
+                  to_string(input->resoruce_instance_id_.value())));
+      }
+    }
+    options.emplace_back(
+        build(CoAP::OptionNumber::CONTENT_FORMAT,
+              to_string(static_cast<uint16_t>(ContentFormatType::TLV))));
+    auto header =
+        CoAP::Header(CoAP::MessageType::CONFIRMABLE, 8, CodeType::PUT);
+    auto payload = make_shared<DataFormat_Payload>(input->payload_);
+    auto msg = make_unique<CoAP::Message>(input->endpoint_address_,
+                                          input->endpoint_port_, header,
+                                          options, payload);
+    // @TODO: handle message retranmission here
+    output_queue_->push(move(msg));
+  } catch (exception &ex) {
+    logger_->log(SeverityLevel::ERROR, ex.what());
+  }
+}
+
 void CoAP_Encoder::encode(unique_ptr<ServerResponse_Register> input) {
   try {
     vector<shared_ptr<CoAP::Option>> options;

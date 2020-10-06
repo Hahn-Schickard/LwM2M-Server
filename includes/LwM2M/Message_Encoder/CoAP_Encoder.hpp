@@ -19,6 +19,7 @@ public:
 
   ResponseFuture encode(std::unique_ptr<ServerRequest_Read> input) override;
 
+  void encode(std::unique_ptr<ServerRequest_Write> input) override;
   void encode(std::unique_ptr<ServerResponse_Register> input) override;
   void encode(std::unique_ptr<Response> input) override;
 };
