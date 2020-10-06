@@ -2,6 +2,10 @@
 
 #include <stdexcept>
 
+#define MAX_8BIT_VALUE 256
+#define MAX_16BIT_VALUE 65536
+#define MAX_32BIT_VALUE 4294967296
+
 using namespace std;
 namespace utility {
 
@@ -12,56 +16,26 @@ vector<uint8_t> toBytes(const string &value) {
   return bytes;
 }
 
-vector<uint8_t> toBytes(bool value) { return vector<uint8_t>{value}; }
-
 vector<uint8_t> toBytes(double value) {
   throw runtime_error("Convertion from double to bytes is not supported!");
 }
 
-enum class integer_size : uint8_t { SHORT = 2, WORD = 4, LONG = 8 };
-
-vector<uint8_t> unpack_int(uint64_t value, integer_size type) {
+vector<uint8_t> toBytes(size_t value) {
   vector<uint8_t> result;
-  uint8_t offset;
-  uint8_t bytes_to_iterate = static_cast<uint8_t>(type);
-  switch (type) {
-  case integer_size::SHORT: {
-    offset = 8;
-    break;
-  }
-  case integer_size::WORD: {
-    offset = 24;
-    break;
-  }
-  case integer_size::LONG: {
-    offset = 56;
-    break;
-  }
-  default: { break; }
-  }
-
-  for (int i = 0; i < bytes_to_iterate; i++) {
-    uint8_t byte = (value >> offset) & 0xFF;
-    offset = offset - 8;
-    result.push_back(byte);
+  while (value != 0) {
+    uint8_t byte = value & 0xFF;
+    result.insert(result.begin(), byte);
+    value >>= 8;
   }
 
   return result;
 }
 
-vector<uint8_t> toBytes(uint16_t value) {
-  return unpack_int(value, integer_size::SHORT);
-}
+vector<uint8_t> toBytes(bool value) { return toBytes((size_t)value); }
 
-vector<uint8_t> toBytes(uint32_t value) {
-  return unpack_int(value, integer_size::WORD);
-}
+vector<uint8_t> toBytes(uint16_t value) { return toBytes((size_t)value); }
 
-vector<uint8_t> toBytes(uint64_t value) {
-  return unpack_int(value, integer_size::LONG);
-}
+vector<uint8_t> toBytes(uint32_t value) { return toBytes((size_t)value); }
 
-vector<uint8_t> toBytes(int64_t value) {
-  return unpack_int(value, integer_size::LONG);
-}
+vector<uint8_t> toBytes(int64_t value) { return toBytes((size_t)value); }
 } // namespace utility
