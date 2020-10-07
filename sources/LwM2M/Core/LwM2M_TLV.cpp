@@ -111,7 +111,8 @@ uint16_t TLV::getIdentifier() { return identifier_; }
 vector<uint8_t> TLV::getValue() { return value_; }
 
 vector<uint8_t> TLV::getBytes() {
-  vector<uint8_t> result = value_;
+  vector<uint8_t> result;
+  result.push_back(header_->toByte());
   switch (header_->length_type_) {
   case Length_Type::No_Length: {
     break;
@@ -148,7 +149,7 @@ vector<uint8_t> TLV::getBytes() {
     uint8_t identifier_byte = identifier_;
     result.push_back(identifier_byte);
   }
-  result.push_back(header_->toByte());
+  result.insert(result.end(), value_.begin(), value_.end());
   return result;
 }
 
