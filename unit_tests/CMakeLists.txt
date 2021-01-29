@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.6)
 
 set(THIS Unit_Tests_Runner)
 
+file(GLOB Generic_Messages_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Messages/*")
+file(GLOB Registration_Messages_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Messages/Registration_Messages/*")
 file(GLOB XML_Parser_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/XML_Parser/*")
 
 find_package(GTest REQUIRED)
@@ -9,12 +11,13 @@ find_package(GTest REQUIRED)
 add_executable(${THIS})
 target_sources(${THIS} PRIVATE 
                        "testRunner.cpp"
-                       ${XML_Parser_Test_Suite}
+                       ${Generic_Messages_Test_Suite}
+                       ${Registration_Messages_Test_Suite}
 )
 
 target_link_libraries(${THIS} PUBLIC
                               GTest::GTest
-                              XML_Parser
+                              Messages
 )
 
 add_test(
