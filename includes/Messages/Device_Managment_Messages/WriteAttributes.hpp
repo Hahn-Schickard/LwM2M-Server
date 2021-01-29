@@ -34,6 +34,7 @@ struct NotifyAttribute {
 };
 
 using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;
+using TargetAttribute = std::pair<EelmentIdVariant, NotifyAttributePtr>;
 
 /**
  * @brief Used to modify multiple Attributes of Objects/Object
@@ -41,7 +42,6 @@ using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;
  *
  */
 struct WriteAttributesRequest : DeviceManagmentRequest {
-  using TargetAttribute = std::pair<EelmentIdVariant, NotifyAttributePtr>;
   std::vector<TargetAttribute> content_;
 
   WriteAttributesRequest(EndpointPtr endpoint);
