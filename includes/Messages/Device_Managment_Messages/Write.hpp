@@ -17,11 +17,11 @@ namespace LwM2M {
  * data formats
  */
 struct WriteRequest : public DeviceManagmentRequest {
-  DataFormatPtr content_;
   EelmentIdVariant target_id_;
+  DataFormatPtr content_;
 
-  WriteRequest(EndpointPtr endpoint, DataFormatPtr content,
-               EelmentIdVariant target_id);
+  WriteRequest(EndpointPtr endpoint, EelmentIdVariant target_id,
+               DataFormatPtr content);
 
   std::string name() override final;
 };

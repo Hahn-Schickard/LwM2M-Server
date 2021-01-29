@@ -4,10 +4,10 @@ using namespace std;
 
 namespace LwM2M {
 
-WriteRequest::WriteRequest(EndpointPtr endpoint, DataFormatPtr content,
-                           EelmentIdVariant target_id)
-    : DeviceManagmentRequest(endpoint, MessageType::WRITE), content_(content),
-      target_id_(target_id) {}
+WriteRequest::WriteRequest(EndpointPtr endpoint, EelmentIdVariant target_id,
+                           DataFormatPtr content)
+    : DeviceManagmentRequest(endpoint, MessageType::WRITE),
+      target_id_(target_id), content_(content) {}
 
 string WriteRequest::name() { return "WriteRequest"; }
 
