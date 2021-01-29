@@ -128,7 +128,7 @@ INSTANTIATE_TEST_SUITE_P(
                           .incomming_ = false,
                           .notification_ = false})),
         TestParameter(make_shared<ReadComopositeRequest>(
-                          make_shared<Endpoint>(), ResourceID(3303, 0, 1)),
+                          make_shared<Endpoint>(), vector<EelmentIdVariant>()),
                       make_shared<TestExpectations>(TestExpectations{
                           .endpoint_ = make_shared<Endpoint>(),
                           .message_type_ = MessageType::READ_COMPOSITE,
