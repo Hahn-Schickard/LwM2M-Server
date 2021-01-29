@@ -8,6 +8,8 @@
 #include <utility>
 
 namespace LwM2M {
+using TargetContent = std::pair<EelmentIdVariant, DataFormatPtr>;
+
 /**
  * @brief Used to selectively write Resources, and/or Resource Instances of
  * different or same Objects/Object Instances in a single request,
@@ -17,7 +19,6 @@ namespace LwM2M {
  *
  */
 struct WriteComopositeRequest : public DeviceManagmentRequest {
-  using TargetContent = std::pair<EelmentIdVariant, DataFormatPtr>;
   std::vector<TargetContent> content_;
 
   WriteComopositeRequest(EndpointPtr endpoint,
