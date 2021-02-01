@@ -2,10 +2,8 @@
 #define __LWM2M_DEVICE_MANAGMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
 
 #include "DeviceManagmentMessage.hpp"
-#include "ElementID.hpp"
 
 #include <optional>
-#include <utility>
 #include <vector>
 
 namespace LwM2M {

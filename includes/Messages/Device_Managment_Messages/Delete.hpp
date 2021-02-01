@@ -2,7 +2,6 @@
 #define __LWM2M_DEVICE_MANAGMENT_DELETE_MESSAGE_HPP
 
 #include "DeviceManagmentMessage.hpp"
-#include "ElementID.hpp"
 
 namespace LwM2M {
 /**

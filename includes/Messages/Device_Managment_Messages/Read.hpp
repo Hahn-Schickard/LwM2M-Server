@@ -1,9 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_READ_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_READ_MESSAGE_HPP
 
-#include "DataFormat.hpp"
 #include "DeviceManagmentMessage.hpp"
-#include "ElementID.hpp"
 
 namespace LwM2M {
 /**
