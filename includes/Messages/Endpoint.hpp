@@ -9,6 +9,12 @@ struct Endpoint {
   const std::string endpoint_address_;
   const unsigned int endpoint_port_;
   const std::string sms_number_;
+
+  Endpoint(std::string endpoint_address = std::string(),
+           unsigned int endpoint_port = 0,
+           std::string sms_number = std::string())
+      : endpoint_address_(endpoint_address), endpoint_port_(endpoint_port),
+        sms_number_(sms_number) {}
 };
 
 using EndpointPtr = std::shared_ptr<Endpoint>;
