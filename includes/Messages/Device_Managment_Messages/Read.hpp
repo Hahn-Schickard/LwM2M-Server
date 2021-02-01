@@ -11,7 +11,7 @@ namespace LwM2M {
  *
  */
 struct ReadRequest : DeviceManagmentRequest {
-  EelmentIdVariant target_id_;
+  const EelmentIdVariant target_id_;
 
   ReadRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
 
@@ -34,7 +34,7 @@ using ReadRequestPtr = std::shared_ptr<ReadRequest>;
  * ResponseCode::NOT_ACCEPTABLE
  */
 struct ReadResponse : DeviceManagmentResponse {
-  DataFormatPtr content_;
+  const DataFormatPtr content_;
 
   ReadResponse(EndpointPtr endpoint, ResponseCode response_code,
                DataFormatPtr content);

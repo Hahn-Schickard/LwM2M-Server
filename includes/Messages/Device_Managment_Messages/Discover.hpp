@@ -11,7 +11,7 @@ namespace LwM2M {
  *
  */
 struct DiscoverRequest : DeviceManagmentRequest {
-  EelmentIdVariant target_id_;
+  const EelmentIdVariant target_id_;
 
   DiscoverRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
 
@@ -35,7 +35,7 @@ using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
  *
  */
 struct DiscoverResponse : DeviceManagmentResponse {
-  DataFormatPtr content_;
+  const DataFormatPtr content_;
 
   DiscoverResponse(EndpointPtr endpoint, ResponseCode response_code,
                    DataFormatPtr content);

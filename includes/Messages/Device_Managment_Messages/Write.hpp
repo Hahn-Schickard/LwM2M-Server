@@ -15,8 +15,8 @@ namespace LwM2M {
  * data formats
  */
 struct WriteRequest : public DeviceManagmentRequest {
-  EelmentIdVariant target_id_;
-  DataFormatPtr content_;
+  const EelmentIdVariant target_id_;
+  const DataFormatPtr content_;
 
   WriteRequest(EndpointPtr endpoint, EelmentIdVariant target_id,
                DataFormatPtr content);

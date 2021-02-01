@@ -45,7 +45,7 @@ using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
  * ResponseCode::NOT_ACCEPTABLE
  */
 struct ReadComopositeResponse : DeviceManagmentResponse {
-  std::vector<TargetContent> content_;
+  const std::vector<TargetContent> content_;
 
   ReadComopositeResponse(EndpointPtr endpoint, ResponseCode response_code,
                          std::vector<TargetContent> content);
