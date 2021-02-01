@@ -1,9 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP
 
-#include "DataFormat.hpp"
 #include "DeviceManagmentMessage.hpp"
-#include "ElementID.hpp"
 
 #include <vector>
 
@@ -47,10 +45,10 @@ using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
  * ResponseCode::NOT_ACCEPTABLE
  */
 struct ReadComopositeResponse : DeviceManagmentResponse {
-  DataFormatPtr content_;
+  std::vector<TargetContent> content_;
 
   ReadComopositeResponse(EndpointPtr endpoint, ResponseCode response_code,
-                         DataFormatPtr content);
+                         std::vector<TargetContent> content);
 
   std::string name() override final;
 };

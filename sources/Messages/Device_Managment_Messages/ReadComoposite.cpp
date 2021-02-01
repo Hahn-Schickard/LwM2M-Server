@@ -11,9 +11,9 @@ ReadComopositeRequest::ReadComopositeRequest(EndpointPtr endpoint,
 
 string ReadComopositeRequest::name() { return "ReadComopositeRequest"; }
 
-ReadComopositeResponse::ReadComopositeResponse(EndpointPtr endpoint,
-                                               ResponseCode response_code,
-                                               DataFormatPtr content)
+ReadComopositeResponse::ReadComopositeResponse(
+    EndpointPtr endpoint, ResponseCode response_code,
+    std::vector<TargetContent> content)
     : DeviceManagmentResponse(
           endpoint, MessageType::READ_COMPOSITE,
           unordered_set<ResponseCode>{
