@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
 
-#include "DeviceManagmentMessage.hpp"
+#include "Message.hpp"
 
 #include <optional>
 #include <vector>
@@ -39,7 +39,7 @@ using TargetAttribute = std::pair<EelmentIdVariant, NotifyAttributePtr>;
  * Instances/Resoruces/Resource Instances in a single operation
  *
  */
-struct WriteAttributesRequest : DeviceManagmentRequest {
+struct WriteAttributesRequest : ServerRequest {
   std::vector<TargetAttribute> content_;
 
   WriteAttributesRequest(EndpointPtr endpoint);
@@ -67,7 +67,7 @@ struct WriteAttributesRequest : DeviceManagmentRequest {
  * ResponseCode::NOT_FOUND
  * ResponseCode::METHOD_NOT_ALLOWED
  */
-struct WriteAttributesResponse : DeviceManagmentResponse {
+struct WriteAttributesResponse : ClientResponse {
   WriteAttributesResponse(EndpointPtr endpoint, ResponseCode response_code);
 
   std::string name() override final;

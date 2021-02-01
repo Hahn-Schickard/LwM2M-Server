@@ -4,24 +4,27 @@ using namespace std;
 
 namespace LwM2M {
 ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target)
-    : DeviceManagmentRequest(endpoint, MessageType::EXECUTE), target_(target) {}
+    : ServerRequest(endpoint, MessageType::EXECUTE,
+                    InterfaceType::DEVICE_MANAGMENT),
+      target_(target) {}
 
 ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target,
                                vector<DataFormatPtr> arguments)
-    : DeviceManagmentRequest(endpoint, MessageType::EXECUTE), target_(target),
-      arguments_(arguments) {}
+    : ServerRequest(endpoint, MessageType::EXECUTE,
+                    InterfaceType::DEVICE_MANAGMENT),
+      target_(target), arguments_(arguments) {}
 
 string ExecuteRequest::name() { return "WriteRequest"; }
 
 ExecuteResponse::ExecuteResponse(EndpointPtr endpoint,
                                  ResponseCode response_code)
-    : DeviceManagmentResponse(
-          endpoint, MessageType::EXECUTE,
-          unordered_set<ResponseCode>{
-              ResponseCode::CHANGED, ResponseCode::BAD_REQUEST,
-              ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
-              ResponseCode::METHOD_NOT_ALLOWED},
-          response_code) {
+    : ClientResponse(endpoint, MessageType::EXECUTE,
+                     InterfaceType::DEVICE_MANAGMENT,
+                     unordered_set<ResponseCode>{
+                         ResponseCode::CHANGED, ResponseCode::BAD_REQUEST,
+                         ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
+                         ResponseCode::METHOD_NOT_ALLOWED},
+                     response_code) {
   checkResponseCode(response_code);
 }
 

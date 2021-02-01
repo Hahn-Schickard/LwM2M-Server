@@ -1,17 +1,17 @@
 #ifndef __LWM2M_REGISTRATION_INTERFACE_DEREGISTER_MESSAGE_HPP
 #define __LWM2M_REGISTRATION_INTERFACE_DEREGISTER_MESSAGE_HPP
 
-#include "RegistrationInterfaceMessage.hpp"
+#include "Message.hpp"
 
 namespace LwM2M {
-struct DeregisterResponse : RegirstrationInterfaceResponse {
+struct DeregisterResponse : ServerResponse {
   DeregisterResponse(EndpointPtr endpoint, ResponseCode response_code)
-      : RegirstrationInterfaceResponse(
-            endpoint, MessageType::DEREGISTER,
-            std::unordered_set<ResponseCode>{ResponseCode::DELETED,
-                                             ResponseCode::BAD_REQUEST,
-                                             ResponseCode::NOT_FOUND},
-            response_code) {
+      : ServerResponse(endpoint, MessageType::DEREGISTER,
+                       InterfaceType::REGISTRATION,
+                       std::unordered_set<ResponseCode>{
+                           ResponseCode::DELETED, ResponseCode::BAD_REQUEST,
+                           ResponseCode::NOT_FOUND},
+                       response_code) {
     checkResponseCode(response_code);
   }
 
@@ -20,11 +20,12 @@ struct DeregisterResponse : RegirstrationInterfaceResponse {
 
 using DeregisterResponsePtr = std::shared_ptr<DeregisterResponse>;
 
-struct DeregisterRequest : RegirstrationInterfaceRequest {
+struct DeregisterRequest : ClientRequest {
   const std::string location_;
 
   DeregisterRequest(EndpointPtr endpoint, std::string location)
-      : RegirstrationInterfaceRequest(endpoint, MessageType::DEREGISTER),
+      : ClientRequest(endpoint, MessageType::DEREGISTER,
+                      InterfaceType::REGISTRATION),
         location_(location) {}
 
   std::string name() override final { return "DeregisterRequest"; }

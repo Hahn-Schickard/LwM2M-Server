@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_WRITE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_WRITE_MESSAGE_HPP
 
-#include "DeviceManagmentMessage.hpp"
+#include "Message.hpp"
 
 namespace LwM2M {
 /**
@@ -14,7 +14,7 @@ namespace LwM2M {
  * application/senml+json or application/senml+cbor Sensor Measurement Lists
  * data formats
  */
-struct WriteRequest : public DeviceManagmentRequest {
+struct WriteRequest : ServerRequest {
   const EelmentIdVariant target_id_;
   const DataFormatPtr content_;
 
@@ -41,7 +41,7 @@ using WriteRequestPtr = std::shared_ptr<WriteRequest>;
  * ResponseCode::REQUEST_ENTITY_INCOMPLETE
  * ResponseCode::REQUEST_ENTITY_TOO_LARGE
  */
-struct WriteResponse : DeviceManagmentResponse {
+struct WriteResponse : ClientResponse {
   WriteResponse(EndpointPtr endpoint, ResponseCode response_code);
 
   std::string name() override final;

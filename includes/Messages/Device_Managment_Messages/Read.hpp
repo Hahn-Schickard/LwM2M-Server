@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_READ_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_READ_MESSAGE_HPP
 
-#include "DeviceManagmentMessage.hpp"
+#include "Message.hpp"
 
 namespace LwM2M {
 /**
@@ -10,7 +10,7 @@ namespace LwM2M {
  * Object.
  *
  */
-struct ReadRequest : DeviceManagmentRequest {
+struct ReadRequest : ServerRequest {
   const EelmentIdVariant target_id_;
 
   ReadRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
@@ -33,7 +33,7 @@ using ReadRequestPtr = std::shared_ptr<ReadRequest>;
  * ResponseCode::METHOD_NOT_ALLOWED
  * ResponseCode::NOT_ACCEPTABLE
  */
-struct ReadResponse : DeviceManagmentResponse {
+struct ReadResponse : ClientResponse {
   const DataFormatPtr content_;
 
   ReadResponse(EndpointPtr endpoint, ResponseCode response_code,

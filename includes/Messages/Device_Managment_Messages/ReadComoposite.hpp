@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP
 
-#include "DeviceManagmentMessage.hpp"
+#include "Message.hpp"
 
 #include <vector>
 
@@ -12,7 +12,7 @@ namespace LwM2M {
  * Objects/Object Instances in a single request
  *
  */
-struct ReadComopositeRequest : DeviceManagmentRequest {
+struct ReadComopositeRequest : ServerRequest {
   const std::vector<EelmentIdVariant> targets_;
 
   /**
@@ -44,7 +44,7 @@ using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
  * ResponseCode::METHOD_NOT_ALLOWED
  * ResponseCode::NOT_ACCEPTABLE
  */
-struct ReadComopositeResponse : DeviceManagmentResponse {
+struct ReadComopositeResponse : ClientResponse {
   const std::vector<TargetContent> content_;
 
   ReadComopositeResponse(EndpointPtr endpoint, ResponseCode response_code,

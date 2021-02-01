@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_DISCOVER_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_DISCOVER_MESSAGE_HPP
 
-#include "DeviceManagmentMessage.hpp"
+#include "Message.hpp"
 
 namespace LwM2M {
 /**
@@ -10,7 +10,7 @@ namespace LwM2M {
  * given Object Instance.
  *
  */
-struct DiscoverRequest : DeviceManagmentRequest {
+struct DiscoverRequest : ServerRequest {
   const EelmentIdVariant target_id_;
 
   DiscoverRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
@@ -34,7 +34,7 @@ using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
  * ResponseCode::METHOD_NOT_ALLOWED
  *
  */
-struct DiscoverResponse : DeviceManagmentResponse {
+struct DiscoverResponse : ClientResponse {
   const DataFormatPtr content_;
 
   DiscoverResponse(EndpointPtr endpoint, ResponseCode response_code,

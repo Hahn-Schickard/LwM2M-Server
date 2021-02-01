@@ -1,21 +1,21 @@
 #ifndef __LWM2M_REGISTRATION_INTERFACE_REGISTER_MESSAGE_HPP
 #define __LWM2M_REGISTRATION_INTERFACE_REGISTER_MESSAGE_HPP
 
+#include "Message.hpp"
 #include "ModelType.hpp"
-#include "RegistrationInterfaceMessage.hpp"
 
 #include <unordered_map>
 #include <vector>
 
 namespace LwM2M {
-struct RegisterResponse : RegirstrationInterfaceResponse {
+struct RegisterResponse : ServerResponse {
   // Mandatory fields
   const std::string location_;
 
   RegisterResponse(EndpointPtr endpoint, ResponseCode response_code,
                    std::string location)
-      : RegirstrationInterfaceResponse(
-            endpoint, MessageType::REGISTER,
+      : ServerResponse(
+            endpoint, MessageType::REGISTER, InterfaceType::REGISTRATION,
             std::unordered_set<ResponseCode>{
                 ResponseCode::CREATED, ResponseCode::BAD_REQUEST,
                 ResponseCode::FORBIDDEN, ResponseCode::PRECOGNITION_FAILED},
@@ -29,7 +29,7 @@ struct RegisterResponse : RegirstrationInterfaceResponse {
 
 using RegisterResponsePtr = std::shared_ptr<RegisterResponse>;
 
-struct RegisterRequest : RegirstrationInterfaceRequest {
+struct RegisterRequest : ClientRequest {
   // Mandatory fields
   const size_t life_time_;
   const LwM2M_Version version_;
@@ -44,7 +44,8 @@ struct RegisterRequest : RegirstrationInterfaceRequest {
   RegisterRequest(EndpointPtr endpoint, size_t life_time, LwM2M_Version version,
                   std::unordered_map<unsigned int, std::vector<unsigned int>>
                       object_instances_map)
-      : RegirstrationInterfaceRequest(endpoint, MessageType::REGISTER),
+      : ClientRequest(endpoint, MessageType::REGISTER,
+                      InterfaceType::REGISTRATION),
         life_time_(life_time), version_(version),
         object_instances_map_(object_instances_map) {}
 

@@ -1,14 +1,14 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_DELETE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_DELETE_MESSAGE_HPP
 
-#include "DeviceManagmentMessage.hpp"
+#include "Message.hpp"
 
 namespace LwM2M {
 /**
  * @brief Used to delete an Object Instance within the LwM2M Client
  *
  */
-struct DeleteRequest : public DeviceManagmentRequest {
+struct DeleteRequest : public ServerRequest {
   const ObjectInstanceID target_id_;
 
   DeleteRequest(EndpointPtr endpoint, ObjectInstanceID target_id);
@@ -29,7 +29,7 @@ using DeleteRequestPtr = std::shared_ptr<DeleteRequest>;
  * ResponseCode::NOT_FOUND
  * ResponseCode::METHOD_NOT_ALLOWED
  */
-struct DeleteResponse : DeviceManagmentResponse {
+struct DeleteResponse : ClientResponse {
   DeleteResponse(EndpointPtr endpoint, ResponseCode response_code);
 
   std::string name() override final;

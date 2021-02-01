@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_CREATE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_CREATE_MESSAGE_HPP
 
-#include "DeviceManagmentMessage.hpp"
+#include "Message.hpp"
 
 namespace LwM2M {
 /**
@@ -13,7 +13,7 @@ namespace LwM2M {
  * application/senml+cbor Sensor Measurement Lists data formats
  *
  */
-struct CreateRequest : public DeviceManagmentRequest {
+struct CreateRequest : public ServerRequest {
   const ObjectID target_id_;
   const DataFormatPtr content_;
 
@@ -36,7 +36,7 @@ using CreateRequestPtr = std::shared_ptr<CreateRequest>;
  * ResponseCode::METHOD_NOT_ALLOWED
  * ResponseCode::NOT_ACCEPTABLE
  */
-struct CreateResponse : DeviceManagmentResponse {
+struct CreateResponse : ClientResponse {
   CreateResponse(EndpointPtr endpoint, ResponseCode response_code);
 
   std::string name() override final;

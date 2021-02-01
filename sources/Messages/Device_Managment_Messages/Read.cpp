@@ -5,15 +5,16 @@ using namespace std;
 namespace LwM2M {
 
 ReadRequest::ReadRequest(EndpointPtr endpoint, EelmentIdVariant target_id)
-    : DeviceManagmentRequest(endpoint, MessageType::READ),
+    : ServerRequest(endpoint, MessageType::READ,
+                    InterfaceType::DEVICE_MANAGMENT),
       target_id_(target_id) {}
 
 string ReadRequest::name() { return "ReadRequest"; }
 
 ReadResponse::ReadResponse(EndpointPtr endpoint, ResponseCode response_code,
                            DataFormatPtr content)
-    : DeviceManagmentResponse(
-          endpoint, MessageType::READ,
+    : ClientResponse(
+          endpoint, MessageType::READ, InterfaceType::DEVICE_MANAGMENT,
           unordered_set<ResponseCode>{
               ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
               ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
