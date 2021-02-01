@@ -1,6 +1,8 @@
 #ifndef __LWM2M_MESSAGE_HPP
 #define __LWM2M_MESSAGE_HPP
 
+#include "DataFormat.hpp"
+#include "ElementID.hpp"
 #include "Endpoint.hpp"
 
 #include <cstdint>
@@ -200,6 +202,8 @@ protected:
 };
 
 using ServerResponsePtr = std::shared_ptr<ServerResponse>;
+
+using TargetContent = std::pair<EelmentIdVariant, DataFormatPtr>;
 
 } // namespace LwM2M
 #endif //__LWM2M_MESSAGE_HPP

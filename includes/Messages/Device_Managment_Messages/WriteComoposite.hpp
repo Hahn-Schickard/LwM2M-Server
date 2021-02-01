@@ -1,15 +1,9 @@
 #ifndef __LWM2M_DEVICE_MANAGMENT_WRITE_COMPOSITE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGMENT_WRITE_COMPOSITE_MESSAGE_HPP
 
-#include "DataFormat.hpp"
 #include "DeviceManagmentMessage.hpp"
-#include "ElementID.hpp"
-
-#include <utility>
 
 namespace LwM2M {
-using TargetContent = std::pair<EelmentIdVariant, DataFormatPtr>;
-
 /**
  * @brief Used to selectively write Resources, and/or Resource Instances of
  * different or same Objects/Object Instances in a single request,
