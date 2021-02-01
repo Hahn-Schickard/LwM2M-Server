@@ -8,27 +8,32 @@
 #include <vector>
 
 namespace LwM2M {
+/**
+ * @brief Response to LwM2M::RegisterRequest, indicates wheater the request was
+ * succefull, or not
+ *
+ * Supported response codes:
+ * ResponseCode::CREATED
+ * ResponseCode::BAD_REQUEST
+ * ResponseCode::FORBIDDEN
+ * ResponseCode::PRECOGNITION_FAILED
+ */
 struct RegisterResponse : ServerResponse {
   // Mandatory fields
   const std::string location_;
 
   RegisterResponse(EndpointPtr endpoint, ResponseCode response_code,
-                   std::string location)
-      : ServerResponse(
-            endpoint, MessageType::REGISTER, InterfaceType::REGISTRATION,
-            std::unordered_set<ResponseCode>{
-                ResponseCode::CREATED, ResponseCode::BAD_REQUEST,
-                ResponseCode::FORBIDDEN, ResponseCode::PRECOGNITION_FAILED},
-            response_code),
-        location_(location) {
-    checkResponseCode(response_code);
-  }
+                   std::string location);
 
-  std::string name() override final { return "RegisterResponse"; }
+  std::string name() override final;
 };
 
 using RegisterResponsePtr = std::shared_ptr<RegisterResponse>;
 
+/**
+ * @brief Used to add a new device to the server
+ *
+ */
 struct RegisterRequest : ClientRequest {
   // Mandatory fields
   const size_t life_time_;
@@ -43,20 +48,13 @@ struct RegisterRequest : ClientRequest {
 
   RegisterRequest(EndpointPtr endpoint, size_t life_time, LwM2M_Version version,
                   std::unordered_map<unsigned int, std::vector<unsigned int>>
-                      object_instances_map)
-      : ClientRequest(endpoint, MessageType::REGISTER,
-                      InterfaceType::REGISTRATION),
-        life_time_(life_time), version_(version),
-        object_instances_map_(object_instances_map) {}
+                      object_instances_map);
 
-  std::string name() override final { return "RegisterRequest"; }
+  std::string name() override final;
 
   RegisterResponsePtr
   makeResponse(ResponseCode response_code = ResponseCode::FORBIDDEN,
-               std::string location = std::string()) {
-    return std::make_shared<RegisterResponse>(endpoint_, response_code,
-                                              location);
-  }
+               std::string location = std::string());
 };
 
 using RegisterRequestPtr = std::shared_ptr<RegisterRequest>;

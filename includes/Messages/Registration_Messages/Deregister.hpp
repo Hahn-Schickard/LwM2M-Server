@@ -4,35 +4,36 @@
 #include "Message.hpp"
 
 namespace LwM2M {
+/**
+ * @brief Response to LwM2M::DeregisterRequest, indicates wheater the request
+ * was succefull, or not
+ *
+ * Supported response codes:
+ * ResponseCode::DELETED
+ * ResponseCode::BAD_REQUEST
+ * ResponseCode::NOT_FOUND
+ */
 struct DeregisterResponse : ServerResponse {
-  DeregisterResponse(EndpointPtr endpoint, ResponseCode response_code)
-      : ServerResponse(endpoint, MessageType::DEREGISTER,
-                       InterfaceType::REGISTRATION,
-                       std::unordered_set<ResponseCode>{
-                           ResponseCode::DELETED, ResponseCode::BAD_REQUEST,
-                           ResponseCode::NOT_FOUND},
-                       response_code) {
-    checkResponseCode(response_code);
-  }
+  DeregisterResponse(EndpointPtr endpoint, ResponseCode response_code);
 
-  std::string name() override final { return "DeregisterResponse"; }
+  std::string name() override final;
 };
 
 using DeregisterResponsePtr = std::shared_ptr<DeregisterResponse>;
 
+/**
+ * @brief Used to deregister a certain LwM2M::Device from the server, identified
+ * by unique DeviceID, specified in the location argument
+ *
+ */
 struct DeregisterRequest : ClientRequest {
   const std::string location_;
 
-  DeregisterRequest(EndpointPtr endpoint, std::string location)
-      : ClientRequest(endpoint, MessageType::DEREGISTER,
-                      InterfaceType::REGISTRATION),
-        location_(location) {}
+  DeregisterRequest(EndpointPtr endpoint, std::string location);
 
-  std::string name() override final { return "DeregisterRequest"; }
+  std::string name() override final;
 
-  DeregisterResponsePtr makeResponse(ResponseCode response_code) {
-    return std::make_shared<DeregisterResponse>(endpoint_, response_code);
-  }
+  DeregisterResponsePtr makeResponse(ResponseCode response_code);
 };
 
 using DeregisterRequestPtr = std::shared_ptr<DeregisterRequest>;

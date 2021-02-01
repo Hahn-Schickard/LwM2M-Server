@@ -10,22 +10,27 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Response to LwM2M::UpdateRequest, indicates wheater the request was
+ * succefull, or not
+ *
+ * Supported response codes:
+ * ResponseCode::CHANGED
+ * ResponseCode::BAD_REQUEST
+ * ResponseCode::NOT_FOUND
+ */
 struct UpdateResponse : ServerResponse {
-  UpdateResponse(EndpointPtr endpoint, ResponseCode response_code)
-      : ServerResponse(endpoint, MessageType::UPDATE,
-                       InterfaceType::REGISTRATION,
-                       std::unordered_set<ResponseCode>{
-                           ResponseCode::CHANGED, ResponseCode::BAD_REQUEST,
-                           ResponseCode::NOT_FOUND},
-                       response_code) {
-    checkResponseCode(response_code);
-  }
+  UpdateResponse(EndpointPtr endpoint, ResponseCode response_code);
 
-  std::string name() override final { return "UpdateResponse"; }
+  std::string name() override final;
 };
 
 using UpdateResponsePtr = std::shared_ptr<UpdateResponse>;
 
+/**
+ * @brief Used to update certain LwM2M::Device fields
+ *
+ */
 struct UpdateRequest : ClientRequest {
   const std::string location_;
   const std::unordered_map<unsigned int, std::vector<unsigned int>>
@@ -39,17 +44,11 @@ struct UpdateRequest : ClientRequest {
                     object_instances_map,
                 std::optional<size_t> lifetime = std::nullopt,
                 std::optional<BindingType> binding = std::nullopt,
-                std::optional<std::string> sms_number = std::nullopt)
-      : ClientRequest(endpoint, MessageType::UPDATE,
-                      InterfaceType::REGISTRATION),
-        location_(location), object_instances_map_(object_instances_map),
-        lifetime_(lifetime), binding_(binding), sms_number_(sms_number) {}
+                std::optional<std::string> sms_number = std::nullopt);
 
-  std::string name() override final { return "UpdateRequest"; }
+  std::string name() override final;
 
-  UpdateResponsePtr makeResponse(ResponseCode response_code) {
-    return std::make_shared<UpdateResponse>(endpoint_, response_code);
-  }
+  UpdateResponsePtr makeResponse(ResponseCode response_code);
 };
 
 using UpdateRequestPtr = std::shared_ptr<UpdateRequest>;
