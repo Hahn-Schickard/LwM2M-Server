@@ -6,9 +6,9 @@
 
 namespace LwM2M {
 struct Endpoint {
-  std::string endpoint_address_;
-  unsigned int endpoint_port_;
-  std::string sms_number_;
+  const std::string endpoint_address_;
+  const unsigned int endpoint_port_;
+  const std::string sms_number_;
 };
 
 using EndpointPtr = std::shared_ptr<Endpoint>;
