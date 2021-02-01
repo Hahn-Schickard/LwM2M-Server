@@ -37,12 +37,16 @@ using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
  * fields.
  *
  * Supported response codes:
- * ResponseCode::CONTENT
- * ResponseCode::BAD_REQUEST
- * ResponseCode::UNAUTHORIZED
- * ResponseCode::NOT_FOUND
- * ResponseCode::METHOD_NOT_ALLOWED
- * ResponseCode::NOT_ACCEPTABLE
+ * - ResponseCode::CONTENT - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
+ * processing the request.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - None of target EelmentIdVariant instances point
+ * to a valid element within the client
+ * - ResponseCode::METHOD_NOT_ALLOWED - None of target EelmentIdVariant
+ * instances are allowed to use Read operation.
+ * - ResponseCode::NOT_ACCEPTABLE - None of preferred Content Formats are
+ * supported by the Client
  */
 struct ReadComopositeResponse : ClientResponse {
   const std::vector<TargetContent> content_;

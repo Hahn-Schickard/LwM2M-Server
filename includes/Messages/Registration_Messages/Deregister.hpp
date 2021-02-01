@@ -9,9 +9,9 @@ namespace LwM2M {
  * was succefull, or not
  *
  * Supported response codes:
- * ResponseCode::DELETED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::NOT_FOUND
+ * - ResponseCode::DELETED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - No location was given in the request.
+ * - ResponseCode::NOT_FOUND - Given location could not be found in the server
  */
 struct DeregisterResponse : ServerResponse {
   DeregisterResponse(EndpointPtr endpoint, ResponseCode response_code);

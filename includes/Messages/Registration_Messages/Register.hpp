@@ -13,10 +13,13 @@ namespace LwM2M {
  * succefull, or not
  *
  * Supported response codes:
- * ResponseCode::CREATED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::FORBIDDEN
- * ResponseCode::PRECOGNITION_FAILED
+ * - ResponseCode::CREATED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - One of the mandatory parameters were not
+ * specified, endpoint name does not match with CN field of X.509 Cerftificates
+ * - ResponseCode::FORBIDDEN - A given endpoint name is not allowed within the
+ * server.
+ * - ResponseCode::PRECOGNITION_FAILED - Given LwM2M version is not supported by
+ * the server.
  */
 struct RegisterResponse : ServerResponse {
   // Mandatory fields

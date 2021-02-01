@@ -15,9 +15,9 @@ namespace LwM2M {
  * succefull, or not
  *
  * Supported response codes:
- * ResponseCode::CHANGED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::NOT_FOUND
+ * - ResponseCode::CHANGED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - No location was given in the request.
+ * - ResponseCode::NOT_FOUND - Given location could not be found in the server
  */
 struct UpdateResponse : ServerResponse {
   UpdateResponse(EndpointPtr endpoint, ResponseCode response_code);

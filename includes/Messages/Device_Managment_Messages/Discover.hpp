@@ -27,11 +27,14 @@ using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
  * including the Object Version attribute if required
  *
  * Supported response codes:
- * ResponseCode::CONTENT
- * ResponseCode::BAD_REQUEST
- * ResponseCode::UNAUTHORIZED
- * ResponseCode::NOT_FOUND
- * ResponseCode::METHOD_NOT_ALLOWED
+ * - ResponseCode::CONTENT - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
+ * processing the request.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
+ * element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target EelmentIdVariant is not allowed
+ * to use Discover operation.
  *
  */
 struct DiscoverResponse : ClientResponse {

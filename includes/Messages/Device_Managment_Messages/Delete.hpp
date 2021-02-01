@@ -23,11 +23,14 @@ using DeleteRequestPtr = std::shared_ptr<DeleteRequest>;
  * succefull, requires more data or failed
  *
  * Supported response codes:
- * ResponseCode::DELETED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::UNAUTHORIZED,
- * ResponseCode::NOT_FOUND
- * ResponseCode::METHOD_NOT_ALLOWED
+ * - ResponseCode::DELETED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
+ * processing the request.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - Target ObjectInstanceID does not point to a
+ * valid object instance.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target ObjectInstanceID is not allowed
+ * to use Delete operation.
  */
 struct DeleteResponse : ClientResponse {
   DeleteResponse(EndpointPtr endpoint, ResponseCode response_code);

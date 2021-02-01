@@ -29,12 +29,15 @@ using CreateRequestPtr = std::shared_ptr<CreateRequest>;
  * succefull, requires more data or failed
  *
  * Supported response codes:
- * ResponseCode::CREATED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::UNAUTHORIZED,
- * ResponseCode::NOT_FOUND
- * ResponseCode::METHOD_NOT_ALLOWED
- * ResponseCode::NOT_ACCEPTABLE
+ * - ResponseCode::CREATED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Target ObjectID does not support multpile
+ * instances or Content Format was not specified.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - ObjectID does not point to a valid object.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target ObjectID is not allowed to use
+ * Create operation.
+ * - ResponseCode::UNSUPPORTED_CONTENT_FORMAT - Specified Content Format is not
+ * supported by the client.
  */
 struct CreateResponse : ClientResponse {
   CreateResponse(EndpointPtr endpoint, ResponseCode response_code);

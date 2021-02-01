@@ -31,12 +31,15 @@ using WriteComopositeRequestPtr = std::shared_ptr<WriteComopositeRequest>;
  * request was succefull, or not
  *
  * Supported response codes:
- * ResponseCode::CHANGED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::UNAUTHORIZED
- * ResponseCode::NOT_FOUND
- * ResponseCode::METHOD_NOT_ALLOWED
- * ResponseCode::NOT_ACCEPTABLE
+ * ResponseCode::CHANGED - Operation was a success.
+ * ResponseCode::BAD_REQUEST - Data format is written in wrong Content Format.
+ * ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * ResponseCode::NOT_FOUND - None of target EelmentIdVariant instances point
+ * to a valid element within the client.
+ * ResponseCode::METHOD_NOT_ALLOWED  - No target EelmentIdVariant instances are
+ * allowed to use WriteComposite operation.
+ * ResponseCode::NOT_ACCEPTABLE - None of preferred Content Formats are
+ * supported by the Client
  */
 struct WriteComopositeResponse : ClientResponse {
   WriteComopositeResponse(EndpointPtr endpoint, ResponseCode response_code);

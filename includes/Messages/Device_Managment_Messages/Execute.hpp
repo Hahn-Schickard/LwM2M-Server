@@ -33,11 +33,14 @@ using ExecuteRequestPtr = std::shared_ptr<ExecuteRequest>;
  * succefull, requires more data or failed
  *
  * Supported response codes:
- * ResponseCode::CHANGED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::UNAUTHORIZED
- * ResponseCode::NOT_FOUND
- * ResponseCode::METHOD_NOT_ALLOWED
+ * - ResponseCode::CHANGED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Client failed to interpret the ExecuteRequest
+ * argument.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - Target ResourceID does not point to a valid
+ * resource.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target ResourceID is not allowed
+ * to use Execute operation.
  */
 struct ExecuteResponse : ClientResponse {
   ExecuteResponse(EndpointPtr endpoint, ResponseCode response_code);

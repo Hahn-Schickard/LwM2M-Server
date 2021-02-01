@@ -61,11 +61,13 @@ struct WriteAttributesRequest : ServerRequest {
  * request was succefull, or not
  *
  * Supported response codes:
- * ResponseCode::CHANGED
- * ResponseCode::BAD_REQUEST
- * ResponseCode::UNAUTHORIZED
- * ResponseCode::NOT_FOUND
- * ResponseCode::METHOD_NOT_ALLOWED
+ * - ResponseCode::CHANGED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Data format is written in wrong Content Format.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - None of target EelmentIdVariant instances point
+ * to a valid element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - No target EelmentIdVariant instances are
+ * allowed to use WriteAttributes operation.
  */
 struct WriteAttributesResponse : ClientResponse {
   WriteAttributesResponse(EndpointPtr endpoint, ResponseCode response_code);
