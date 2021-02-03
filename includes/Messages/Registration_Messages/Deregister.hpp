@@ -29,7 +29,7 @@ using DeregisterResponsePtr = std::shared_ptr<DeregisterResponse>;
 struct DeregisterRequest : ClientRequest {
   const std::string location_;
 
-  DeregisterRequest(EndpointPtr endpoint, std::string location);
+  DeregisterRequest(EndpointPtr endpoint, std::string location = std::string());
 
   std::string name() override final;
 

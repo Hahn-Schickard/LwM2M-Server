@@ -39,12 +39,14 @@ struct UpdateRequest : ClientRequest {
   const std::optional<BindingType> binding_;
   const std::optional<std::string> sms_number_;
 
-  UpdateRequest(EndpointPtr endpoint, std::string location,
-                std::unordered_map<unsigned int, std::vector<unsigned int>>
-                    object_instances_map,
-                std::optional<size_t> lifetime = std::nullopt,
-                std::optional<BindingType> binding = std::nullopt,
-                std::optional<std::string> sms_number = std::nullopt);
+  UpdateRequest(
+      EndpointPtr endpoint, std::string location = std::string(),
+      std::unordered_map<unsigned int, std::vector<unsigned int>>
+          object_instances_map =
+              std::unordered_map<unsigned int, std::vector<unsigned int>>(),
+      std::optional<size_t> lifetime = std::nullopt,
+      std::optional<BindingType> binding = std::nullopt,
+      std::optional<std::string> sms_number = std::nullopt);
 
   std::string name() override final;
 

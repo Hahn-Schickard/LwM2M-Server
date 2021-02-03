@@ -49,9 +49,12 @@ struct RegisterRequest : ClientRequest {
   const bool queue_mode_ = false;
   const std::string sms_number_ = std::string();
 
-  RegisterRequest(EndpointPtr endpoint, size_t life_time, LwM2M_Version version,
-                  std::unordered_map<unsigned int, std::vector<unsigned int>>
-                      object_instances_map);
+  RegisterRequest(
+      EndpointPtr endpoint, size_t life_time = 0,
+      LwM2M_Version version = LwM2M_Version::V1_0,
+      std::unordered_map<unsigned int, std::vector<unsigned int>>
+          object_instances_map =
+              std::unordered_map<unsigned int, std::vector<unsigned int>>());
 
   std::string name() override final;
 
