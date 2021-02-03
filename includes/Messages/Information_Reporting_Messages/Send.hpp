@@ -11,7 +11,7 @@ namespace LwM2M {
  * Supported response codes:
  * - ResponseCode::CHANGED - Operation was a success.
  * - ResponseCode::BAD_REQUEST - Given LwM2M::DataFormatPtr could not be
- * interpreted
+ * interpreted, or Server encountered an undetermened error.
  * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
  * element within the client.
  */
