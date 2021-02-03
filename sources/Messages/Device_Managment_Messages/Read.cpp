@@ -4,7 +4,7 @@ using namespace std;
 
 namespace LwM2M {
 
-ReadRequest::ReadRequest(EndpointPtr endpoint, EelmentIdVariant target_id)
+ReadRequest::ReadRequest(EndpointPtr endpoint, ElmentIdVariant target_id)
     : ServerRequest(endpoint, MessageType::READ,
                     InterfaceType::DEVICE_MANAGMENT),
       target_id_(target_id) {}

@@ -11,9 +11,9 @@ namespace LwM2M {
  *
  */
 struct ReadRequest : ServerRequest {
-  const EelmentIdVariant target_id_;
+  const ElmentIdVariant target_id_;
 
-  ReadRequest(EndpointPtr endpoint, EelmentIdVariant target_id = ObjectID(0));
+  ReadRequest(EndpointPtr endpoint, ElmentIdVariant target_id = ObjectID(0));
 
   std::string name() override final;
 };
@@ -30,10 +30,10 @@ using ReadRequestPtr = std::shared_ptr<ReadRequest>;
  * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
  * processing the request.
  * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
- * element within the client.
- * - ResponseCode::METHOD_NOT_ALLOWED - Target EelmentIdVariant is not allowed
- * to use Read operation.
+ * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
+ * valid element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target LwM2M::ElmentIdVariant is not
+ * allowed to use Read operation.
  * - ResponseCode::NOT_ACCEPTABLE - None of preferred Content Formats are
  * supported by the Client
  */

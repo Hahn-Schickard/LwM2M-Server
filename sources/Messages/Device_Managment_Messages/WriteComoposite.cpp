@@ -10,12 +10,12 @@ WriteComopositeRequest::WriteComopositeRequest(EndpointPtr endpoint,
                     InterfaceType::DEVICE_MANAGMENT),
       content_(content) {}
 
-void WriteComopositeRequest::append(EelmentIdVariant target,
+void WriteComopositeRequest::append(ElmentIdVariant target,
                                     DataFormatPtr content) {
   content_.emplace_back(target, content);
 }
 
-void WriteComopositeRequest::append(vector<EelmentIdVariant> targets,
+void WriteComopositeRequest::append(vector<ElmentIdVariant> targets,
                                     DataFormatPtr content) {
   for (auto target : targets) {
     append(target, content);

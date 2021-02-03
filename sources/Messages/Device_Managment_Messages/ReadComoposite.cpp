@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 ReadComopositeRequest::ReadComopositeRequest(EndpointPtr endpoint,
-                                             vector<EelmentIdVariant> targets)
+                                             vector<ElmentIdVariant> targets)
     : ServerRequest(endpoint, MessageType::READ_COMPOSITE,
                     InterfaceType::DEVICE_MANAGMENT),
       targets_(targets) {}

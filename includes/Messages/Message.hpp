@@ -203,7 +203,7 @@ protected:
 
 using ServerResponsePtr = std::shared_ptr<ServerResponse>;
 
-using TargetContent = std::pair<EelmentIdVariant, DataFormatPtr>;
+using TargetContent = std::pair<ElmentIdVariant, DataFormatPtr>;
 
 } // namespace LwM2M
 #endif //__LWM2M_MESSAGE_HPP

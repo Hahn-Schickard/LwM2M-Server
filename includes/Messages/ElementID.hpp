@@ -65,7 +65,7 @@ struct ResourceInstanceID {
             resource_instance_id) {}
 };
 
-using EelmentIdVariant =
+using ElmentIdVariant =
     std::variant<ObjectID, ObjectInstanceID, ResourceID, ResourceInstanceID>;
 } // namespace LwM2M
 

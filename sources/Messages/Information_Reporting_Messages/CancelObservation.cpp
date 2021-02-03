@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 CancelObservationRequest::CancelObservationRequest(EndpointPtr endpoint,
-                                                   EelmentIdVariant target_id)
+                                                   ElmentIdVariant target_id)
     : ServerRequest(endpoint, MessageType::CANCEL_OBSERVATION,
                     InterfaceType::INFORMATION_REPORTING),
       target_id_(target_id) {}

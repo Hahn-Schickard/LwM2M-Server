@@ -15,18 +15,18 @@ WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
       content_(content) {}
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
-                                               vector<EelmentIdVariant> targets,
+                                               vector<ElmentIdVariant> targets,
                                                NotifyAttributePtr attribute)
     : WriteAttributesRequest(endpoint) {
   append(targets, attribute);
 }
 
-void WriteAttributesRequest::append(EelmentIdVariant target,
+void WriteAttributesRequest::append(ElmentIdVariant target,
                                     NotifyAttributePtr attribute) {
   content_.emplace_back(target, attribute);
 }
 
-void WriteAttributesRequest::append(vector<EelmentIdVariant> targets,
+void WriteAttributesRequest::append(vector<ElmentIdVariant> targets,
                                     NotifyAttributePtr attribute) {
   for (auto target : targets) {
     append(target, attribute);

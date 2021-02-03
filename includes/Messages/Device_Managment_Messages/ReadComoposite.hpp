@@ -13,7 +13,7 @@ namespace LwM2M {
  *
  */
 struct ReadComopositeRequest : ServerRequest {
-  const std::vector<EelmentIdVariant> targets_;
+  const std::vector<ElmentIdVariant> targets_;
 
   /**
    * @brief Construct a new Read Comoposite Request object
@@ -24,7 +24,7 @@ struct ReadComopositeRequest : ServerRequest {
    */
   ReadComopositeRequest(
       EndpointPtr endpoint,
-      std::vector<EelmentIdVariant> targets = std::vector<EelmentIdVariant>());
+      std::vector<ElmentIdVariant> targets = std::vector<ElmentIdVariant>());
 
   std::string name() override final;
 };
@@ -42,9 +42,9 @@ using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
  * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
  * processing the request.
  * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - None of target EelmentIdVariant instances point
- * to a valid element within the client
- * - ResponseCode::METHOD_NOT_ALLOWED - None of target EelmentIdVariant
+ * - ResponseCode::NOT_FOUND - None of target LwM2M::ElmentIdVariant instances
+ * point to a valid element within the client
+ * - ResponseCode::METHOD_NOT_ALLOWED - None of target LwM2M::ElmentIdVariant
  * instances are allowed to use Read operation.
  * - ResponseCode::NOT_ACCEPTABLE - None of preferred Content Formats are
  * supported by the Client

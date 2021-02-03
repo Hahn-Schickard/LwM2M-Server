@@ -19,8 +19,8 @@ struct WriteComopositeRequest : public ServerRequest {
       EndpointPtr endpoint,
       std::vector<TargetContent> content = std::vector<TargetContent>());
 
-  void append(EelmentIdVariant target, DataFormatPtr content);
-  void append(std::vector<EelmentIdVariant> targets, DataFormatPtr content);
+  void append(ElmentIdVariant target, DataFormatPtr content);
+  void append(std::vector<ElmentIdVariant> targets, DataFormatPtr content);
 
   std::string name() override final;
 };
@@ -35,12 +35,11 @@ using WriteComopositeRequestPtr = std::shared_ptr<WriteComopositeRequest>;
  * ResponseCode::CHANGED - Operation was a success.
  * ResponseCode::BAD_REQUEST - Data format is written in wrong Content Format.
  * ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * ResponseCode::NOT_FOUND - None of target EelmentIdVariant instances point
- * to a valid element within the client.
- * ResponseCode::METHOD_NOT_ALLOWED  - No target EelmentIdVariant instances are
- * allowed to use WriteComposite operation.
- * ResponseCode::NOT_ACCEPTABLE - None of preferred Content Formats are
- * supported by the Client
+ * ResponseCode::NOT_FOUND - None of target LwM2M::ElmentIdVariant instances
+ * point to a valid element within the client. ResponseCode::METHOD_NOT_ALLOWED
+ * - No target LwM2M::ElmentIdVariant instances are allowed to use
+ * WriteComposite operation. ResponseCode::NOT_ACCEPTABLE - None of preferred
+ * Content Formats are supported by the Client
  */
 struct WriteComopositeResponse : ClientResponse {
   WriteComopositeResponse(EndpointPtr endpoint, ResponseCode response_code =

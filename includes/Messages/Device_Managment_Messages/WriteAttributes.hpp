@@ -32,7 +32,7 @@ struct NotifyAttribute {
 };
 
 using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;
-using TargetAttribute = std::pair<EelmentIdVariant, NotifyAttributePtr>;
+using TargetAttribute = std::pair<ElmentIdVariant, NotifyAttributePtr>;
 
 /**
  * @brief Used to modify multiple Attributes of Objects/Object
@@ -46,11 +46,11 @@ struct WriteAttributesRequest : ServerRequest {
   WriteAttributesRequest(EndpointPtr endpoint,
                          std::vector<TargetAttribute> content);
   WriteAttributesRequest(EndpointPtr endpoint,
-                         std::vector<EelmentIdVariant> targets,
+                         std::vector<ElmentIdVariant> targets,
                          NotifyAttributePtr attribute);
 
-  void append(EelmentIdVariant target, NotifyAttributePtr attribute);
-  void append(std::vector<EelmentIdVariant> targets,
+  void append(ElmentIdVariant target, NotifyAttributePtr attribute);
+  void append(std::vector<ElmentIdVariant> targets,
               NotifyAttributePtr attribute);
 
   std::string name() override final;
@@ -64,10 +64,10 @@ struct WriteAttributesRequest : ServerRequest {
  * - ResponseCode::CHANGED - Operation was a success.
  * - ResponseCode::BAD_REQUEST - Data format is written in wrong Content Format.
  * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - None of target EelmentIdVariant instances point
- * to a valid element within the client.
- * - ResponseCode::METHOD_NOT_ALLOWED - No target EelmentIdVariant instances are
- * allowed to use WriteAttributes operation.
+ * - ResponseCode::NOT_FOUND - None of target LwM2M::ElmentIdVariant instances
+ * point to a valid element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - No target LwM2M::ElmentIdVariant
+ * instances are allowed to use WriteAttributes operation.
  */
 struct WriteAttributesResponse : ClientResponse {
   WriteAttributesResponse(EndpointPtr endpoint, ResponseCode response_code =

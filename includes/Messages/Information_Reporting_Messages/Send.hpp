@@ -12,8 +12,8 @@ namespace LwM2M {
  * - ResponseCode::CHANGED - Operation was a success.
  * - ResponseCode::BAD_REQUEST - Given LwM2M::DataFormatPtr could not be
  * interpreted, or Server encountered an undetermened error.
- * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
- * element within the client.
+ * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
+ * valid element within the client.
  */
 struct SendResponse : ServerResponse {
   SendResponse(EndpointPtr endpoint,

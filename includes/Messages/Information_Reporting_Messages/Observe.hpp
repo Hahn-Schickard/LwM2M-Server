@@ -9,10 +9,9 @@ namespace LwM2M {
  *
  */
 struct ObserveRequest : ServerRequest {
-  const EelmentIdVariant target_id_;
+  const ElmentIdVariant target_id_;
 
-  ObserveRequest(EndpointPtr endpoint,
-                 EelmentIdVariant target_id = ObjectID(0));
+  ObserveRequest(EndpointPtr endpoint, ElmentIdVariant target_id = ObjectID(0));
 
   std::string name() override final;
 };
@@ -28,10 +27,10 @@ using ObserveRequestPtr = std::shared_ptr<ObserveRequest>;
  * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
  * processing the request.
  * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
- * element within the client.
- * - ResponseCode::METHOD_NOT_ALLOWED Target EelmentIdVariant is not allowed
- * to use Cancel Observe operation.
+ * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
+ * valid element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target LwM2M::ElmentIdVariant is not
+ * allowed to use Cancel Observe operation.
  */
 struct ObservResponse : ClientResponse {
   const DataFormatPtr content_;

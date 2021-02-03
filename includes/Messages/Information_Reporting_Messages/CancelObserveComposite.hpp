@@ -9,11 +9,11 @@ namespace LwM2M {
  *
  */
 struct CancelObserveCompositeRequest : ServerRequest {
-  const std::vector<EelmentIdVariant> target_ids_;
+  const std::vector<ElmentIdVariant> target_ids_;
 
-  CancelObserveCompositeRequest(EndpointPtr endpoint,
-                                std::vector<EelmentIdVariant> target_ids =
-                                    std::vector<EelmentIdVariant>());
+  CancelObserveCompositeRequest(
+      EndpointPtr endpoint,
+      std::vector<ElmentIdVariant> target_ids = std::vector<ElmentIdVariant>());
 
   std::string name() override final;
 };
@@ -30,10 +30,11 @@ using CancelObserveCompositeRequestPtr =
  * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
  * processing the request.
  * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
- * element within the client.
- * - ResponseCode::METHOD_NOT_ALLOWED Target EelmentIdVariant is not allowed
- * to use Cancel Observe operation.
+ * - ResponseCode::NOT_FOUND - None of the specified LwM2M::ElmentIdVariant
+ * instances point to a valid element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - None of specified
+ * LwM2M::ElmentIdVariant instances are allowed to use Cancel Observe
+ * operation.
  */
 struct CancelObserveCompositeResponse : ClientResponse {
   std::vector<TargetContent> content_;

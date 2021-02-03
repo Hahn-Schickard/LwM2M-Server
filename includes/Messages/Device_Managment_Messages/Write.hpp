@@ -15,10 +15,10 @@ namespace LwM2M {
  * data formats
  */
 struct WriteRequest : ServerRequest {
-  const EelmentIdVariant target_id_;
+  const ElmentIdVariant target_id_;
   const DataFormatPtr content_;
 
-  WriteRequest(EndpointPtr endpoint, EelmentIdVariant target_id = ObjectID(0),
+  WriteRequest(EndpointPtr endpoint, ElmentIdVariant target_id = ObjectID(0),
                DataFormatPtr content = DataFormatPtr());
 
   std::string name() override final;
@@ -36,10 +36,10 @@ using WriteRequestPtr = std::shared_ptr<WriteRequest>;
  * fragments.
  * - ResponseCode::BAD_REQUEST - Data format is written in wrong Content Format.
  * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
- * element within the client.
- * - ResponseCode::METHOD_NOT_ALLOWED - Target EelmentIdVariant is not allowed
- * to use Write operation.
+ * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
+ * valid element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target LwM2M::ElmentIdVariant is not
+ * allowed to use Write operation.
  * - ResponseCode::NOT_ACCEPTABLE - The specified Content Format type is not
  * supported by the Client.
  * - ResponseCode::REQUEST_ENTITY_INCOMPLETE - Failed to receive all of the

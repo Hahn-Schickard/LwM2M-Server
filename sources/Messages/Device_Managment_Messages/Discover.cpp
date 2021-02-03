@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 DiscoverRequest::DiscoverRequest(EndpointPtr endpoint,
-                                 EelmentIdVariant target_id)
+                                 ElmentIdVariant target_id)
     : ServerRequest(endpoint, MessageType::DISCOVER,
                     InterfaceType::DEVICE_MANAGMENT),
       target_id_(target_id) {}

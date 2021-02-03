@@ -9,10 +9,10 @@ namespace LwM2M {
  *
  */
 struct CancelObservationRequest : ServerRequest {
-  const EelmentIdVariant target_id_;
+  const ElmentIdVariant target_id_;
 
   CancelObservationRequest(EndpointPtr endpoint,
-                           EelmentIdVariant target_id = ObjectID(0));
+                           ElmentIdVariant target_id = ObjectID(0));
 
   std::string name() override final;
 };
@@ -28,10 +28,10 @@ using CancelObservationRequestPtr = std::shared_ptr<CancelObservationRequest>;
  * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
  * processing the request.
  * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
- * element within the client.
- * - ResponseCode::METHOD_NOT_ALLOWED Target EelmentIdVariant is not allowed
- * to use Cancel Observe operation.
+ * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to
+ * a valid element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED - Target LwM2M::ElmentIdVariant is not
+ * allowed to use Cancel Observe operation.
  */
 struct CancelObservationResponse : ClientResponse {
   CancelObservationResponse(
