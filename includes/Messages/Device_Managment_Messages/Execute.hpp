@@ -43,7 +43,8 @@ using ExecuteRequestPtr = std::shared_ptr<ExecuteRequest>;
  * to use Execute operation.
  */
 struct ExecuteResponse : ClientResponse {
-  ExecuteResponse(EndpointPtr endpoint, ResponseCode response_code);
+  ExecuteResponse(EndpointPtr endpoint,
+                  ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

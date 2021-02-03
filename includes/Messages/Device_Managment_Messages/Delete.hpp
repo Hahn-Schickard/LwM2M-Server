@@ -34,7 +34,8 @@ using DeleteRequestPtr = std::shared_ptr<DeleteRequest>;
  * to use Delete operation.
  */
 struct DeleteResponse : ClientResponse {
-  DeleteResponse(EndpointPtr endpoint, ResponseCode response_code);
+  DeleteResponse(EndpointPtr endpoint,
+                 ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

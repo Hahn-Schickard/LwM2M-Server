@@ -70,7 +70,8 @@ struct WriteAttributesRequest : ServerRequest {
  * allowed to use WriteAttributes operation.
  */
 struct WriteAttributesResponse : ClientResponse {
-  WriteAttributesResponse(EndpointPtr endpoint, ResponseCode response_code);
+  WriteAttributesResponse(EndpointPtr endpoint, ResponseCode response_code =
+                                                    ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

@@ -14,7 +14,8 @@ namespace LwM2M {
  * - ResponseCode::NOT_FOUND - Given location could not be found in the server
  */
 struct DeregisterResponse : ServerResponse {
-  DeregisterResponse(EndpointPtr endpoint, ResponseCode response_code);
+  DeregisterResponse(EndpointPtr endpoint,
+                     ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };
@@ -33,7 +34,8 @@ struct DeregisterRequest : ClientRequest {
 
   std::string name() override final;
 
-  DeregisterResponsePtr makeResponse(ResponseCode response_code);
+  DeregisterResponsePtr
+  makeResponse(ResponseCode response_code = ResponseCode::BAD_REQUEST);
 };
 
 using DeregisterRequestPtr = std::shared_ptr<DeregisterRequest>;

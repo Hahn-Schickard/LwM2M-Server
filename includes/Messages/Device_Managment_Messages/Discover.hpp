@@ -41,8 +41,9 @@ using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
 struct DiscoverResponse : ClientResponse {
   const DataFormatPtr content_;
 
-  DiscoverResponse(EndpointPtr endpoint, ResponseCode response_code,
-                   DataFormatPtr content);
+  DiscoverResponse(EndpointPtr endpoint,
+                   ResponseCode response_code = ResponseCode::BAD_REQUEST,
+                   DataFormatPtr content = DataFormatPtr());
 
   std::string name() override final;
 };

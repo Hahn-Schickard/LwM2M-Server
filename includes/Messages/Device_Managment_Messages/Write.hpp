@@ -48,7 +48,8 @@ using WriteRequestPtr = std::shared_ptr<WriteRequest>;
  * allowed message fragments.
  */
 struct WriteResponse : ClientResponse {
-  WriteResponse(EndpointPtr endpoint, ResponseCode response_code);
+  WriteResponse(EndpointPtr endpoint,
+                ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

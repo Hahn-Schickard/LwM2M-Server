@@ -25,8 +25,9 @@ struct RegisterResponse : ServerResponse {
   // Mandatory fields
   const std::string location_;
 
-  RegisterResponse(EndpointPtr endpoint, ResponseCode response_code,
-                   std::string location);
+  RegisterResponse(EndpointPtr endpoint,
+                   ResponseCode response_code = ResponseCode::BAD_REQUEST,
+                   std::string location = std::string());
 
   std::string name() override final;
 };

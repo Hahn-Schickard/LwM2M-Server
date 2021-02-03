@@ -20,7 +20,8 @@ namespace LwM2M {
  * - ResponseCode::NOT_FOUND - Given location could not be found in the server
  */
 struct UpdateResponse : ServerResponse {
-  UpdateResponse(EndpointPtr endpoint, ResponseCode response_code);
+  UpdateResponse(EndpointPtr endpoint,
+                 ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };
@@ -50,7 +51,8 @@ struct UpdateRequest : ClientRequest {
 
   std::string name() override final;
 
-  UpdateResponsePtr makeResponse(ResponseCode response_code);
+  UpdateResponsePtr
+  makeResponse(ResponseCode response_code = ResponseCode::BAD_REQUEST);
 };
 
 using UpdateRequestPtr = std::shared_ptr<UpdateRequest>;

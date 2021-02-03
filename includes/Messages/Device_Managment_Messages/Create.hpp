@@ -40,7 +40,8 @@ using CreateRequestPtr = std::shared_ptr<CreateRequest>;
  * supported by the client.
  */
 struct CreateResponse : ClientResponse {
-  CreateResponse(EndpointPtr endpoint, ResponseCode response_code);
+  CreateResponse(EndpointPtr endpoint,
+                 ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 }; // namespace LwM2M

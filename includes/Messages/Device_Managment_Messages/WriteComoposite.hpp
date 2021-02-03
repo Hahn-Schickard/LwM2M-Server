@@ -43,7 +43,8 @@ using WriteComopositeRequestPtr = std::shared_ptr<WriteComopositeRequest>;
  * supported by the Client
  */
 struct WriteComopositeResponse : ClientResponse {
-  WriteComopositeResponse(EndpointPtr endpoint, ResponseCode response_code);
+  WriteComopositeResponse(EndpointPtr endpoint, ResponseCode response_code =
+                                                    ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };
