@@ -11,7 +11,8 @@ namespace LwM2M {
 struct ObserveRequest : ServerRequest {
   const EelmentIdVariant target_id_;
 
-  ObserveRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
+  ObserveRequest(EndpointPtr endpoint,
+                 EelmentIdVariant target_id = ObjectID(0));
 
   std::string name() override final;
 };
@@ -35,8 +36,9 @@ using ObserveRequestPtr = std::shared_ptr<ObserveRequest>;
 struct ObservResponse : ClientResponse {
   const DataFormatPtr content_;
 
-  ObservResponse(EndpointPtr endpoint, ResponseCode response_code,
-                 DataFormatPtr content);
+  ObservResponse(EndpointPtr endpoint,
+                 ResponseCode response_code = ResponseCode::BAD_REQUEST,
+                 DataFormatPtr content = DataFormatPtr());
 
   std::string name() override final;
 };

@@ -6,7 +6,8 @@ namespace LwM2M {
 CancelObserveCompositeRequest::CancelObserveCompositeRequest(
     EndpointPtr endpoint, vector<EelmentIdVariant> target_ids)
     : ServerRequest(endpoint, MessageType::CANCEL_OBSERVATION_COMPOSITE,
-                    InterfaceType::INFORMATION_REPORTING) {}
+                    InterfaceType::INFORMATION_REPORTING),
+      target_ids_(target_ids) {}
 
 string CancelObserveCompositeRequest::name() {
   return "CancelObserveCompositeRequest";

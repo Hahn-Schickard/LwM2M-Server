@@ -16,7 +16,8 @@ namespace LwM2M {
  * element within the client.
  */
 struct SendResponse : ServerResponse {
-  SendResponse(EndpointPtr endpoint, ResponseCode response_code);
+  SendResponse(EndpointPtr endpoint,
+               ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };
@@ -30,11 +31,14 @@ using SendResponsePtr = std::shared_ptr<SendResponse>;
 struct SendRequest : ClientRequest {
   TargetContent content_;
 
-  SendRequest(EndpointPtr endpoint, TargetContent content);
+  SendRequest(EndpointPtr endpoint,
+              TargetContent content = TargetContent(ObjectID(0),
+                                                    DataFormatPtr()));
 
   std::string name() override final;
 
-  SendResponsePtr makeResponse(ResponseCode response_code);
+  SendResponsePtr
+  makeResponse(ResponseCode response_code = ResponseCode::BAD_REQUEST);
 };
 
 using SendRequestPtr = std::shared_ptr<SendRequest>;

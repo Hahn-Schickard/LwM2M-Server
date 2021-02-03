@@ -11,7 +11,8 @@ namespace LwM2M {
 struct CancelObservationRequest : ServerRequest {
   const EelmentIdVariant target_id_;
 
-  CancelObservationRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
+  CancelObservationRequest(EndpointPtr endpoint,
+                           EelmentIdVariant target_id = ObjectID(0));
 
   std::string name() override final;
 };
@@ -33,7 +34,9 @@ using CancelObservationRequestPtr = std::shared_ptr<CancelObservationRequest>;
  * to use Cancel Observe operation.
  */
 struct CancelObservationResponse : ClientResponse {
-  CancelObservationResponse(EndpointPtr endpoint, ResponseCode response_code);
+  CancelObservationResponse(
+      EndpointPtr endpoint,
+      ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

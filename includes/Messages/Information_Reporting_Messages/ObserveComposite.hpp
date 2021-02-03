@@ -14,7 +14,8 @@ struct ObserveCompositeRequest : ServerRequest {
   const std::vector<EelmentIdVariant> target_ids_;
 
   ObserveCompositeRequest(EndpointPtr endpoint,
-                          std::vector<EelmentIdVariant> target_ids);
+                          std::vector<EelmentIdVariant> target_ids =
+                              std::vector<EelmentIdVariant>());
 
   std::string name() override final;
 };
@@ -38,8 +39,10 @@ using ObserveCompositeRequestPtr = std::shared_ptr<ObserveCompositeRequest>;
 struct ObserveCompositeResponse : ClientResponse {
   std::vector<TargetContent> content_;
 
-  ObserveCompositeResponse(EndpointPtr endpoint, ResponseCode response_code,
-                           std::vector<TargetContent> conent);
+  ObserveCompositeResponse(
+      EndpointPtr endpoint,
+      ResponseCode response_code = ResponseCode::BAD_REQUEST,
+      std::vector<TargetContent> conent = std::vector<TargetContent>());
 
   std::string name() override final;
 };
