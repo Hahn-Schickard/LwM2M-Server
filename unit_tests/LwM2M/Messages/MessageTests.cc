@@ -107,6 +107,13 @@ vector<TestParameter> parameters{
                          .response_ = false,
                          .incomming_ = true,
                          .notification_ = false})),
+    TestParameter(makePassingTest<RegisterResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::REGISTER,
+                         .interface_ = InterfaceType::REGISTRATION,
+                         .response_ = true,
+                         .incomming_ = false,
+                         .notification_ = false})),
     TestParameter(makePassingTest<UpdateRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::UPDATE,
@@ -114,12 +121,26 @@ vector<TestParameter> parameters{
                          .response_ = false,
                          .incomming_ = true,
                          .notification_ = false})),
+    TestParameter(makePassingTest<UpdateResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::UPDATE,
+                         .interface_ = InterfaceType::REGISTRATION,
+                         .response_ = true,
+                         .incomming_ = false,
+                         .notification_ = false})),
     TestParameter(makePassingTest<DeregisterRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::DEREGISTER,
                          .interface_ = InterfaceType::REGISTRATION,
                          .response_ = false,
                          .incomming_ = true,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<DeregisterResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::DEREGISTER,
+                         .interface_ = InterfaceType::REGISTRATION,
+                         .response_ = true,
+                         .incomming_ = false,
                          .notification_ = false})),
     // Device managment Messages
     TestParameter(makePassingTest<CreateRequest>(
@@ -129,12 +150,26 @@ vector<TestParameter> parameters{
                          .response_ = false,
                          .incomming_ = false,
                          .notification_ = false})),
+    TestParameter(makePassingTest<CreateResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::CREATE,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
     TestParameter(makePassingTest<DeleteRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::DELETE,
                          .interface_ = InterfaceType::DEVICE_MANAGMENT,
                          .response_ = false,
                          .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<DeleteResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::DELETE,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
                          .notification_ = false})),
     TestParameter(makePassingTest<DiscoverRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
@@ -143,12 +178,26 @@ vector<TestParameter> parameters{
                          .response_ = false,
                          .incomming_ = false,
                          .notification_ = false})),
+    TestParameter(makePassingTest<DiscoverResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::DISCOVER,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
     TestParameter(makePassingTest<ExecuteRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::EXECUTE,
                          .interface_ = InterfaceType::DEVICE_MANAGMENT,
                          .response_ = false,
                          .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<ExecuteResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::EXECUTE,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
                          .notification_ = false})),
     TestParameter(makePassingTest<ReadRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
@@ -157,12 +206,26 @@ vector<TestParameter> parameters{
                          .response_ = false,
                          .incomming_ = false,
                          .notification_ = false})),
+    TestParameter(makePassingTest<ReadResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::READ,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
     TestParameter(makePassingTest<ReadComopositeRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::READ_COMPOSITE,
                          .interface_ = InterfaceType::DEVICE_MANAGMENT,
                          .response_ = false,
                          .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<ReadComopositeResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::READ_COMPOSITE,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
                          .notification_ = false})),
     TestParameter(makePassingTest<WriteRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
@@ -171,6 +234,13 @@ vector<TestParameter> parameters{
                          .response_ = false,
                          .incomming_ = false,
                          .notification_ = false})),
+    TestParameter(makePassingTest<WriteResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::WRITE,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
     TestParameter(makePassingTest<WriteAttributesRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::WRITE_ATTRIBUTES,
@@ -178,12 +248,26 @@ vector<TestParameter> parameters{
                          .response_ = false,
                          .incomming_ = false,
                          .notification_ = false})),
+    TestParameter(makePassingTest<WriteAttributesResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::WRITE_ATTRIBUTES,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
     TestParameter(makePassingTest<WriteComopositeRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::WRITE_COMPOSITE,
                          .interface_ = InterfaceType::DEVICE_MANAGMENT,
                          .response_ = false,
                          .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<WriteComopositeResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::WRITE_COMPOSITE,
+                         .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
                          .notification_ = false}))};
 
 INSTANTIATE_TEST_SUITE_P(BaseFieldTests, MessageTest,
