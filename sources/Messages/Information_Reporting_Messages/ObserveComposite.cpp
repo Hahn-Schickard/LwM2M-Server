@@ -14,7 +14,7 @@ string ObserveCompositeRequest::name() { return "ObserveCompositeRequest"; }
 ObserveCompositeResponse::ObserveCompositeResponse(
     EndpointPtr endpoint, ResponseCode response_code,
     vector<TargetContent> content)
-    : ClientResponse(endpoint, MessageType::CANCEL_OBSERVATION,
+    : ClientResponse(endpoint, MessageType::OBSERVE_COMPOSITE,
                      InterfaceType::INFORMATION_REPORTING,
                      unordered_set<ResponseCode>{
                          ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
