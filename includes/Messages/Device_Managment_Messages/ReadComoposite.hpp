@@ -22,8 +22,9 @@ struct ReadComopositeRequest : ServerRequest {
    * @param uri_targets - a list of Object/Object Instance/Resource/Resoruce
    * Instance URIs that will be read
    */
-  ReadComopositeRequest(EndpointPtr endpoint,
-                        std::vector<EelmentIdVariant> targets);
+  ReadComopositeRequest(
+      EndpointPtr endpoint,
+      std::vector<EelmentIdVariant> targets = std::vector<EelmentIdVariant>());
 
   std::string name() override final;
 };

@@ -18,8 +18,8 @@ struct WriteRequest : ServerRequest {
   const EelmentIdVariant target_id_;
   const DataFormatPtr content_;
 
-  WriteRequest(EndpointPtr endpoint, EelmentIdVariant target_id,
-               DataFormatPtr content);
+  WriteRequest(EndpointPtr endpoint, EelmentIdVariant target_id = ObjectID(0),
+               DataFormatPtr content = DataFormatPtr());
 
   std::string name() override final;
 };

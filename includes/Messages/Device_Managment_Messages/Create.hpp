@@ -17,8 +17,8 @@ struct CreateRequest : public ServerRequest {
   const ObjectID target_id_;
   const DataFormatPtr content_;
 
-  CreateRequest(EndpointPtr endpoint, ObjectID target_id,
-                DataFormatPtr content);
+  CreateRequest(EndpointPtr endpoint, ObjectID target_id = ObjectID(0),
+                DataFormatPtr content = DataFormatPtr());
   std::string name() override final;
 };
 

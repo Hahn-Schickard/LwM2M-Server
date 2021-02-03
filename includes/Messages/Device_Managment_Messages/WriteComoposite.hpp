@@ -15,8 +15,9 @@ namespace LwM2M {
 struct WriteComopositeRequest : public ServerRequest {
   std::vector<TargetContent> content_;
 
-  WriteComopositeRequest(EndpointPtr endpoint,
-                         std::vector<TargetContent> content);
+  WriteComopositeRequest(
+      EndpointPtr endpoint,
+      std::vector<TargetContent> content = std::vector<TargetContent>());
 
   void append(EelmentIdVariant target, DataFormatPtr content);
   void append(std::vector<EelmentIdVariant> targets, DataFormatPtr content);

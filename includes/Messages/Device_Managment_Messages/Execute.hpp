@@ -19,7 +19,7 @@ struct ExecuteRequest : ServerRequest {
   const ResourceID target_;
   const std::vector<DataFormatPtr> arguments_;
 
-  ExecuteRequest(EndpointPtr endpoint, ResourceID target);
+  ExecuteRequest(EndpointPtr endpoint, ResourceID target = ResourceID(0, 0, 0));
   ExecuteRequest(EndpointPtr endpoint, ResourceID target,
                  std::vector<DataFormatPtr> arguments);
 

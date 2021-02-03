@@ -13,7 +13,8 @@ namespace LwM2M {
 struct DiscoverRequest : ServerRequest {
   const EelmentIdVariant target_id_;
 
-  DiscoverRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
+  DiscoverRequest(EndpointPtr endpoint,
+                  EelmentIdVariant target_id = ObjectID(0));
 
   std::string name() override final;
 };
