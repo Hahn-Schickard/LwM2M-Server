@@ -1,7 +1,7 @@
 // Registration_Messages
-// #include "Deregister.hpp"
-// #include "Register.hpp"
-// #include "Update.hpp"
+#include "Deregister.hpp"
+#include "Register.hpp"
+#include "Update.hpp"
 // Device_Managment_Messages
 #include "Create.hpp"
 #include "Delete.hpp"
@@ -99,6 +99,29 @@ TestParameter makePassingTest(const TestExpectations &valid_expectations) {
 }
 
 vector<TestParameter> parameters{
+    // Registration Messages
+    TestParameter(makePassingTest<RegisterRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::REGISTER,
+                         .interface_ = InterfaceType::REGISTRATION,
+                         .response_ = false,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<UpdateRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::UPDATE,
+                         .interface_ = InterfaceType::REGISTRATION,
+                         .response_ = false,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<DeregisterRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::DEREGISTER,
+                         .interface_ = InterfaceType::REGISTRATION,
+                         .response_ = false,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    // Device managment Messages
     TestParameter(makePassingTest<CreateRequest>(
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::CREATE,
