@@ -12,6 +12,13 @@
 #include "Write.hpp"
 #include "WriteAttributes.hpp"
 #include "WriteComoposite.hpp"
+// Information_Reporting_Messages
+#include "CancelObservation.hpp"
+#include "CancelObserveComposite.hpp"
+#include "Notify.hpp"
+#include "Observe.hpp"
+#include "ObserveComposite.hpp"
+#include "Send.hpp"
 
 #include "gtest/gtest.h"
 
@@ -266,6 +273,84 @@ vector<TestParameter> parameters{
         TestExpectations{.endpoint_ = make_shared<Endpoint>(),
                          .message_type_ = MessageType::WRITE_COMPOSITE,
                          .interface_ = InterfaceType::DEVICE_MANAGMENT,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    // Information Reporting Messages
+    TestParameter(makePassingTest<ObserveRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::OBSERVE,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = false,
+                         .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<ObservResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::OBSERVE,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<ObserveCompositeRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::OBSERVE_COMPOSITE,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = false,
+                         .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<ObserveCompositeResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::OBSERVE_COMPOSITE,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<ValueUpdated>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::NOTIFY,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = false,
+                         .incomming_ = true,
+                         .notification_ = true})),
+    TestParameter(makePassingTest<SendRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::SEND,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = false,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<SendResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::SEND,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = true,
+                         .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<CancelObservationRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::CANCEL_OBSERVATION,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = false,
+                         .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<CancelObservationResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::CANCEL_OBSERVATION,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = true,
+                         .incomming_ = true,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<CancelObserveCompositeRequest>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::CANCEL_OBSERVATION_COMPOSITE,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
+                         .response_ = false,
+                         .incomming_ = false,
+                         .notification_ = false})),
+    TestParameter(makePassingTest<CancelObserveCompositeResponse>(
+        TestExpectations{.endpoint_ = make_shared<Endpoint>(),
+                         .message_type_ = MessageType::CANCEL_OBSERVATION_COMPOSITE,
+                         .interface_ = InterfaceType::INFORMATION_REPORTING,
                          .response_ = true,
                          .incomming_ = true,
                          .notification_ = false}))};
