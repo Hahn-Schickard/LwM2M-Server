@@ -14,7 +14,7 @@ ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target,
                     InterfaceType::DEVICE_MANAGMENT),
       target_(target), arguments_(arguments) {}
 
-string ExecuteRequest::name() { return "WriteRequest"; }
+string ExecuteRequest::name() { return "ExecuteRequest"; }
 
 ExecuteResponse::ExecuteResponse(EndpointPtr endpoint,
                                  ResponseCode response_code)
