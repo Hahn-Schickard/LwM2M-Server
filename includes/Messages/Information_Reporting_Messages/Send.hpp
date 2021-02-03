@@ -4,40 +4,40 @@
 #include "Message.hpp"
 
 namespace LwM2M {
+/**
+ * @brief Response to LwM2M::SendRequest, indicates wheater
+ * the request was succefull, requires more data or failed
+ *
+ * Supported response codes:
+ * - ResponseCode::CHANGED - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Given LwM2M::DataFormatPtr could not be
+ * interpreted
+ * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
+ * element within the client.
+ */
 struct SendResponse : ServerResponse {
-  SendResponse(EndpointPtr endpoint, ResponseCode response_code)
-      : ServerResponse(endpoint, MessageType::SEND,
-                       InterfaceType::INFORMATION_REPORTING,
-                       std::unordered_set<ResponseCode>{
-                           ResponseCode::CHANGED, ResponseCode::BAD_REQUEST,
-                           ResponseCode::NOT_FOUND},
-                       response_code) {
-    checkResponseCode(response_code);
-  }
+  SendResponse(EndpointPtr endpoint, ResponseCode response_code);
 
-  std::string name() override final { return "SendResponse"; }
+  std::string name() override final;
 };
 
 using SendResponsePtr = std::shared_ptr<SendResponse>;
 
+/**
+ * @brief Used by the Client to send data value changes without prior request
+ *
+ */
 struct SendRequest : ClientRequest {
   TargetContent content_;
 
-  SendRequest(EndpointPtr endpoint, TargetContent content)
-      : ClientRequest(endpoint, MessageType::SEND,
-                      InterfaceType::INFORMATION_REPORTING),
-        content_(content) {}
+  SendRequest(EndpointPtr endpoint, TargetContent content);
 
-  std::string name() override final { return "SendRequest"; }
+  std::string name() override final;
 
-  SendResponsePtr makeResponse(ResponseCode response_code) {
-    return std::make_shared<SendResponse>(endpoint_, response_code);
-  }
+  SendResponsePtr makeResponse(ResponseCode response_code);
 };
 
 using SendRequestPtr = std::shared_ptr<SendRequest>;
-
-}; // namespace LwM2M
 
 } // namespace LwM2M
 

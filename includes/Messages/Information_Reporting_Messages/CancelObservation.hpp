@@ -4,32 +4,38 @@
 #include "Message.hpp"
 
 namespace LwM2M {
+/**
+ * @brief Used stop the observation of a given element within the Client.
+ *
+ */
 struct CancelObservationRequest : ServerRequest {
-  const ElementIdVariant target_id_;
+  const EelmentIdVariant target_id_;
 
-  CancelObservationRequest(EndpointPtr endpoint, ElementIdVariant target_id)
-      : ServerRequest(endpoint, MessageType::CANCEL_OBSERVATION,
-                      InterfaceType::INFORMATION_REPORTING),
-        target_id_(target_id) {}
+  CancelObservationRequest(EndpointPtr endpoint, EelmentIdVariant target_id);
 
-  std::string name() override final { return "CancelObservationRequest"; }
+  std::string name() override final;
 };
 
 using CancelObservationRequestPtr = std::shared_ptr<CancelObservationRequest>;
 
+/**
+ * @brief Response to LwM2M::CancelObservationRequest, indicates wheater the
+ * request was succefull, requires more data or failed
+ *
+ * Supported response codes:
+ * - ResponseCode::CONTENT - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
+ * processing the request.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
+ * element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED Target EelmentIdVariant is not allowed
+ * to use Cancel Observe operation.
+ */
 struct CancelObservationResponse : ClientResponse {
-  CancelObservationResponse(EndpointPtr endpoint, ResponseCode response_code)
-      : ClientResponse(endpoint, MessageType::CANCEL_OBSERVATION,
-                       InterfaceType::INFORMATION_REPORTING,
-                       std::unordered_set<ResponseCode>{
-                           ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
-                           ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
-                           ResponseCode::METHOD_NOT_ALLOWED},
-                       response_code) {
-    checkResponseCode(response_code);
-  }
+  CancelObservationResponse(EndpointPtr endpoint, ResponseCode response_code);
 
-  std::string name() override final { return "CancelObservationResponse"; }
+  std::string name() override final;
 };
 
 using CancelObservationResponsePtr = std::shared_ptr<CancelObservationResponse>;

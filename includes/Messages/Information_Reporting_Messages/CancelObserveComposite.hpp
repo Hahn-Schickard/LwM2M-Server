@@ -4,37 +4,44 @@
 #include "Message.hpp"
 
 namespace LwM2M {
+/**
+ * @brief Used stop the observation of a given elements within the Client.
+ *
+ */
 struct CancelObserveCompositeRequest : ServerRequest {
-  const std::vector<ElementIdVariant> target_ids_;
+  const std::vector<EelmentIdVariant> target_ids_;
 
   CancelObserveCompositeRequest(EndpointPtr endpoint,
-                                std::vector<ElementIdVariant> target_ids)
-      : ServerRequest(endpoint, MessageType::CANCEL_OBSERVE_COMPOSITE,
-                      InterfaceType::INFORMATION_REPORTING) {}
+                                std::vector<EelmentIdVariant> target_ids);
 
-  std::string name() override final { return "CancelObserveCompositeRequest"; }
+  std::string name() override final;
 };
 
 using CancelObserveCompositeRequestPtr =
     std::shared_ptr<CancelObserveCompositeRequest>;
 
+/**
+ * @brief Response to LwM2M::CancelObserveCompositeRequest, indicates wheater
+ * the request was succefull, requires more data or failed
+ *
+ * Supported response codes:
+ * - ResponseCode::CONTENT - Operation was a success.
+ * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
+ * processing the request.
+ * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
+ * - ResponseCode::NOT_FOUND - Target EelmentIdVariant does not point to a valid
+ * element within the client.
+ * - ResponseCode::METHOD_NOT_ALLOWED Target EelmentIdVariant is not allowed
+ * to use Cancel Observe operation.
+ */
 struct CancelObserveCompositeResponse : ClientResponse {
   std::vector<TargetContent> content_;
 
-  ObserveCompositeResponse(EndpointPtr endpoint, ResponseCode response_code,
-                           std::vector<TargetContent> conent)
-      : ClientResponse(endpoint, MessageType::CANCEL_OBSERVE_COMPOSITE,
-                       InterfaceType::INFORMATION_REPORTING,
-                       std::unordered_set<ResponseCode>{
-                           ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
-                           ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
-                           ResponseCode::METHOD_NOT_ALLOWED},
-                       response_code),
-        content_(content) {
-    checkResponseCode(response_code);
-  }
+  CancelObserveCompositeResponse(EndpointPtr endpoint,
+                                 ResponseCode response_code,
+                                 std::vector<TargetContent> conent);
 
-  std::string name() override final { return "CancelObserveCompositeResponse"; }
+  std::string name() override final;
 };
 
 using CancelObserveCompositeResponsePtr =
