@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              Requests_Manager
+                              Messages
 )
 
 target_include_directories(${THIS} INTERFACE

@@ -3,35 +3,30 @@
 using namespace std;
 
 namespace LwM2M {
-string generateDeviceID(string name, string endpoint_address,
-                        unsigned int endpoint_port) {
-  size_t result =
-      hash<string>{}(name) + hash<string>{}(endpoint_address) + endpoint_port;
+string generateDeviceID(string name, EndpointPtr endpoint) {
+  // Possible hash colissions, need to check the size of name and endpoint
+  // address, offset each by the lenghts and concat it with bit shifts
+  size_t result = hash<string>{}(name) +
+                  hash<string>{}(endpoint->endpoint_address_) +
+                  endpoint->endpoint_port_;
   return to_string(result);
 }
 
-Device::Device() {}
-
-Device::Device(shared_ptr<RequestsManager> requests_manager, string name,
-               string endpoint_address, unsigned int endpoint_port,
-               size_t life_time, LwM2M_Version version, BindingType binding,
-               bool queue_mode, string sms_number,
-               ObjectDescriptorsMap object_descriptors_map)
-    : requests_manager_(requests_manager),
-      device_id_(generateDeviceID(name, endpoint_address, endpoint_port)),
-      name_(name), life_time_(life_time), version_(version), binding_(binding),
-      queue_mode_(queue_mode),
-      endpoint_(make_shared<Endpoint>(
-          Endpoint{endpoint_address, endpoint_port, sms_number})) {
+Device::Device(EndpointPtr endpoint,
+               ObjectDescriptorsMap object_descriptors_map, size_t life_time,
+               string name, LwM2M_Version version, BindingType binding,
+               bool queue_mode)
+    : endpoint_(endpoint), life_time_(life_time),
+      device_id_(generateDeviceID(name, endpoint_)), name_(name),
+      version_(version), binding_(binding), queue_mode_(queue_mode) {
   makeObjects(object_descriptors_map);
 }
 
 void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
   for (auto object_descriptor_pair : object_descriptors_map) {
     auto object_instance_pair = object_descriptor_pair.second;
-    auto object =
-        make_shared<Object>(endpoint_, object_instance_pair.second,
-                            requests_manager_, object_instance_pair.first);
+    auto object = make_shared<Object>(endpoint_, object_instance_pair.second,
+                                      object_instance_pair.first);
     object_instances_.emplace(object_descriptor_pair.first, move(object));
   }
 }
@@ -54,10 +49,6 @@ ObjectsMap Device::getObjects() { return object_instances_; }
 void Device::updateBinding(BindingType binding) { binding_ = binding; }
 
 void Device::updateLifetime(size_t life_time) { life_time_ = life_time; }
-
-void Device::updateSMS_Number(std::string sms_number) {
-  endpoint_->sms_number_ = sms_number;
-}
 
 void Device::updateObjectsMap(ObjectDescriptorsMap object_descriptors_map) {
   makeObjects(object_descriptors_map);

@@ -1,12 +1,12 @@
 #ifndef __LWM2M_MODEL_OBJECT_INSTANCE_HPP
 #define __LWM2M_MODEL_OBJECT_INSTANCE_HPP
 
+#include "DataFormat.hpp"
 #include "Endpoint.hpp"
-#include "ObjectLink.hpp"
-#include "RequestsManager.hpp"
 #include "Resource.hpp"
 
 #include <memory>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -19,16 +19,14 @@ using ResourceVariant = std::variant<
 using Resources = std::unordered_map<uint32_t, ResourceVariant>;
 
 class ObjectInstance {
-  std::shared_ptr<Endpoint> endpoint_;
+  EndpointPtr endpoint_;
   uint32_t parent_id_;
   uint32_t instance_id_;
-  std::shared_ptr<RequestsManager> requests_manager_;
   Resources resources_;
 
 public:
   ObjectInstance(
-      std::shared_ptr<Endpoint> endpoint, uint32_t parent_id_,
-      uint32_t instance_id, std::shared_ptr<RequestsManager> requests_manager,
+      EndpointPtr endpoint, uint32_t parent_id_, uint32_t instance_id,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
 
