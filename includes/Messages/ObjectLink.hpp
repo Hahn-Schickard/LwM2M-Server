@@ -14,6 +14,8 @@ struct ObjectLink {
 
   ObjectLink();
   ObjectLink(uint16_t object_id, uint16_t instance_id);
+
+  friend bool operator==(const ObjectLink &lhs, const ObjectLink &rhs);
 };
 } // namespace LwM2M
 
