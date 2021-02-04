@@ -78,7 +78,7 @@ WrongDataType::WrongDataType(DataType expected, DataType actual)
           "\nActual data type: " + toString(actual)) {}
 
 DataFormat::DataFormat(DataVariant data, DataType type, MediaType format)
-    : data_(move(data)), data_type_(type), media_type_(format) {}
+    : data_(data), data_type_(type), media_type_(format) {}
 
 template <> void DataFormat::get<void>() {
   if (data_type_ != DataType::NONE) {
@@ -103,7 +103,8 @@ template <> int64_t DataFormat::get<int64_t>() {
 }
 
 template <> uint64_t DataFormat::get<uint64_t>() {
-  if (data_type_ == DataType::UNSIGNED_INTEGER) {
+  if (data_type_ == DataType::UNSIGNED_INTEGER ||
+      data_type_ == DataType::TIME) {
     return std::get<uint64_t>(data_);
   } else {
     throw WrongDataType(DataType::UNSIGNED_INTEGER, data_type_);
