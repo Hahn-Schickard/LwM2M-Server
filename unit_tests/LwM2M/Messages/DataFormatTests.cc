@@ -5,23 +5,24 @@
 using namespace std;
 using namespace LwM2M;
 
-struct TestExpectations {
+struct DataFormatTestExpectations {
   const DataVariant data_;
   const DataType data_type_;
   const MediaType media_type_;
 };
 
-using TestExpectationsPtr = shared_ptr<TestExpectations>;
+using DataFormatTestExpectationsPtr = shared_ptr<DataFormatTestExpectations>;
 
-struct TestParameter {
+struct DataFormatTestParameter {
   DataFormatPtr tested_;
-  TestExpectationsPtr expected_;
+  DataFormatTestExpectationsPtr expected_;
 
-  TestParameter(DataFormatPtr tested, TestExpectationsPtr expected)
+  DataFormatTestParameter(DataFormatPtr tested,
+                          DataFormatTestExpectationsPtr expected)
       : tested_(tested), expected_(expected) {}
 };
 
-class DataFormatTest : public testing::TestWithParam<TestParameter> {
+class DataFormatTest : public testing::TestWithParam<DataFormatTestParameter> {
 public:
   void SetUp() override {
     tested_ = GetParam().tested_;
@@ -29,7 +30,7 @@ public:
   }
 
   DataFormatPtr tested_;
-  TestExpectationsPtr expected_;
+  DataFormatTestExpectationsPtr expected_;
 };
 
 TEST_P(DataFormatTest, returnsCorrectDataType) {
@@ -147,8 +148,8 @@ TEST_P(DataFormatTest, UnsuportedDataType) {
 }
 
 struct GenerateTestName {
-  string
-  operator()(const testing::TestParamInfo<TestParameter> &parameter) const {
+  string operator()(
+      const testing::TestParamInfo<DataFormatTestParameter> &parameter) const {
     auto name = toString(parameter.param.tested_->media_type_) +
                 toString(parameter.param.tested_->data_type_);
     name.erase(remove_if(name.begin(), name.end(), ::isspace), name.end());
@@ -156,50 +157,52 @@ struct GenerateTestName {
   }
 };
 
-TestParameter makeTestParameter(const TestExpectations &valid_expectations) {
+DataFormatTestParameter
+makeTestParameter(const DataFormatTestExpectations &valid_expectations) {
   auto data = make_shared<DataFormat>(valid_expectations.data_,
                                       valid_expectations.data_type_,
                                       valid_expectations.media_type_);
-  auto expectations = make_shared<TestExpectations>(valid_expectations);
+  auto expectations =
+      make_shared<DataFormatTestExpectations>(valid_expectations);
 
-  return TestParameter(move(data), move(expectations));
+  return DataFormatTestParameter(move(data), move(expectations));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     DataFormatTests, DataFormatTest,
-    testing::Values(makeTestParameter(TestExpectations{
+    testing::Values(makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant(),
                         .data_type_ = DataType::NONE,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant(string("Hello")),
                         .data_type_ = DataType::STRING,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant((int64_t)-10),
                         .data_type_ = DataType::SIGNED_INTEGER,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant((uint64_t)20),
                         .data_type_ = DataType::UNSIGNED_INTEGER,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant((double)30.2),
                         .data_type_ = DataType::FLOAT,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant((bool)true),
                         .data_type_ = DataType::BOOLEAN,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}),
                         .data_type_ = DataType::OPAQUE,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant((uint64_t)2),
                         .data_type_ = DataType::TIME,
                         .media_type_ = MediaType::NOT_SPECIFIED}),
-                    makeTestParameter(TestExpectations{
+                    makeTestParameter(DataFormatTestExpectations{
                         .data_ = DataVariant(ObjectLink(0, 0)),
                         .data_type_ = DataType::OBJECT_LINK,
                         .media_type_ = MediaType::NOT_SPECIFIED})),

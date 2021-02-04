@@ -30,7 +30,7 @@
 using namespace std;
 using namespace LwM2M;
 
-struct TestExpectations {
+struct MessageTestExpectations {
   const EndpointPtr endpoint_;
   const MessageType message_type_;
   const InterfaceType interface_;
@@ -39,17 +39,17 @@ struct TestExpectations {
   const bool notification_;
 };
 
-using TestExpectationsPtr = shared_ptr<TestExpectations>;
+using TestExpectationsPtr = shared_ptr<MessageTestExpectations>;
 
-struct TestParameter {
+struct MessageTestParameter {
   MessagePtr tested_;
   TestExpectationsPtr expected_;
 
-  TestParameter(MessagePtr tested, TestExpectationsPtr expected)
+  MessageTestParameter(MessagePtr tested, TestExpectationsPtr expected)
       : tested_(tested), expected_(expected) {}
 };
 
-class MessageTest : public testing::TestWithParam<TestParameter> {
+class MessageTest : public testing::TestWithParam<MessageTestParameter> {
 public:
   void SetUp() override {
     tested_ = GetParam().tested_;
@@ -81,8 +81,8 @@ TEST_P(MessageTest, returnsCorrectInterfaceType) {
 }
 
 struct GenerateTestName {
-  string
-  operator()(const testing::TestParamInfo<TestParameter> &parameter) const {
+  string operator()(
+      const testing::TestParamInfo<MessageTestParameter> &parameter) const {
     return parameter.param.tested_->name();
   }
 };
@@ -90,7 +90,8 @@ struct GenerateTestName {
 EndpointPtr tested_endpoint = make_shared<Endpoint>();
 
 template <typename T>
-TestParameter makeTestParameter(const TestExpectations &valid_expectations) {
+MessageTestParameter
+makeTestParameter(const MessageTestExpectations &valid_expectations) {
   assert((is_base_of<Message, T>::value));
 
   shared_ptr<T> message;
@@ -102,51 +103,51 @@ TestParameter makeTestParameter(const TestExpectations &valid_expectations) {
          << " message test. Exception was: " << ex.what() << endl;
     throw ex;
   }
-  auto expectations = make_shared<TestExpectations>(valid_expectations);
+  auto expectations = make_shared<MessageTestExpectations>(valid_expectations);
 
-  return TestParameter(move(message), move(expectations));
+  return MessageTestParameter(move(message), move(expectations));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     BaseFieldTests, MessageTest,
     testing::Values(
         // Registration Messages
-        makeTestParameter<RegisterRequest>(TestExpectations{
+        makeTestParameter<RegisterRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::REGISTER,
             .interface_ = InterfaceType::REGISTRATION,
             .response_ = false,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<RegisterResponse>(TestExpectations{
+        makeTestParameter<RegisterResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::REGISTER,
             .interface_ = InterfaceType::REGISTRATION,
             .response_ = true,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<UpdateRequest>(TestExpectations{
+        makeTestParameter<UpdateRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::UPDATE,
             .interface_ = InterfaceType::REGISTRATION,
             .response_ = false,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<UpdateResponse>(TestExpectations{
+        makeTestParameter<UpdateResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::UPDATE,
             .interface_ = InterfaceType::REGISTRATION,
             .response_ = true,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<DeregisterRequest>(TestExpectations{
+        makeTestParameter<DeregisterRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::DEREGISTER,
             .interface_ = InterfaceType::REGISTRATION,
             .response_ = false,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<DeregisterResponse>(TestExpectations{
+        makeTestParameter<DeregisterResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::DEREGISTER,
             .interface_ = InterfaceType::REGISTRATION,
@@ -154,126 +155,126 @@ INSTANTIATE_TEST_SUITE_P(
             .incomming_ = false,
             .notification_ = false}),
         // Device managment Messages
-        makeTestParameter<CreateRequest>(TestExpectations{
+        makeTestParameter<CreateRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::CREATE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<CreateResponse>(TestExpectations{
+        makeTestParameter<CreateResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::CREATE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<DeleteRequest>(TestExpectations{
+        makeTestParameter<DeleteRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::DELETE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<DeleteResponse>(TestExpectations{
+        makeTestParameter<DeleteResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::DELETE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<DiscoverRequest>(TestExpectations{
+        makeTestParameter<DiscoverRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::DISCOVER,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<DiscoverResponse>(TestExpectations{
+        makeTestParameter<DiscoverResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::DISCOVER,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<ExecuteRequest>(TestExpectations{
+        makeTestParameter<ExecuteRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::EXECUTE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ExecuteResponse>(TestExpectations{
+        makeTestParameter<ExecuteResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::EXECUTE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<ReadRequest>(TestExpectations{
+        makeTestParameter<ReadRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::READ,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ReadResponse>(TestExpectations{
+        makeTestParameter<ReadResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::READ,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<ReadComopositeRequest>(TestExpectations{
+        makeTestParameter<ReadComopositeRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::READ_COMPOSITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ReadComopositeResponse>(TestExpectations{
+        makeTestParameter<ReadComopositeResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::READ_COMPOSITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<WriteRequest>(TestExpectations{
+        makeTestParameter<WriteRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<WriteResponse>(TestExpectations{
+        makeTestParameter<WriteResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<WriteAttributesRequest>(TestExpectations{
+        makeTestParameter<WriteAttributesRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE_ATTRIBUTES,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<WriteAttributesResponse>(TestExpectations{
+        makeTestParameter<WriteAttributesResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE_ATTRIBUTES,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<WriteComopositeRequest>(TestExpectations{
+        makeTestParameter<WriteComopositeRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE_COMPOSITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<WriteComopositeResponse>(TestExpectations{
+        makeTestParameter<WriteComopositeResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE_COMPOSITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
@@ -281,81 +282,83 @@ INSTANTIATE_TEST_SUITE_P(
             .incomming_ = true,
             .notification_ = false}),
         // Information Reporting Messages
-        makeTestParameter<ObserveRequest>(TestExpectations{
+        makeTestParameter<ObserveRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::OBSERVE,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ObservResponse>(TestExpectations{
+        makeTestParameter<ObservResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::OBSERVE,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<ObserveCompositeRequest>(TestExpectations{
+        makeTestParameter<ObserveCompositeRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::OBSERVE_COMPOSITE,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ObserveCompositeResponse>(TestExpectations{
+        makeTestParameter<ObserveCompositeResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::OBSERVE_COMPOSITE,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<ValueUpdated>(TestExpectations{
+        makeTestParameter<ValueUpdated>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::NOTIFY,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = false,
             .incomming_ = true,
             .notification_ = true}),
-        makeTestParameter<SendRequest>(TestExpectations{
+        makeTestParameter<SendRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::SEND,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = false,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<SendResponse>(TestExpectations{
+        makeTestParameter<SendResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::SEND,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = true,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<CancelObservationRequest>(TestExpectations{
+        makeTestParameter<CancelObservationRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::CANCEL_OBSERVATION,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<CancelObservationResponse>(TestExpectations{
+        makeTestParameter<CancelObservationResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::CANCEL_OBSERVATION,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = true,
             .incomming_ = true,
             .notification_ = false}),
-        makeTestParameter<CancelObserveCompositeRequest>(TestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::CANCEL_OBSERVATION_COMPOSITE,
-            .interface_ = InterfaceType::INFORMATION_REPORTING,
-            .response_ = false,
-            .incomming_ = false,
-            .notification_ = false}),
-        makeTestParameter<CancelObserveCompositeResponse>(TestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::CANCEL_OBSERVATION_COMPOSITE,
-            .interface_ = InterfaceType::INFORMATION_REPORTING,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false})),
+        makeTestParameter<CancelObserveCompositeRequest>(
+            MessageTestExpectations{
+                .endpoint_ = tested_endpoint,
+                .message_type_ = MessageType::CANCEL_OBSERVATION_COMPOSITE,
+                .interface_ = InterfaceType::INFORMATION_REPORTING,
+                .response_ = false,
+                .incomming_ = false,
+                .notification_ = false}),
+        makeTestParameter<CancelObserveCompositeResponse>(
+            MessageTestExpectations{
+                .endpoint_ = tested_endpoint,
+                .message_type_ = MessageType::CANCEL_OBSERVATION_COMPOSITE,
+                .interface_ = InterfaceType::INFORMATION_REPORTING,
+                .response_ = true,
+                .incomming_ = true,
+                .notification_ = false})),
     GenerateTestName());
