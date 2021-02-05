@@ -34,6 +34,8 @@ public:
   ResourceVariant getResource(uint32_t id);
   Resources getResources();
 };
+
+using ObjectInstacePtr = std::shared_ptr<ObjectInstance>;
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_OBJECT_INSTANCE_HPP

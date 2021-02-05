@@ -10,8 +10,6 @@
 
 namespace LwM2M {
 
-using ResourceDescriptorPtr = std::shared_ptr<ResourceDescriptor>;
-
 struct UnsupportedMethod : public std::runtime_error {
   UnsupportedMethod(std::string const &message) : std::runtime_error(message) {}
 };

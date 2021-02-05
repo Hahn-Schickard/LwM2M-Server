@@ -5,6 +5,7 @@
 #include "RangeEnumeration.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -53,6 +54,8 @@ struct ResourceDescriptor {
                      DataType data_type, RangeEnumeration range_enumeration,
                      std::string units, std::string description);
 };
+
+using ResourceDescriptorPtr = std::shared_ptr<ResourceDescriptor>;
 
 } // namespace LwM2M
 #endif //__LWM2M_MODEL_RESOURCE_DESCRIPTOR_HPP

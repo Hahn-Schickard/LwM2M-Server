@@ -12,10 +12,9 @@
 
 namespace LwM2M {
 
-using ObjectPtr = std::shared_ptr<Object>;
 using ObjectsMap = std::unordered_map<uint32_t, ObjectPtr>;
 using ObjectDescriptorPair =
-    std::pair<std::shared_ptr<ObjectDescriptor>, std::vector<uint32_t>>;
+    std::pair<ObjectDescriptorPtr, std::vector<uint32_t>>;
 using ObjectDescriptorsMap = std::unordered_map<uint32_t, ObjectDescriptorPair>;
 
 class Device {
