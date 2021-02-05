@@ -4,6 +4,7 @@ set(THIS Unit_Tests_Runner)
 
 file(GLOB Generic_Messages_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Messages/*")
 file(GLOB Registration_Messages_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Messages/Registration_Messages/*")
+file(GLOB Device_Model_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Device_Model/*")
 file(GLOB XML_Parser_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/XML_Parser/*")
 
 find_package(GTest REQUIRED)
@@ -13,11 +14,13 @@ target_sources(${THIS} PRIVATE
                        "testRunner.cpp"
                        ${Generic_Messages_Test_Suite}
                        ${Registration_Messages_Test_Suite}
+                       ${Device_Model_Test_Suite}
 )
 
 target_link_libraries(${THIS} PUBLIC
                               GTest::GTest
                               Messages
+                              Device_Model
 )
 
 add_test(
