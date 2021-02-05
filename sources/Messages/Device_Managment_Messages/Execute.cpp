@@ -9,7 +9,7 @@ ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target)
       target_(target) {}
 
 ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target,
-                               vector<DataFormatPtr> arguments)
+                               vector<DataVariant> arguments)
     : ServerRequest(endpoint, MessageType::EXECUTE,
                     InterfaceType::DEVICE_MANAGMENT),
       target_(target), arguments_(arguments) {}
