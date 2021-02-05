@@ -8,6 +8,7 @@ namespace LwM2M {
 struct ObjectID {
   const uint32_t id_;
 
+  ObjectID() : id_(0) {}
   ObjectID(uint32_t id) : id_(id) {}
 };
 
@@ -15,6 +16,7 @@ struct ObjectInstanceID {
   const ObjectID object_;
   const uint32_t id_;
 
+  ObjectInstanceID() : object_(), id_(0) {}
   ObjectInstanceID(ObjectID object_id, uint32_t instance_id)
       : object_(object_id), id_(instance_id) {}
 
@@ -26,6 +28,7 @@ struct ResourceID {
   const ObjectInstanceID object_instance_;
   const uint32_t id_;
 
+  ResourceID() : object_instance_(), id_(0) {}
   ResourceID(ObjectInstanceID object_instance_id, uint32_t resource_id)
       : object_instance_(object_instance_id), id_(resource_id) {}
 
@@ -44,6 +47,7 @@ struct ResourceInstanceID {
   const ResourceID resource_;
   const uint32_t id_;
 
+  ResourceInstanceID() : resource_(), id_(0) {}
   ResourceInstanceID(ResourceID resource_id, uint32_t resource_instance_id)
       : resource_(resource_id), id_(resource_instance_id) {}
 
