@@ -12,11 +12,11 @@ string generateDeviceID(string name, EndpointPtr endpoint) {
   return to_string(result);
 }
 
-Device::Device(EndpointPtr endpoint,
+Device::Device(RequesterPtr requester, EndpointPtr endpoint,
                ObjectDescriptorsMap object_descriptors_map, size_t life_time,
                string name, LwM2M_Version version, BindingType binding,
                bool queue_mode)
-    : endpoint_(endpoint), life_time_(life_time),
+    : requester_(requester), endpoint_(endpoint), life_time_(life_time),
       device_id_(generateDeviceID(name, endpoint_)), name_(name),
       version_(version), binding_(binding), queue_mode_(queue_mode) {
   makeObjects(object_descriptors_map);
@@ -25,8 +25,9 @@ Device::Device(EndpointPtr endpoint,
 void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
   for (auto object_descriptor_pair : object_descriptors_map) {
     auto object_instance_pair = object_descriptor_pair.second;
-    auto object = make_shared<Object>(endpoint_, object_instance_pair.second,
-                                      object_instance_pair.first);
+    auto object =
+        make_shared<Object>(requester_, endpoint_, object_instance_pair.second,
+                            object_instance_pair.first);
     object_instances_.emplace(object_descriptor_pair.first, move(object));
   }
 }

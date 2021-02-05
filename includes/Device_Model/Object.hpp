@@ -4,6 +4,7 @@
 #include "Endpoint.hpp"
 #include "ObjectDescriptor.hpp"
 #include "ObjectInstance.hpp"
+#include "Requester.hpp"
 #include "Resource.hpp"
 
 #include <memory>
@@ -16,13 +17,14 @@ using ObjectInstacePtr = std::shared_ptr<ObjectInstance>;
 using ObjectInstances = std::unordered_map<uint32_t, ObjectInstacePtr>;
 
 class Object {
+  RequesterPtr requester_;
   EndpointPtr endpoint_;
   ObjectInstances instances_;
   ObjectDescriptorPtr descriptor_;
 
 public:
-  Object(EndpointPtr endpoint, std::vector<uint32_t> instances,
-         ObjectDescriptorPtr descriptor);
+  Object(RequesterPtr requester, EndpointPtr endpoint,
+         std::vector<uint32_t> instances, ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();
   ObjectInstances getInstances();

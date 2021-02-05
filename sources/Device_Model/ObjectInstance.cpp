@@ -1,93 +1,85 @@
 #include "ObjectInstance.hpp"
 
+#include "Executable.hpp"
+#include "ReadAndWritable.hpp"
+#include "Readable.hpp"
+#include "Writable.hpp"
+
 using namespace std;
 
 namespace LwM2M {
 
 template <typename T>
 shared_ptr<Resource<T>>
-makeResourcePtr(EndpointPtr endpoint, uint32_t parent_id, uint32_t instance_id,
-                ResourceDescriptorPtr descriptor) {
+makeResourcePtr(RequesterPtr requester, EndpointPtr endpoint,
+                ObjectInstanceID id, ResourceDescriptorPtr descriptor) {
   switch (descriptor->operations_) {
   case OperationsType::READ: {
-    return make_shared<Readable<T>>(endpoint, parent_id, instance_id,
-                                    descriptor);
+    return make_shared<Readable<T>>(requester, endpoint, id, descriptor);
   }
   case OperationsType::WRITE: {
-    return make_shared<Writable<T>>(endpoint, parent_id, instance_id,
-                                    descriptor);
+    return make_shared<Writable<T>>(requester, endpoint, id, descriptor);
   }
   case OperationsType::READ_AND_WRITE: {
-    return make_shared<ReadAndWritable<T>>(endpoint, parent_id, instance_id,
-                                           descriptor);
+    return make_shared<ReadAndWritable<T>>(requester, endpoint, id, descriptor);
   }
   case OperationsType::EXECUTE: {
-    return make_shared<Executable<T>>(endpoint, parent_id, instance_id,
-                                      descriptor);
+    return make_shared<Executable<T>>(requester, endpoint, id, descriptor);
   }
   case OperationsType::NO_OPERATION:
-  default: {
-    return make_shared<Resource<T>>(endpoint, parent_id, instance_id,
-                                    descriptor);
-  }
+  default: { return make_shared<Resource<T>>(); }
   }
 }
 
 ObjectInstance::ObjectInstance(
-    EndpointPtr endpoint, uint32_t parent_id, uint32_t instance_id,
+    RequesterPtr requester, EndpointPtr endpoint, ObjectInstanceID id,
     unordered_map<uint32_t, shared_ptr<ResourceDescriptor>>
         resource_descriptors)
-    : endpoint_(endpoint), parent_id_(parent_id), instance_id_(instance_id) {
+    : requester_(requester), endpoint_(endpoint), id_(id) {
   for (auto resource_pair : resource_descriptors) {
     switch (resource_pair.second->data_type_) {
     case DataType::FLOAT: {
       resources_.emplace(resource_pair.first,
-                         makeResourcePtr<double>(endpoint, parent_id_,
-                                                 instance_id_,
+                         makeResourcePtr<double>(requester_, endpoint, id_,
                                                  resource_pair.second));
       break;
     }
     case DataType::SIGNED_INTEGER: {
       resources_.emplace(resource_pair.first,
-                         makeResourcePtr<int64_t>(endpoint, parent_id_,
-                                                  instance_id_,
+                         makeResourcePtr<int64_t>(requester_, endpoint, id_,
                                                   resource_pair.second));
       break;
     }
     case DataType::OBJECT_LINK: {
       resources_.emplace(resource_pair.first,
-                         makeResourcePtr<ObjectLink>(endpoint, parent_id_,
-                                                     instance_id_,
+                         makeResourcePtr<ObjectLink>(requester_, endpoint, id_,
                                                      resource_pair.second));
       break;
     }
     case DataType::OPAQUE: {
-      resources_.emplace(
-          resource_pair.first,
-          makeResourcePtr<vector<uint8_t>>(endpoint, parent_id_, instance_id_,
-                                           resource_pair.second));
+      resources_.emplace(resource_pair.first,
+                         makeResourcePtr<vector<uint8_t>>(
+                             requester_, endpoint, id_, resource_pair.second));
       break;
     }
     case DataType::STRING: {
       resources_.emplace(resource_pair.first,
-                         makeResourcePtr<string>(endpoint, parent_id_,
-                                                 instance_id_,
+                         makeResourcePtr<string>(requester_, endpoint, id_,
                                                  resource_pair.second));
       break;
     }
-    case DataType::TIME: {
+    case DataType::TIME:
+    case DataType::UNSIGNED_INTEGER: {
       resources_.emplace(resource_pair.first,
-                         makeResourcePtr<time_t>(endpoint, parent_id_,
-                                                 instance_id_,
-                                                 resource_pair.second));
+                         makeResourcePtr<uint64_t>(requester_, endpoint, id_,
+                                                   resource_pair.second));
       break;
     }
     case DataType::BOOLEAN:
     case DataType::NONE:
     default: {
       resources_.emplace(resource_pair.first,
-                         makeResourcePtr<bool>(endpoint, parent_id_,
-                                               instance_id_,
+                         makeResourcePtr<bool>(requester_, endpoint, id_,
                                                resource_pair.second));
       break;
     }

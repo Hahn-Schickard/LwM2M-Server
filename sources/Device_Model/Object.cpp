@@ -4,13 +4,15 @@ using namespace std;
 
 namespace LwM2M {
 
-Object::Object(EndpointPtr endpoint, vector<uint32_t> instances,
-               ObjectDescriptorPtr descriptor)
-    : endpoint_(endpoint), descriptor_(descriptor) {
+Object::Object(RequesterPtr requester, EndpointPtr endpoint,
+               vector<uint32_t> instances, ObjectDescriptorPtr descriptor)
+    : requester_(requester), endpoint_(endpoint), descriptor_(descriptor) {
   for (auto instance : instances) {
-    instances_.emplace(instance, make_shared<ObjectInstance>(
-                                     endpoint, descriptor->id_, instance,
-                                     descriptor_->resources_));
+    instances_.emplace(
+        instance,
+        make_shared<ObjectInstance>(requester_, endpoint,
+                                    ObjectInstanceID(descriptor->id_, instance),
+                                    descriptor_->resources_));
   }
 }
 

@@ -2,7 +2,9 @@
 #define __LWM2M_MODEL_OBJECT_INSTANCE_HPP
 
 #include "DataFormat.hpp"
+#include "ElementID.hpp"
 #include "Endpoint.hpp"
+#include "Requester.hpp"
 #include "Resource.hpp"
 
 #include <memory>
@@ -11,22 +13,21 @@
 #include <vector>
 
 namespace LwM2M {
-using ResourceVariant = std::variant<
-    std::shared_ptr<Resource<bool>>, std::shared_ptr<Resource<int64_t>>,
-    std::shared_ptr<Resource<double>>, std::shared_ptr<Resource<std::string>>,
-    std::shared_ptr<Resource<uint64_t>>, std::shared_ptr<Resource<ObjectLink>>,
-    std::shared_ptr<Resource<std::vector<uint8_t>>>>;
+using ResourceVariant =
+    std::variant<ResourcePtr<bool>, ResourcePtr<int64_t>, ResourcePtr<double>,
+                 ResourcePtr<std::string>, ResourcePtr<uint64_t>,
+                 ResourcePtr<ObjectLink>, ResourcePtr<std::vector<uint8_t>>>;
 using Resources = std::unordered_map<uint32_t, ResourceVariant>;
 
 class ObjectInstance {
+  RequesterPtr requester_;
   EndpointPtr endpoint_;
-  uint32_t parent_id_;
-  uint32_t instance_id_;
+  ObjectInstanceID id_;
   Resources resources_;
 
 public:
   ObjectInstance(
-      EndpointPtr endpoint, uint32_t parent_id_, uint32_t instance_id,
+      RequesterPtr requester, EndpointPtr endpoint, ObjectInstanceID id,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
 

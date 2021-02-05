@@ -5,6 +5,7 @@
 #include "ModelType.hpp"
 #include "Object.hpp"
 #include "ObjectDescriptor.hpp"
+#include "Requester.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -18,7 +19,8 @@ using ObjectDescriptorPair =
 using ObjectDescriptorsMap = std::unordered_map<uint32_t, ObjectDescriptorPair>;
 
 class Device {
-  const EndpointPtr endpoint_;
+  RequesterPtr requester_;
+  EndpointPtr endpoint_;
   ObjectsMap object_instances_;
   size_t life_time_;
   std::string device_id_;
@@ -31,8 +33,9 @@ class Device {
 
 public:
   Device() = default;
-  Device(EndpointPtr endpoint, ObjectDescriptorsMap object_descriptors_map,
-         size_t life_time, std::string name = std::string(),
+  Device(RequesterPtr requester, EndpointPtr endpoint,
+         ObjectDescriptorsMap object_descriptors_map, size_t life_time,
+         std::string name = std::string(),
          LwM2M_Version version = LwM2M_Version::V1_0,
          BindingType binding = BindingType::UDP, bool queue_mode = false);
 
