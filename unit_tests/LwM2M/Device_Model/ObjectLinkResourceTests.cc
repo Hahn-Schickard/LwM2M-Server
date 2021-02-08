@@ -25,18 +25,10 @@ TEST_P(ObjectLinkResourceTest, canReadValue) {
       auto result = tested_->read();
       auto expected = expected_->result_;
 
-      auto delay_executed =
-          async(std::launch::async,
-                RespondWithDelay<DataFormat>(expected_->requester_,
-                                             response_delay_ms, expected));
-
-      auto status =
-          delay_executed.wait_for(chrono::milliseconds(response_delay_ms + 1));
-      if (status == std::future_status::timeout) {
-        FAIL() << "Response was not sent in time" << endl;
-      } else {
-        EXPECT_EQ(result.get(), expected.get<ObjectLink>());
-      }
+      async(std::launch::async,
+            RespondWithDelay<DataFormat>(expected_->requester_,
+                                         response_delay_ms, expected));
+      EXPECT_EQ(result.get(), expected.get<ObjectLink>());
     });
   } else {
     EXPECT_THROW({ tested_->read(); }, UnsupportedMethod);
@@ -50,18 +42,10 @@ TEST_P(ObjectLinkResourceTest, canWriteValue) {
       auto result = tested_->write(true);
       auto expected = true;
 
-      auto delay_executed =
-          async(std::launch::async,
-                RespondWithDelay<bool>(expected_->requester_, response_delay_ms,
-                                       expected));
-
-      auto status =
-          delay_executed.wait_for(chrono::milliseconds(response_delay_ms + 1));
-      if (status == std::future_status::timeout) {
-        FAIL() << "Response was not sent in time" << endl;
-      } else {
-        EXPECT_TRUE(result.get());
-      }
+      async(std::launch::async,
+            RespondWithDelay<bool>(expected_->requester_, response_delay_ms,
+                                   expected));
+      EXPECT_TRUE(result.get());
     });
   } else {
     EXPECT_THROW({ tested_->write(DataVariant()); }, UnsupportedMethod);
@@ -74,18 +58,10 @@ TEST_P(ObjectLinkResourceTest, canExecuteAction) {
       auto result = tested_->execute();
       auto expected = true;
 
-      auto delay_executed =
-          async(std::launch::async,
-                RespondWithDelay<bool>(expected_->requester_, response_delay_ms,
-                                       expected));
-
-      auto status =
-          delay_executed.wait_for(chrono::milliseconds(response_delay_ms + 1));
-      if (status == std::future_status::timeout) {
-        FAIL() << "Response was not sent in time" << endl;
-      } else {
-        EXPECT_TRUE(result.get());
-      }
+      async(std::launch::async,
+            RespondWithDelay<bool>(expected_->requester_, response_delay_ms,
+                                   expected));
+      EXPECT_TRUE(result.get());
     });
   } else {
     EXPECT_THROW({ tested_->execute(); }, UnsupportedMethod);
