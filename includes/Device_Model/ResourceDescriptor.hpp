@@ -26,6 +26,8 @@ enum class OperationsType {
   EXECUTE
 };
 
+std::string toString(OperationsType operation);
+
 /**
  * @brief ResourceDescriptor - a representation of a single data point that is
  * modeled by the LwM2M Model

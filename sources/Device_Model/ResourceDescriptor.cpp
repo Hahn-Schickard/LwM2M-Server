@@ -5,6 +5,25 @@
 using namespace std;
 namespace LwM2M {
 
+string toString(OperationsType operation) {
+  switch (operation) {
+  case OperationsType::READ: {
+    return "Read";
+  }
+  case OperationsType::WRITE: {
+    return "Write";
+  }
+  case OperationsType::READ_AND_WRITE: {
+    return "Read and Write";
+  }
+  case OperationsType::EXECUTE: {
+    return "Execute";
+  }
+  case OperationsType::NO_OPERATION:
+  default: { return "No Operation"; }
+  }
+}
+
 ResourceDescriptor::ResourceDescriptor(const ResourceDescriptor &instance)
     : id_(instance.id_), name_(instance.name_),
       operations_(instance.operations_),
