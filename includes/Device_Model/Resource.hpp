@@ -51,7 +51,8 @@ public:
   virtual std::future<bool> write(T /*value*/) {
     throw UnsupportedMethod("This resource is not Writable!");
   }
-  virtual std::future<bool> execute(std::vector<DataVariant> /*arguments*/) {
+  virtual std::future<bool>
+  execute(std::vector<DataVariant> /*arguments*/ = std::vector<DataVariant>()) {
     throw UnsupportedMethod("This resource is not Executable!");
   }
 };
