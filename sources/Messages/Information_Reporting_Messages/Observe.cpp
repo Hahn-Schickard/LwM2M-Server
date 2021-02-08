@@ -11,8 +11,9 @@ ObserveRequest::ObserveRequest(EndpointPtr endpoint, ElmentIdVariant target_id)
 
 string ObserveRequest::name() { return "ObserveRequest"; }
 
-ObservResponse::ObservResponse(EndpointPtr endpoint, ResponseCode response_code,
-                               DataFormatPtr content)
+ObserveResponse::ObserveResponse(EndpointPtr endpoint,
+                                 ResponseCode response_code,
+                                 DataFormatPtr content)
     : ClientResponse(endpoint, MessageType::OBSERVE,
                      InterfaceType::INFORMATION_REPORTING,
                      unordered_set<ResponseCode>{
@@ -24,6 +25,6 @@ ObservResponse::ObservResponse(EndpointPtr endpoint, ResponseCode response_code,
   checkResponseCode(response_code);
 }
 
-string ObservResponse::name() { return "ObservResponse"; }
+string ObserveResponse::name() { return "ObserveResponse"; }
 
 } // namespace LwM2M

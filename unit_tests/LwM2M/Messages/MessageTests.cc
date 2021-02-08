@@ -289,7 +289,7 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ObservResponse>(MessageTestExpectations{
+        makeTestParameter<ObserveResponse>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::OBSERVE,
             .interface_ = InterfaceType::INFORMATION_REPORTING,

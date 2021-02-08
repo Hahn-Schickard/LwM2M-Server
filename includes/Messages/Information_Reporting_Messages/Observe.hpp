@@ -32,17 +32,17 @@ using ObserveRequestPtr = std::shared_ptr<ObserveRequest>;
  * - ResponseCode::METHOD_NOT_ALLOWED - Target LwM2M::ElmentIdVariant is not
  * allowed to use Cancel Observe operation.
  */
-struct ObservResponse : ClientResponse {
+struct ObserveResponse : ClientResponse {
   const DataFormatPtr content_;
 
-  ObservResponse(EndpointPtr endpoint,
-                 ResponseCode response_code = ResponseCode::BAD_REQUEST,
-                 DataFormatPtr content = DataFormatPtr());
+  ObserveResponse(EndpointPtr endpoint,
+                  ResponseCode response_code = ResponseCode::BAD_REQUEST,
+                  DataFormatPtr content = DataFormatPtr());
 
   std::string name() override final;
 };
 
-using ObservResponsePtr = std::shared_ptr<ObservResponse>;
+using ObservResponsePtr = std::shared_ptr<ObserveResponse>;
 } // namespace LwM2M
 
 #endif //__LWM2M_INFORMATION_REPORTING_INTERFACE_OBSERVE_MESSAGE_HPP
