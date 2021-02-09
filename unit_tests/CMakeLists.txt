@@ -15,6 +15,7 @@ target_sources(${THIS} PRIVATE
                        ${Generic_Messages_Test_Suite}
                        ${Registration_Messages_Test_Suite}
                        ${Device_Model_Test_Suite}
+                       ${XML_Parser_Test_Suite}
 )
 
 target_link_libraries(${THIS} PUBLIC
@@ -22,6 +23,7 @@ target_link_libraries(${THIS} PUBLIC
                               Variant_Visitor::Variant_Visitor
                               Messages
                               Device_Model
+                              XML_Parser
 )
 
 add_test(

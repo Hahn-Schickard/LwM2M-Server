@@ -98,7 +98,7 @@ DataType converDataType(string value) {
   if (value == "String") {
     result = DataType::STRING;
   } else if (value == "Integer") {
-    result = DataType::INTEGER;
+    result = DataType::SIGNED_INTEGER;
   } else if (value == "Float") {
     result = DataType::FLOAT;
   } else if (value == "Boolean") {
@@ -107,8 +107,12 @@ DataType converDataType(string value) {
     result = DataType::OPAQUE;
   } else if (value == "Time") {
     result = DataType::TIME;
-  } else if (value == "Objlnk") {
-    result = DataType::OBJECT_LINK;
+  } else if (value == "Time") {
+    result = DataType::TIME;
+  } else if (value == "Unsigned Integer") {
+    result = DataType::UNSIGNED_INTEGER;
+  } else if (value == "Corelnk") {
+    result = DataType::CORE_LINK;
   } else {
     result = DataType::NONE;
   }
@@ -122,7 +126,7 @@ optional<RangeEnumeration> getRangeEnumeration(xml_node resource_node) {
   return nullopt;
 }
 
-shared_ptr<ResourceDescriptor> deserializeResource(xml_node resource_node) {
+ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
   try {
     uint32_t resource_id;
     if (resource_node.attribute("ID").hash_value()) {
@@ -163,7 +167,7 @@ shared_ptr<ResourceDescriptor> deserializeResource(xml_node resource_node) {
   }
 }
 
-shared_ptr<ObjectDescriptor> deserializeObject(xml_node object_node) {
+ObjectDescriptorPtr deserializeObject(xml_node object_node) {
   try {
     auto object_name = getChildValue<string>(object_node, "Name");
     auto object_description =
