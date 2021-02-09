@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 3.6) 
-
-add_subdirectory(Core)
-add_subdirectory(RegistrationMessages)
-add_subdirectory(DeviceManagmentMessages)
-add_subdirectory(InformationReportingMessages)

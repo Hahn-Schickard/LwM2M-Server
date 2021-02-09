@@ -10,9 +10,8 @@ class PackageConan(ConanFile):
     topics = ("lwm2m", "server", "coap")
     build_requires = "gtest/1.10.0"
     requires = [
-        "asio/1.16.0",
         "HaSLL/0.2.2@hahn-schickard/stable",
-        "TDC4CPP17/0.1.0@hahn-schickard/stable",
+        "CoAPS4Cpp/0.1.0@hahn-schickard/stable ",
         "Variant_Visitor/0.1.0@hahn-schickard/stable",
         "Stoppable/0.1.0@hahn-schickard/stable",
         "Event_Model/0.1.0@hahn-schickard/stable",

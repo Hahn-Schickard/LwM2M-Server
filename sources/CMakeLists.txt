@@ -1,4 +1,4 @@
-add_subdirectory(Utility)
-add_subdirectory(CoAP)
-add_subdirectory(LwM2M)
-add_subdirectory(Runner)
+cmake_minimum_required(VERSION 3.6) 
+
+add_subdirectory(Messages)
+add_subdirectory(Device_Model)

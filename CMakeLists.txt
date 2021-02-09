@@ -22,9 +22,8 @@ execute_conan_install()
 
 #@+ ======================== User PACKAGES configuration ===========================
 list(APPEND DEPENDENCIES_LIST 
-            asio
             HaSLL
-            TDC4CPP17
+            CoAPS4Cpp
             Variant_Visitor
             Stoppable
             Event_Model
