@@ -47,6 +47,8 @@ public:
   void updateLifetime(size_t life_time);
   void updateObjectsMap(ObjectDescriptorsMap object_instances);
 };
+
+using DevicePtr = std::shared_ptr<Device>;
 }; // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_HPP
