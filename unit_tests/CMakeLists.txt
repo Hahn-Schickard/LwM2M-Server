@@ -19,6 +19,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC
                               GTest::GTest
+                              Variant_Visitor::Variant_Visitor
                               Messages
                               Device_Model
 )
