@@ -89,7 +89,37 @@ const ResourceExpectations &BooleanReadable{
                                         true, DataType::BOOLEAN, "", ""),
     .result_ = DataFormat(DataVariant((bool)true), DataType::BOOLEAN)};
 
+const ResourceExpectations &BooleanWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE, false,
+                                        true, DataType::BOOLEAN, "", ""),
+    .result_ = DataFormat(DataVariant((bool)true), DataType::BOOLEAN)};
+
+const ResourceExpectations &BooleanReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true,
+        DataType::BOOLEAN, "", ""),
+    .result_ = DataFormat(DataVariant((bool)true), DataType::BOOLEAN)};
+
+const ResourceExpectations &BooleanExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
+                                        false, true, DataType::BOOLEAN, "", ""),
+    .result_ = DataFormat(DataVariant((bool)true), DataType::BOOLEAN)};
+
 INSTANTIATE_TEST_SUITE_P(
     BooleanResourceTests, BooleanResourceTest,
-    testing::Values(makeTestParameter<bool>(BooleanReadable)),
+    testing::Values(makeTestParameter<bool>(BooleanReadable),
+                    makeTestParameter<bool>(BooleanWritable),
+                    makeTestParameter<bool>(BooleanReadAndWritable),
+                    makeTestParameter<bool>(BooleanExecutable)),
     GenerateTestName());

@@ -90,7 +90,40 @@ const ResourceExpectations &SignedIntReadable{
     .result_ =
         DataFormat(DataVariant((int64_t)-100), DataType::SIGNED_INTEGER)};
 
+const ResourceExpectations &SignedIntWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE, false,
+                                        true, DataType::SIGNED_INTEGER, "", ""),
+    .result_ =
+        DataFormat(DataVariant((int64_t)-100), DataType::SIGNED_INTEGER)};
+
+const ResourceExpectations &SignedIntReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true,
+        DataType::SIGNED_INTEGER, "", ""),
+    .result_ =
+        DataFormat(DataVariant((int64_t)-100), DataType::SIGNED_INTEGER)};
+
+const ResourceExpectations &SignedIntExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::EXECUTE, false, true,
+        DataType::SIGNED_INTEGER, "", ""),
+    .result_ =
+        DataFormat(DataVariant((int64_t)-100), DataType::SIGNED_INTEGER)};
+
 INSTANTIATE_TEST_SUITE_P(
     SignedIntResourceTests, SignedIntResourceTest,
-    testing::Values(makeTestParameter<int64_t>(SignedIntReadable)),
+    testing::Values(makeTestParameter<int64_t>(SignedIntReadable),
+                    makeTestParameter<int64_t>(SignedIntWritable),
+                    makeTestParameter<int64_t>(SignedIntReadAndWritable),
+                    makeTestParameter<int64_t>(SignedIntExecutable)),
     GenerateTestName());

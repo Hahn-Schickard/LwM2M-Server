@@ -88,7 +88,36 @@ const ResourceExpectations &FlaotReadable{
         1, "Test", OperationsType::READ, false, true, DataType::FLOAT, "", ""),
     .result_ = DataFormat(DataVariant((double)52.4), DataType::FLOAT)};
 
+const ResourceExpectations &FloatWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::WRITE, false, true, DataType::FLOAT, "", ""),
+    .result_ = DataFormat(DataVariant((double)20.2), DataType::FLOAT)};
+
+const ResourceExpectations &FloatReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true, DataType::FLOAT,
+        "", ""),
+    .result_ = DataFormat(DataVariant((double)20.2), DataType::FLOAT)};
+
+const ResourceExpectations &FloatExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
+                                        false, true, DataType::FLOAT, "", ""),
+    .result_ = DataFormat(DataVariant((double)20.2), DataType::FLOAT)};
+
 INSTANTIATE_TEST_SUITE_P(
     FloatResourceTests, FloatResourceTest,
-    testing::Values(makeTestParameter<double>(FlaotReadable)),
+    testing::Values(makeTestParameter<double>(FlaotReadable),
+                    makeTestParameter<double>(FloatWritable),
+                    makeTestParameter<double>(FloatReadAndWritable),
+                    makeTestParameter<double>(FloatExecutable)),
     GenerateTestName());

@@ -90,6 +90,36 @@ const ResourceExpectations &UnsignedIntReadable{
     .result_ =
         DataFormat(DataVariant((uint64_t)26), DataType::UNSIGNED_INTEGER)};
 
+const ResourceExpectations &UnsignedIntWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::WRITE, false, true,
+        DataType::UNSIGNED_INTEGER, "", ""),
+    .result_ =
+        DataFormat(DataVariant((uint64_t)26), DataType::UNSIGNED_INTEGER)};
+
+const ResourceExpectations &UnsignedIntReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true,
+        DataType::UNSIGNED_INTEGER, "", ""),
+    .result_ =
+        DataFormat(DataVariant((uint64_t)26), DataType::UNSIGNED_INTEGER)};
+
+const ResourceExpectations &UnsignedIntExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::EXECUTE, false, true,
+        DataType::UNSIGNED_INTEGER, "", ""),
+    .result_ =
+        DataFormat(DataVariant((uint64_t)26), DataType::UNSIGNED_INTEGER)};
+
 const ResourceExpectations &TimeReadable{
     .requester_ = test_requester,
     .endpoint_ = tested_endpoint,
@@ -99,7 +129,43 @@ const ResourceExpectations &TimeReadable{
     .result_ =
         DataFormat(DataVariant((uint64_t)12850912328012), DataType::TIME)};
 
+const ResourceExpectations &TimeWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::WRITE, false, true, DataType::TIME, "", ""),
+    .result_ =
+        DataFormat(DataVariant((uint64_t)12850912328012), DataType::TIME)};
+
+const ResourceExpectations &TimeReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true, DataType::TIME,
+        "", ""),
+    .result_ =
+        DataFormat(DataVariant((uint64_t)12850912328012), DataType::TIME)};
+
+const ResourceExpectations &TimeExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
+                                        false, true, DataType::TIME, "", ""),
+    .result_ =
+        DataFormat(DataVariant((uint64_t)12850912328012), DataType::TIME)};
+
 INSTANTIATE_TEST_SUITE_P(
     UnsignedIntResourceTests, UnsignedIntResourceTest,
-    testing::Values(makeTestParameter<uint64_t>(UnsignedIntReadable)),
+    testing::Values(makeTestParameter<uint64_t>(UnsignedIntReadable),
+                    makeTestParameter<uint64_t>(UnsignedIntWritable),
+                    makeTestParameter<uint64_t>(UnsignedIntReadAndWritable),
+                    makeTestParameter<uint64_t>(UnsignedIntExecutable),
+                    makeTestParameter<uint64_t>(TimeReadable),
+                    makeTestParameter<uint64_t>(TimeWritable),
+                    makeTestParameter<uint64_t>(TimeReadAndWritable),
+                    makeTestParameter<uint64_t>(TimeExecutable)),
     GenerateTestName());

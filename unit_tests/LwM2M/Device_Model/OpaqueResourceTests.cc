@@ -89,7 +89,40 @@ const ResourceExpectations &OpaqueReadable{
     .result_ = DataFormat(DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}),
                           DataType::OPAQUE)};
 
+const ResourceExpectations &OpaqueWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE, false,
+                                        true, DataType::OPAQUE, "", ""),
+    .result_ =
+        DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}), DataType::OPAQUE)};
+
+const ResourceExpectations &OpaqueReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true,
+        DataType::OPAQUE, "", ""),
+    .result_ =
+        DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}), DataType::OPAQUE)};
+
+const ResourceExpectations &OpaqueExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
+                                        false, true, DataType::OPAQUE, "", ""),
+    .result_ =
+        DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}), DataType::OPAQUE)};
+
 INSTANTIATE_TEST_SUITE_P(
     OpaqueResourceTests, OpaqueResourceTest,
-    testing::Values(makeTestParameter<vector<uint8_t>>(OpaqueReadable)),
+    testing::Values(makeTestParameter<vector<uint8_t>>(OpaqueReadable),
+                    makeTestParameter<vector<uint8_t>>(OpaqueWritable),
+                    makeTestParameter<vector<uint8_t>>(OpaqueReadAndWritable),
+                    makeTestParameter<vector<uint8_t>>(OpaqueExecutable)),
     GenerateTestName());

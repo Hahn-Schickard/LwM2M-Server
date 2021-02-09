@@ -88,7 +88,37 @@ const ResourceExpectations &StringReadable{
         1, "Test", OperationsType::READ, false, true, DataType::STRING, "", ""),
     .result_ = DataFormat(DataVariant((string) "Hello"), DataType::STRING)};
 
+const ResourceExpectations &StringWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE, false,
+                                        true, DataType::STRING, "", ""),
+    .result_ = DataFormat(DataVariant(string("hello")), DataType::STRING)};
+
+const ResourceExpectations &StringReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true,
+        DataType::STRING, "", ""),
+    .result_ = DataFormat(DataVariant(string("hello")), DataType::STRING)};
+
+const ResourceExpectations &StringExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
+                                        false, true, DataType::STRING, "", ""),
+    .result_ = DataFormat(DataVariant(string("hello")), DataType::STRING)};
+
 INSTANTIATE_TEST_SUITE_P(
     StringResourceTest, StringResourceTest,
-    testing::Values(makeTestParameter<string>(StringReadable)),
+    testing::Values(makeTestParameter<string>(StringReadable),
+                    makeTestParameter<string>(StringWritable),
+                    makeTestParameter<string>(StringReadAndWritable),
+                    makeTestParameter<string>(StringExecutable)),
     GenerateTestName());

@@ -90,7 +90,40 @@ const ResourceExpectations &ObjectLinkReadable{
     .result_ =
         DataFormat(DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK)};
 
+const ResourceExpectations &ObjectLinkWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ =
+        make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE, false,
+                                        true, DataType::OBJECT_LINK, "", ""),
+    .result_ =
+        DataFormat(DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK)};
+
+const ResourceExpectations &ObjectLinkReadAndWritable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::READ_AND_WRITE, false, true,
+        DataType::OBJECT_LINK, "", ""),
+    .result_ =
+        DataFormat(DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK)};
+
+const ResourceExpectations &ObjectLinkExecutable{
+    .requester_ = test_requester,
+    .endpoint_ = tested_endpoint,
+    .parent_ = ObjectInstanceID(0, 0),
+    .descriptor_ = make_shared<ResourceDescriptor>(
+        1, "Test", OperationsType::EXECUTE, false, true, DataType::OBJECT_LINK,
+        "", ""),
+    .result_ =
+        DataFormat(DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK)};
+
 INSTANTIATE_TEST_SUITE_P(
     ObjectLinkResourceTests, ObjectLinkResourceTest,
-    testing::Values(makeTestParameter<ObjectLink>(ObjectLinkReadable)),
+    testing::Values(makeTestParameter<ObjectLink>(ObjectLinkReadable),
+                    makeTestParameter<ObjectLink>(ObjectLinkWritable),
+                    makeTestParameter<ObjectLink>(ObjectLinkReadAndWritable),
+                    makeTestParameter<ObjectLink>(ObjectLinkExecutable)),
     GenerateTestName());
