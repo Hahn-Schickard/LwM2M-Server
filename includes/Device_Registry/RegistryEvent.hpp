@@ -1,7 +1,7 @@
 #ifndef __LWM2M_REGISTRATION_EVENT_HPP
 #define __LWM2M_REGISTRATION_EVENT_HPP
 
-#include "LwM2M_Device.hpp"
+#include "Device.hpp"
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@ enum class RegistryEventType { REGISTERED, UPDATED, DEREGISTERED };
 struct RegistryEvent {
   RegistryEventType type;
   std::string identifier;
-  std::shared_ptr<Device> device;
+  DevicePtr device;
 };
 
 } // namespace LwM2M
