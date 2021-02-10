@@ -6,11 +6,18 @@ list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/Binding_Interface
 )
 
+file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+
 INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
 
-add_library(${THIS} INTERFACE)
+add_library(${THIS})                
 
-target_link_libraries(${THIS} INTERFACE
+target_sources(${THIS} PRIVATE 
+                       ${THIS_INCLUDES}
+                       ${sources_list}
+)
+
+target_link_libraries(${THIS} PUBLIC 
                               Device_Registry
 )
 
@@ -20,7 +27,9 @@ target_include_directories(${THIS} INTERFACE
                            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/LwM2M>
 )
 
-target_compile_features(${THIS} INTERFACE cxx_std_17)
+target_compile_features(${THIS} PUBLIC cxx_std_17)
+
+PRINT_TARGET_PROPERTIES(${THIS})
 
 install(
     TARGETS ${THIS}
