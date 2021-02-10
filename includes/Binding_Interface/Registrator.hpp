@@ -25,6 +25,7 @@ public:
   DeregisterResponsePtr handleRquest(DeregisterRequestPtr request);
 };
 
+using RegistratorPtr = std::shared_ptr<Registrator>;
 } // namespace LwM2M
 
 #endif //__LWM2M_BINDING_REGISTRATOR_INTERFACE_HPP
