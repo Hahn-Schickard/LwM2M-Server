@@ -6,6 +6,7 @@ file(GLOB Generic_Messages_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Messages/
 file(GLOB Registration_Messages_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Messages/Registration_Messages/*")
 file(GLOB Device_Model_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Device_Model/*")
 file(GLOB XML_Parser_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/XML_Parser/*")
+file(GLOB Device_Registry_Test_Suite "${CMAKE_CURRENT_LIST_DIR}/LwM2M/Device_Registry/*")
 
 find_package(GTest REQUIRED)
 
@@ -16,6 +17,7 @@ target_sources(${THIS} PRIVATE
                        ${Registration_Messages_Test_Suite}
                        ${Device_Model_Test_Suite}
                        ${XML_Parser_Test_Suite}
+                       ${Device_Registry_Test_Suite}
 )
 
 target_link_libraries(${THIS} PUBLIC
@@ -24,6 +26,7 @@ target_link_libraries(${THIS} PUBLIC
                               Messages
                               Device_Model
                               XML_Parser
+                              Device_Registry
 )
 
 add_test(
