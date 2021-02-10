@@ -10,9 +10,13 @@ namespace LwM2M {
 enum class RegistryEventType { REGISTERED, UPDATED, DEREGISTERED };
 
 struct RegistryEvent {
-  RegistryEventType type;
-  std::string identifier;
-  DevicePtr device;
+  const RegistryEventType type_;
+  const std::string identifier_;
+  const DevicePtr device_;
+
+  RegistryEvent(RegistryEventType type, std::string identifier,
+                DevicePtr device = DevicePtr())
+      : type_(type), identifier_(identifier), device_(device) {}
 };
 
 } // namespace LwM2M

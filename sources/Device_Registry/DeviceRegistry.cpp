@@ -36,7 +36,7 @@ bool DeviceRegistry::isRegistered(std::string identifier) {
              : false;
 }
 
-void DeviceRegistry::registerDevice(DevicePtr new_device) {
+string DeviceRegistry::registerDevice(DevicePtr new_device) {
   if (isRegistered(new_device->getDeviceId())) {
     logger_->log(SeverityLevel::TRACE,
                  "Device {} with id {} already exists in the registry!",
@@ -47,8 +47,10 @@ void DeviceRegistry::registerDevice(DevicePtr new_device) {
   logger_->log(SeverityLevel::TRACE,
                "Device {} with id {} has been registered.",
                new_device->getName(), new_device->getDeviceId());
-  notify(make_shared<RegistryEvent>(RegistryEvent{
-      RegistryEventType::REGISTERED, new_device->getDeviceId(), new_device}));
+  notify(make_shared<RegistryEvent>(RegistryEventType::REGISTERED,
+                                    new_device->getDeviceId(), new_device));
+
+  return new_device->getDeviceId();
 }
 
 void DeviceRegistry::updateDevice(DevicePtr updated_device) {
@@ -57,9 +59,9 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
     it->second = updated_device;
     logger_->log(SeverityLevel::TRACE, "Device {} with id {} has been updated.",
                  updated_device->getName(), updated_device->getDeviceId());
-    notify(make_shared<RegistryEvent>(
-        RegistryEvent{RegistryEventType::UPDATED, updated_device->getDeviceId(),
-                      updated_device}));
+    notify(make_shared<RegistryEvent>(RegistryEventType::UPDATED,
+                                      updated_device->getDeviceId(),
+                                      updated_device));
   } else {
     throw DeviceNotFound(updated_device->getDeviceId());
   }
@@ -72,8 +74,8 @@ void DeviceRegistry::deregisterDevice(std::string identifier) {
     logger_->log(SeverityLevel::TRACE,
                  "Device with id {} has been removed from the registry.",
                  identifier);
-    notify(make_shared<RegistryEvent>(RegistryEvent{
-        RegistryEventType::DEREGISTERED, identifier, DevicePtr()}));
+    notify(make_shared<RegistryEvent>(RegistryEventType::DEREGISTERED,
+                                      identifier));
   } else {
     throw DeviceNotFound(identifier);
   }
