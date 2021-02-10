@@ -48,6 +48,8 @@ public:
    * first. Informs all registered Event_Model::EventListener<RegistryEvent>
    * instances that a new LwM2M::Device has been added to the registry.
    *
+   * @throw std::invalid_argument - if LwM2M::DevicePtr is nullptr
+   *
    * @param new_device
    */
   std::string registerDevice(DevicePtr new_device);
@@ -60,6 +62,7 @@ public:
    *
    * @throw DeviceNotFound - if a given LwM2M::Device does not exist in the
    * current registry.
+   * @throw std::invalid_argument - if LwM2M::DevicePtr is nullptr
    *
    * @param updated_device
    */
