@@ -14,10 +14,6 @@
 
 namespace LwM2M {
 
-struct ObjectDescriptorNotSupported : std::runtime_error {
-  ObjectDescriptorNotSupported(uint32_t object_id);
-};
-
 struct DeviceNotFound : std::runtime_error {
   DeviceNotFound(std::string const &identifier);
 };
@@ -37,7 +33,6 @@ class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
 public:
   DeviceRegistry(const std::string &configuration_path);
 
-  // Maybe rework into check if ElementID is supported?
   SupportedObjectDescripotrsMapPtr getSupportedDescriptors();
 
   bool isRegistered(std::string identifier);

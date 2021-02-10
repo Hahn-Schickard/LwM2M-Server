@@ -6,10 +6,6 @@ using namespace std;
 using namespace HaSLL;
 
 namespace LwM2M {
-ObjectDescriptorNotSupported::ObjectDescriptorNotSupported(uint32_t object_id)
-    : runtime_error("Object with id: " + to_string(object_id) +
-                    " is not supported by the current registry.") {}
-
 DeviceNotFound::DeviceNotFound(string const &identifier)
     : runtime_error("Device with id: " + identifier +
                     " could not be found in the registry.") {}
