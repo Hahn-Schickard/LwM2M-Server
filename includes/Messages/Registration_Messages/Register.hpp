@@ -45,17 +45,25 @@ struct RegisterRequest : ClientRequest {
   const std::unordered_map<unsigned int, std::vector<unsigned int>>
       object_instances_map_;
   // Optional fields
-  const std::string endpoint_name_ = std::string();
-  const BindingType binding_ = BindingType::UDP;
-  const bool queue_mode_ = false;
-  const std::string sms_number_ = std::string();
+  const std::string endpoint_name_;
+  const BindingType binding_;
+  const bool queue_mode_;
+  const std::string sms_number_;
 
   RegisterRequest(
       EndpointPtr endpoint, size_t life_time = 0,
-      LwM2M_Version version = LwM2M_Version::V1_0,
       std::unordered_map<unsigned int, std::vector<unsigned int>>
           object_instances_map =
-              std::unordered_map<unsigned int, std::vector<unsigned int>>());
+              std::unordered_map<unsigned int, std::vector<unsigned int>>(),
+      std::string endpoint_name = std::string());
+
+  RegisterRequest(EndpointPtr endpoint, size_t life_time, LwM2M_Version version,
+                  std::unordered_map<unsigned int, std::vector<unsigned int>>
+                      object_instances_map,
+                  std::string endpoint_name,
+                  BindingType binding = BindingType::UDP,
+                  bool queue_mode = false,
+                  std::string sms_number = std::string());
 
   std::string name() override final;
 
