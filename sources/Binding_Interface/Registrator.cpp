@@ -32,54 +32,66 @@ Registrator::Registrator(DeviceRegistryPtr registry, RequesterPtr requester)
 }
 
 RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
-  auto object_instances =
-      assignObjectDescriptors(request->object_instances_map_);
-  try {
-    auto device = make_shared<Device>(
-        requester_, request->endpoint_, object_instances, request->life_time_,
-        request->endpoint_name_, request->version_, request->binding_,
-        request->queue_mode_);
-    auto location = registry_->registerDevice(device);
-    return request->makeResponse(ResponseCode::CREATED, location);
-  } catch (exception &ex) {
-    // TODO: log exception here?
-    return request->makeResponse(ResponseCode::BAD_REQUEST);
+  if (request) {
+    auto object_instances =
+        assignObjectDescriptors(request->object_instances_map_);
+    try {
+      auto device = make_shared<Device>(
+          requester_, request->endpoint_, object_instances, request->life_time_,
+          request->endpoint_name_, request->version_, request->binding_,
+          request->queue_mode_);
+      auto location = registry_->registerDevice(device);
+      return request->makeResponse(ResponseCode::CREATED, location);
+    } catch (exception &ex) {
+      // TODO: log exception here?
+      return request->makeResponse(ResponseCode::BAD_REQUEST);
+    }
+  } else {
+    throw invalid_argument("Register Request can not be a nullptr");
   }
 }
 
 UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
-  auto device = registry_->getDevice(request->location_);
-  if (device) {
-    if (!request->object_instances_map_.empty()) {
-      auto object_instances =
-          assignObjectDescriptors(request->object_instances_map_);
-      device->updateObjectsMap(object_instances);
+  if (request) {
+    auto device = registry_->getDevice(request->location_);
+    if (device) {
+      if (!request->object_instances_map_.empty()) {
+        auto object_instances =
+            assignObjectDescriptors(request->object_instances_map_);
+        device->updateObjectsMap(object_instances);
+      }
+      if (request->lifetime_.has_value()) {
+        device->updateLifetime(request->lifetime_.value());
+      }
+      if (request->binding_.has_value()) {
+        device->updateBinding(request->binding_.value());
+      }
+      if (request->sms_number_.has_value()) {
+        // TODO: implement endpoint updating
+        return request->makeResponse();
+      }
+      registry_->updateDevice(device);
+      return request->makeResponse(ResponseCode::CHANGED);
+    } else {
+      return request->makeResponse(ResponseCode::NOT_FOUND);
     }
-    if (request->lifetime_.has_value()) {
-      device->updateLifetime(request->lifetime_.value());
-    }
-    if (request->binding_.has_value()) {
-      device->updateBinding(request->binding_.value());
-    }
-    if (request->sms_number_.has_value()) {
-      // TODO: implement endpoint updating
-      return request->makeResponse();
-    }
-    registry_->updateDevice(device);
-    return request->makeResponse(ResponseCode::CHANGED);
   } else {
-    return request->makeResponse(ResponseCode::NOT_FOUND);
+    throw invalid_argument("Update Request can not be a nullptr");
   }
 }
 
 DeregisterResponsePtr Registrator::handleRquest(DeregisterRequestPtr request) {
-  try {
-    registry_->deregisterDevice(request->location_);
-    return request->makeResponse(ResponseCode::DELETED);
-  } catch (DeviceNotFound &ex) {
-    return request->makeResponse(ResponseCode::NOT_FOUND);
-  } catch (exception &ex) {
-    return request->makeResponse();
+  if (request) {
+    try {
+      registry_->deregisterDevice(request->location_);
+      return request->makeResponse(ResponseCode::DELETED);
+    } catch (DeviceNotFound &ex) {
+      return request->makeResponse(ResponseCode::NOT_FOUND);
+    } catch (exception &ex) {
+      return request->makeResponse();
+    }
+  } else {
+    throw invalid_argument("Deregister Request can not be a nullptr");
   }
 }
 } // namespace LwM2M
