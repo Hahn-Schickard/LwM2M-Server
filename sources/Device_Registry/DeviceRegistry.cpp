@@ -30,44 +30,53 @@ SupportedObjectDescripotrsMapPtr DeviceRegistry::getSupportedDescriptors() {
   return make_shared<SupportedObjectDescripotrsMap>(supported_descriptors_);
 }
 
-bool DeviceRegistry::isRegistered(std::string identifier) {
+bool DeviceRegistry::isRegistered(string identifier) {
   return (device_registery_.find(identifier) != device_registery_.end())
              ? true
              : false;
 }
 
 string DeviceRegistry::registerDevice(DevicePtr new_device) {
-  if (isRegistered(new_device->getDeviceId())) {
+  if (new_device) {
+    if (isRegistered(new_device->getDeviceId())) {
+      logger_->log(SeverityLevel::TRACE,
+                   "Device {} with id {} already exists in the registry!",
+                   new_device->getName(), new_device->getDeviceId());
+      deregisterDevice(new_device->getDeviceId());
+    }
+    device_registery_.emplace(new_device->getDeviceId(), new_device);
     logger_->log(SeverityLevel::TRACE,
-                 "Device {} with id {} already exists in the registry!",
+                 "Device {} with id {} has been registered.",
                  new_device->getName(), new_device->getDeviceId());
-    deregisterDevice(new_device->getDeviceId());
-  }
-  device_registery_.emplace(new_device->getDeviceId(), new_device);
-  logger_->log(SeverityLevel::TRACE,
-               "Device {} with id {} has been registered.",
-               new_device->getName(), new_device->getDeviceId());
-  notify(make_shared<RegistryEvent>(RegistryEventType::REGISTERED,
-                                    new_device->getDeviceId(), new_device));
+    notify(make_shared<RegistryEvent>(RegistryEventType::REGISTERED,
+                                      new_device->getDeviceId(), new_device));
 
-  return new_device->getDeviceId();
+    return new_device->getDeviceId();
+  } else {
+    throw invalid_argument("Target device can not be a null pointer.");
+  }
 }
 
 void DeviceRegistry::updateDevice(DevicePtr updated_device) {
-  auto it = device_registery_.find(updated_device->getDeviceId());
-  if (it != device_registery_.end()) {
-    it->second = updated_device;
-    logger_->log(SeverityLevel::TRACE, "Device {} with id {} has been updated.",
-                 updated_device->getName(), updated_device->getDeviceId());
-    notify(make_shared<RegistryEvent>(RegistryEventType::UPDATED,
-                                      updated_device->getDeviceId(),
-                                      updated_device));
+  if (updated_device) {
+    auto it = device_registery_.find(updated_device->getDeviceId());
+    if (it != device_registery_.end()) {
+      it->second = updated_device;
+      logger_->log(SeverityLevel::TRACE,
+                   "Device {} with id {} has been updated.",
+                   updated_device->getName(), updated_device->getDeviceId());
+      notify(make_shared<RegistryEvent>(RegistryEventType::UPDATED,
+                                        updated_device->getDeviceId(),
+                                        updated_device));
+    } else {
+      throw DeviceNotFound(updated_device->getDeviceId());
+    }
   } else {
-    throw DeviceNotFound(updated_device->getDeviceId());
+    throw invalid_argument("Target device can not be a null pointer.");
   }
 }
 
-void DeviceRegistry::deregisterDevice(std::string identifier) {
+void DeviceRegistry::deregisterDevice(string identifier) {
   auto it = device_registery_.find(identifier);
   if (it != device_registery_.end()) {
     device_registery_.erase(it);
@@ -81,7 +90,7 @@ void DeviceRegistry::deregisterDevice(std::string identifier) {
   }
 }
 
-DevicePtr DeviceRegistry::getDevice(std::string identifier) {
+DevicePtr DeviceRegistry::getDevice(string identifier) {
   auto it = device_registery_.find(identifier);
   if (it != device_registery_.end()) {
     return it->second;
