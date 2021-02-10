@@ -53,8 +53,8 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
 
 UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
   if (request) {
-    auto device = registry_->getDevice(request->location_);
-    if (device) {
+    try {
+      auto device = registry_->getDevice(request->location_);
       if (!request->object_instances_map_.empty()) {
         auto object_instances =
             assignObjectDescriptors(request->object_instances_map_);
@@ -72,7 +72,7 @@ UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
       }
       registry_->updateDevice(device);
       return request->makeResponse(ResponseCode::CHANGED);
-    } else {
+    } catch (DeviceNotFound &ex) {
       return request->makeResponse(ResponseCode::NOT_FOUND);
     }
   } else {
