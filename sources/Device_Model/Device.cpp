@@ -17,9 +17,14 @@ Device::Device(RequesterPtr requester, EndpointPtr endpoint,
                string name, LwM2M_Version version, BindingType binding,
                bool queue_mode)
     : requester_(requester), endpoint_(endpoint), life_time_(life_time),
-      device_id_(generateDeviceID(name, endpoint_)), name_(name),
-      version_(version), binding_(binding), queue_mode_(queue_mode) {
+      name_(name), version_(version), binding_(binding),
+      queue_mode_(queue_mode) {
   makeObjects(object_descriptors_map);
+  if (!endpoint_) {
+    throw invalid_argument("Endpoint can not be a nullptr!");
+  } else {
+    device_id_ = generateDeviceID(name, endpoint_);
+  }
 }
 
 void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
