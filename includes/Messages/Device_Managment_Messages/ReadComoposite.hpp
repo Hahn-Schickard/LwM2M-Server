@@ -50,12 +50,11 @@ using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
  * supported by the Client
  */
 struct ReadComopositeResponse : ClientResponse {
-  const std::vector<TargetContent> content_;
+  ReadComopositeResponse(EndpointPtr endpoint, ResponseCode response_code,
+                         std::vector<TargetContent> content);
 
-  ReadComopositeResponse(
-      EndpointPtr endpoint,
-      ResponseCode response_code = ResponseCode::BAD_REQUEST,
-      std::vector<TargetContent> content = std::vector<TargetContent>());
+  ReadComopositeResponse(EndpointPtr endpoint, ResponseCode response_code =
+                                                   ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

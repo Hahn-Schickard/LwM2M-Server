@@ -37,12 +37,11 @@ using ObserveCompositeRequestPtr = std::shared_ptr<ObserveCompositeRequest>;
  * instances are allowed to use Cancel Observe operation.
  */
 struct ObserveCompositeResponse : ClientResponse {
-  std::vector<TargetContent> content_;
+  ObserveCompositeResponse(EndpointPtr endpoint, ResponseCode response_code,
+                           std::vector<TargetContent> conent);
 
-  ObserveCompositeResponse(
-      EndpointPtr endpoint,
-      ResponseCode response_code = ResponseCode::BAD_REQUEST,
-      std::vector<TargetContent> conent = std::vector<TargetContent>());
+  ObserveCompositeResponse(EndpointPtr endpoint, ResponseCode response_code =
+                                                     ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

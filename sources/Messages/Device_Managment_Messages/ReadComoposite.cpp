@@ -22,8 +22,20 @@ ReadComopositeResponse::ReadComopositeResponse(
                          ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
                          ResponseCode::METHOD_NOT_ALLOWED,
                          ResponseCode::NOT_ACCEPTABLE},
-                     response_code),
-      content_(content) {
+                     response_code, make_shared<Payload>(content)) {
+  checkResponseCode(response_code);
+}
+
+ReadComopositeResponse::ReadComopositeResponse(EndpointPtr endpoint,
+                                               ResponseCode response_code)
+    : ClientResponse(endpoint, MessageType::READ_COMPOSITE,
+                     InterfaceType::DEVICE_MANAGMENT,
+                     unordered_set<ResponseCode>{
+                         ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
+                         ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
+                         ResponseCode::METHOD_NOT_ALLOWED,
+                         ResponseCode::NOT_ACCEPTABLE},
+                     response_code, PayloadPtr()) {
   checkResponseCode(response_code);
 }
 

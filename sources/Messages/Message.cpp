@@ -187,9 +187,10 @@ string Message::name() {
 Response::Response(EndpointPtr endpoint, MessageType message_type,
                    InterfaceType interface, bool incomming,
                    unordered_set<ResponseCode> supported_responses,
-                   ResponseCode response_code)
+                   ResponseCode response_code, PayloadPtr payload)
     : Message(endpoint, message_type, interface, incomming, true),
-      supported_responses_(supported_responses), response_code_(response_code) {
+      supported_responses_(supported_responses), response_code_(response_code),
+      payload_(payload) {
   if (supported_responses_.empty()) {
     throw invalid_argument("Response must support at least 1 Response code");
   }
@@ -208,9 +209,9 @@ ClientRequest::ClientRequest(EndpointPtr endpoint, MessageType message_type,
 ClientResponse::ClientResponse(EndpointPtr endpoint, MessageType message_type,
                                InterfaceType interface,
                                unordered_set<ResponseCode> supported_responses,
-                               ResponseCode response_code)
+                               ResponseCode response_code, PayloadPtr payload)
     : Response(endpoint, message_type, interface, true, supported_responses,
-               response_code) {}
+               response_code, payload) {}
 
 ClientNotification::ClientNotification(EndpointPtr endpoint,
                                        MessageType message_type,
@@ -226,6 +227,6 @@ ServerResponse::ServerResponse(EndpointPtr endpoint, MessageType message_type,
                                unordered_set<ResponseCode> supported_responses,
                                ResponseCode response_code)
     : Response(endpoint, message_type, interface, false, supported_responses,
-               response_code) {}
+               response_code, PayloadPtr()) {}
 
 } // namespace LwM2M

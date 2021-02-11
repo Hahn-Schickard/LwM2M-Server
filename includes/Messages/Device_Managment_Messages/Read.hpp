@@ -38,11 +38,11 @@ using ReadRequestPtr = std::shared_ptr<ReadRequest>;
  * supported by the Client
  */
 struct ReadResponse : ClientResponse {
-  const DataFormatPtr content_;
+  ReadResponse(EndpointPtr endpoint, ResponseCode response_code,
+               const DataFormat &content);
 
   ReadResponse(EndpointPtr endpoint,
-               ResponseCode response_code = ResponseCode::BAD_REQUEST,
-               DataFormatPtr content = DataFormatPtr());
+               ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

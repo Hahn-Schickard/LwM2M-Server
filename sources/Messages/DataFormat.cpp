@@ -77,8 +77,8 @@ WrongDataType::WrongDataType(DataType expected, DataType actual)
           "Wrong actual data type!\nExpected data type: " + toString(expected) +
           "\nActual data type: " + toString(actual)) {}
 
-DataFormat::DataFormat(DataVariant data, DataType type, MediaType format)
-    : data_(data), data_type_(type), media_type_(format) {}
+DataFormat::DataFormat(DataVariant data, DataType type)
+    : data_(data), data_type_(type) {}
 
 template <> void DataFormat::get<void>() {
   if (data_type_ != DataType::NONE) {
@@ -142,5 +142,13 @@ template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() {
     throw WrongDataType(DataType::OPAQUE, data_type_);
   }
 }
+
+Payload::Payload(const DataFormat &data) : Payload(PayloadData(data)) {}
+
+Payload::Payload(std::vector<TargetContent> data)
+    : Payload(PayloadData(data)) {}
+
+Payload::Payload(PayloadData data, MediaType format)
+    : data_(data), media_type_(format) {}
 
 } // namespace LwM2M

@@ -1,6 +1,7 @@
 #ifndef __LWM2M_DATA_FORMAT_TYPE_HPP
 #define __LWM2M_DATA_FORMAT_TYPE_HPP
 
+#include "ElementID.hpp"
 #include "ObjectLink.hpp"
 
 #include <cstdint>
@@ -77,10 +78,8 @@ using DataVariant = std::variant<bool, int64_t, uint64_t, double, std::string,
 struct DataFormat {
   const DataVariant data_;
   const DataType data_type_;
-  const MediaType media_type_;
 
-  DataFormat(DataVariant data, DataType type,
-             MediaType format = MediaType::NOT_SPECIFIED);
+  DataFormat(DataVariant data, DataType type);
 
   /**
    * @brief Helper method to access underling DataVariant without defining a
@@ -97,6 +96,21 @@ struct DataFormat {
 };
 
 using DataFormatPtr = std::shared_ptr<DataFormat>;
+
+using TargetContent = std::pair<ElmentIdVariant, DataFormatPtr>;
+using TargetContentVector = std::vector<TargetContent>;
+using PayloadData = std::variant<DataFormat, TargetContentVector>;
+
+struct Payload {
+  const PayloadData data_;
+  const MediaType media_type_;
+
+  Payload(const DataFormat &data);
+  Payload(TargetContentVector data);
+  Payload(PayloadData data, MediaType format = MediaType::NOT_SPECIFIED);
+};
+
+using PayloadPtr = std::shared_ptr<Payload>;
 } // namespace LwM2M
 
 #endif //__LWM2M_DATA_FORMAT_TYPE_HPP

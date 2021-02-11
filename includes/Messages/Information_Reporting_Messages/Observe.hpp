@@ -33,11 +33,11 @@ using ObserveRequestPtr = std::shared_ptr<ObserveRequest>;
  * allowed to use Cancel Observe operation.
  */
 struct ObserveResponse : ClientResponse {
-  const DataFormatPtr content_;
+  ObserveResponse(EndpointPtr endpoint, ResponseCode response_code,
+                  const DataFormat &content);
 
   ObserveResponse(EndpointPtr endpoint,
-                  ResponseCode response_code = ResponseCode::BAD_REQUEST,
-                  DataFormatPtr content = DataFormatPtr());
+                  ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };

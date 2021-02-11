@@ -39,11 +39,10 @@ using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
  *
  */
 struct DiscoverResponse : ClientResponse {
-  const DataFormatPtr content_;
-
+  DiscoverResponse(EndpointPtr endpoint, ResponseCode response_code,
+                   const DataFormat &content);
   DiscoverResponse(EndpointPtr endpoint,
-                   ResponseCode response_code = ResponseCode::BAD_REQUEST,
-                   DataFormatPtr content = DataFormatPtr());
+                   ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };
