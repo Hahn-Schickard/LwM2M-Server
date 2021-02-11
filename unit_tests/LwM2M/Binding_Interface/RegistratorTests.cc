@@ -1,5 +1,6 @@
 #include "Registrator.hpp"
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 #include <memory>
@@ -7,27 +8,28 @@
 using namespace LwM2M;
 using namespace std;
 
-struct FakeRequester : Requester {
-  future<DataFormat> requestData(MessagePtr /*message*/) override {
-    throw logic_error("Fake call to requestData()");
-  }
-  future<bool> requestAction(MessagePtr /*message*/) override {
-    throw logic_error("Fake call to requestAction()");
-  }
+struct MockDispatcher : DispatcherInterface {
+  MockDispatcher() : DispatcherInterface(make_shared<RequestsManager>()) {}
+
+  MOCK_METHOD(uint64_t, dispatch, (ServerRequestPtr), (override));
 };
+
+using MockDispatcherPtr = std::shared_ptr<MockDispatcher>;
 
 TEST(RegistratorInstantiationTests,
      throwsInvalidArgumentForNullptrDeviceRegistry) {
   EXPECT_THROW(
-      { make_shared<Registrator>(DeviceRegistryPtr(), RequesterPtr()); },
+      { make_shared<Registrator>(DeviceRegistryPtr(), MockDispatcherPtr()); },
       invalid_argument);
 }
 
-TEST(RegistratorInstantiationTests, throwsInvalidArgumentForNullptrRequester) {
+TEST(RegistratorInstantiationTests,
+     throwsInvalidArgumentForNullptrDispatcherInterface) {
   EXPECT_THROW(
       {
         make_shared<Registrator>(
-            make_shared<DeviceRegistry>("thisDoesNotMatter"), RequesterPtr());
+            make_shared<DeviceRegistry>("thisDoesNotMatter"),
+            MockDispatcherPtr());
       },
       invalid_argument);
 }
@@ -36,10 +38,10 @@ class RegistratorTests : public ::testing::Test {
 protected:
   void SetUp() override {
     registry_ = make_shared<DeviceRegistry>("model/passingModel1.xml");
-    auto requester = make_shared<FakeRequester>();
-    registrator_ = make_shared<Registrator>(registry_, requester);
+    auto DispatcherInterface = make_shared<MockDispatcher>();
+    registrator_ = make_shared<Registrator>(registry_, DispatcherInterface);
     initial_device_ = make_shared<Device>(
-        RequesterPtr(), make_shared<Endpoint>("0.0.0.0", 10),
+        DispatcherInterface, make_shared<Endpoint>("0.0.0.0", 10),
         ObjectDescriptorsMap(), 10, "initial_device");
     registry_->registerDevice(initial_device_);
   }

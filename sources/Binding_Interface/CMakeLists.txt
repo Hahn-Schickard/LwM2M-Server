@@ -19,6 +19,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC 
                               Device_Registry
+                              Stoppable::Stoppable
 )
 
 target_include_directories(${THIS} INTERFACE
