@@ -6,14 +6,21 @@
 namespace LwM2M {
 class TestRequester : public Requester {
   std::promise<DataFormat> data_promise_;
+  std::promise<TargetContentVector> multi_data_promise_;
   std::promise<bool> action_promise_;
 
 public:
-  std::future<DataFormat> requestData(MessagePtr /*message*/) override final {
+  std::future<DataFormat>
+  requestData(ServerRequestPtr /*message*/) override final {
     return data_promise_.get_future();
   }
 
-  std::future<bool> requestAction(MessagePtr /*message*/) override final {
+  std::future<TargetContentVector>
+  requestMultiTargetData(ServerRequestPtr /*message*/) override final {
+    return multi_data_promise_.get_future();
+  }
+
+  std::future<bool> requestAction(ServerRequestPtr /*message*/) override final {
     return action_promise_.get_future();
   }
 
@@ -21,6 +28,17 @@ public:
     bool success = false;
     try {
       data_promise_.set_value(result);
+      success = true;
+    } catch (std::exception &ex) {
+      success = false;
+    }
+    return success;
+  }
+
+  bool respond(TargetContentVector result) {
+    bool success = false;
+    try {
+      multi_data_promise_.set_value(result);
       success = true;
     } catch (std::exception &ex) {
       success = false;

@@ -2,7 +2,6 @@
 #define __LWM2M_MESSAGE_HPP
 
 #include "DataFormat.hpp"
-#include "ElementID.hpp"
 #include "Endpoint.hpp"
 
 #include <cstdint>
@@ -125,6 +124,7 @@ using MessagePtr = std::shared_ptr<Message>;
 struct Response : Message {
   const std::unordered_set<ResponseCode> supported_responses_;
   const ResponseCode response_code_;
+  const PayloadPtr payload_;
 
 protected:
   /**
@@ -139,11 +139,12 @@ protected:
    * @param incomming bool
    * @param supported_responses std::unordered_set<LwM2M::ResponseCode>
    * @param response_code LwM2M::ResponseCode
+   * @param payload LwM2M::PayloadPtr
    */
   Response(EndpointPtr endpoint, MessageType message_type,
            InterfaceType interface, bool incomming,
            std::unordered_set<ResponseCode> supported_responses,
-           ResponseCode response_code);
+           ResponseCode response_code, PayloadPtr payload);
 
   /**
    * @brief Checks if a given response code is supported
@@ -172,7 +173,7 @@ protected:
   ClientResponse(EndpointPtr endpoint, MessageType message_type,
                  InterfaceType interface,
                  std::unordered_set<ResponseCode> supported_responses,
-                 ResponseCode response_code);
+                 ResponseCode response_code, PayloadPtr payload = PayloadPtr());
 };
 
 using ClientResponsePtr = std::shared_ptr<ClientResponse>;
@@ -202,8 +203,5 @@ protected:
 };
 
 using ServerResponsePtr = std::shared_ptr<ServerResponse>;
-
-using TargetContent = std::pair<ElmentIdVariant, DataFormatPtr>;
-
 } // namespace LwM2M
 #endif //__LWM2M_MESSAGE_HPP

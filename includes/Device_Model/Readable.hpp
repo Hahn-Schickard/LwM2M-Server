@@ -8,9 +8,9 @@ namespace LwM2M {
 
 template <typename T>
 class Readable : public Resource<T>, protected ResourceMetaInfo {
-  std::future<T> asyncDataRequest(MessagePtr message) {
+  std::future<T> asyncDataRequest(ServerRequestPtr message) {
     return std::async(std::launch::async,
-                      [](RequesterPtr requester, MessagePtr msg) -> T {
+                      [](RequesterPtr requester, ServerRequestPtr msg) -> T {
                         auto result = requester->requestData(msg);
                         return result.get().get<T>();
                       },
