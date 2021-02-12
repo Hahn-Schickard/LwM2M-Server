@@ -20,7 +20,26 @@ struct RequestCanceled : protected std::runtime_error {
   RequestCanceled();
 };
 
-class RequestsManager {
+class ResponseHandler {
+public:
+  virtual ~ResponseHandler() = default;
+
+  /**
+   * @brief Sets the promised value of request() method
+   *
+   * @throws RequestNotFound if identifier does not have an associated
+   * std::promise
+   *
+   * @param request_identifier
+   * @param response
+   */
+  virtual void respond(uint64_t request_identifier,
+                       ClientResponsePtr response) = 0;
+};
+
+using ResponseHandlerPtr = std::shared_ptr<ResponseHandler>;
+
+class RequestsManager : public ResponseHandler {
   std::unordered_map<uint64_t, std::promise<ClientResponsePtr>> requests_;
 
   /**
@@ -53,16 +72,8 @@ public:
    */
   std::future<ClientResponsePtr> request(uint64_t request_identifier);
 
-  /**
-   * @brief Sets the promised value of request() method
-   *
-   * @throws RequestNotFound if identifier does not have an associated
-   * std::promise
-   *
-   * @param request_identifier
-   * @param response
-   */
-  void respond(uint64_t request_identifier, ClientResponsePtr response);
+  void respond(uint64_t request_identifier,
+               ClientResponsePtr response) override final;
 };
 
 using RequestsManagerPtr = std::shared_ptr<RequestsManager>;
