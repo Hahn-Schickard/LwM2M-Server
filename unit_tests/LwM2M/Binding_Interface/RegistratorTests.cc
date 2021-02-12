@@ -1,20 +1,12 @@
+#include "MockDispatcher.hpp"
 #include "Registrator.hpp"
 
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 #include <memory>
 
 using namespace LwM2M;
 using namespace std;
-
-struct MockDispatcher : DispatcherInterface {
-  MockDispatcher() : DispatcherInterface(make_shared<RequestsManager>()) {}
-
-  MOCK_METHOD(uint64_t, dispatch, (ServerRequestPtr), (override));
-};
-
-using MockDispatcherPtr = std::shared_ptr<MockDispatcher>;
 
 TEST(RegistratorInstantiationTests,
      throwsInvalidArgumentForNullptrDeviceRegistry) {
