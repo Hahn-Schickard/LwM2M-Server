@@ -48,7 +48,7 @@ struct Requester {
   requestMultiTargetData(ServerRequestPtr message) = 0;
 
   /**
-   * @brief Request f LwM2M::Device to do an Action
+   * @brief Request LwM2M::Device to do an Action
    *
    * @throws LwM2M::ResponseReturnedAnErrorCode if the corresponding
    * LwM2M::Response contained an error code
