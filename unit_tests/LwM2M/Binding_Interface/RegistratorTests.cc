@@ -1,4 +1,4 @@
-#include "MockDispatcher.hpp"
+#include "MockRequestsManager.hpp"
 #include "Registrator.hpp"
 
 #include "gtest/gtest.h"
@@ -11,7 +11,9 @@ using namespace std;
 TEST(RegistratorInstantiationTests,
      throwsInvalidArgumentForNullptrDeviceRegistry) {
   EXPECT_THROW(
-      { make_shared<Registrator>(DeviceRegistryPtr(), MockDispatcherPtr()); },
+      {
+        make_shared<Registrator>(DeviceRegistryPtr(), MockRequestsManagerPtr());
+      },
       invalid_argument);
 }
 
@@ -21,7 +23,7 @@ TEST(RegistratorInstantiationTests,
       {
         make_shared<Registrator>(
             make_shared<DeviceRegistry>("thisDoesNotMatter"),
-            MockDispatcherPtr());
+            MockRequestsManagerPtr());
       },
       invalid_argument);
 }
@@ -30,7 +32,7 @@ class RegistratorTests : public ::testing::Test {
 protected:
   void SetUp() override {
     registry_ = make_shared<DeviceRegistry>("model/passingModel1.xml");
-    auto DispatcherInterface = make_shared<MockDispatcher>();
+    auto DispatcherInterface = make_shared<MockRequestsManager>();
     registrator_ = make_shared<Registrator>(registry_, DispatcherInterface);
     initial_device_ = make_shared<Device>(
         DispatcherInterface, make_shared<Endpoint>("0.0.0.0", 10),

@@ -22,7 +22,7 @@ ObjectDescriptorsMap Registrator::assignObjectDescriptors(
 }
 
 Registrator::Registrator(DeviceRegistryPtr registry,
-                         DispatcherInterfacePtr requester)
+                         RequestsManagerInterfacePtr requester)
     : registry_(registry), requester_(requester) {
   if (!registry_) {
     throw invalid_argument("Device Registry can not be a nullptr.");

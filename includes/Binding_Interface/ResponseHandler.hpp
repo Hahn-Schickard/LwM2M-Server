@@ -20,9 +20,9 @@ struct RequestCanceled : protected std::runtime_error {
   RequestCanceled();
 };
 
-class ResponseHandler {
+class ResponseHandlerInterface {
 public:
-  virtual ~ResponseHandler() = default;
+  virtual ~ResponseHandlerInterface() = default;
 
   /**
    * @brief Sets the promised value of request() method
@@ -37,9 +37,9 @@ public:
                        ClientResponsePtr response) = 0;
 };
 
-using ResponseHandlerPtr = std::shared_ptr<ResponseHandler>;
+using ResponseHandlerInterfacePtr = std::shared_ptr<ResponseHandlerInterface>;
 
-class RequestsManager : public ResponseHandler {
+class ResponseHandler : public ResponseHandlerInterface {
   std::unordered_map<uint64_t, std::promise<ClientResponsePtr>> requests_;
 
   /**
@@ -76,7 +76,7 @@ public:
                ClientResponsePtr response) override final;
 };
 
-using RequestsManagerPtr = std::shared_ptr<RequestsManager>;
+using ResponseHandlerPtr = std::shared_ptr<ResponseHandler>;
 } // namespace LwM2M
 
 #endif //__LWM2M_REQUESTS_MANAGER_HPP

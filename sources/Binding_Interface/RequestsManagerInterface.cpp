@@ -1,4 +1,4 @@
-#include "Dispatcher.hpp"
+#include "RequestsManagerInterface.hpp"
 
 #include <algorithm>
 
@@ -7,22 +7,22 @@
 using namespace std;
 
 namespace LwM2M {
-
 ResponseReturnedAnErrorCode::ResponseReturnedAnErrorCode(
     ClientResponsePtr response, ServerRequestPtr request)
     : runtime_error(response->name() + " returned " +
                     toString(response->response_code_) + " for " +
                     request->name()) {}
 
-DispatcherInterface::DispatcherInterface(RequestsManagerPtr requests_manager)
+RequestsManagerInterface::RequestsManagerInterface(
+    ResponseHandlerPtr requests_manager)
     : requests_manager_(requests_manager) {}
 
-DispatcherInterface::~DispatcherInterface() {
+RequestsManagerInterface::~RequestsManagerInterface() {
   requests_manager_->cleanup(dispatched_);
 }
 
 ClientResponsePtr
-DispatcherInterface::dispatchAndGet(ServerRequestPtr request) {
+RequestsManagerInterface::dispatchAndGet(ServerRequestPtr request) {
   auto id = dispatch(request);
   auto result_future = requests_manager_->request(id);
   auto result = result_future.get();
@@ -32,7 +32,7 @@ DispatcherInterface::dispatchAndGet(ServerRequestPtr request) {
 }
 
 future<TargetContentVector>
-DispatcherInterface::handleResponseWithTargetContentVector(
+RequestsManagerInterface::handleResponseWithTargetContentVector(
     ServerRequestPtr message) {
   return async(launch::async,
                [&](ServerRequestPtr msg) -> TargetContentVector {
@@ -48,8 +48,8 @@ DispatcherInterface::handleResponseWithTargetContentVector(
                message);
 }
 
-future<DataFormat>
-DispatcherInterface::handleResponseWithDataFormat(ServerRequestPtr message) {
+future<DataFormat> RequestsManagerInterface::handleResponseWithDataFormat(
+    ServerRequestPtr message) {
   return async(launch::async,
                [&](ServerRequestPtr msg) -> DataFormat {
                  auto result = dispatchAndGet(msg);
@@ -63,7 +63,8 @@ DispatcherInterface::handleResponseWithDataFormat(ServerRequestPtr message) {
                message);
 }
 
-future<bool> DispatcherInterface::handleResponse(ServerRequestPtr message) {
+future<bool>
+RequestsManagerInterface::handleResponse(ServerRequestPtr message) {
   return async(launch::async,
                [&](ServerRequestPtr msg) -> bool {
                  auto result = dispatchAndGet(msg);
@@ -76,15 +77,16 @@ future<bool> DispatcherInterface::handleResponse(ServerRequestPtr message) {
 }
 
 future<TargetContentVector>
-DispatcherInterface::requestMultiTargetData(ServerRequestPtr message) {
+RequestsManagerInterface::requestMultiTargetData(ServerRequestPtr message) {
   return handleResponseWithTargetContentVector(message);
 }
 
-future<DataFormat> DispatcherInterface::requestData(ServerRequestPtr message) {
+future<DataFormat>
+RequestsManagerInterface::requestData(ServerRequestPtr message) {
   return handleResponseWithDataFormat(message);
 }
 
-future<bool> DispatcherInterface::requestAction(ServerRequestPtr message) {
+future<bool> RequestsManagerInterface::requestAction(ServerRequestPtr message) {
   return handleResponse(message);
 }
 } // namespace LwM2M

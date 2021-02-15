@@ -1,4 +1,4 @@
-#include "RequestsManager.hpp"
+#include "ResponseHandler.hpp"
 
 using namespace std;
 
@@ -14,7 +14,7 @@ RequestAlreadyDispatched::RequestAlreadyDispatched(uint64_t request_identifier)
 
 RequestCanceled::RequestCanceled() : runtime_error("Request was cancled") {}
 
-void RequestsManager::cancelRequest(uint64_t request_identifier) {
+void ResponseHandler::cancelRequest(uint64_t request_identifier) {
   auto request = requests_.find(request_identifier);
   if (request != requests_.end()) {
     request->second.set_exception(make_exception_ptr(RequestCanceled()));
@@ -22,14 +22,14 @@ void RequestsManager::cancelRequest(uint64_t request_identifier) {
   }
 }
 
-void RequestsManager::cleanup(vector<uint64_t> request_identifiers) {
+void ResponseHandler::cleanup(vector<uint64_t> request_identifiers) {
   for (auto identifier : request_identifiers) {
     cancelRequest(identifier);
   }
 }
 
 future<ClientResponsePtr>
-RequestsManager::request(uint64_t request_identifier) {
+ResponseHandler::request(uint64_t request_identifier) {
   auto request = requests_.find(request_identifier);
   if (request == requests_.end()) {
     promise<ClientResponsePtr> response_promise;
@@ -41,7 +41,7 @@ RequestsManager::request(uint64_t request_identifier) {
   }
 }
 
-void RequestsManager::respond(uint64_t request_identifier,
+void ResponseHandler::respond(uint64_t request_identifier,
                               ClientResponsePtr response) {
   auto request = requests_.find(request_identifier);
   if (request != requests_.end()) {

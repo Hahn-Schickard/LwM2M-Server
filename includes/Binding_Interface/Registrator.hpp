@@ -3,15 +3,15 @@
 
 #include "Deregister.hpp"
 #include "DeviceRegistry.hpp"
-#include "Dispatcher.hpp"
 #include "Register.hpp"
+#include "RequestsManagerInterface.hpp"
 #include "Update.hpp"
 
 namespace LwM2M {
 
 class Registrator {
   DeviceRegistryPtr registry_;
-  DispatcherInterfacePtr requester_;
+  RequestsManagerInterfacePtr requester_;
 
   /**
    * @brief Assigns correct LwM2M::ObjecDescriptorMap based on given input.
@@ -25,7 +25,8 @@ class Registrator {
           requested_object_instances);
 
 public:
-  Registrator(DeviceRegistryPtr registry, DispatcherInterfacePtr requester);
+  Registrator(DeviceRegistryPtr registry,
+              RequestsManagerInterfacePtr requester);
 
   /**
    * @brief Registers a new LwM2M::Device or Reregisters it, if it already

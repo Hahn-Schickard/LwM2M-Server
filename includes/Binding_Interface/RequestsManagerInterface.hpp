@@ -2,7 +2,7 @@
 #define __LWM2M_REQUESTER_HPP
 
 #include "Requester.hpp"
-#include "RequestsManager.hpp"
+#include "ResponseHandler.hpp"
 
 #include <cstdint>
 
@@ -19,9 +19,9 @@ struct ResponseReturnedAnErrorCode : protected std::runtime_error {
  * dispatches them to the correct endpoint.
  *
  */
-struct DispatcherInterface : Requester {
-  DispatcherInterface(RequestsManagerPtr requests_manager);
-  ~DispatcherInterface();
+struct RequestsManagerInterface : Requester {
+  RequestsManagerInterface(ResponseHandlerPtr response_handler);
+  ~RequestsManagerInterface();
 
   /**
    * @brief Converts a given request into the protocol specifc message and
@@ -35,7 +35,7 @@ struct DispatcherInterface : Requester {
 private:
   /**
    * @brief Dispatches a given request by calling dispatch(), sets the given
-   * request in LwM2M::RequestsManager and waits for a response. Once a response
+   * request in LwM2M::ResponseHandler and waits for a response. Once a response
    * was received, frees up the assign request identifier for reuse and returns
    * the LwM2M::Response for processing
    *
@@ -81,11 +81,11 @@ private:
 
   std::future<bool> requestAction(ServerRequestPtr message) override;
 
-  RequestsManagerPtr requests_manager_;
+  ResponseHandlerPtr requests_manager_;
   std::vector<uint64_t> dispatched_;
 };
 
-using DispatcherInterfacePtr = std::shared_ptr<DispatcherInterface>;
+using RequestsManagerInterfacePtr = std::shared_ptr<RequestsManagerInterface>;
 } // namespace LwM2M
 
 #endif //__LWM2M_REQUESTER_HPP
