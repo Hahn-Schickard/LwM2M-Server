@@ -33,6 +33,11 @@ struct RequestsManagerInterface : Requester {
   virtual uint64_t dispatch(ServerRequestPtr request) = 0;
 
 protected:
+  /**
+   * @brief Removes pending requests from LwM2M::ResponseHandler
+   * Should only be used on destruction of RequestsManager or in similar
+   * situations
+   */
   void cleanup();
 
 private:
