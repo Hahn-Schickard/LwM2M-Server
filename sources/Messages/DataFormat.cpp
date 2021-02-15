@@ -143,6 +143,14 @@ template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() {
   }
 }
 
+bool operator==(const DataFormat &lhs, const DataFormat &rhs) {
+  if (lhs.data_type_ == rhs.data_type_ && lhs.data_ == rhs.data_) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 Payload::Payload(const DataFormat &data) : Payload(PayloadData(data)) {}
 
 Payload::Payload(std::vector<TargetContent> data)

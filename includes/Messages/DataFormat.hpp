@@ -93,6 +93,8 @@ struct DataFormat {
    * @return T - contained data value as type T
    */
   template <typename T> T get() { throw UnsuportedDataType(); }
+
+  friend bool operator==(const DataFormat &lhs, const DataFormat &rhs);
 };
 
 using DataFormatPtr = std::shared_ptr<DataFormat>;

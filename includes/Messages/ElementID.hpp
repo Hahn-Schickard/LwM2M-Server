@@ -10,6 +10,10 @@ struct ObjectID {
 
   ObjectID() : id_(0) {}
   ObjectID(uint32_t id) : id_(id) {}
+
+  friend inline bool operator==(const ObjectID &lhs, const ObjectID &rhs) {
+    return lhs.id_ == rhs.id_ ? true : false;
+  }
 };
 
 struct ObjectInstanceID {
@@ -22,6 +26,15 @@ struct ObjectInstanceID {
 
   ObjectInstanceID(uint32_t object_id, uint32_t instance_id)
       : ObjectInstanceID(ObjectID(object_id), instance_id) {}
+
+  friend inline bool operator==(const ObjectInstanceID &lhs,
+                                const ObjectInstanceID &rhs) {
+    if (lhs.object_ == rhs.object_ && lhs.id_ == rhs.id_) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
 
 struct ResourceID {
@@ -41,6 +54,14 @@ struct ResourceID {
              uint32_t resource_id)
       : ResourceID(ObjectInstanceID(object_id, object_instance_id),
                    resource_id) {}
+
+  friend inline bool operator==(const ResourceID &lhs, const ResourceID &rhs) {
+    if (lhs.object_instance_ == rhs.object_instance_ && lhs.id_ == rhs.id_) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
 
 struct ResourceInstanceID {
@@ -67,6 +88,15 @@ struct ResourceInstanceID {
       : ResourceInstanceID(
             ResourceID(object_id, object_instance_id, resource_id),
             resource_instance_id) {}
+
+  friend inline bool operator==(const ResourceInstanceID &lhs,
+                                const ResourceInstanceID &rhs) {
+    if (lhs.resource_ == rhs.resource_ && lhs.id_ == rhs.id_) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
 
 using ElmentIdVariant =
