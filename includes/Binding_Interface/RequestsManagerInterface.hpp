@@ -32,6 +32,9 @@ struct RequestsManagerInterface : Requester {
    */
   virtual uint64_t dispatch(ServerRequestPtr request) = 0;
 
+protected:
+  void cleanup();
+
 private:
   /**
    * @brief Dispatches a given request by calling dispatch(), sets the given

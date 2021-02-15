@@ -17,7 +17,9 @@ RequestsManagerInterface::RequestsManagerInterface(
     ResponseHandlerPtr requests_manager)
     : requests_manager_(requests_manager) {}
 
-RequestsManagerInterface::~RequestsManagerInterface() {
+RequestsManagerInterface::~RequestsManagerInterface() { cleanup(); }
+
+void RequestsManagerInterface::cleanup() {
   requests_manager_->cleanup(dispatched_);
 }
 
@@ -25,6 +27,7 @@ ClientResponsePtr
 RequestsManagerInterface::dispatchAndGet(ServerRequestPtr request) {
   auto id = dispatch(request);
   auto result_future = requests_manager_->request(id);
+  dispatched_.push_back(id);
   auto result = result_future.get();
   dispatched_.erase(remove(dispatched_.begin(), dispatched_.end(), id),
                     dispatched_.end());
