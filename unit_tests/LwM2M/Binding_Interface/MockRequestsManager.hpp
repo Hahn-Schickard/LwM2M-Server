@@ -6,7 +6,7 @@
 #include "gmock/gmock.h"
 
 namespace LwM2M {
-struct MockRequestsManager : RequestsManagerInterface {
+struct MockRequestsManager : public RequestsManagerInterface {
   MockRequestsManager()
       : RequestsManagerInterface(std::make_shared<ResponseHandler>()) {}
 
@@ -14,6 +14,8 @@ struct MockRequestsManager : RequestsManagerInterface {
       : RequestsManagerInterface(manager) {}
 
   MOCK_METHOD(uint64_t, dispatch, (ServerRequestPtr), (override));
+
+  void doCleanup() { cleanup(); }
 };
 
 using MockRequestsManagerPtr = std::shared_ptr<MockRequestsManager>;
