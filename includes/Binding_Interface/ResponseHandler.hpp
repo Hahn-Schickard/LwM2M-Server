@@ -40,7 +40,8 @@ public:
 using ResponseHandlerInterfacePtr = std::shared_ptr<ResponseHandlerInterface>;
 
 class ResponseHandler : public ResponseHandlerInterface {
-  std::unordered_map<uint64_t, std::promise<ClientResponsePtr>> requests_;
+  std::unordered_map<uint64_t, std::promise<ClientResponsePtr>>
+      response_promises_;
 
   /**
    * @brief Removes a given request identifier and associated std::promise pair
