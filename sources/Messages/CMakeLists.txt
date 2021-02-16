@@ -18,6 +18,10 @@ INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
 
 add_library(${THIS})                
 
+target_link_libraries(${THIS} PRIVATE 
+                              Variant_Visitor::Variant_Visitor
+)
+
 target_sources(${THIS} PRIVATE 
                        ${THIS_INCLUDES}
                        ${message_sources}

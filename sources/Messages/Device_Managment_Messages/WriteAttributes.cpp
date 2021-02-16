@@ -11,33 +11,8 @@ WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint)
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
                                                vector<TargetAttribute> content)
     : ServerRequest(endpoint, MessageType::WRITE_ATTRIBUTES,
-                    InterfaceType::DEVICE_MANAGMENT),
-      content_(content) {}
-
-WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
-                                               vector<ElmentIdVariant> targets,
-                                               NotifyAttributePtr attribute)
-    : WriteAttributesRequest(endpoint) {
-  append(targets, attribute);
-}
-
-void WriteAttributesRequest::append(ElmentIdVariant target,
-                                    NotifyAttributePtr attribute) {
-  content_.emplace_back(target, attribute);
-}
-
-void WriteAttributesRequest::append(vector<ElmentIdVariant> targets,
-                                    NotifyAttributePtr attribute) {
-  for (auto target : targets) {
-    append(target, attribute);
-  }
-}
-
-// void append(vector<TargetAttribute> content) {
-//   content_.reserve(content_.size() +
-//                    distance(content.begin(), content.end()));
-//   content_.insert(content_.end(), content.begin(), content.end());
-// }
+                    InterfaceType::DEVICE_MANAGMENT,
+                    make_shared<Payload>(content)) {}
 
 string WriteAttributesRequest::name() { return "WriteAttributesRequest"; }
 

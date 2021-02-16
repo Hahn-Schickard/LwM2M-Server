@@ -151,10 +151,17 @@ bool operator==(const DataFormat &lhs, const DataFormat &rhs) {
   }
 }
 
-Payload::Payload(const DataFormat &data) : Payload(PayloadData(data)) {}
+Payload::Payload(DataFormatPtr data) : Payload(PayloadData(data)) {}
 
-Payload::Payload(std::vector<TargetContent> data)
-    : Payload(PayloadData(data)) {}
+Payload::Payload(TargetContent data) : Payload(PayloadData(data)) {}
+
+Payload::Payload(ElmentIdVariant data) : Payload(PayloadData(data)) {}
+
+Payload::Payload(vector<ElmentIdVariant> data) : Payload(PayloadData(data)) {}
+
+Payload::Payload(vector<TargetContent> data) : Payload(PayloadData(data)) {}
+
+Payload::Payload(vector<TargetAttribute> data) : Payload(PayloadData(data)) {}
 
 Payload::Payload(PayloadData data, MediaType format)
     : data_(data), media_type_(format) {}

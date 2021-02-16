@@ -11,8 +11,6 @@ namespace LwM2M {
  *
  */
 struct ObserveCompositeRequest : ServerRequest {
-  const std::vector<ElmentIdVariant> target_ids_;
-
   ObserveCompositeRequest(
       EndpointPtr endpoint,
       std::vector<ElmentIdVariant> target_ids = std::vector<ElmentIdVariant>());

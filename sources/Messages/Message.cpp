@@ -170,10 +170,11 @@ UnsupportedResponseCode::UnsupportedResponseCode(
 }
 
 Message::Message(EndpointPtr endpoint, MessageType message_type,
-                 InterfaceType interface, bool incomming, bool response,
-                 bool notification)
+                 InterfaceType interface, PayloadPtr payload, bool incomming,
+                 bool response, bool notification)
     : endpoint_(endpoint), message_type_(message_type), interface_(interface),
-      response_(response), incomming_(incomming), notification_(notification) {
+      payload_(payload), response_(response), incomming_(incomming),
+      notification_(notification) {
   if (!endpoint_) {
     throw invalid_argument("Endpoint can not be null!");
   }
@@ -188,9 +189,8 @@ Response::Response(EndpointPtr endpoint, MessageType message_type,
                    InterfaceType interface, bool incomming,
                    unordered_set<ResponseCode> supported_responses,
                    ResponseCode response_code, PayloadPtr payload)
-    : Message(endpoint, message_type, interface, incomming, true),
-      supported_responses_(supported_responses), response_code_(response_code),
-      payload_(payload) {
+    : Message(endpoint, message_type, interface, payload, incomming, true),
+      supported_responses_(supported_responses), response_code_(response_code) {
   if (supported_responses_.empty()) {
     throw invalid_argument("Response must support at least 1 Response code");
   }
@@ -203,8 +203,8 @@ void Response::checkResponseCode(ResponseCode response_code) {
 }
 
 ClientRequest::ClientRequest(EndpointPtr endpoint, MessageType message_type,
-                             InterfaceType interface)
-    : Message(endpoint, message_type, interface, true) {}
+                             InterfaceType interface, PayloadPtr payload)
+    : Message(endpoint, message_type, interface, payload, true) {}
 
 ClientResponse::ClientResponse(EndpointPtr endpoint, MessageType message_type,
                                InterfaceType interface,
@@ -215,18 +215,19 @@ ClientResponse::ClientResponse(EndpointPtr endpoint, MessageType message_type,
 
 ClientNotification::ClientNotification(EndpointPtr endpoint,
                                        MessageType message_type,
-                                       InterfaceType interface)
-    : Message(endpoint, message_type, interface, true, false, true) {}
+                                       InterfaceType interface,
+                                       PayloadPtr payload)
+    : Message(endpoint, message_type, interface, payload, true, false, true) {}
 
 ServerRequest::ServerRequest(EndpointPtr endpoint, MessageType message_type,
-                             InterfaceType interface)
-    : Message(endpoint, message_type, interface, false) {}
+                             InterfaceType interface, PayloadPtr payload)
+    : Message(endpoint, message_type, interface, payload, false) {}
 
 ServerResponse::ServerResponse(EndpointPtr endpoint, MessageType message_type,
                                InterfaceType interface,
                                unordered_set<ResponseCode> supported_responses,
-                               ResponseCode response_code)
+                               ResponseCode response_code, PayloadPtr payload)
     : Response(endpoint, message_type, interface, false, supported_responses,
-               response_code, PayloadPtr()) {}
+               response_code, payload) {}
 
 } // namespace LwM2M

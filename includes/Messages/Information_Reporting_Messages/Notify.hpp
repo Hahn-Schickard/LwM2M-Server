@@ -11,8 +11,6 @@ namespace LwM2M {
  *
  */
 struct ValueUpdated : ClientNotification {
-  const DataFormatPtr content_;
-
   ValueUpdated(EndpointPtr endpoint, DataFormatPtr content = DataFormatPtr());
 
   std::string name() override final;

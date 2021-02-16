@@ -9,8 +9,6 @@ namespace LwM2M {
  *
  */
 struct CancelObservationRequest : ServerRequest {
-  const ElmentIdVariant target_id_;
-
   CancelObservationRequest(EndpointPtr endpoint,
                            ElmentIdVariant target_id = ObjectID(0));
 

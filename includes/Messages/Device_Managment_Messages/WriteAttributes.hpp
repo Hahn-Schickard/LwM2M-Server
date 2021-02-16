@@ -3,36 +3,9 @@
 
 #include "Message.hpp"
 
-#include <optional>
 #include <vector>
 
 namespace LwM2M {
-
-struct NotifyAttribute {
-  const std::optional<unsigned int> minimum_period_;
-  const std::optional<unsigned int> maximum_period_;
-  const std::optional<unsigned int> greater_than_;
-  const std::optional<unsigned int> less_than_;
-  const std::optional<unsigned int> step_;
-  const std::optional<unsigned int> minimum_evaluation_period_;
-  const std::optional<unsigned int> maximum_evaluation_period_;
-
-  NotifyAttribute(
-      std::optional<unsigned int> minimum_period = std::nullopt,
-      std::optional<unsigned int> maximum_period = std::nullopt,
-      std::optional<unsigned int> greater_than = std::nullopt,
-      std::optional<unsigned int> less_than = std::nullopt,
-      std::optional<unsigned int> step = std::nullopt,
-      std::optional<unsigned int> minimum_evaluation_period = std::nullopt,
-      std::optional<unsigned int> maximum_evaluation_period = std::nullopt)
-      : minimum_period_(minimum_period), maximum_period_(maximum_period),
-        greater_than_(greater_than), less_than_(less_than), step_(step),
-        minimum_evaluation_period_(minimum_evaluation_period),
-        maximum_evaluation_period_(maximum_evaluation_period) {}
-};
-
-using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;
-using TargetAttribute = std::pair<ElmentIdVariant, NotifyAttributePtr>;
 
 /**
  * @brief Used to modify multiple Attributes of Objects/Object
@@ -40,18 +13,12 @@ using TargetAttribute = std::pair<ElmentIdVariant, NotifyAttributePtr>;
  *
  */
 struct WriteAttributesRequest : ServerRequest {
-  std::vector<TargetAttribute> content_;
-
   WriteAttributesRequest(EndpointPtr endpoint);
   WriteAttributesRequest(EndpointPtr endpoint,
                          std::vector<TargetAttribute> content);
   WriteAttributesRequest(EndpointPtr endpoint,
                          std::vector<ElmentIdVariant> targets,
                          NotifyAttributePtr attribute);
-
-  void append(ElmentIdVariant target, NotifyAttributePtr attribute);
-  void append(std::vector<ElmentIdVariant> targets,
-              NotifyAttributePtr attribute);
 
   std::string name() override final;
 };

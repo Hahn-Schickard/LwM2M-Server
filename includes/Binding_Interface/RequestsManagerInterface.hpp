@@ -67,9 +67,9 @@ private:
    * LwM2M::ClientResponse payload as LwM2M::DataFormat.
    *
    * @param message
-   * @return std::future<DataFormat>
+   * @return std::future<DataFormatPtr>
    */
-  std::future<DataFormat>
+  std::future<DataFormatPtr>
   handleResponseWithDataFormat(ServerRequestPtr message);
 
   /**
@@ -85,7 +85,7 @@ private:
   std::future<TargetContentVector>
   requestMultiTargetData(ServerRequestPtr message) override;
 
-  std::future<DataFormat> requestData(ServerRequestPtr message) override;
+  std::future<DataFormatPtr> requestData(ServerRequestPtr message) override;
 
   std::future<bool> requestAction(ServerRequestPtr message) override;
 

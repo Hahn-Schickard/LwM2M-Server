@@ -5,12 +5,12 @@
 
 namespace LwM2M {
 class TestRequester : public Requester {
-  std::promise<DataFormat> data_promise_;
+  std::promise<DataFormatPtr> data_promise_;
   std::promise<TargetContentVector> multi_data_promise_;
   std::promise<bool> action_promise_;
 
 public:
-  std::future<DataFormat>
+  std::future<DataFormatPtr>
   requestData(ServerRequestPtr /*message*/) override final {
     return data_promise_.get_future();
   }
@@ -27,7 +27,7 @@ public:
   bool respond(const DataFormat &result) {
     bool success = false;
     try {
-      data_promise_.set_value(result);
+      data_promise_.set_value(std::make_shared<DataFormat>(result));
       success = true;
     } catch (std::exception &ex) {
       success = false;

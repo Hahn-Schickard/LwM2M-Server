@@ -51,14 +51,14 @@ RequestsManagerInterface::handleResponseWithTargetContentVector(
                message);
 }
 
-future<DataFormat> RequestsManagerInterface::handleResponseWithDataFormat(
+future<DataFormatPtr> RequestsManagerInterface::handleResponseWithDataFormat(
     ServerRequestPtr message) {
   return async(launch::async,
-               [&](ServerRequestPtr msg) -> DataFormat {
+               [&](ServerRequestPtr msg) -> DataFormatPtr {
                  auto result = dispatchAndGet(msg);
                  if (result->response_code_ == ResponseCode::CONTENT &&
                      result->payload_) {
-                   return std::get<DataFormat>(result->payload_->data_);
+                   return std::get<DataFormatPtr>(result->payload_->data_);
                  } else {
                    throw ResponseReturnedAnErrorCode(result, msg);
                  }
@@ -84,7 +84,7 @@ RequestsManagerInterface::requestMultiTargetData(ServerRequestPtr message) {
   return handleResponseWithTargetContentVector(message);
 }
 
-future<DataFormat>
+future<DataFormatPtr>
 RequestsManagerInterface::requestData(ServerRequestPtr message) {
   return handleResponseWithDataFormat(message);
 }

@@ -6,13 +6,13 @@ namespace LwM2M {
 
 ReadRequest::ReadRequest(EndpointPtr endpoint, ElmentIdVariant target_id)
     : ServerRequest(endpoint, MessageType::READ,
-                    InterfaceType::DEVICE_MANAGMENT),
-      target_id_(target_id) {}
+                    InterfaceType::DEVICE_MANAGMENT,
+                    make_shared<Payload>(target_id)) {}
 
 string ReadRequest::name() { return "ReadRequest"; }
 
 ReadResponse::ReadResponse(EndpointPtr endpoint, ResponseCode response_code,
-                           const DataFormat &content)
+                           DataFormatPtr content)
     : ClientResponse(
           endpoint, MessageType::READ, InterfaceType::DEVICE_MANAGMENT,
           unordered_set<ResponseCode>{

@@ -15,7 +15,7 @@ public:
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
-  std::future<bool> execute(std::vector<DataVariant> arguments) override {
+  std::future<bool> execute(std::string arguments) override {
     auto message = std::make_shared<ExecuteRequest>(endpoint_, id_, arguments);
 
     return requester_->requestAction(message);

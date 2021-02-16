@@ -88,6 +88,7 @@ struct Message {
   const EndpointPtr endpoint_;
   const MessageType message_type_;
   const InterfaceType interface_;
+  const PayloadPtr payload_;
   const bool response_ = false;
   const bool incomming_ = false;
   const bool notification_ = false;
@@ -113,8 +114,8 @@ protected:
    * @param notification bool
    */
   Message(EndpointPtr endpoint, MessageType message_type,
-          InterfaceType interface, bool incomming, bool response = false,
-          bool notification = false);
+          InterfaceType interface, PayloadPtr payload, bool incomming,
+          bool response = false, bool notification = false);
 
   virtual ~Message() = default;
 };
@@ -124,7 +125,6 @@ using MessagePtr = std::shared_ptr<Message>;
 struct Response : Message {
   const std::unordered_set<ResponseCode> supported_responses_;
   const ResponseCode response_code_;
-  const PayloadPtr payload_;
 
 protected:
   /**
@@ -163,7 +163,7 @@ using ResponsePtr = std::shared_ptr<Response>;
 struct ClientRequest : Message {
 protected:
   ClientRequest(EndpointPtr endpoint, MessageType message_type,
-                InterfaceType interface);
+                InterfaceType interface, PayloadPtr payload = PayloadPtr());
 };
 
 using ClientRequestPtr = std::shared_ptr<ClientRequest>;
@@ -181,7 +181,8 @@ using ClientResponsePtr = std::shared_ptr<ClientResponse>;
 struct ClientNotification : Message {
 protected:
   ClientNotification(EndpointPtr endpoint, MessageType message_type,
-                     InterfaceType interface);
+                     InterfaceType interface,
+                     PayloadPtr payload = PayloadPtr());
 };
 
 using ClientNotificationPtr = std::shared_ptr<ClientNotification>;
@@ -189,7 +190,7 @@ using ClientNotificationPtr = std::shared_ptr<ClientNotification>;
 struct ServerRequest : Message {
 protected:
   ServerRequest(EndpointPtr endpoint, MessageType message_type,
-                InterfaceType interface);
+                InterfaceType interface, PayloadPtr payload = PayloadPtr());
 };
 
 using ServerRequestPtr = std::shared_ptr<ServerRequest>;
@@ -199,7 +200,7 @@ protected:
   ServerResponse(EndpointPtr endpoint, MessageType message_type,
                  InterfaceType interface,
                  std::unordered_set<ResponseCode> supported_responses,
-                 ResponseCode response_code);
+                 ResponseCode response_code, PayloadPtr payload = PayloadPtr());
 };
 
 using ServerResponsePtr = std::shared_ptr<ServerResponse>;

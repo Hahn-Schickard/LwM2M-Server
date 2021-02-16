@@ -13,8 +13,6 @@ namespace LwM2M {
  *
  */
 struct ReadComopositeRequest : ServerRequest {
-  const std::vector<ElmentIdVariant> targets_;
-
   /**
    * @brief Construct a new Read Comoposite Request object
    *

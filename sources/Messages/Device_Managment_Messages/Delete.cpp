@@ -5,8 +5,8 @@ using namespace std;
 namespace LwM2M {
 DeleteRequest::DeleteRequest(EndpointPtr endpoint, ObjectInstanceID target_id)
     : ServerRequest(endpoint, MessageType::DELETE,
-                    InterfaceType::DEVICE_MANAGMENT),
-      target_id_(target_id) {}
+                    InterfaceType::DEVICE_MANAGMENT,
+                    make_shared<Payload>(ElmentIdVariant(target_id))) {}
 
 string DeleteRequest::name() { return "DeleteRequest"; }
 

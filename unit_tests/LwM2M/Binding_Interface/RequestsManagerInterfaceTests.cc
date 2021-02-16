@@ -38,12 +38,13 @@ TEST_F(RequestsManagerInterfaceTests, returnsDataFormatOnRequestData) {
     auto result_future = requester_->requestData(request);
     this_thread::sleep_for(1ms);
 
-    auto data = DataFormat(DataVariant((bool)true), DataType::BOOLEAN);
+    auto data =
+        make_shared<DataFormat>(DataVariant((bool)true), DataType::BOOLEAN);
 
     auto response_test_result =
         async(launch::async,
               [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier, DataFormat content) {
+                 uint64_t identifier, DataFormatPtr content) {
                 ClientResponsePtr response = make_shared<ReadResponse>(
                     target, ResponseCode::CONTENT, content);
                 responder->respond(identifier, response);
@@ -57,7 +58,7 @@ TEST_F(RequestsManagerInterfaceTests, returnsDataFormatOnRequestData) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       auto result = result_future.get();
-      EXPECT_EQ(result, data);
+      EXPECT_EQ(*result.get(), *data.get());
     }
   } catch (exception &ex) {
     FAIL() << "Caught an exception while requesting data. Exception: "

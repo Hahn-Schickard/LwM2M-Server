@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <variant>
@@ -99,16 +100,48 @@ struct DataFormat {
 
 using DataFormatPtr = std::shared_ptr<DataFormat>;
 
+struct NotifyAttribute {
+  const std::optional<unsigned int> minimum_period_;
+  const std::optional<unsigned int> maximum_period_;
+  const std::optional<unsigned int> greater_than_;
+  const std::optional<unsigned int> less_than_;
+  const std::optional<unsigned int> step_;
+  const std::optional<unsigned int> minimum_evaluation_period_;
+  const std::optional<unsigned int> maximum_evaluation_period_;
+
+  NotifyAttribute(
+      std::optional<unsigned int> minimum_period = std::nullopt,
+      std::optional<unsigned int> maximum_period = std::nullopt,
+      std::optional<unsigned int> greater_than = std::nullopt,
+      std::optional<unsigned int> less_than = std::nullopt,
+      std::optional<unsigned int> step = std::nullopt,
+      std::optional<unsigned int> minimum_evaluation_period = std::nullopt,
+      std::optional<unsigned int> maximum_evaluation_period = std::nullopt)
+      : minimum_period_(minimum_period), maximum_period_(maximum_period),
+        greater_than_(greater_than), less_than_(less_than), step_(step),
+        minimum_evaluation_period_(minimum_evaluation_period),
+        maximum_evaluation_period_(maximum_evaluation_period) {}
+};
+
+using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;
+using TargetAttribute = std::pair<ElmentIdVariant, NotifyAttributePtr>;
 using TargetContent = std::pair<ElmentIdVariant, DataFormatPtr>;
 using TargetContentVector = std::vector<TargetContent>;
-using PayloadData = std::variant<DataFormat, TargetContentVector>;
+using PayloadData =
+    std::variant<DataFormatPtr, TargetContent, TargetContentVector,
+                 ElmentIdVariant, std::vector<ElmentIdVariant>,
+                 std::vector<TargetAttribute>>;
 
 struct Payload {
   const PayloadData data_;
   const MediaType media_type_;
 
-  Payload(const DataFormat &data);
+  Payload(DataFormatPtr data);
   Payload(TargetContentVector data);
+  Payload(TargetContent data);
+  Payload(ElmentIdVariant data);
+  Payload(std::vector<ElmentIdVariant> data);
+  Payload(std::vector<TargetAttribute> data);
   Payload(PayloadData data, MediaType format = MediaType::NOT_SPECIFIED);
 };
 

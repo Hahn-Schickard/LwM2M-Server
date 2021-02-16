@@ -12,7 +12,7 @@ class ReadAndWritable : public Resource<T>, protected ResourceMetaInfo {
     return std::async(std::launch::async,
                       [](RequesterPtr requester, ServerRequestPtr msg) -> T {
                         auto result = requester->requestData(msg);
-                        return result.get().get<T>();
+                        return result.get()->get<T>();
                       },
                       requester_, message);
   }

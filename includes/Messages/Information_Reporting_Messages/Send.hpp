@@ -29,8 +29,6 @@ using SendResponsePtr = std::shared_ptr<SendResponse>;
  *
  */
 struct SendRequest : ClientRequest {
-  TargetContent content_;
-
   SendRequest(EndpointPtr endpoint,
               TargetContent content = TargetContent(ObjectID(0),
                                                     DataFormatPtr()));

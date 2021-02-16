@@ -15,9 +15,6 @@ namespace LwM2M {
  * data formats
  */
 struct WriteRequest : ServerRequest {
-  const ElmentIdVariant target_id_;
-  const DataFormatPtr content_;
-
   WriteRequest(EndpointPtr endpoint, ElmentIdVariant target_id = ObjectID(0),
                DataFormatPtr content = DataFormatPtr());
 

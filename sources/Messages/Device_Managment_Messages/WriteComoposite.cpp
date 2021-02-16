@@ -7,24 +7,8 @@ namespace LwM2M {
 WriteComopositeRequest::WriteComopositeRequest(EndpointPtr endpoint,
                                                vector<TargetContent> content)
     : ServerRequest(endpoint, MessageType::WRITE_COMPOSITE,
-                    InterfaceType::DEVICE_MANAGMENT),
-      content_(content) {}
-
-void WriteComopositeRequest::append(ElmentIdVariant target,
-                                    DataFormatPtr content) {
-  content_.emplace_back(target, content);
-}
-
-void WriteComopositeRequest::append(vector<ElmentIdVariant> targets,
-                                    DataFormatPtr content) {
-  for (auto target : targets) {
-    append(target, content);
-  }
-}
-
-// void append(vector<TargetContent> content) {
-//   content_.insert(content_.end(), content.begin(), content.end());
-// }
+                    InterfaceType::DEVICE_MANAGMENT,
+                    make_shared<Payload>(content)) {}
 
 string WriteComopositeRequest::name() { return "WriteComopositeRequest"; }
 

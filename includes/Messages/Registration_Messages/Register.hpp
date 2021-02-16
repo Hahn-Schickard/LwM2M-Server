@@ -22,9 +22,6 @@ namespace LwM2M {
  * the server.
  */
 struct RegisterResponse : ServerResponse {
-  // Mandatory fields
-  const std::string location_;
-
   RegisterResponse(EndpointPtr endpoint,
                    ResponseCode response_code = ResponseCode::BAD_REQUEST,
                    std::string location = std::string());

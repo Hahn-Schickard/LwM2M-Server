@@ -11,8 +11,6 @@ namespace LwM2M {
  *
  */
 struct DiscoverRequest : ServerRequest {
-  const ElmentIdVariant target_id_;
-
   DiscoverRequest(EndpointPtr endpoint,
                   ElmentIdVariant target_id = ObjectID(0));
 
@@ -40,7 +38,7 @@ using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
  */
 struct DiscoverResponse : ClientResponse {
   DiscoverResponse(EndpointPtr endpoint, ResponseCode response_code,
-                   const DataFormat &content);
+                   DataFormatPtr content);
   DiscoverResponse(EndpointPtr endpoint,
                    ResponseCode response_code = ResponseCode::BAD_REQUEST);
 

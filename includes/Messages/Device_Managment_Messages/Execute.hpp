@@ -16,12 +16,9 @@ namespace LwM2M {
  *
  */
 struct ExecuteRequest : ServerRequest {
-  const ResourceID target_;
-  const std::vector<DataVariant> arguments_;
-
   ExecuteRequest(EndpointPtr endpoint, ResourceID target = ResourceID(0, 0, 0));
   ExecuteRequest(EndpointPtr endpoint, ResourceID target,
-                 std::vector<DataVariant> arguments);
+                 std::string arguments);
 
   std::string name() override final;
 };

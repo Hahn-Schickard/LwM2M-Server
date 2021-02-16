@@ -10,8 +10,9 @@ RegisterResponse::RegisterResponse(EndpointPtr endpoint,
           unordered_set<ResponseCode>{
               ResponseCode::CREATED, ResponseCode::BAD_REQUEST,
               ResponseCode::FORBIDDEN, ResponseCode::PRECOGNITION_FAILED},
-          response_code),
-      location_(location) {
+          response_code,
+          make_shared<Payload>(make_shared<DataFormat>(DataVariant(location),
+                                                       DataType::STRING))) {
   checkResponseCode(response_code);
 }
 

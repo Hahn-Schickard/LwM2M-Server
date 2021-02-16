@@ -53,7 +53,9 @@ TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
 
   try {
     auto response = registrator_->handleRquest(request);
-    EXPECT_TRUE(registry_->isRegistered(response->location_));
+    auto data_format = std::get<DataFormatPtr>(response->payload_->data_);
+    auto location = data_format->get<string>();
+    EXPECT_TRUE(registry_->isRegistered(location));
     EXPECT_EQ(response->response_code_, ResponseCode::CREATED);
   } catch (exception &ex) {
     FAIL() << "Cought an exception while handling registration request. "

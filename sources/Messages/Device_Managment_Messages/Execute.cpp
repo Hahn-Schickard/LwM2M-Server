@@ -1,18 +1,23 @@
 #include "Execute.hpp"
+#include "Variant_Visitor.hpp"
 
 using namespace std;
 
 namespace LwM2M {
+
 ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target)
     : ServerRequest(endpoint, MessageType::EXECUTE,
-                    InterfaceType::DEVICE_MANAGMENT),
-      target_(target) {}
+                    InterfaceType::DEVICE_MANAGMENT,
+                    make_shared<Payload>(ElmentIdVariant(target))) {}
 
 ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target,
-                               vector<DataVariant> arguments)
+                               string arguments)
     : ServerRequest(endpoint, MessageType::EXECUTE,
-                    InterfaceType::DEVICE_MANAGMENT),
-      target_(target), arguments_(arguments) {}
+                    InterfaceType::DEVICE_MANAGMENT,
+                    make_shared<Payload>(make_pair(
+                        ElmentIdVariant(target),
+                        make_shared<DataFormat>(DataVariant(arguments),
+                                                DataType::STRING)))) {}
 
 string ExecuteRequest::name() { return "ExecuteRequest"; }
 

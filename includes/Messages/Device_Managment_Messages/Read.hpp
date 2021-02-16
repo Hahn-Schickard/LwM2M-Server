@@ -11,8 +11,6 @@ namespace LwM2M {
  *
  */
 struct ReadRequest : ServerRequest {
-  const ElmentIdVariant target_id_;
-
   ReadRequest(EndpointPtr endpoint, ElmentIdVariant target_id = ObjectID(0));
 
   std::string name() override final;
@@ -39,7 +37,7 @@ using ReadRequestPtr = std::shared_ptr<ReadRequest>;
  */
 struct ReadResponse : ClientResponse {
   ReadResponse(EndpointPtr endpoint, ResponseCode response_code,
-               const DataFormat &content);
+               DataFormatPtr content);
 
   ReadResponse(EndpointPtr endpoint,
                ResponseCode response_code = ResponseCode::BAD_REQUEST);

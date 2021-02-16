@@ -18,8 +18,8 @@ string SendResponse::name() { return "SendResponse"; }
 
 SendRequest::SendRequest(EndpointPtr endpoint, TargetContent content)
     : ClientRequest(endpoint, MessageType::SEND,
-                    InterfaceType::INFORMATION_REPORTING),
-      content_(content) {}
+                    InterfaceType::INFORMATION_REPORTING,
+                    make_shared<Payload>(content)) {}
 
 string SendRequest::name() { return "SendRequest"; }
 

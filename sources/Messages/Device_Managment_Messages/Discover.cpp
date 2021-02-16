@@ -7,14 +7,14 @@ namespace LwM2M {
 DiscoverRequest::DiscoverRequest(EndpointPtr endpoint,
                                  ElmentIdVariant target_id)
     : ServerRequest(endpoint, MessageType::DISCOVER,
-                    InterfaceType::DEVICE_MANAGMENT),
-      target_id_(target_id) {}
+                    InterfaceType::DEVICE_MANAGMENT,
+                    make_shared<Payload>(ElmentIdVariant(target_id))) {}
 
 string DiscoverRequest::name() { return "DiscoverRequest"; }
 
 DiscoverResponse::DiscoverResponse(EndpointPtr endpoint,
                                    ResponseCode response_code,
-                                   const DataFormat &content)
+                                   DataFormatPtr content)
     : ClientResponse(endpoint, MessageType::DISCOVER,
                      InterfaceType::DEVICE_MANAGMENT,
                      unordered_set<ResponseCode>{

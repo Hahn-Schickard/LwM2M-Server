@@ -6,14 +6,14 @@ namespace LwM2M {
 
 ObserveRequest::ObserveRequest(EndpointPtr endpoint, ElmentIdVariant target_id)
     : ServerRequest(endpoint, MessageType::OBSERVE,
-                    InterfaceType::INFORMATION_REPORTING),
-      target_id_(target_id) {}
+                    InterfaceType::INFORMATION_REPORTING,
+                    make_shared<Payload>(target_id)) {}
 
 string ObserveRequest::name() { return "ObserveRequest"; }
 
 ObserveResponse::ObserveResponse(EndpointPtr endpoint,
                                  ResponseCode response_code,
-                                 const DataFormat &content)
+                                 DataFormatPtr content)
     : ClientResponse(endpoint, MessageType::OBSERVE,
                      InterfaceType::INFORMATION_REPORTING,
                      unordered_set<ResponseCode>{

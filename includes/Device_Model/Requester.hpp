@@ -28,7 +28,7 @@ struct Requester {
    * @param message
    * @return std::future<DataFormat>
    */
-  virtual std::future<DataFormat> requestData(ServerRequestPtr message) = 0;
+  virtual std::future<DataFormatPtr> requestData(ServerRequestPtr message) = 0;
 
   /**
    * @brief Requests multiple instances of LwM2M:DataFormat objects, wrapped in
