@@ -1,22 +1,23 @@
 #ifndef __LWM2M_BINDING_INTERFACE_HPP
 #define __LWM2M_BINDING_INTERFACE_HPP
 
-#include "Dispatcher.hpp"
 #include "Registrator.hpp"
+#include "RequestsManagerInterface.hpp"
 #include "Stoppable.hpp"
 
 namespace LwM2M {
 
 class BindingInterface : public Stoppable {
 protected:
-  DispatcherInterfacePtr dispatcher_;
+  RequestsManagerInterfacePtr requests_manager_;
   RegistratorPtr registrator_;
 
 public:
-  BindingInterface(DispatcherInterfacePtr dispatcher,
+  BindingInterface(RequestsManagerInterfacePtr requests_manager,
                    DeviceRegistryPtr registry)
-      : dispatcher_(dispatcher),
-        registrator_(std::make_shared<Registrator>(registry, dispatcher_)) {}
+      : requests_manager_(requests_manager),
+        registrator_(
+            std::make_shared<Registrator>(registry, requests_manager_)) {}
 };
 
 using BindingInterfacePtr = std::shared_ptr<BindingInterface>;
