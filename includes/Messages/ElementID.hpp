@@ -6,101 +6,61 @@
 
 namespace LwM2M {
 struct ObjectID {
-  const uint32_t id_;
+  const uint16_t id_ = 0;
 
-  ObjectID() : id_(0) {}
-  ObjectID(uint32_t id) : id_(id) {}
+  ObjectID() = default;
+  ObjectID(uint16_t id);
 
-  friend inline bool operator==(const ObjectID &lhs, const ObjectID &rhs) {
-    return lhs.id_ == rhs.id_ ? true : false;
-  }
+  friend bool operator==(const ObjectID &lhs, const ObjectID &rhs);
 };
 
 struct ObjectInstanceID {
-  const ObjectID object_;
-  const uint32_t id_;
+  const ObjectID object_ = ObjectID();
+  const uint16_t id_ = 0;
 
-  ObjectInstanceID() : object_(), id_(0) {}
-  ObjectInstanceID(ObjectID object_id, uint32_t instance_id)
-      : object_(object_id), id_(instance_id) {}
+  ObjectInstanceID() = default;
+  ObjectInstanceID(ObjectID object_id, uint16_t instance_id);
+  ObjectInstanceID(uint16_t object_id, uint16_t instance_id);
 
-  ObjectInstanceID(uint32_t object_id, uint32_t instance_id)
-      : ObjectInstanceID(ObjectID(object_id), instance_id) {}
-
-  friend inline bool operator==(const ObjectInstanceID &lhs,
-                                const ObjectInstanceID &rhs) {
-    if (lhs.object_ == rhs.object_ && lhs.id_ == rhs.id_) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  friend bool operator==(const ObjectInstanceID &lhs,
+                         const ObjectInstanceID &rhs);
 };
 
 struct ResourceID {
-  const ObjectInstanceID object_instance_;
-  const uint32_t id_;
+  const ObjectInstanceID object_instance_ = ObjectInstanceID();
+  const uint16_t id_ = 0;
 
-  ResourceID() : object_instance_(), id_(0) {}
-  ResourceID(ObjectInstanceID object_instance_id, uint32_t resource_id)
-      : object_instance_(object_instance_id), id_(resource_id) {}
+  ResourceID() = default;
+  ResourceID(ObjectInstanceID object_instance_id, uint16_t resource_id);
+  ResourceID(ObjectID object_id, uint16_t object_instance_id,
+             uint16_t resource_id);
+  ResourceID(uint16_t object_id, uint16_t object_instance_id,
+             uint16_t resource_id);
 
-  ResourceID(ObjectID object_id, uint32_t object_instance_id,
-             uint32_t resource_id)
-      : ResourceID(ObjectInstanceID(object_id, object_instance_id),
-                   resource_id) {}
-
-  ResourceID(uint32_t object_id, uint32_t object_instance_id,
-             uint32_t resource_id)
-      : ResourceID(ObjectInstanceID(object_id, object_instance_id),
-                   resource_id) {}
-
-  friend inline bool operator==(const ResourceID &lhs, const ResourceID &rhs) {
-    if (lhs.object_instance_ == rhs.object_instance_ && lhs.id_ == rhs.id_) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  friend bool operator==(const ResourceID &lhs, const ResourceID &rhs);
 };
 
 struct ResourceInstanceID {
-  const ResourceID resource_;
-  const uint32_t id_;
+  const ResourceID resource_ = ResourceID();
+  const uint16_t id_ = 0;
 
-  ResourceInstanceID() : resource_(), id_(0) {}
-  ResourceInstanceID(ResourceID resource_id, uint32_t resource_instance_id)
-      : resource_(resource_id), id_(resource_instance_id) {}
+  ResourceInstanceID() = default;
+  ResourceInstanceID(ResourceID resource_id, uint16_t resource_instance_id);
+  ResourceInstanceID(ObjectInstanceID object_instance_id, uint16_t resource_id,
+                     uint16_t resource_instance_id);
+  ResourceInstanceID(ObjectID object_id, uint16_t object_instance_id,
+                     uint16_t resource_id, uint16_t resource_instance_id);
+  ResourceInstanceID(uint16_t object_id, uint16_t object_instance_id,
+                     uint16_t resource_id, uint16_t resource_instance_id);
 
-  ResourceInstanceID(ObjectInstanceID object_instance_id, uint32_t resource_id,
-                     uint32_t resource_instance_id)
-      : ResourceInstanceID(ResourceID(object_instance_id, resource_id),
-                           resource_instance_id) {}
-
-  ResourceInstanceID(ObjectID object_id, uint32_t object_instance_id,
-                     uint32_t resource_id, uint32_t resource_instance_id)
-      : ResourceInstanceID(
-            ResourceID(object_id, object_instance_id, resource_id),
-            resource_instance_id) {}
-
-  ResourceInstanceID(uint32_t object_id, uint32_t object_instance_id,
-                     uint32_t resource_id, uint32_t resource_instance_id)
-      : ResourceInstanceID(
-            ResourceID(object_id, object_instance_id, resource_id),
-            resource_instance_id) {}
-
-  friend inline bool operator==(const ResourceInstanceID &lhs,
-                                const ResourceInstanceID &rhs) {
-    if (lhs.resource_ == rhs.resource_ && lhs.id_ == rhs.id_) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  friend bool operator==(const ResourceInstanceID &lhs,
+                         const ResourceInstanceID &rhs);
 };
 
 using ElmentIdVariant =
     std::variant<ObjectID, ObjectInstanceID, ResourceID, ResourceInstanceID>;
+
+size_t size_of(ElmentIdVariant value);
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_ELEMENT_ID_HPP
