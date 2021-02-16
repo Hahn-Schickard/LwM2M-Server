@@ -71,7 +71,10 @@ uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
   // @TODO: expose generateToken method in CoAPS4Cpp
   // *message += message->generateToken();
   // uint64_t message_identifier = hash<vector<unit8_t>{}(message->getToken());
-  *message += makeOptions(request);
+  auto options = makeOptions(request);
+  if (!options.empty()) {
+    *message += options;
+  }
   auto payload = makePayload(request);
   if (payload) {
     *message += payload;
