@@ -1,4 +1,5 @@
 #include "DataFormat.hpp"
+#include "Variant_Visitor.hpp"
 
 using namespace std;
 
@@ -143,12 +144,64 @@ template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() {
   }
 }
 
+size_t DataFormat::size() {
+  size_t result = 0;
+  match(data_, [&](bool value) { result = sizeof(value); },
+        [&](int64_t value) { result = sizeof(value); },
+        [&](uint64_t value) { result = sizeof(value); },
+        [&](double value) { result = sizeof(value); },
+        [&](string value) { result = value.size(); },
+        [&](ObjectLink /*value*/) { result = 8; },
+        [&](vector<uint8_t> value) { result = value.size(); });
+
+  return result;
+}
+
 bool operator==(const DataFormat &lhs, const DataFormat &rhs) {
   if (lhs.data_type_ == rhs.data_type_ && lhs.data_ == rhs.data_) {
     return true;
   } else {
     return false;
   }
+}
+
+NotifyAttribute::NotifyAttribute(
+    std::optional<uint16_t> minimum_period,
+    std::optional<uint16_t> maximum_period, std::optional<double> greater_than,
+    std::optional<double> less_than, std::optional<double> step,
+    std::optional<uint16_t> minimum_evaluation_period,
+    std::optional<uint16_t> maximum_evaluation_period)
+    : minimum_period_(minimum_period), maximum_period_(maximum_period),
+      greater_than_(greater_than), less_than_(less_than), step_(step),
+      minimum_evaluation_period_(minimum_evaluation_period),
+      maximum_evaluation_period_(maximum_evaluation_period) {}
+
+size_t NotifyAttribute::size() {
+  size_t result = 0;
+
+  if (minimum_period_.has_value()) {
+    result += sizeof(minimum_period_.value());
+  }
+  if (maximum_period_.has_value()) {
+    result += sizeof(maximum_period_.value());
+  }
+  if (greater_than_.has_value()) {
+    result += sizeof(greater_than_.value());
+  }
+  if (less_than_.has_value()) {
+    result += sizeof(less_than_.value());
+  }
+  if (step_.has_value()) {
+    result += sizeof(step_.value());
+  }
+  if (minimum_evaluation_period_.has_value()) {
+    result += sizeof(minimum_evaluation_period_.value());
+  }
+  if (maximum_evaluation_period_.has_value()) {
+    result += sizeof(maximum_evaluation_period_.value());
+  }
+
+  return result;
 }
 
 Payload::Payload(DataFormatPtr data) : Payload(PayloadData(data)) {}
@@ -166,4 +219,36 @@ Payload::Payload(vector<TargetAttribute> data) : Payload(PayloadData(data)) {}
 Payload::Payload(PayloadData data, MediaType format)
     : data_(data), media_type_(format) {}
 
+size_t size_of(TargetContent value) {
+  return size_of(value.first) + value.second->size();
+}
+
+size_t size_of(TargetContentVector value) {
+  size_t result = 0;
+  for (auto target_content : value) {
+    result += size_of(target_content);
+  }
+  return result;
+}
+
+size_t Payload::size() {
+  size_t result = 0;
+  match(data_, [&](DataFormatPtr value) { result = value->size(); },
+        [&](TargetContent value) { result = size_of(value); },
+        [&](TargetContentVector value) { result = size_of(value); },
+        [&](ElmentIdVariant value) { result = size_of(value); },
+        [&](vector<ElmentIdVariant> value) {
+          for (auto elment_id : value) {
+            result += size_of(elment_id);
+          }
+        },
+        [&](vector<TargetAttribute> value) {
+          for (auto target_attribute : value) {
+            result += size_of(target_attribute.first) +
+                      target_attribute.second->size();
+          }
+        });
+
+  return result;
+}
 } // namespace LwM2M
