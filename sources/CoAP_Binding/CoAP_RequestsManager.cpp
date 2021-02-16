@@ -59,8 +59,8 @@ CoAP::PayloadPtr makePayload(ServerRequestPtr request) {
   }
 }
 
-CoAP_RequestsManager::CoAP_RequestsManager(
-    ResponseHandlerPtr response_handler shared_ptr<CoAP::Server> server)
+CoAP_RequestsManager::CoAP_RequestsManager(ResponseHandlerPtr response_handler,
+                                           shared_ptr<CoAP::Server> server)
     : RequestsManagerInterface(response_handler), server_(server) {}
 
 uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
@@ -71,12 +71,12 @@ uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
   // @TODO: expose generateToken method in CoAPS4Cpp
   // *message += message->generateToken();
   // uint64_t message_identifier = hash<vector<unit8_t>{}(message->getToken());
-  *messsage += makeOptions(request);
+  *message += makeOptions(request);
   auto payload = makePayload(request);
   if (payload) {
-    *messsage += payload;
+    *message += payload;
   }
-  auto sent = server_->send(messsage);
+  auto sent = server_->send(message);
   sent.get();
   return 0;
 }
