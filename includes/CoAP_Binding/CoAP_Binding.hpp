@@ -23,11 +23,15 @@ using CoAP_BindingConfigPtr = std::shared_ptr<CoAP_BindingConfig>;
 
 class CoAP_Binding : public BindingInterface {
   std::shared_ptr<CoAP::Server> socket_;
+  CoAP::InboxPtr inbox_;
+
+  CoAP::MessagePtr handleResponse(CoAP::MessagePtr message);
+  CoAP::MessagePtr handleNotification(CoAP::MessagePtr message);
+  CoAP::MessagePtr handleRequest(CoAP::MessagePtr message);
+  CoAP::MessagePtr handleMessage(CoAP::MessagePtr message);
 
 public:
-  CoAP_Binding(CoAP_BindingConfigPtr config,
-               RequestsManagerInterfacePtr requests_manager,
-               DeviceRegistryPtr registry);
+  CoAP_Binding(CoAP_BindingConfigPtr config, DeviceRegistryPtr registry);
 
   void start();
 
