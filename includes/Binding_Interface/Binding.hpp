@@ -9,15 +9,15 @@ namespace LwM2M {
 
 class BindingInterface : public Stoppable {
 protected:
+  ResponseHandlerPtr response_handler_ = std::make_shared<ResponseHandler>();
   RequestsManagerInterfacePtr requests_manager_;
   RegistratorPtr registrator_;
 
-public:
-  BindingInterface(RequestsManagerInterfacePtr requests_manager,
-                   DeviceRegistryPtr registry)
-      : requests_manager_(requests_manager),
-        registrator_(
-            std::make_shared<Registrator>(registry, requests_manager_)) {}
+  void bind(RequestsManagerInterfacePtr requests_manager,
+            DeviceRegistryPtr registry) {
+    requests_manager_ = requests_manager;
+    registrator_ = std::make_shared<Registrator>(registry, requests_manager_);
+  }
 };
 
 using BindingInterfacePtr = std::shared_ptr<BindingInterface>;
