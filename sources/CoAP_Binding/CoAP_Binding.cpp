@@ -1,4 +1,5 @@
 #include "CoAP_Binding.hpp"
+#include "CoAP_ContentTypes.hpp"
 #include "CoAP_RequestsManager.hpp"
 #include "Variant_Visitor.hpp"
 
@@ -16,6 +17,13 @@ CoAP_Binding::CoAP_Binding(CoAP_BindingConfigPtr config,
         [&](string address) {
           socket_ = make_shared<Server>(address, config->port_);
         });
+
+  SupportedContentFormats::addNewContentFormatType<
+      ContentFormatEncodings::LwM2M_TLV>();
+  SupportedContentFormats::addNewContentFormatType<
+      ContentFormatEncodings::LwM2M_CBOR>();
+  SupportedContentFormats::addNewContentFormatType<
+      ContentFormatEncodings::LwM2M_JSON>();
 
   inbox_ = socket_->getInbox();
 
