@@ -10,8 +10,8 @@
 
 namespace LwM2M {
 struct ParameterNotFound : protected std::domain_error {
-  ParameterNotFound(std::string request_name, EndpointPtr endpoint,
-                    std::string error_msg);
+  ServerResponsePtr response_;
+  ParameterNotFound(ServerResponsePtr response);
 };
 
 RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message);

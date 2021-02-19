@@ -11,12 +11,12 @@ using namespace CoAP;
 
 namespace LwM2M {
 
-ParameterNotFound::ParameterNotFound(string request_name, EndpointPtr endpoint,
-                                     string error_msg)
-    : domain_error(
-          request_name + "  request from " + endpoint->endpoint_address_ + ":" +
-          to_string(endpoint->endpoint_port_) +
-          " is missing one or more mandatory parameters. " + error_msg) {}
+ParameterNotFound::ParameterNotFound(ServerResponsePtr response)
+    : domain_error("Request " + response->endpoint_->endpoint_address_ + ":" +
+                   to_string(response->endpoint_->endpoint_port_) +
+                   " is missing one of mandatory parameters. Sending " +
+                   response->name()),
+      response_(response) {}
 
 optional<BindingType> getBindingType(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
@@ -158,23 +158,26 @@ getObjectList(CoAP::PayloadPtr payload) {
 RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
+
   try {
-    // mandatory parameters
-    auto life_time_ = getLifetime(message->getOptions()).value();
-    auto object_instances_map_ = getObjectList(message->getPayload());
     auto version_ = getLwM2M_Version(message->getOptions()).value();
+    try {
+      auto life_time_ = getLifetime(message->getOptions()).value();
+      auto object_instances_map_ = getObjectList(message->getPayload());
+      auto endpoint_name_ = getEndpointName(message->getOptions());
+      auto binding_ = getBindingType(message->getOptions());
+      auto queue_mode_ = getQueueMode(message->getOptions());
+      auto sms_number_ = getSMS(message->getOptions());
 
-    // optional parameters
-    auto endpoint_name_ = getEndpointName(message->getOptions());
-    auto binding_ = getBindingType(message->getOptions());
-    auto queue_mode_ = getQueueMode(message->getOptions());
-    auto sms_number_ = getSMS(message->getOptions());
-
-    return make_shared<RegisterRequest>(
-        endpoint, life_time_, object_instances_map_, endpoint_name_, version_,
-        binding_, queue_mode_, sms_number_);
+      return make_shared<RegisterRequest>(
+          endpoint, life_time_, object_instances_map_, endpoint_name_, version_,
+          binding_, queue_mode_, sms_number_);
+    } catch (bad_optional_access &ex) {
+      throw ParameterNotFound(make_shared<RegisterResponse>(endpoint));
+    }
   } catch (bad_optional_access &ex) {
-    throw ParameterNotFound(string("Register"), endpoint, string(ex.what()));
+    throw ParameterNotFound(make_shared<RegisterResponse>(
+        endpoint, ResponseCode::PRECOGNITION_FAILED));
   }
 }
 
@@ -205,7 +208,7 @@ UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message) {
     return make_shared<UpdateRequest>(endpoint, location, object_instances_map,
                                       life_time, binding, sms_number);
   } catch (bad_optional_access &ex) {
-    throw ParameterNotFound(string("Update"), endpoint, string(ex.what()));
+    throw ParameterNotFound(make_shared<UpdateResponse>(endpoint));
   }
 }
 
@@ -216,7 +219,7 @@ DeregisterRequestPtr buildDeregisterRequest(CoAP::MessagePtr message) {
     auto location = getLocation(message->getOptions()).value();
     return make_shared<DeregisterRequest>(endpoint, location);
   } catch (bad_optional_access &ex) {
-    throw ParameterNotFound(string("Deregister"), endpoint, string(ex.what()));
+    throw ParameterNotFound(make_shared<DeregisterResponse>(endpoint));
   }
 }
 
