@@ -6,7 +6,7 @@ list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/CoAP_Binding
 )
 
-file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
+file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.?pp")
 
 INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
 
