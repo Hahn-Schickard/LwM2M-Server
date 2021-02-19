@@ -1,6 +1,7 @@
 #include "CoAP_Binding.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "CoAP_RequestsManager.hpp"
+#include "RegistrationInterfaceRequestsBuilder.hpp"
 #include "Variant_Visitor.hpp"
 
 using namespace std;
@@ -50,8 +51,149 @@ CoAP::MessagePtr CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
   return CoAP::MessagePtr();
 }
 
-CoAP::MessagePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
-  return CoAP::MessagePtr();
+ServerResponsePtr
+CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
+  auto options = message->getOptions();
+  auto option = options.find(CoAP::OptionNumber::URI_PATH);
+  if (option != options.end()) {
+    if (option->second->getAsString() == "rd") {
+      try {
+        if (message->getHeader()->getCodeType() == CoAP::CodeType::POST) {
+          if (options.count(CoAP::OptionNumber::URI_PATH) > 1) {
+            auto request = buildUpdateRequest(message);
+            return registrator_->handleRquest(move(request));
+          } else {
+            auto request = buildRegisterRequest(message);
+            return registrator_->handleRquest(move(request));
+          }
+        } else if (message->getHeader()->getCodeType() ==
+                   CoAP::CodeType::DELETE) {
+          auto request = buildDeregisterRequest(message);
+          return registrator_->handleRquest(move(request));
+        }
+      } catch (ParameterNotFound &ex) {
+        auto endpoint = make_shared<Endpoint>(message->getAddressIP(),
+                                              message->getAddressPort());
+        return ex.response_;
+      }
+    }
+  }
+  return ServerResponsePtr();
+}
+
+ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
+  auto response = handleRegistrationRequest(message);
+  if (response) {
+    return move(response);
+  }
+  return ServerResponsePtr();
+}
+
+CoAP::CodeType toCodeType(ResponseCode code) {
+  switch (code) {
+  case ResponseCode::OK: {
+    return CoAP::CodeType::OK;
+  }
+  case ResponseCode::CREATED: {
+    return CoAP::CodeType::CREATED;
+  }
+  case ResponseCode::DELETED: {
+    return CoAP::CodeType::DELETED;
+  }
+  case ResponseCode::CHANGED: {
+    return CoAP::CodeType::CHANGED;
+  }
+  case ResponseCode::CONTENT: {
+    return CoAP::CodeType::CONTENT;
+  }
+  case ResponseCode::CONTINUE: {
+    return CoAP::CodeType::CONTINUE;
+  }
+  case ResponseCode::BAD_REQUEST: {
+    return CoAP::CodeType::BAD_REQUEST;
+  }
+  case ResponseCode::UNAUTHORIZED: {
+    return CoAP::CodeType::UNAUTHORIZED;
+  }
+  case ResponseCode::FORBIDDEN: {
+    return CoAP::CodeType::FORBIDDEN;
+  }
+  case ResponseCode::NOT_FOUND: {
+    return CoAP::CodeType::NOT_FOUND;
+  }
+  case ResponseCode::METHOD_NOT_ALLOWED: {
+    return CoAP::CodeType::METHOD_NOT_ALLOWED;
+  }
+  case ResponseCode::NOT_ACCEPTABLE: {
+    return CoAP::CodeType::NOT_ACCEPTABLE;
+  }
+  case ResponseCode::REQUEST_ENTITY_INCOMPLETE: {
+    return CoAP::CodeType::REQUEST_ENTITY_INCOMPLETE;
+  }
+  case ResponseCode::PRECOGNITION_FAILED: {
+    return CoAP::CodeType::PRECOGNITION_FAILED;
+  }
+  case ResponseCode::REQUEST_ENTITY_TOO_LARGE: {
+    return CoAP::CodeType::REQUEST_ENTITY_TOO_LARGE;
+  }
+  case ResponseCode::UNSUPPORTED_CONTENT_FORMAT: {
+    return CoAP::CodeType::UNSUPPORTED_CONTENT_FORMAT;
+  }
+  default:
+    return CoAP::CodeType::UNHANDLED;
+  }
+}
+
+CoAP::PayloadPtr buildPayload(ServerResponsePtr message) {
+  try {
+    if (message->interface_ == InterfaceType::REGISTRATION &&
+        message->message_type_ == MessageType::REGISTER) {
+      if (holds_alternative<DataFormatPtr>(message->payload_->data_)) {
+        auto data = std::get<DataFormatPtr>(message->payload_->data_);
+        auto location_string = data->get<string>();
+        vector<uint8_t> bytes =
+            vector<uint8_t>(location_string.begin(), location_string.end());
+        return make_shared<CoAP::Payload>(
+            ContentFormatEncodings::PlainText::index, bytes);
+      }
+    }
+  } catch (WrongDataType &ex) {
+    // log error msg here?
+  }
+  return CoAP::PayloadPtr();
+}
+
+Options buildOptions(ServerResponsePtr messag) {
+  // build required CoAP options based on LwM2M::InterfaceType and
+  // LwM2M::MessageType
+  return Options();
+}
+
+CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message) {
+  auto header = make_shared<CoAP::Header>(CoAP::MessageType::ACKNOWLEDGMENT,
+                                          request->getToken().size(),
+                                          toCodeType(message->response_code_),
+                                          request->getHeader()->getMessageID());
+  auto response = make_shared<CoAP::Message>(
+      request->getAddressIP(), request->getAddressPort(), move(header));
+
+  if (!request->getToken().empty()) {
+    *response += request->getToken();
+  }
+
+  auto options = buildOptions(message);
+  if (!options.empty()) {
+    *response += options;
+  }
+
+  if (message->payload_) {
+    auto payload = buildPayload(message);
+    if (payload) {
+      *response += payload;
+    }
+  }
+
+  return response;
 }
 
 CoAP::MessagePtr CoAP_Binding::handleMessage(CoAP::MessagePtr message) {
@@ -63,7 +205,7 @@ CoAP::MessagePtr CoAP_Binding::handleMessage(CoAP::MessagePtr message) {
     return handleNotification(message);
   } else if (message->getHeader()->getMesageType() ==
              CoAP::MessageType::CONFIRMABLE) {
-    return handleRequest(message);
+    return encode(message, handleRequest(message));
   } else {
     return CoAP::MessagePtr();
   }

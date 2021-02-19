@@ -27,7 +27,8 @@ class CoAP_Binding : public BindingInterface {
 
   CoAP::MessagePtr handleResponse(CoAP::MessagePtr message);
   CoAP::MessagePtr handleNotification(CoAP::MessagePtr message);
-  CoAP::MessagePtr handleRequest(CoAP::MessagePtr message);
+  ServerResponsePtr handleRegistrationRequest(CoAP::MessagePtr message);
+  ServerResponsePtr handleRequest(CoAP::MessagePtr message);
   CoAP::MessagePtr handleMessage(CoAP::MessagePtr message);
 
 public:
