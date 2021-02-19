@@ -47,6 +47,7 @@ HeaderPtr makeHeader(ServerRequestPtr request) {
 
 CoAP::Options makeOptions(ServerRequestPtr request) {
   // based on ServerRequest populate Option vector
+  // Use build() from OptionBuilder.hpp
   return CoAP::Options();
 }
 
@@ -70,7 +71,10 @@ uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
       move(header));
   // @TODO: expose generateToken method in CoAPS4Cpp
   // *message += message->generateToken();
-  // uint64_t message_identifier = hash<vector<unit8_t>{}(message->getToken());
+  // size_t token_hash =  hash<vector<unit8_t>{}(message->getToken());
+  // generate message id by concating message id and token_hash
+  // uint64_t message_identifier = message->header_->getMessageID() <<
+  // message->getToken().size() | token_hash;
   auto options = makeOptions(request);
   if (!options.empty()) {
     *message += options;

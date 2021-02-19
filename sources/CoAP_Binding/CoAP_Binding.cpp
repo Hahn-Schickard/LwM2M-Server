@@ -90,6 +90,8 @@ ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
 }
 
 CoAP::CodeType toCodeType(ResponseCode code) {
+  // Possible to do with reinterpert cast, but REALLY dangerous. This is a bit
+  // more tedious, but 100% safe
   switch (code) {
   case ResponseCode::OK: {
     return CoAP::CodeType::OK;
@@ -163,7 +165,7 @@ CoAP::PayloadPtr buildPayload(ServerResponsePtr message) {
   return CoAP::PayloadPtr();
 }
 
-Options buildOptions(ServerResponsePtr messag) {
+Options buildOptions(ServerResponsePtr message) {
   // build required CoAP options based on LwM2M::InterfaceType and
   // LwM2M::MessageType
   return Options();
