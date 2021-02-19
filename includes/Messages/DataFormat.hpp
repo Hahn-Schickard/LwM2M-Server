@@ -93,8 +93,8 @@ struct DataFormat {
    * @tparam T - requested data type
    * @return T - contained data value as type T
    */
-  template <typename T> T get() { throw UnsuportedDataType(); }
-  size_t size();
+  template <typename T> T get() const { throw UnsuportedDataType(); }
+  size_t size() const;
 
   friend bool operator==(const DataFormat &lhs, const DataFormat &rhs);
 };

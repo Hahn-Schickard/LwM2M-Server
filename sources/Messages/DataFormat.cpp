@@ -81,13 +81,13 @@ WrongDataType::WrongDataType(DataType expected, DataType actual)
 DataFormat::DataFormat(DataVariant data, DataType type)
     : data_(data), data_type_(type) {}
 
-template <> void DataFormat::get<void>() {
+template <> void DataFormat::get<void>() const {
   if (data_type_ != DataType::NONE) {
     throw WrongDataType(DataType::NONE, data_type_);
   }
 }
 
-template <> bool DataFormat::get<bool>() {
+template <> bool DataFormat::get<bool>() const {
   if (data_type_ == DataType::BOOLEAN) {
     return std::get<bool>(data_);
   } else {
@@ -95,7 +95,7 @@ template <> bool DataFormat::get<bool>() {
   }
 }
 
-template <> int64_t DataFormat::get<int64_t>() {
+template <> int64_t DataFormat::get<int64_t>() const {
   if (data_type_ == DataType::SIGNED_INTEGER) {
     return std::get<int64_t>(data_);
   } else {
@@ -103,7 +103,7 @@ template <> int64_t DataFormat::get<int64_t>() {
   }
 }
 
-template <> uint64_t DataFormat::get<uint64_t>() {
+template <> uint64_t DataFormat::get<uint64_t>() const {
   if (data_type_ == DataType::UNSIGNED_INTEGER ||
       data_type_ == DataType::TIME) {
     return std::get<uint64_t>(data_);
@@ -112,7 +112,7 @@ template <> uint64_t DataFormat::get<uint64_t>() {
   }
 }
 
-template <> double DataFormat::get<double>() {
+template <> double DataFormat::get<double>() const {
   if (data_type_ == DataType::FLOAT) {
     return std::get<double>(data_);
   } else {
@@ -120,7 +120,7 @@ template <> double DataFormat::get<double>() {
   }
 }
 
-template <> string DataFormat::get<string>() {
+template <> string DataFormat::get<string>() const {
   if (data_type_ == DataType::STRING) {
     return std::get<string>(data_);
   } else {
@@ -128,7 +128,7 @@ template <> string DataFormat::get<string>() {
   }
 }
 
-template <> ObjectLink DataFormat::get<ObjectLink>() {
+template <> ObjectLink DataFormat::get<ObjectLink>() const {
   if (data_type_ == DataType::OBJECT_LINK) {
     return std::get<ObjectLink>(data_);
   } else {
@@ -136,7 +136,7 @@ template <> ObjectLink DataFormat::get<ObjectLink>() {
   }
 }
 
-template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() {
+template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() const {
   if (data_type_ == DataType::OPAQUE) {
     return std::get<vector<uint8_t>>(data_);
   } else {
@@ -144,7 +144,7 @@ template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() {
   }
 }
 
-size_t DataFormat::size() {
+size_t DataFormat::size() const {
   size_t result = 0;
   match(data_, [&](bool value) { result = sizeof(value); },
         [&](int64_t value) { result = sizeof(value); },
