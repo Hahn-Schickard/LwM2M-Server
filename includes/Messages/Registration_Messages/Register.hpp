@@ -4,6 +4,7 @@
 #include "Message.hpp"
 #include "ModelType.hpp"
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -36,31 +37,25 @@ using RegisterResponsePtr = std::shared_ptr<RegisterResponse>;
  *
  */
 struct RegisterRequest : ClientRequest {
-  // Mandatory fields
   const size_t life_time_;
-  const LwM2M_Version version_;
   const std::unordered_map<unsigned int, std::vector<unsigned int>>
       object_instances_map_;
-  // Optional fields
-  const std::string endpoint_name_;
-  const BindingType binding_;
-  const bool queue_mode_;
-  const std::string sms_number_;
+  const std::optional<std::string> endpoint_name_;
+  const LwM2M_Version version_;
+  const std::optional<BindingType> binding_;
+  const std::optional<bool> queue_mode_;
+  const std::optional<std::string> sms_number_;
 
   RegisterRequest(
       EndpointPtr endpoint, size_t life_time = 0,
       std::unordered_map<unsigned int, std::vector<unsigned int>>
           object_instances_map =
               std::unordered_map<unsigned int, std::vector<unsigned int>>(),
-      std::string endpoint_name = std::string());
-
-  RegisterRequest(EndpointPtr endpoint, size_t life_time, LwM2M_Version version,
-                  std::unordered_map<unsigned int, std::vector<unsigned int>>
-                      object_instances_map,
-                  std::string endpoint_name,
-                  BindingType binding = BindingType::UDP,
-                  bool queue_mode = false,
-                  std::string sms_number = std::string());
+      std::optional<std::string> endpoint_name = std::nullopt,
+      LwM2M_Version version = LwM2M_Version::V1_0,
+      std::optional<BindingType> binding = std::nullopt,
+      std::optional<bool> queue_mode = std::nullopt,
+      std::optional<std::string> sms_number = std::nullopt);
 
   std::string name() override final;
 

@@ -39,8 +39,9 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
     try {
       auto device = make_shared<Device>(
           requester_, request->endpoint_, object_instances, request->life_time_,
-          request->endpoint_name_, request->version_, request->binding_,
-          request->queue_mode_);
+          request->endpoint_name_.value_or(string()), request->version_,
+          request->binding_.value_or(BindingType::UDP),
+          request->queue_mode_.value_or(false));
       auto location = registry_->registerDevice(device);
       return request->makeResponse(ResponseCode::CREATED, location);
     } catch (exception &ex) {
