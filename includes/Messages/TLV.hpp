@@ -72,8 +72,10 @@ public:
     throw std::runtime_error("Can not get value of an unsupported data type!");
   }
 
-  std::vector<uint8_t> TLV_Pack::getBytes();
+  std::vector<uint8_t> getBytes();
 };
+
+using TLV_PackPtr = std::shared_ptr<TLV_Pack>;
 
 } // namespace LwM2M
 
