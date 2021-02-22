@@ -90,6 +90,7 @@ public:
 };
 
 using DeviceRegistryPtr = std::shared_ptr<DeviceRegistry>;
+using EventSourcePtr = std::shared_ptr<Event_Model::EventSource<RegistryEvent>>;
 
 } // namespace LwM2M
 
