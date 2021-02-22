@@ -182,13 +182,13 @@ RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message) {
 }
 
 optional<string> getLocation(Options options) {
-  auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
-  for (auto it = uri_queries.first; it != uri_queries.second; it++) {
+  auto uri_paths = options.equal_range(OptionNumber::URI_PATH);
+  for (auto it = uri_paths.first; it != uri_paths.second; it++) {
     auto option = it->second;
     if (option->getAsString() == "rd") {
       auto location_uri = it;
       location_uri++;
-      if (location_uri != uri_queries.second) {
+      if (location_uri != uri_paths.second) {
         return location_uri->second->getAsString();
       }
     }
