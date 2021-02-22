@@ -1,4 +1,5 @@
 #include "CoAP_Binding.hpp"
+#include "CoAP/OptionBuilder.hpp"
 #include "CoAP/PlainText.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "CoAP_RequestsManager.hpp"
@@ -152,27 +153,27 @@ CoAP::CodeType toCodeType(ResponseCode code) {
 }
 
 CoAP::PayloadPtr buildPayload(ServerResponsePtr message) {
-  try {
-    if (message->interface_ == InterfaceType::REGISTRATION &&
-        message->message_type_ == MessageType::REGISTER) {
-      if (holds_alternative<DataFormatPtr>(message->payload_->data_)) {
-        auto data = std::get<DataFormatPtr>(message->payload_->data_);
-        auto location_string = data->get<string>();
-        vector<uint8_t> bytes =
-            vector<uint8_t>(location_string.begin(), location_string.end());
-        return encode<CoAP::PlainText>(PlainText(bytes));
-      }
-    }
-  } catch (WrongDataType &ex) {
-    // log error msg here?
+  if (message->interface_ == InterfaceType::REGISTRATION &&
+      message->message_type_ == MessageType::REGISTER) {
   }
   return CoAP::PayloadPtr();
 }
 
 Options buildOptions(ServerResponsePtr message) {
-  // build required CoAP options based on LwM2M::InterfaceType and
-  // LwM2M::MessageType
-  return Options();
+  Options options;
+  if (message->interface_ == InterfaceType::REGISTRATION &&
+      message->message_type_ == MessageType::REGISTER) {
+    if (holds_alternative<DataFormatPtr>(message->payload_->data_)) {
+      auto data = std::get<DataFormatPtr>(message->payload_->data_);
+      auto location = data->get<string>();
+      auto rd_path = build(OptionNumber::LOCATION_PATH, "rd");
+      auto location_path = build(OptionNumber::LOCATION_PATH, location);
+      options.emplace(OptionNumber::LOCATION_PATH, move(rd_path));
+      options.emplace(OptionNumber::LOCATION_PATH, move(location_path));
+    }
+  }
+
+  return options;
 }
 
 CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message) {
