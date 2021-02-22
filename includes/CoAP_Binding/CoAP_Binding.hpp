@@ -34,7 +34,8 @@ class CoAP_Binding : public BindingInterface {
   CoAP::MessagePtr handleMessage(CoAP::MessagePtr message);
 
 public:
-  CoAP_Binding(CoAP_BindingConfigPtr config, DeviceRegistryPtr registry);
+  CoAP_Binding(DeviceRegistryPtr registry,
+               CoAP_BindingConfigPtr config = CoAP_BindingConfigPtr());
 
   void start();
 

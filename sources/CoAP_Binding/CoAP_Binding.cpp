@@ -10,15 +10,19 @@ using namespace CoAP;
 
 namespace LwM2M {
 
-CoAP_Binding::CoAP_Binding(CoAP_BindingConfigPtr config,
-                           DeviceRegistryPtr registry) {
-  match(config->address_,
-        [&](bool ipv6_flag) {
-          socket_ = make_shared<Server>(ipv6_flag, config->port_);
-        },
-        [&](string address) {
-          socket_ = make_shared<Server>(address, config->port_);
-        });
+CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry,
+                           CoAP_BindingConfigPtr config) {
+  if (config) {
+    match(config->address_,
+          [&](bool ipv6_flag) {
+            socket_ = make_shared<Server>(ipv6_flag, config->port_);
+          },
+          [&](string address) {
+            socket_ = make_shared<Server>(address, config->port_);
+          });
+  } else {
+    socket_ = make_shared<Server>();
+  }
 
   SupportedContentFormats::addNewContentFormatType<
       ContentFormatEncodings::LwM2M_TLV>();
