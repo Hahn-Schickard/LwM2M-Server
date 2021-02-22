@@ -176,30 +176,34 @@ Options buildOptions(ServerResponsePtr message) {
 }
 
 CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message) {
-  auto header = make_shared<CoAP::Header>(CoAP::MessageType::ACKNOWLEDGMENT,
-                                          request->getToken().size(),
-                                          toCodeType(message->response_code_),
-                                          request->getHeader()->getMessageID());
-  auto response = make_shared<CoAP::Message>(
-      request->getAddressIP(), request->getAddressPort(), move(header));
+  if (message) {
+    auto header = make_shared<CoAP::Header>(
+        CoAP::MessageType::ACKNOWLEDGMENT, request->getToken().size(),
+        toCodeType(message->response_code_),
+        request->getHeader()->getMessageID());
+    auto response = make_shared<CoAP::Message>(
+        request->getAddressIP(), request->getAddressPort(), move(header));
 
-  if (!request->getToken().empty()) {
-    *response += request->getToken();
-  }
-
-  auto options = buildOptions(message);
-  if (!options.empty()) {
-    *response += options;
-  }
-
-  if (message->payload_) {
-    auto payload = buildPayload(message);
-    if (payload) {
-      *response += payload;
+    if (!request->getToken().empty()) {
+      *response += request->getToken();
     }
-  }
 
-  return response;
+    auto options = buildOptions(message);
+    if (!options.empty()) {
+      *response += options;
+    }
+
+    if (message->payload_) {
+      auto payload = buildPayload(message);
+      if (payload) {
+        *response += payload;
+      }
+    }
+
+    return response;
+  } else {
+    return CoAP::MessagePtr();
+  }
 }
 
 CoAP::MessagePtr CoAP_Binding::handleMessage(CoAP::MessagePtr message) {
