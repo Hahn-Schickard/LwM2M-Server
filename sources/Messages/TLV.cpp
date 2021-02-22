@@ -159,7 +159,7 @@ shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
   }
 }
 
-template <> void TLV_Pack::getValue<void>(uint16_t identifier) {}
+template <> void TLV_Pack::getValue<void>(uint16_t /*identifier*/) {}
 
 template <>
 vector<uint8_t> TLV_Pack::getValue<vector<uint8_t>>(uint16_t identifier) {
