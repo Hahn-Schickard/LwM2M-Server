@@ -96,4 +96,6 @@ DeregisterResponsePtr Registrator::handleRquest(DeregisterRequestPtr request) {
     throw invalid_argument("Deregister Request can not be a nullptr");
   }
 }
+
+EventSourcePtr Registrator::getEventSource() { return registry_; }
 } // namespace LwM2M

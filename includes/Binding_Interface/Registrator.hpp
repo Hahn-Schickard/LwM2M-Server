@@ -59,6 +59,8 @@ public:
    * @return DeregisterResponsePtr
    */
   DeregisterResponsePtr handleRquest(DeregisterRequestPtr request);
+
+  EventSourcePtr getEventSource();
 };
 
 using RegistratorPtr = std::shared_ptr<Registrator>;
