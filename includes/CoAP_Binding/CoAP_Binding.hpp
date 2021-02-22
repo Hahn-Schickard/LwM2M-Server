@@ -4,6 +4,8 @@
 #include "Binding.hpp"
 #include "CoAP/Server.hpp"
 
+#include <variant>
+
 namespace LwM2M {
 struct CoAP_BindingConfig {
   const std::variant<bool, std::string> address_ = false;
