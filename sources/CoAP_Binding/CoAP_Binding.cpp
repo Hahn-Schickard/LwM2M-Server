@@ -1,4 +1,5 @@
 #include "CoAP_Binding.hpp"
+#include "CoAP/PlainText.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "CoAP_RequestsManager.hpp"
 #include "RegistrationInterfaceRequestsBuilder.hpp"
@@ -155,8 +156,7 @@ CoAP::PayloadPtr buildPayload(ServerResponsePtr message) {
         auto location_string = data->get<string>();
         vector<uint8_t> bytes =
             vector<uint8_t>(location_string.begin(), location_string.end());
-        return make_shared<CoAP::Payload>(
-            ContentFormatEncodings::PlainText::index, bytes);
+        return encode<CoAP::PlainText>(PlainText(bytes));
       }
     }
   } catch (WrongDataType &ex) {
