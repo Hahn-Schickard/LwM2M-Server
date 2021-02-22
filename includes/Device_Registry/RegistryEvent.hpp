@@ -19,6 +19,8 @@ struct RegistryEvent {
       : type_(type), identifier_(identifier), device_(device) {}
 };
 
+using RegistryEventPtr = std::shared_ptr<RegistryEvent>;
+
 } // namespace LwM2M
 
 #endif //__LWM2M_REGISTRATION_EVENT_HPP
