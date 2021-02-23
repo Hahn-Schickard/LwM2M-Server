@@ -61,8 +61,8 @@ CoAP::PayloadPtr makePayload(ServerRequestPtr request) {
 }
 
 CoAP_RequestsManager::CoAP_RequestsManager(ResponseHandlerPtr response_handler,
-                                           shared_ptr<CoAP::Server> server)
-    : RequestsManagerInterface(response_handler), server_(server) {}
+                                           CoAP::SocketPtr socket)
+    : RequestsManagerInterface(response_handler), socket_(socket) {}
 
 uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
   auto header = makeHeader(request);
@@ -83,7 +83,7 @@ uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
   if (payload) {
     *message += payload;
   }
-  auto sent = server_->send(message);
+  auto sent = socket_->send(message);
   sent.get();
   return 0;
 }

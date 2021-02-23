@@ -2,7 +2,7 @@
 #define __LWM2M_COAP_BINDING_HPP
 
 #include "Binding.hpp"
-#include "CoAP/Server.hpp"
+#include "CoAP/Socket.hpp"
 
 #include <variant>
 
@@ -24,7 +24,7 @@ struct CoAP_BindingConfig {
 using CoAP_BindingConfigPtr = std::shared_ptr<CoAP_BindingConfig>;
 
 class CoAP_Binding : public BindingInterface {
-  std::shared_ptr<CoAP::Server> socket_;
+  CoAP::SocketPtr socket_;
   CoAP::InboxPtr inbox_;
 
   CoAP::MessagePtr handleResponse(CoAP::MessagePtr message);

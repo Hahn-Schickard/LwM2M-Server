@@ -31,6 +31,10 @@ target_include_directories(${THIS} INTERFACE
 
 target_compile_features(${THIS} PUBLIC cxx_std_17)
 
+if(BUILD_SHARED_LIBS)
+    set_property(TARGET ${THIS} PROPERTY POSITION_INDEPENDENT_CODE ON)
+endif()
+
 PRINT_TARGET_PROPERTIES(${THIS})
 
 install(

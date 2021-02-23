@@ -16,13 +16,13 @@ CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry,
   if (config) {
     match(config->address_,
           [&](bool ipv6_flag) {
-            socket_ = make_shared<Server>(ipv6_flag, config->port_);
+            socket_ = make_shared<Socket>(ipv6_flag, config->port_);
           },
           [&](string address) {
-            socket_ = make_shared<Server>(address, config->port_);
+            socket_ = make_shared<Socket>(address, config->port_);
           });
   } else {
-    socket_ = make_shared<Server>();
+    socket_ = make_shared<Socket>();
   }
 
   SupportedContentFormats::addNewContentFormatType<
