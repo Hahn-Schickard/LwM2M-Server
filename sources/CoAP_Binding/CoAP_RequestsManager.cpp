@@ -1,5 +1,7 @@
 #include "CoAP_RequestsManager.hpp"
 #include "CoAP/Message.hpp"
+#include "CoAP/OptionBuilder.hpp"
+#include "CoAP_ContentTypes.hpp"
 #include "Utility.hpp"
 
 using namespace std;
@@ -46,10 +48,130 @@ HeaderPtr makeHeader(ServerRequestPtr request) {
                              toCodeType(request->message_type_));
 }
 
+CoAP::Options makeURI_PATH(ElmentIdVariant target) {
+  Options options;
+  for (auto uri : toStrings(target)) {
+    options.emplace(OptionNumber::URI_PATH, build(OptionNumber::URI_PATH, uri));
+  }
+  return options;
+}
+
+CoAP::Options toOptions(PayloadPtr payload) {
+  Options options;
+
+  if (payload) {
+    auto data = payload->data_;
+    if (holds_alternative<TargetContent>(data)) {
+      auto target_content = get<TargetContent>(data);
+      options = makeURI_PATH(target_content.first);
+    } else if (holds_alternative<TargetContentVector>(data)) {
+      auto target_contents = get<TargetContentVector>(data);
+      for (auto target_content : target_contents) {
+        auto uri_path = makeURI_PATH(target_content.first);
+        options.insert(uri_path.begin(), uri_path.end());
+      }
+    } else if (holds_alternative<ElmentIdVariant>(data)) {
+      auto target = get<ElmentIdVariant>(data);
+      options = makeURI_PATH(target);
+    } else if (holds_alternative<vector<ElmentIdVariant>>(data)) {
+      auto targets = get<vector<ElmentIdVariant>>(data);
+      for (auto target : targets) {
+        auto uri_path = makeURI_PATH(target);
+        options.insert(uri_path.begin(), uri_path.end());
+      }
+    } else if (holds_alternative<vector<TargetAttribute>>(data)) {
+      auto target_attributes = get<vector<TargetAttribute>>(data);
+      for (auto target_attribute : target_attributes) {
+        auto uri_path = makeURI_PATH(target_attribute.first);
+        options.insert(uri_path.begin(), uri_path.end());
+      }
+    }
+  }
+
+  return options;
+}
+
 CoAP::Options makeOptions(ServerRequestPtr request) {
-  // based on ServerRequest populate Option vector
-  // Use build() from OptionBuilder.hpp
-  return CoAP::Options();
+  Options options;
+
+  options = toOptions(request->payload_);
+
+  if (request->interface_ == InterfaceType::DEVICE_MANAGMENT) {
+    switch (request->message_type_) {
+    case MessageType::READ: {
+      options.emplace(
+          OptionNumber::ACCEPT,
+          build(OptionNumber::ACCEPT,
+                to_string(ContentFormatEncodings::LwM2M_TLV::index)));
+      break;
+    }
+    case MessageType::READ_COMPOSITE: {
+      options.emplace(
+          OptionNumber::CONTENT_FORMAT,
+          build(OptionNumber::CONTENT_FORMAT,
+                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+      break;
+    }
+    case MessageType::WRITE: {
+      options.emplace(
+          OptionNumber::CONTENT_FORMAT,
+          build(OptionNumber::CONTENT_FORMAT,
+                to_string(ContentFormatEncodings::LwM2M_TLV::index)));
+      break;
+    }
+    case MessageType::WRITE_COMPOSITE: {
+      options.emplace(
+          OptionNumber::CONTENT_FORMAT,
+          build(OptionNumber::CONTENT_FORMAT,
+                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+      break;
+    }
+    case MessageType::EXECUTE: {
+      // check if there is some arguments first!
+      options.emplace(
+          OptionNumber::CONTENT_FORMAT,
+          build(OptionNumber::CONTENT_FORMAT,
+                to_string(ContentFormatEncodings::PlainText::index)));
+      break;
+    }
+    case MessageType::CREATE: {
+      options.emplace(
+          OptionNumber::CONTENT_FORMAT,
+          build(OptionNumber::CONTENT_FORMAT,
+                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+      break;
+    }
+    default: { break; }
+    }
+  } else if (request->interface_ == InterfaceType::INFORMATION_REPORTING) {
+    switch (request->message_type_) {
+    case MessageType::OBSERVE_COMPOSITE: {
+      options.emplace(
+          OptionNumber::CONTENT_FORMAT,
+          build(OptionNumber::CONTENT_FORMAT,
+                to_string(ContentFormatEncodings::LwM2M_JSON::index)));
+      options.emplace(
+          OptionNumber::ACCEPT,
+          build(OptionNumber::ACCEPT,
+                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+      [[fallthrough]];
+    }
+    case MessageType::OBSERVE: {
+      options.emplace(OptionNumber::OBSERVE,
+                      build(OptionNumber::OBSERVE, to_string(true)));
+      break;
+    }
+    case MessageType::CANCEL_OBSERVATION:
+    case MessageType::CANCEL_OBSERVATION_COMPOSITE: {
+      options.emplace(OptionNumber::OBSERVE,
+                      build(OptionNumber::OBSERVE, to_string(false)));
+      break;
+    }
+    default: { break; }
+    }
+  }
+
+  return options;
 }
 
 CoAP::PayloadPtr makePayload(ServerRequestPtr request) {
