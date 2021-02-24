@@ -154,7 +154,8 @@ CoAP::CodeType toCodeType(ResponseCode code) {
 
 CoAP::PayloadPtr buildPayload(ServerResponsePtr message) {
   if (message->interface_ == InterfaceType::REGISTRATION &&
-      message->message_type_ == MessageType::REGISTER) {
+      (message->message_type_ == MessageType::REGISTER ||
+       message->message_type_ == MessageType::UPDATE)) {
   }
   return CoAP::PayloadPtr();
 }
@@ -162,7 +163,8 @@ CoAP::PayloadPtr buildPayload(ServerResponsePtr message) {
 Options buildOptions(ServerResponsePtr message) {
   Options options;
   if (message->interface_ == InterfaceType::REGISTRATION &&
-      message->message_type_ == MessageType::REGISTER) {
+      (message->message_type_ == MessageType::REGISTER ||
+       message->message_type_ == MessageType::UPDATE)) {
     if (holds_alternative<DataFormatPtr>(message->payload_->data_)) {
       auto data = std::get<DataFormatPtr>(message->payload_->data_);
       auto location = data->get<string>();
