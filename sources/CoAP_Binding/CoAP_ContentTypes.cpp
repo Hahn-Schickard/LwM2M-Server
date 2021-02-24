@@ -17,7 +17,7 @@ template <> LwM2M::TLV_Pack decode(PayloadPtr payload) {
 }
 
 template <> PayloadPtr encode(LwM2M::TLV_Pack content) {
-  return make_shared<Payload>(ContentFormatEncodings::LwM2M_TLV::index,
-                              content.getBytes());
+  auto index = ContentFormatEncodings::LwM2M_TLV::index;
+  return make_shared<Payload>(index, content.getBytes());
 }
 } // namespace CoAP
