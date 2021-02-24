@@ -42,6 +42,12 @@ ResponseHandler::request(uint64_t response_identifier) {
   }
 }
 
+bool ResponseHandler::exists(uint64_t identifier) {
+  return response_promises_.find(identifier) != response_promises_.end()
+             ? true
+             : false;
+}
+
 void ResponseHandler::respond(uint64_t response_identifier,
                               ClientResponsePtr response) {
   auto response_promise = response_promises_.find(response_identifier);

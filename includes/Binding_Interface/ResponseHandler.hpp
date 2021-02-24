@@ -73,6 +73,8 @@ public:
    */
   std::future<ClientResponsePtr> request(uint64_t request_identifier);
 
+  bool exists(uint64_t identifier);
+
   void respond(uint64_t request_identifier,
                ClientResponsePtr response) override final;
 };
