@@ -2,7 +2,9 @@
 #define __LWM2M_MODEL_ELEMENT_ID_HPP
 
 #include <cstdint>
+#include <string>
 #include <variant>
+#include <vector>
 
 namespace LwM2M {
 struct ObjectID {
@@ -10,6 +12,9 @@ struct ObjectID {
 
   ObjectID() = default;
   ObjectID(uint16_t id);
+
+  std::string toString() const;
+  std::vector<std::string> toStrings() const;
 
   friend bool operator==(const ObjectID &lhs, const ObjectID &rhs);
 };
@@ -21,6 +26,9 @@ struct ObjectInstanceID {
   ObjectInstanceID() = default;
   ObjectInstanceID(ObjectID object_id, uint16_t instance_id);
   ObjectInstanceID(uint16_t object_id, uint16_t instance_id);
+
+  std::string toString() const;
+  std::vector<std::string> toStrings() const;
 
   friend bool operator==(const ObjectInstanceID &lhs,
                          const ObjectInstanceID &rhs);
@@ -36,6 +44,9 @@ struct ResourceID {
              uint16_t resource_id);
   ResourceID(uint16_t object_id, uint16_t object_instance_id,
              uint16_t resource_id);
+
+  std::string toString() const;
+  std::vector<std::string> toStrings() const;
 
   friend bool operator==(const ResourceID &lhs, const ResourceID &rhs);
 };
@@ -53,6 +64,9 @@ struct ResourceInstanceID {
   ResourceInstanceID(uint16_t object_id, uint16_t object_instance_id,
                      uint16_t resource_id, uint16_t resource_instance_id);
 
+  std::string toString() const;
+  std::vector<std::string> toStrings() const;
+
   friend bool operator==(const ResourceInstanceID &lhs,
                          const ResourceInstanceID &rhs);
 };
@@ -61,6 +75,8 @@ using ElmentIdVariant =
     std::variant<ObjectID, ObjectInstanceID, ResourceID, ResourceInstanceID>;
 
 size_t size_of(ElmentIdVariant value);
+
+std::vector<std::string> toStrings(ElmentIdVariant value);
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_ELEMENT_ID_HPP
