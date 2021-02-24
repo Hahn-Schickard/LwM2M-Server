@@ -1,7 +1,9 @@
 #include "CoAP_RequestsManager.hpp"
 #include "CoAP/Message.hpp"
 #include "CoAP/OptionBuilder.hpp"
+#include "CoAP/PlainText.hpp"
 #include "CoAP_ContentTypes.hpp"
+#include "TLV.hpp"
 #include "Utility.hpp"
 
 using namespace std;
@@ -174,12 +176,53 @@ CoAP::Options makeOptions(ServerRequestPtr request) {
   return options;
 }
 
+CoAP::PayloadPtr makeTLV(PayloadPtr payload) {
+  if (payload) {
+    auto data = payload->data_;
+    if (holds_alternative<TargetContent>(data)) {
+      // @TODO: build TLV_Pack here
+      // auto tlv = makeTLV_pack(get<TargetContent>(data));
+      // if (tlv) {
+      //   return encode<TLV_Pack>(*tlv.get());
+      // }
+    }
+  }
+  return CoAP::PayloadPtr();
+}
+
+CoAP::PayloadPtr makeLwM2M_CBOR(PayloadPtr payload) {
+  if (payload) {
+    auto data = payload->data_;
+    if (holds_alternative<vector<TargetContent>>(data)) {
+      // encode in LwM2M_CBOR format here
+    }
+  }
+  return CoAP::PayloadPtr();
+}
+
+CoAP::PayloadPtr makePlainText(PayloadPtr payload) {
+  if (payload) {
+    auto data = payload->data_;
+    if (holds_alternative<DataFormatPtr>(data)) {
+      auto arguments = get<DataFormatPtr>(data)->get<string>();
+      return encode<PlainText>(arguments);
+    }
+  }
+  return CoAP::PayloadPtr();
+}
+
 CoAP::PayloadPtr makePayload(ServerRequestPtr request) {
-  if (request->payload_) {
-    // encode to coap payload here
-    return CoAP::PayloadPtr();
-  } else {
-    return CoAP::PayloadPtr();
+  switch (request->message_type_) {
+  case MessageType::WRITE: {
+    return makeTLV(request->payload_);
+  }
+  case MessageType::WRITE_COMPOSITE: {
+    return makeLwM2M_CBOR(request->payload_);
+  }
+  case MessageType::EXECUTE: {
+    return makePlainText(request->payload_);
+  }
+  default: { return CoAP::PayloadPtr(); }
   }
 }
 
