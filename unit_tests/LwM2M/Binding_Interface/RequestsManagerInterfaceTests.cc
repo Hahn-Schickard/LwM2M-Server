@@ -6,6 +6,7 @@
 #include "gtest/gtest.h"
 
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 using namespace LwM2M;
@@ -25,6 +26,23 @@ protected:
   RequesterPtr requester_;
 };
 
+struct RespondWithContent {
+  void operator()(ResponseHandlerPtr responder, EndpointPtr target,
+                  uint64_t identifier, PayloadPtr content) {
+    auto response =
+        make_shared<ClientResponse>(target, ResponseCode::CONTENT, content);
+    responder->respond(identifier, move(response));
+  }
+};
+
+struct RespondWithCode {
+  void operator()(ResponseHandlerPtr responder, EndpointPtr target,
+                  uint64_t identifier, ResponseCode code) {
+    auto response = make_shared<ClientResponse>(target, code);
+    responder->respond(identifier, move(response));
+  }
+};
+
 TEST_F(RequestsManagerInterfaceTests, returnsDataFormatOnRequestData) {
   auto endpoint = make_shared<Endpoint>("1.1.1.1.", 10);
   ServerRequestPtr request = make_shared<ReadRequest>(endpoint);
@@ -42,15 +60,9 @@ TEST_F(RequestsManagerInterfaceTests, returnsDataFormatOnRequestData) {
         make_shared<DataFormat>(DataVariant((bool)true), DataType::BOOLEAN);
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier, DataFormatPtr content) {
-                ClientResponsePtr response = make_shared<ReadResponse>(
-                    target, ResponseCode::CONTENT, content);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier, data);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+        async(launch::async, RespondWithContent(), response_handler_, endpoint,
+              request_identifier, make_shared<Payload>(data));
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
@@ -81,14 +93,8 @@ TEST_F(RequestsManagerInterfaceTests,
     this_thread::sleep_for(1ms);
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier) {
-                ClientResponsePtr response =
-                    make_shared<ReadResponse>(target, ResponseCode::NOT_FOUND);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier);
+        async(launch::async, RespondWithCode(), response_handler_, endpoint,
+              request_identifier, ResponseCode::NOT_FOUND);
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
@@ -170,14 +176,8 @@ TEST_F(RequestsManagerInterfaceTests,
     }
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier) {
-                ClientResponsePtr response =
-                    make_shared<ReadResponse>(target, ResponseCode::NOT_FOUND);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier);
+        async(launch::async, RespondWithCode(), response_handler_, endpoint,
+              request_identifier, ResponseCode::NOT_FOUND);
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
@@ -219,15 +219,8 @@ TEST_F(RequestsManagerInterfaceTests,
         ObjectID(2),
         make_shared<DataFormat>(DataVariant((double)20.2), DataType::FLOAT));
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier, vector<TargetContent> content) {
-                ClientResponsePtr response =
-                    make_shared<ReadComopositeResponse>(
-                        target, ResponseCode::CONTENT, content);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier, data);
+        async(launch::async, RespondWithContent(), response_handler_, endpoint,
+              request_identifier, make_shared<Payload>(data));
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
@@ -271,15 +264,8 @@ TEST_F(RequestsManagerInterfaceTests,
     this_thread::sleep_for(1ms);
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier) {
-                ClientResponsePtr response =
-                    make_shared<ReadComopositeResponse>(
-                        target, ResponseCode::UNAUTHORIZED);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier);
+        async(launch::async, RespondWithCode(), response_handler_, endpoint,
+              request_identifier, ResponseCode::UNAUTHORIZED);
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
@@ -369,15 +355,8 @@ TEST_F(RequestsManagerInterfaceTests,
     }
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier) {
-                ClientResponsePtr response =
-                    make_shared<ReadComopositeResponse>(
-                        target, ResponseCode::UNAUTHORIZED);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier);
+        async(launch::async, RespondWithCode(), response_handler_, endpoint,
+              request_identifier, ResponseCode::UNAUTHORIZED);
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
@@ -409,14 +388,8 @@ TEST_F(RequestsManagerInterfaceTests, returnsTrueOnRequestAction) {
     this_thread::sleep_for(1ms);
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier) {
-                ClientResponsePtr response =
-                    make_shared<WriteResponse>(target, ResponseCode::CHANGED);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier);
+        async(launch::async, RespondWithCode(), response_handler_, endpoint,
+              request_identifier, ResponseCode::CHANGED);
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
@@ -447,13 +420,8 @@ TEST_F(RequestsManagerInterfaceTests, returnsFalseOnRequestAction) {
     this_thread::sleep_for(1ms);
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier) {
-                ClientResponsePtr response = make_shared<WriteResponse>(target);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier);
+        async(launch::async, RespondWithCode(), response_handler_, endpoint,
+              request_identifier, ResponseCode::BAD_REQUEST);
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
@@ -534,13 +502,8 @@ TEST_F(RequestsManagerInterfaceTests,
     }
 
     auto response_test_result =
-        async(launch::async,
-              [](ResponseHandlerPtr responder, EndpointPtr target,
-                 uint64_t identifier) {
-                ClientResponsePtr response = make_shared<WriteResponse>(target);
-                responder->respond(identifier, response);
-              },
-              response_handler_, endpoint, request_identifier);
+        async(launch::async, RespondWithCode(), response_handler_, endpoint,
+              request_identifier, ResponseCode::BAD_REQUEST);
     if (response_test_result.wait_for(1ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }

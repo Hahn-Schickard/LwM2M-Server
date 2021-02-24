@@ -22,37 +22,6 @@ struct WriteRequest : ServerRequest {
 };
 
 using WriteRequestPtr = std::shared_ptr<WriteRequest>;
-
-/**
- * @brief Response to LwM2M::WriteRequest, indicates wheater the request was
- * succefull, requires more data or failed
- *
- * Supported response codes:
- * - ResponseCode::CHANGED - Operation was a success.
- * - ResponseCode::CONTINUE - Operation was a success, but requires more data
- * fragments.
- * - ResponseCode::BAD_REQUEST - Data format is written in wrong Content Format.
- * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
- * valid element within the client.
- * - ResponseCode::METHOD_NOT_ALLOWED - Target LwM2M::ElmentIdVariant is not
- * allowed to use Write operation.
- * - ResponseCode::NOT_ACCEPTABLE - The specified Content Format type is not
- * supported by the Client.
- * - ResponseCode::REQUEST_ENTITY_INCOMPLETE - Failed to receive all of the
- * request fragments.
- * - ResponseCode::REQUEST_ENTITY_TOO_LARGE - Request exceeds the ammount of
- * allowed message fragments.
- */
-struct WriteResponse : ClientResponse {
-  WriteResponse(EndpointPtr endpoint,
-                ResponseCode response_code = ResponseCode::BAD_REQUEST);
-
-  std::string name() override final;
-};
-
-using WriteResponsePtr = std::shared_ptr<WriteResponse>;
-
 } // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_MANAGMENT_WRITE_MESSAGE_HPP

@@ -20,19 +20,4 @@ ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target,
                                                 DataType::STRING)))) {}
 
 string ExecuteRequest::name() { return "ExecuteRequest"; }
-
-ExecuteResponse::ExecuteResponse(EndpointPtr endpoint,
-                                 ResponseCode response_code)
-    : ClientResponse(endpoint, MessageType::EXECUTE,
-                     InterfaceType::DEVICE_MANAGMENT,
-                     unordered_set<ResponseCode>{
-                         ResponseCode::CHANGED, ResponseCode::BAD_REQUEST,
-                         ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
-                         ResponseCode::METHOD_NOT_ALLOWED},
-                     response_code) {
-  checkResponseCode(response_code);
-}
-
-string ExecuteResponse::name() { return "ExecuteResponse"; }
-
 } // namespace LwM2M

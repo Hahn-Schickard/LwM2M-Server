@@ -162,26 +162,12 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<CreateResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::CREATE,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false}),
         makeTestParameter<DeleteRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::DELETE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
-            .notification_ = false}),
-        makeTestParameter<DeleteResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::DELETE,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
             .notification_ = false}),
         makeTestParameter<DiscoverRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
@@ -190,26 +176,12 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<DiscoverResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::DISCOVER,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false}),
         makeTestParameter<ExecuteRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::EXECUTE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
-            .notification_ = false}),
-        makeTestParameter<ExecuteResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::EXECUTE,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
             .notification_ = false}),
         makeTestParameter<ReadRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
@@ -218,26 +190,12 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ReadResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::READ,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false}),
         makeTestParameter<ReadComopositeRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::READ_COMPOSITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
-            .notification_ = false}),
-        makeTestParameter<ReadComopositeResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::READ_COMPOSITE,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
             .notification_ = false}),
         makeTestParameter<WriteRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
@@ -246,13 +204,6 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<WriteResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::WRITE,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false}),
         makeTestParameter<WriteAttributesRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE_ATTRIBUTES,
@@ -260,26 +211,12 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<WriteAttributesResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::WRITE_ATTRIBUTES,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false}),
         makeTestParameter<WriteComopositeRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::WRITE_COMPOSITE,
             .interface_ = InterfaceType::DEVICE_MANAGMENT,
             .response_ = false,
             .incomming_ = false,
-            .notification_ = false}),
-        makeTestParameter<WriteComopositeResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::WRITE_COMPOSITE,
-            .interface_ = InterfaceType::DEVICE_MANAGMENT,
-            .response_ = true,
-            .incomming_ = true,
             .notification_ = false}),
         // Information Reporting Messages
         makeTestParameter<ObserveRequest>(MessageTestExpectations{
@@ -289,26 +226,12 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<ObserveResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::OBSERVE,
-            .interface_ = InterfaceType::INFORMATION_REPORTING,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false}),
         makeTestParameter<ObserveCompositeRequest>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
             .message_type_ = MessageType::OBSERVE_COMPOSITE,
             .interface_ = InterfaceType::INFORMATION_REPORTING,
             .response_ = false,
             .incomming_ = false,
-            .notification_ = false}),
-        makeTestParameter<ObserveCompositeResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::OBSERVE_COMPOSITE,
-            .interface_ = InterfaceType::INFORMATION_REPORTING,
-            .response_ = true,
-            .incomming_ = true,
             .notification_ = false}),
         makeTestParameter<ValueUpdated>(MessageTestExpectations{
             .endpoint_ = tested_endpoint,
@@ -338,13 +261,6 @@ INSTANTIATE_TEST_SUITE_P(
             .response_ = false,
             .incomming_ = false,
             .notification_ = false}),
-        makeTestParameter<CancelObservationResponse>(MessageTestExpectations{
-            .endpoint_ = tested_endpoint,
-            .message_type_ = MessageType::CANCEL_OBSERVATION,
-            .interface_ = InterfaceType::INFORMATION_REPORTING,
-            .response_ = true,
-            .incomming_ = true,
-            .notification_ = false}),
         makeTestParameter<CancelObserveCompositeRequest>(
             MessageTestExpectations{
                 .endpoint_ = tested_endpoint,
@@ -352,13 +268,5 @@ INSTANTIATE_TEST_SUITE_P(
                 .interface_ = InterfaceType::INFORMATION_REPORTING,
                 .response_ = false,
                 .incomming_ = false,
-                .notification_ = false}),
-        makeTestParameter<CancelObserveCompositeResponse>(
-            MessageTestExpectations{
-                .endpoint_ = tested_endpoint,
-                .message_type_ = MessageType::CANCEL_OBSERVATION_COMPOSITE,
-                .interface_ = InterfaceType::INFORMATION_REPORTING,
-                .response_ = true,
-                .incomming_ = true,
                 .notification_ = false})),
     GenerateTestName());

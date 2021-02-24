@@ -28,37 +28,6 @@ struct ReadComopositeRequest : ServerRequest {
 };
 
 using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
-
-/**
- * @brief Response to LwM2M::ReadComopositeRequest, contains a list of
- * application/senml+json or application/senml+cbor [RFC8428] Sensor Measurement
- * Lists where the records contain Base Name and/or Name Fields, but no Value
- * fields.
- *
- * Supported response codes:
- * - ResponseCode::CONTENT - Operation was a success.
- * - ResponseCode::BAD_REQUEST - Client encountered an undetermened error, while
- * processing the request.
- * - ResponseCode::UNAUTHORIZED - Access rights permission denied.
- * - ResponseCode::NOT_FOUND - None of target LwM2M::ElmentIdVariant instances
- * point to a valid element within the client
- * - ResponseCode::METHOD_NOT_ALLOWED - None of target LwM2M::ElmentIdVariant
- * instances are allowed to use Read operation.
- * - ResponseCode::NOT_ACCEPTABLE - None of preferred Content Formats are
- * supported by the Client
- */
-struct ReadComopositeResponse : ClientResponse {
-  ReadComopositeResponse(EndpointPtr endpoint, ResponseCode response_code,
-                         std::vector<TargetContent> content);
-
-  ReadComopositeResponse(EndpointPtr endpoint, ResponseCode response_code =
-                                                   ResponseCode::BAD_REQUEST);
-
-  std::string name() override final;
-};
-
-using ReadComopositeResponsePtr = std::shared_ptr<ReadComopositeResponse>;
-
 } // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP

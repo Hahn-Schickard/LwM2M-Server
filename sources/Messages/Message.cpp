@@ -191,9 +191,6 @@ Response::Response(EndpointPtr endpoint, MessageType message_type,
                    ResponseCode response_code, PayloadPtr payload)
     : Message(endpoint, message_type, interface, payload, incomming, true),
       supported_responses_(supported_responses), response_code_(response_code) {
-  if (supported_responses_.empty()) {
-    throw invalid_argument("Response must support at least 1 Response code");
-  }
 }
 
 void Response::checkResponseCode(ResponseCode response_code) {
@@ -206,12 +203,11 @@ ClientRequest::ClientRequest(EndpointPtr endpoint, MessageType message_type,
                              InterfaceType interface, PayloadPtr payload)
     : Message(endpoint, message_type, interface, payload, true) {}
 
-ClientResponse::ClientResponse(EndpointPtr endpoint, MessageType message_type,
-                               InterfaceType interface,
-                               unordered_set<ResponseCode> supported_responses,
-                               ResponseCode response_code, PayloadPtr payload)
-    : Response(endpoint, message_type, interface, true, supported_responses,
-               response_code, payload) {}
+ClientResponse::ClientResponse(EndpointPtr endpoint, ResponseCode response_code,
+                               PayloadPtr payload)
+    : Response(endpoint, MessageType::NOT_RECOGNIZED,
+               InterfaceType::NOT_RECOGNIZED, true,
+               unordered_set<ResponseCode>(), response_code, payload) {}
 
 ClientNotification::ClientNotification(EndpointPtr endpoint,
                                        MessageType message_type,

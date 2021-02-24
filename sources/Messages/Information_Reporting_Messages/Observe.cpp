@@ -10,32 +10,4 @@ ObserveRequest::ObserveRequest(EndpointPtr endpoint, ElmentIdVariant target_id)
                     make_shared<Payload>(target_id)) {}
 
 string ObserveRequest::name() { return "ObserveRequest"; }
-
-ObserveResponse::ObserveResponse(EndpointPtr endpoint,
-                                 ResponseCode response_code,
-                                 DataFormatPtr content)
-    : ClientResponse(endpoint, MessageType::OBSERVE,
-                     InterfaceType::INFORMATION_REPORTING,
-                     unordered_set<ResponseCode>{
-                         ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
-                         ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
-                         ResponseCode::METHOD_NOT_ALLOWED},
-                     response_code, make_shared<Payload>(content)) {
-  checkResponseCode(response_code);
-}
-
-ObserveResponse::ObserveResponse(EndpointPtr endpoint,
-                                 ResponseCode response_code)
-    : ClientResponse(endpoint, MessageType::OBSERVE,
-                     InterfaceType::INFORMATION_REPORTING,
-                     unordered_set<ResponseCode>{
-                         ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
-                         ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
-                         ResponseCode::METHOD_NOT_ALLOWED},
-                     response_code, PayloadPtr()) {
-  checkResponseCode(response_code);
-}
-
-string ObserveResponse::name() { return "ObserveResponse"; }
-
 } // namespace LwM2M

@@ -169,11 +169,9 @@ protected:
 using ClientRequestPtr = std::shared_ptr<ClientRequest>;
 
 struct ClientResponse : Response {
-protected:
-  ClientResponse(EndpointPtr endpoint, MessageType message_type,
-                 InterfaceType interface,
-                 std::unordered_set<ResponseCode> supported_responses,
-                 ResponseCode response_code, PayloadPtr payload = PayloadPtr());
+  ClientResponse(EndpointPtr endpoint,
+                 ResponseCode response_code = ResponseCode::BAD_REQUEST,
+                 PayloadPtr payload = PayloadPtr());
 };
 
 using ClientResponsePtr = std::shared_ptr<ClientResponse>;

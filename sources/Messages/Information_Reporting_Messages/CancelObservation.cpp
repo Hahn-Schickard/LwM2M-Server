@@ -11,18 +11,4 @@ CancelObservationRequest::CancelObservationRequest(EndpointPtr endpoint,
                     make_shared<Payload>(target_id)) {}
 
 string CancelObservationRequest::name() { return "CancelObservationRequest"; }
-
-CancelObservationResponse::CancelObservationResponse(EndpointPtr endpoint,
-                                                     ResponseCode response_code)
-    : ClientResponse(endpoint, MessageType::CANCEL_OBSERVATION,
-                     InterfaceType::INFORMATION_REPORTING,
-                     unordered_set<ResponseCode>{
-                         ResponseCode::CONTENT, ResponseCode::BAD_REQUEST,
-                         ResponseCode::UNAUTHORIZED, ResponseCode::NOT_FOUND,
-                         ResponseCode::METHOD_NOT_ALLOWED},
-                     response_code) {
-  checkResponseCode(response_code);
-}
-
-string CancelObservationResponse::name() { return "CancelObservationResponse"; }
 } // namespace LwM2M
