@@ -48,6 +48,7 @@ void CoAP_Binding::start() {
 }
 
 ResponseCode toCodeType(CoAP::CodeType code) {
+  // I will suffer, only if I f*ed up the CoAP::Socket implementation
   return static_cast<ResponseCode>(code);
 }
 
@@ -162,60 +163,8 @@ ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
 }
 
 CoAP::CodeType toCodeType(ResponseCode code) {
-  // Possible to do with reinterpert cast, but REALLY dangerous. This is a bit
-  // more tedious, but 100% safe
-  switch (code) {
-  case ResponseCode::OK: {
-    return CoAP::CodeType::OK;
-  }
-  case ResponseCode::CREATED: {
-    return CoAP::CodeType::CREATED;
-  }
-  case ResponseCode::DELETED: {
-    return CoAP::CodeType::DELETED;
-  }
-  case ResponseCode::CHANGED: {
-    return CoAP::CodeType::CHANGED;
-  }
-  case ResponseCode::CONTENT: {
-    return CoAP::CodeType::CONTENT;
-  }
-  case ResponseCode::CONTINUE: {
-    return CoAP::CodeType::CONTINUE;
-  }
-  case ResponseCode::BAD_REQUEST: {
-    return CoAP::CodeType::BAD_REQUEST;
-  }
-  case ResponseCode::UNAUTHORIZED: {
-    return CoAP::CodeType::UNAUTHORIZED;
-  }
-  case ResponseCode::FORBIDDEN: {
-    return CoAP::CodeType::FORBIDDEN;
-  }
-  case ResponseCode::NOT_FOUND: {
-    return CoAP::CodeType::NOT_FOUND;
-  }
-  case ResponseCode::METHOD_NOT_ALLOWED: {
-    return CoAP::CodeType::METHOD_NOT_ALLOWED;
-  }
-  case ResponseCode::NOT_ACCEPTABLE: {
-    return CoAP::CodeType::NOT_ACCEPTABLE;
-  }
-  case ResponseCode::REQUEST_ENTITY_INCOMPLETE: {
-    return CoAP::CodeType::REQUEST_ENTITY_INCOMPLETE;
-  }
-  case ResponseCode::PRECOGNITION_FAILED: {
-    return CoAP::CodeType::PRECOGNITION_FAILED;
-  }
-  case ResponseCode::REQUEST_ENTITY_TOO_LARGE: {
-    return CoAP::CodeType::REQUEST_ENTITY_TOO_LARGE;
-  }
-  case ResponseCode::UNSUPPORTED_CONTENT_FORMAT: {
-    return CoAP::CodeType::UNSUPPORTED_CONTENT_FORMAT;
-  }
-  default:
-    return CoAP::CodeType::UNHANDLED;
-  }
+  // Sometimes, you just have to live dangerously.
+  return static_cast<CoAP::CodeType>(code);
 }
 
 CoAP::PayloadPtr buildPayload(ServerResponsePtr message) {
