@@ -1,9 +1,12 @@
 #include "CoAP_Binding.hpp"
+#include "CoAP/CoRE_Link.hpp"
+#include "CoAP/OctetStream.hpp"
 #include "CoAP/OptionBuilder.hpp"
 #include "CoAP/PlainText.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "CoAP_RequestsManager.hpp"
 #include "RegistrationInterfaceRequestsBuilder.hpp"
+#include "Utility.hpp"
 #include "Variant_Visitor.hpp"
 
 using namespace std;
@@ -44,10 +47,73 @@ void CoAP_Binding::start() {
   Stoppable::start();
 }
 
+ResponseCode toCodeType(CoAP::CodeType code) {
+  return static_cast<ResponseCode>(code);
+}
+
+PayloadPtr toPayload(PlainText content) { return PayloadPtr(); }
+PayloadPtr toPayload(CoRE_Links content) { return PayloadPtr(); }
+PayloadPtr toPayload(TLV_Pack content) { return PayloadPtr(); }
+PayloadPtr toPayload(OctetStream content) { return PayloadPtr(); }
+
+ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) {
+  auto endpoint =
+      make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
+  auto code = toCodeType(message->getHeader()->getCodeType());
+  if (!message->getPayload()) {
+    PayloadPtr content;
+    auto payload = message->getPayload();
+    auto options = message->getOptions();
+    auto it = options.find(OptionNumber::CONTENT_FORMAT);
+    if (it != options.end()) {
+      auto content_format =
+          dynamic_pointer_cast<CoAP::ContentFormat>(it->second);
+      switch (content_format->getIndex()) {
+      case ContentFormatEncodings::PlainText::index: {
+        auto text = decode<PlainText>(payload);
+        content = toPayload(text);
+        break;
+      }
+      case ContentFormatEncodings::CoRE_Link::index: {
+        auto core_links = decode<CoRE_Links>(payload);
+        content = toPayload(core_links);
+        break;
+      }
+      case ContentFormatEncodings::LwM2M_TLV::index: {
+        auto tlv = decode<TLV_Pack>(payload);
+        content = toPayload(tlv);
+        break;
+      }
+      case ContentFormatEncodings::LwM2M_CBOR::index: {
+        [[fallthrough]];
+      }
+      case ContentFormatEncodings::LwM2M_JSON::index: {
+        throw runtime_error(
+            string(ContentFormatEncodings::LwM2M_JSON::toString()) +
+            " is not supported");
+      }
+      case ContentFormatEncodings::Octet_Stream::index: {
+        auto octets = decode<OctetStream>(payload);
+        content = toPayload(octets);
+        break;
+      }
+      default: {
+        throw runtime_error("Unhandeled Content Format with index :" +
+                            content_format->getIndex());
+      }
+      }
+      return make_shared<ClientResponse>(endpoint, code, content);
+    }
+  } else {
+    return make_shared<ClientResponse>(endpoint, code);
+  }
+}
+
 CoAP::MessagePtr CoAP_Binding::handleResponse(CoAP::MessagePtr message) {
-  // get message id and token hash combo
-  // create LwM2M::ClientResponse
-  // call LwM2M::ResponseHandler::respond()
+  auto identifier = generateHash(message);
+  if (response_handler_->exists(identifier)) {
+    response_handler_->respond(identifier, makeClientResponse(message));
+  }
   return CoAP::MessagePtr();
 }
 
