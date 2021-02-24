@@ -12,9 +12,9 @@ namespace ContentFormatEncodings {
  * CoAP Content-Formats table at:
  * https://www.iana.org/assignments/core-parameters/core-parameters.xhtml
  */
-typedef ContentFormatEncoding<11542, decltype("LwM2M TLV"_name)> LwM2M_TLV;
-typedef ContentFormatEncoding<11543, decltype("LwM2M CBOR"_name)> LwM2M_CBOR;
-typedef ContentFormatEncoding<11544, decltype("LwM2M JSON"_name)> LwM2M_JSON;
+using LwM2M_TLV = ContentFormatEncoding<11542, decltype("LwM2M TLV"_name)>;
+using LwM2M_CBOR = ContentFormatEncoding<11543, decltype("LwM2M CBOR"_name)>;
+using LwM2M_JSON = ContentFormatEncoding<11544, decltype("LwM2M JSON"_name)>;
 } // namespace ContentFormatEncodings
 
 template <> LwM2M::TLV_Pack decode(PayloadPtr payload);
