@@ -1,5 +1,6 @@
 #include "CoAP_RequestsManager.hpp"
 #include "CoAP/Message.hpp"
+#include "Utility.hpp"
 
 using namespace std;
 using namespace CoAP;
@@ -69,12 +70,7 @@ uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
   auto message = make_shared<CoAP::Message>(
       request->endpoint_->endpoint_address_, request->endpoint_->endpoint_port_,
       move(header));
-  // @TODO: expose generateToken method in CoAPS4Cpp
-  // *message += message->generateToken();
-  // size_t token_hash =  hash<vector<unit8_t>{}(message->getToken());
-  // generate message id by concating message id and token_hash
-  // uint64_t message_identifier = message->header_->getMessageID() <<
-  // message->getToken().size() | token_hash;
+  message->generateToken();
   auto options = makeOptions(request);
   if (!options.empty()) {
     *message += options;
@@ -83,8 +79,10 @@ uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
   if (payload) {
     *message += payload;
   }
+
   auto sent = socket_->send(message);
   sent.get();
-  return 0;
+
+  return generateHash(message);
 }
 } // namespace LwM2M
