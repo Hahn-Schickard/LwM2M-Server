@@ -3,6 +3,7 @@
 #include "Event_Model.hpp"
 #include "LoggerRepository.hpp"
 #include "RegistryEvent.hpp"
+#include "Variant_Visitor.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -11,6 +12,62 @@
 using namespace HaSLL;
 using namespace LwM2M;
 using namespace std;
+
+future<string> stringifyResourceValue(ResourceVariant variant) {
+  promise<string> result;
+  match(variant,
+        [&](ResourcePtr<bool> resource) {
+          auto resource_future = resource->read();
+          bool value = resource_future.get();
+          result.set_value(value ? "True" : "False");
+        },
+        [&](ResourcePtr<int64_t> resource) {
+          auto resource_future = resource->read();
+          int64_t value = resource_future.get();
+          result.set_value(to_string(value));
+        },
+        [&](ResourcePtr<double> resource) {
+          auto resource_future = resource->read();
+          double value = resource_future.get();
+          result.set_value(to_string(value));
+        },
+        [&](ResourcePtr<string> resource) {
+          auto resource_future = resource->read();
+          result.set_value(resource_future.get());
+        },
+        [&](ResourcePtr<uint64_t> resource) {
+          auto resource_future = resource->read();
+          uint64_t value = resource_future.get();
+          result.set_value(to_string(value));
+        },
+        [&](ResourcePtr<ObjectLink> resource) {
+          auto resource_future = resource->read();
+          ObjectLink value = resource_future.get();
+          string stringy = "Object link:" + to_string(value.object_id_) + ":" +
+                           to_string(value.instance_id_);
+          result.set_value(stringy);
+        },
+        [&](ResourcePtr<vector<uint8_t>> resource) {
+          auto resource_future = resource->read();
+          vector<uint8_t> value = resource_future.get();
+          result.set_value(string(value.begin(), value.end()));
+        });
+  return result.get_future();
+}
+
+void asyncRead(DevicePtr device) {
+  //@TODO: this leaks memory, REWORK IT!
+  thread(
+      [](DevicePtr device) {
+        auto future =
+            stringifyResourceValue(device->getObject(3)->getResource(0, 2));
+        future.wait();
+        cout << "Device: " << device->getDeviceId()
+             << " Model Number of this device is: " << future.get() << endl;
+      },
+      device)
+      .detach();
+}
 
 class RegistrationListener : public Event_Model::EventListener<RegistryEvent> {
 public:
@@ -23,6 +80,7 @@ public:
       cout << "A new device with id: " << event->identifier_
            << " has been registered!" << endl;
       auto device = event->device_;
+      asyncRead(device);
       break;
     }
     case RegistryEventType::UPDATED: {
