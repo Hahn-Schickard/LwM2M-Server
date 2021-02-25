@@ -159,70 +159,6 @@ shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
   }
 }
 
-template <> void TLV_Pack::getValue<void>(uint16_t /*identifier*/) {}
-
-template <>
-vector<uint8_t> TLV_Pack::getValue<vector<uint8_t>>(uint16_t identifier) {
-  return getTLV(identifier)->getValue();
-}
-
-template <> string TLV_Pack::getValue<string>(uint16_t identifier) {
-  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
-  return string(tlv_value.begin(), tlv_value.end());
-}
-
-template <> bool TLV_Pack::getValue<bool>(uint16_t identifier) {
-  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
-  if (!tlv_value.empty() && tlv_value.size() < 2) {
-    return (bool)tlv_value[0];
-  } else {
-    throw logic_error("Bool type can not be empty or larger than 8bits!");
-  }
-}
-
-template <> int64_t TLV_Pack::getValue<int64_t>(uint16_t identifier) {
-  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
-  if (!tlv_value.empty() && tlv_value.size() < 8) {
-    int64_t concat_value = 0;
-    uint8_t offset = 0;
-    for (auto byte : tlv_value) {
-      concat_value = concat_value | byte << offset;
-      offset += 8;
-    }
-    return concat_value;
-  } else {
-    throw logic_error("Intiger type can not be empty or larger than 64bits!");
-  }
-}
-
-template <> uint64_t TLV_Pack::getValue<uint64_t>(uint16_t identifier) {
-  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
-  if (!tlv_value.empty() && tlv_value.size() < 8) {
-    uint64_t concat_value = 0;
-    uint8_t offset = 0;
-    for (auto byte : tlv_value) {
-      concat_value = concat_value | byte << offset;
-      offset += 8;
-    }
-    return concat_value;
-  } else {
-    throw logic_error(
-        "Unsigned Intiger type can not be empty or larger than 64bits!");
-  }
-}
-
-template <> double TLV_Pack::getValue<double>(uint16_t identifier) {
-  vector<uint8_t> tlv_value = getTLV(identifier)->getValue();
-  double result;
-  if (tlv_value.size() <= 8) {
-    copy(tlv_value.begin(), tlv_value.end(),
-         reinterpret_cast<uint8_t *>(&result));
-  } else {
-    throw logic_error("Floating point type can not be smaller than 32bits!");
-  }
-  return result;
-}
-
 vector<uint8_t> TLV_Pack::getBytes() {
   vector<uint8_t> result;
   for (auto value : values_) {
@@ -231,4 +167,6 @@ vector<uint8_t> TLV_Pack::getBytes() {
   }
   return result;
 }
+
+TLV_ValueMap TLV_Pack::getPack() { return values_; }
 } // namespace LwM2M

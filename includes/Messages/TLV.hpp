@@ -68,11 +68,8 @@ public:
   TLV_Pack(std::vector<uint8_t> bytestream);
   TLV_Pack(TLV_ValueMap values);
 
-  template <typename T> T getValue(uint16_t identifier) {
-    throw std::runtime_error("Can not get value of an unsupported data type!");
-  }
-
   std::vector<uint8_t> getBytes();
+  TLV_ValueMap getPack();
 };
 
 using TLV_PackPtr = std::shared_ptr<TLV_Pack>;
