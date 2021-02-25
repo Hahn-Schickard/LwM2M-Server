@@ -44,16 +44,15 @@ CodeType toCodeType(LwM2M::MessageType type) {
   }
 }
 
-HeaderPtr makeHeader(ServerRequestPtr request) {
-  uint8_t request_size = TOKEN_SIZE + request->payload_->size();
-  return make_shared<Header>(CoAP::MessageType::CONFIRMABLE, request_size,
-                             toCodeType(request->message_type_));
+HeaderPtr makeHeader(CodeType code) {
+  return make_shared<Header>(CoAP::MessageType::CONFIRMABLE, TOKEN_SIZE, code);
 }
 
 CoAP::Options makeURI_PATH(ElmentIdVariant target) {
   Options options;
   for (auto uri : toStrings(target)) {
-    options.emplace(OptionNumber::URI_PATH, build(OptionNumber::URI_PATH, uri));
+    auto option = build(OptionNumber::URI_PATH, uri);
+    options.emplace(OptionNumber::URI_PATH, option);
   }
   return options;
 }
@@ -231,7 +230,7 @@ CoAP_RequestsManager::CoAP_RequestsManager(ResponseHandlerPtr response_handler,
     : RequestsManagerInterface(response_handler), socket_(socket) {}
 
 uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
-  auto header = makeHeader(request);
+  auto header = makeHeader(toCodeType(request->message_type_));
   auto message = make_shared<CoAP::Message>(
       request->endpoint_->endpoint_address_, request->endpoint_->endpoint_port_,
       move(header));
