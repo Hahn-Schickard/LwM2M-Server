@@ -70,6 +70,7 @@ public:
 
   std::vector<uint8_t> getBytes();
   TLV_ValueMap getPack();
+  std::vector<TLV_ptr> getPackAsVector();
 };
 
 using TLV_PackPtr = std::shared_ptr<TLV_Pack>;

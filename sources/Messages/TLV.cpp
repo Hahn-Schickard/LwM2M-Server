@@ -169,4 +169,12 @@ vector<uint8_t> TLV_Pack::getBytes() {
 }
 
 TLV_ValueMap TLV_Pack::getPack() { return values_; }
+
+vector<TLV_ptr> TLV_Pack::getPackAsVector() {
+  vector<TLV_ptr> result;
+  for (auto value : values_) {
+    result.push_back(value.second);
+  }
+  return result;
+}
 } // namespace LwM2M

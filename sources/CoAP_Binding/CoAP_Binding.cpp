@@ -53,8 +53,7 @@ ResponseCode toCodeType(CoAP::CodeType code) {
 }
 
 PayloadPtr toPayload(PlainText content) {
-  return make_shared<Payload>(
-      make_shared<DataFormat>(content.toString(), DataType::STRING));
+  return make_shared<Payload>(make_shared<DataFormat>(content.toString()));
 }
 
 PayloadPtr toPayload(CoRE_Links content) {
@@ -62,11 +61,19 @@ PayloadPtr toPayload(CoRE_Links content) {
   return PayloadPtr();
 }
 
-PayloadPtr toPayload(TLV_Pack content) { return PayloadPtr(); }
+PayloadPtr toPayload(TLV_Pack content) {
+  auto values = content.getPackAsVector();
+  if (!values.empty()) {
+    if (values.size() == 1) {
+      auto data = make_shared<DataFormat>(values[0]->getValue());
+      return make_shared<Payload>(data);
+    }
+  }
+  return PayloadPtr();
+}
 
 PayloadPtr toPayload(OctetStream content) {
-  return make_shared<Payload>(
-      make_shared<DataFormat>(content.getValue(), DataType::OPAQUE));
+  return make_shared<Payload>(make_shared<DataFormat>(content.getValue()));
 }
 
 ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) {
