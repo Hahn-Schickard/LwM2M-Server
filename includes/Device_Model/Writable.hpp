@@ -18,8 +18,7 @@ public:
 
   std::future<bool> write(DataVariant data) override {
     auto message = std::make_shared<WriteRequest>(
-        endpoint_, id_,
-        std::make_shared<DataFormat>(data, descriptor_->data_type_));
+        endpoint_, id_, std::make_shared<DataFormat>(data));
 
     return requester_->requestAction(message);
   }

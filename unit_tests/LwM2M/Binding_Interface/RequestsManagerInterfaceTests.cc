@@ -56,8 +56,7 @@ TEST_F(RequestsManagerInterfaceTests, returnsDataFormatOnRequestData) {
     auto result_future = requester_->requestData(request);
     this_thread::sleep_for(1ms);
 
-    auto data =
-        make_shared<DataFormat>(DataVariant((bool)true), DataType::BOOLEAN);
+    auto data = make_shared<DataFormat>(DataVariant((bool)true));
 
     auto response_test_result =
         async(launch::async, RespondWithContent(), response_handler_, endpoint,
@@ -212,12 +211,10 @@ TEST_F(RequestsManagerInterfaceTests,
     this_thread::sleep_for(1ms);
 
     vector<TargetContent> data;
-    data.emplace_back(
-        ObjectID(1),
-        make_shared<DataFormat>(DataVariant((bool)true), DataType::BOOLEAN));
-    data.emplace_back(
-        ObjectID(2),
-        make_shared<DataFormat>(DataVariant((double)20.2), DataType::FLOAT));
+    data.emplace_back(ObjectID(1),
+                      make_shared<DataFormat>(DataVariant((bool)true)));
+    data.emplace_back(ObjectID(2),
+                      make_shared<DataFormat>(DataVariant((double)20.2)));
     auto response_test_result =
         async(launch::async, RespondWithContent(), response_handler_, endpoint,
               request_identifier, make_shared<Payload>(data));

@@ -32,14 +32,6 @@ public:
   DataFormatTestExpectationsPtr expected_;
 };
 
-TEST_P(DataFormatTest, returnsCorrectDataType) {
-  EXPECT_EQ(tested_->data_type_, expected_->data_type_);
-}
-
-TEST_P(DataFormatTest, contaisCorrectData) {
-  EXPECT_EQ(tested_->data_, expected_->data_);
-}
-
 TEST_P(DataFormatTest, canGetCorrectValue) {
   try {
     switch (expected_->data_type_) {
@@ -88,56 +80,6 @@ TEST_P(DataFormatTest, canGetCorrectValue) {
   }
 }
 
-TEST_P(DataFormatTest, throwsWrongDataType) {
-  EXPECT_THROW(
-      {
-        switch (expected_->data_type_) {
-        case DataType::STRING: {
-          tested_->get<int64_t>();
-          break;
-        }
-        case DataType::SIGNED_INTEGER: {
-          tested_->get<string>();
-          break;
-        }
-        case DataType::UNSIGNED_INTEGER: {
-          tested_->get<void>();
-          break;
-        }
-        case DataType::FLOAT: {
-          tested_->get<bool>();
-
-          break;
-        }
-        case DataType::BOOLEAN: {
-          tested_->get<double>();
-          break;
-        }
-        case DataType::OPAQUE: {
-          tested_->get<ObjectLink>();
-          break;
-        }
-        case DataType::TIME: {
-          tested_->get<string>();
-          break;
-        }
-        case DataType::OBJECT_LINK: {
-
-          tested_->get<vector<uint8_t>>();
-          break;
-        }
-        case DataType::CORE_LINK: {
-          FAIL() << "CoRE Link format is not implemented" << endl;
-        }
-        case DataType::NONE: {
-          tested_->get<uint64_t>();
-          break;
-        }
-        }
-      },
-      WrongDataType);
-}
-
 TEST_P(DataFormatTest, UnsuportedDataType) {
   EXPECT_THROW({ tested_->get<DataVariant>(); }, UnsuportedDataType);
 }
@@ -145,7 +87,7 @@ TEST_P(DataFormatTest, UnsuportedDataType) {
 struct GenerateTestName {
   string operator()(
       const testing::TestParamInfo<DataFormatTestParameter> &parameter) const {
-    auto name = toString(parameter.param.tested_->data_type_);
+    auto name = toString(parameter.param.expected_->data_type_);
     name.erase(remove_if(name.begin(), name.end(), ::isspace), name.end());
     return name;
   }
@@ -153,8 +95,7 @@ struct GenerateTestName {
 
 DataFormatTestParameter
 makeTestParameter(const DataFormatTestExpectations &valid_expectations) {
-  auto data = make_shared<DataFormat>(valid_expectations.data_,
-                                      valid_expectations.data_type_);
+  auto data = make_shared<DataFormat>(valid_expectations.data_);
   auto expectations =
       make_shared<DataFormatTestExpectations>(valid_expectations);
 

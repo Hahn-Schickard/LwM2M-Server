@@ -350,165 +350,133 @@ ResourceTestParameter makeTestParameter(ResourceDescriptorPtr descriptor,
 INSTANTIATE_TEST_SUITE_P(
     ResourceTests, ResourceTest,
     testing::Values(
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                                            false, true, DataType::BOOLEAN, "",
-                                            ""),
-            DataFormat(DataVariant((bool)true), DataType::BOOLEAN)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                                            false, true, DataType::BOOLEAN, "",
-                                            ""),
-            DataFormat(DataVariant((bool)true), DataType::BOOLEAN)),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::READ, false, true,
+                              DataType::BOOLEAN, "", ""),
+                          DataFormat(DataVariant((bool)true))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::WRITE, false, true,
+                              DataType::BOOLEAN, "", ""),
+                          DataFormat(DataVariant((bool)true))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::BOOLEAN, "", ""),
-                          DataFormat(DataVariant((bool)true),
-                                     DataType::BOOLEAN)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                                            false, true, DataType::BOOLEAN, "",
-                                            ""),
-            DataFormat(DataVariant((bool)true), DataType::BOOLEAN)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                                            false, true, DataType::FLOAT, "",
-                                            ""),
-            DataFormat(DataVariant((double)52.4), DataType::FLOAT)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                                            false, true, DataType::FLOAT, "",
-                                            ""),
-            DataFormat(DataVariant((double)20.2), DataType::FLOAT)),
+                          DataFormat(DataVariant((bool)true))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::EXECUTE, false, true,
+                              DataType::BOOLEAN, "", ""),
+                          DataFormat(DataVariant((bool)true))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::READ, false, true,
+                              DataType::FLOAT, "", ""),
+                          DataFormat(DataVariant((double)52.4))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::WRITE, false, true,
+                              DataType::FLOAT, "", ""),
+                          DataFormat(DataVariant((double)20.2))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::FLOAT, "", ""),
-                          DataFormat(DataVariant((double)20.2),
-                                     DataType::FLOAT)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                                            false, true, DataType::FLOAT, "",
-                                            ""),
-            DataFormat(DataVariant((double)20.2), DataType::FLOAT)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                                            false, true, DataType::OBJECT_LINK,
-                                            "", ""),
-            DataFormat(DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                                            false, true, DataType::OBJECT_LINK,
-                                            "", ""),
-            DataFormat(DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK)),
+                          DataFormat(DataVariant((double)20.2))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::EXECUTE, false, true,
+                              DataType::FLOAT, "", ""),
+                          DataFormat(DataVariant((double)20.2))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::READ, false, true,
+                              DataType::OBJECT_LINK, "", ""),
+                          DataFormat(DataVariant(ObjectLink(0, 0)))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::WRITE, false, true,
+                              DataType::OBJECT_LINK, "", ""),
+                          DataFormat(DataVariant(ObjectLink(0, 0)))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::OBJECT_LINK, "", ""),
-                          DataFormat(DataVariant(ObjectLink(0, 0)),
-                                     DataType::OBJECT_LINK)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                                            false, true, DataType::OBJECT_LINK,
-                                            "", ""),
-            DataFormat(DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK)),
+                          DataFormat(DataVariant(ObjectLink(0, 0)))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::EXECUTE, false, true,
+                              DataType::OBJECT_LINK, "", ""),
+                          DataFormat(DataVariant(ObjectLink(0, 0)))),
         makeTestParameter(
             make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
                                             false, true, DataType::OPAQUE, "",
                                             ""),
-            DataFormat(DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}),
-                       DataType::OPAQUE)),
+            DataFormat(DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::WRITE, false, true,
                               DataType::OPAQUE, "", ""),
-                          DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}),
-                                     DataType::OPAQUE)),
+                          DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::OPAQUE, "", ""),
-                          DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}),
-                                     DataType::OPAQUE)),
+                          DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::EXECUTE, false, true,
                               DataType::OPAQUE, "", ""),
-                          DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}),
-                                     DataType::OPAQUE)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                                            false, true,
-                                            DataType::SIGNED_INTEGER, "", ""),
-            DataFormat(DataVariant((int64_t)-100), DataType::SIGNED_INTEGER)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                                            false, true,
-                                            DataType::SIGNED_INTEGER, "", ""),
-            DataFormat(DataVariant((int64_t)-100), DataType::SIGNED_INTEGER)),
+                          DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::READ, false, true,
+                              DataType::SIGNED_INTEGER, "", ""),
+                          DataFormat(DataVariant((int64_t)-100))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::WRITE, false, true,
+                              DataType::SIGNED_INTEGER, "", ""),
+                          DataFormat(DataVariant((int64_t)-100))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::SIGNED_INTEGER, "", ""),
-                          DataFormat(DataVariant((int64_t)-100),
-                                     DataType::SIGNED_INTEGER)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                                            false, true,
-                                            DataType::SIGNED_INTEGER, "", ""),
-            DataFormat(DataVariant((int64_t)-100), DataType::SIGNED_INTEGER)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                                            false, true, DataType::STRING, "",
-                                            ""),
-            DataFormat(DataVariant((string) "Hello"), DataType::STRING)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                                            false, true, DataType::STRING, "",
-                                            ""),
-            DataFormat(DataVariant(string("hello")), DataType::STRING)),
+                          DataFormat(DataVariant((int64_t)-100))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::EXECUTE, false, true,
+                              DataType::SIGNED_INTEGER, "", ""),
+                          DataFormat(DataVariant((int64_t)-100))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::READ, false, true,
+                              DataType::STRING, "", ""),
+                          DataFormat(DataVariant((string) "Hello"))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::WRITE, false, true,
+                              DataType::STRING, "", ""),
+                          DataFormat(DataVariant(string("hello")))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::STRING, "", ""),
-                          DataFormat(DataVariant(string("hello")),
-                                     DataType::STRING)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                                            false, true, DataType::STRING, "",
-                                            ""),
-            DataFormat(DataVariant(string("hello")), DataType::STRING)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                                            false, true,
-                                            DataType::UNSIGNED_INTEGER, "", ""),
-            DataFormat(DataVariant((uint64_t)26), DataType::UNSIGNED_INTEGER)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                                            false, true,
-                                            DataType::UNSIGNED_INTEGER, "", ""),
-            DataFormat(DataVariant((uint64_t)26), DataType::UNSIGNED_INTEGER)),
+                          DataFormat(DataVariant(string("hello")))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::EXECUTE, false, true,
+                              DataType::STRING, "", ""),
+                          DataFormat(DataVariant(string("hello")))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::READ, false, true,
+                              DataType::UNSIGNED_INTEGER, "", ""),
+                          DataFormat(DataVariant((uint64_t)26))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::WRITE, false, true,
+                              DataType::UNSIGNED_INTEGER, "", ""),
+                          DataFormat(DataVariant((uint64_t)26))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::UNSIGNED_INTEGER, "", ""),
-                          DataFormat(DataVariant((uint64_t)26),
-                                     DataType::UNSIGNED_INTEGER)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                                            false, true,
-                                            DataType::UNSIGNED_INTEGER, "", ""),
-            DataFormat(DataVariant((uint64_t)26), DataType::UNSIGNED_INTEGER)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                                            false, true, DataType::TIME, "",
-                                            ""),
-            DataFormat(DataVariant((uint64_t)12850912328012), DataType::TIME)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                                            false, true, DataType::TIME, "",
-                                            ""),
-            DataFormat(DataVariant((uint64_t)12850912328012), DataType::TIME)),
+                          DataFormat(DataVariant((uint64_t)26))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::EXECUTE, false, true,
+                              DataType::UNSIGNED_INTEGER, "", ""),
+                          DataFormat(DataVariant((uint64_t)26))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::READ, false, true,
+                              DataType::TIME, "", ""),
+                          DataFormat(DataVariant((uint64_t)12850912328012))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::WRITE, false, true,
+                              DataType::TIME, "", ""),
+                          DataFormat(DataVariant((uint64_t)12850912328012))),
         makeTestParameter(make_shared<ResourceDescriptor>(
                               1, "Test", OperationsType::READ_AND_WRITE, false,
                               true, DataType::TIME, "", ""),
-                          DataFormat(DataVariant((uint64_t)12850912328012),
-                                     DataType::TIME)),
-        makeTestParameter(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                                            false, true, DataType::TIME, "",
-                                            ""),
-            DataFormat(DataVariant((uint64_t)12850912328012), DataType::TIME))),
+                          DataFormat(DataVariant((uint64_t)12850912328012))),
+        makeTestParameter(make_shared<ResourceDescriptor>(
+                              1, "Test", OperationsType::EXECUTE, false, true,
+                              DataType::TIME, "", ""),
+                          DataFormat(DataVariant((uint64_t)12850912328012)))),
     GenerateTestName());

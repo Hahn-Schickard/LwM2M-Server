@@ -11,8 +11,8 @@ RegisterResponse::RegisterResponse(EndpointPtr endpoint,
               ResponseCode::CREATED, ResponseCode::BAD_REQUEST,
               ResponseCode::FORBIDDEN, ResponseCode::PRECOGNITION_FAILED},
           response_code,
-          make_shared<Payload>(make_shared<DataFormat>(DataVariant(location),
-                                                       DataType::STRING))) {
+          make_shared<Payload>(
+              make_shared<DataFormat>(DataVariant(location)))) {
   checkResponseCode(response_code);
 }
 

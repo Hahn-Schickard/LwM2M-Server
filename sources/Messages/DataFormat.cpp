@@ -1,6 +1,8 @@
 #include "DataFormat.hpp"
 #include "Variant_Visitor.hpp"
 
+#include <algorithm>
+
 using namespace std;
 
 namespace LwM2M {
@@ -73,96 +75,135 @@ string toString(DataType type) {
 UnsuportedDataType::UnsuportedDataType()
     : logic_error("Tried to access unhandeled data type!") {}
 
-WrongDataType::WrongDataType(DataType expected, DataType actual)
-    : logic_error(
-          "Wrong actual data type!\nExpected data type: " + toString(expected) +
-          "\nActual data type: " + toString(actual)) {}
-
-DataFormat::DataFormat(DataVariant data, DataType type)
-    : data_(data), data_type_(type) {}
-
-template <> void DataFormat::get<void>() const {
-  if (data_type_ != DataType::NONE) {
-    throw WrongDataType(DataType::NONE, data_type_);
+vector<uint8_t> vectorize(uint64_t value, size_t size = sizeof(uint64_t)) {
+  vector<uint8_t> result;
+  result.reserve(size);
+  for (size_t i = 0; i < size; i++) {
+    result.push_back(value & 0xFF);
+    value = (value >> 8);
   }
+  return result;
 }
 
-template <> bool DataFormat::get<bool>() const {
-  if (data_type_ == DataType::BOOLEAN) {
-    return std::get<bool>(data_);
+vector<uint8_t> vectorize(double value) {
+  uint8_t *bytes = (uint8_t *)&value;
+  vector<uint8_t> result;
+  result.reserve(sizeof(bytes));
+  for (size_t i = 0; i < sizeof(bytes); i++) {
+    result.push_back(bytes[i]);
+  }
+  return result;
+}
+
+vector<uint8_t> vectorize(string value) {
+  return vector<uint8_t>(value.begin(), value.end());
+}
+
+vector<uint8_t> vectorize(ObjectLink value) {
+  vector<uint8_t> result =
+      vectorize(value.object_id_, sizeof(value.object_id_));
+  auto tmp = vectorize(value.instance_id_, sizeof(value.instance_id_));
+  result.insert(result.end(), tmp.begin(), tmp.end());
+  return result;
+}
+
+vector<uint8_t> toBytes(DataVariant data) {
+  vector<uint8_t> result;
+  match(data, [&](bool value) { result.push_back(value); },
+        [&](int64_t value) {
+          // possible loss of signess here, but uint64_t (2^64 - 1) should have
+          // more spase than an int64_t (±(2^63 - 1)), thus int64_t should never
+          // be able to use signess bit as a number
+          result = vectorize((uint64_t)value);
+        },
+        [&](uint64_t value) { result = vectorize(value); },
+        [&](double value) { result = vectorize(value); },
+        [&](string value) { result = vectorize(value); },
+        [&](ObjectLink value) { result = vectorize(value); },
+        [&](vector<uint8_t> value) { result = value; });
+  return result;
+}
+
+uint64_t toInt(vector<uint8_t> bytes, bool little_endian = false) {
+  uint64_t result;
+  if (little_endian) {
+    for (size_t i = bytes.size(); i >= 0; i--) {
+      result = (result << 8) + bytes[i];
+    }
   } else {
-    throw WrongDataType(DataType::BOOLEAN, data_type_);
+    for (size_t i = 0; i < bytes.size(); i++) {
+      result = (result << 8) + bytes[i];
+    }
+  }
+  return result;
+}
+
+DataFormat::DataFormat(vector<uint8_t> bytes) : data_(bytes) {}
+
+DataFormat::DataFormat(DataVariant data) : data_(toBytes(data)) {}
+
+template <> void DataFormat::get<void>() const {}
+
+template <> bool DataFormat::get<bool>() const {
+  if (data_.size() == 1) {
+    return static_cast<bool>(data_[0]);
+  } else {
+    throw logic_error("Could not convert to bool");
   }
 }
 
 template <> int64_t DataFormat::get<int64_t>() const {
-  if (data_type_ == DataType::SIGNED_INTEGER) {
-    return std::get<int64_t>(data_);
+  if (data_.size() <= sizeof(uint64_t)) {
+    return (int64_t)toInt(data_);
   } else {
-    throw WrongDataType(DataType::SIGNED_INTEGER, data_type_);
+    throw logic_error("Could not convert to int64_t");
   }
 }
 
 template <> uint64_t DataFormat::get<uint64_t>() const {
-  if (data_type_ == DataType::UNSIGNED_INTEGER ||
-      data_type_ == DataType::TIME) {
-    return std::get<uint64_t>(data_);
+  if (data_.size() <= sizeof(uint64_t)) {
+    return toInt(data_);
   } else {
-    throw WrongDataType(DataType::UNSIGNED_INTEGER, data_type_);
+    throw logic_error("Could not convert to uint64_t");
   }
 }
 
 template <> double DataFormat::get<double>() const {
-  if (data_type_ == DataType::FLOAT) {
-    return std::get<double>(data_);
+  if (data_.size() <= sizeof(double)) {
+    double result;
+    copy(data_.begin(), data_.end(), reinterpret_cast<char *>(&result));
+    return result;
   } else {
-    throw WrongDataType(DataType::FLOAT, data_type_);
+    throw logic_error("Could not convert to double");
   }
 }
 
 template <> string DataFormat::get<string>() const {
-  if (data_type_ == DataType::STRING) {
-    return std::get<string>(data_);
-  } else {
-    throw WrongDataType(DataType::STRING, data_type_);
-  }
+  return string(data_.begin(), data_.end());
 }
 
 template <> ObjectLink DataFormat::get<ObjectLink>() const {
-  if (data_type_ == DataType::OBJECT_LINK) {
-    return std::get<ObjectLink>(data_);
+  if (data_.size() == sizeof(uint16_t) + sizeof(uint16_t)) {
+    vector<uint8_t> object_id_half(data_.begin(),
+                                   data_.begin() + data_.size() / 2);
+    vector<uint8_t> instance_id_half(data_.begin() + data_.size() / 2,
+                                     data_.end());
+    uint16_t object_id = toInt(object_id_half);
+    uint16_t instance_id = toInt(instance_id_half);
+    return ObjectLink(object_id, instance_id);
   } else {
-    throw WrongDataType(DataType::OBJECT_LINK, data_type_);
+    throw logic_error("Could not convert to ObjectLink");
   }
 }
 
 template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() const {
-  if (data_type_ == DataType::OPAQUE) {
-    return std::get<vector<uint8_t>>(data_);
-  } else {
-    throw WrongDataType(DataType::OPAQUE, data_type_);
-  }
+  return data_;
 }
 
-size_t DataFormat::size() const {
-  size_t result = 0;
-  match(data_, [&](bool value) { result = sizeof(value); },
-        [&](int64_t value) { result = sizeof(value); },
-        [&](uint64_t value) { result = sizeof(value); },
-        [&](double value) { result = sizeof(value); },
-        [&](string value) { result = value.size(); },
-        [&](ObjectLink /*value*/) { result = 8; },
-        [&](vector<uint8_t> value) { result = value.size(); });
-
-  return result;
-}
+size_t DataFormat::size() const { return data_.size(); }
 
 bool operator==(const DataFormat &lhs, const DataFormat &rhs) {
-  if (lhs.data_type_ == rhs.data_type_ && lhs.data_ == rhs.data_) {
-    return true;
-  } else {
-    return false;
-  }
+  return lhs.data_ == rhs.data_ ? true : false;
 }
 
 NotifyAttribute::NotifyAttribute(

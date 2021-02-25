@@ -16,8 +16,7 @@ ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, ResourceID target,
                     InterfaceType::DEVICE_MANAGMENT,
                     make_shared<Payload>(make_pair(
                         ElmentIdVariant(target),
-                        make_shared<DataFormat>(DataVariant(arguments),
-                                                DataType::STRING)))) {}
+                        make_shared<DataFormat>(DataVariant(arguments))))) {}
 
 string ExecuteRequest::name() { return "ExecuteRequest"; }
 } // namespace LwM2M

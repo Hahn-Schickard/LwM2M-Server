@@ -65,10 +65,6 @@ struct UnsuportedDataType : public std::logic_error {
   UnsuportedDataType();
 };
 
-struct WrongDataType : public std::logic_error {
-  WrongDataType(DataType expected, DataType actual);
-};
-
 using DataVariant = std::variant<bool, int64_t, uint64_t, double, std::string,
                                  ObjectLink, std::vector<uint8_t>>;
 
@@ -77,10 +73,10 @@ using DataVariant = std::variant<bool, int64_t, uint64_t, double, std::string,
  *
  */
 struct DataFormat {
-  const DataVariant data_;
-  const DataType data_type_;
+  const std::vector<uint8_t> data_;
 
-  DataFormat(DataVariant data, DataType type);
+  DataFormat(std::vector<uint8_t> bytes);
+  DataFormat(DataVariant data);
 
   /**
    * @brief Helper method to access underling DataVariant without defining a
