@@ -52,10 +52,22 @@ ResponseCode toCodeType(CoAP::CodeType code) {
   return static_cast<ResponseCode>(code);
 }
 
-PayloadPtr toPayload(PlainText content) { return PayloadPtr(); }
-PayloadPtr toPayload(CoRE_Links content) { return PayloadPtr(); }
+PayloadPtr toPayload(PlainText content) {
+  return make_shared<Payload>(
+      make_shared<DataFormat>(content.toString(), DataType::STRING));
+}
+
+PayloadPtr toPayload(CoRE_Links content) {
+  // TODO: handle CoRE Links for no nregistration purposes
+  return PayloadPtr();
+}
+
 PayloadPtr toPayload(TLV_Pack content) { return PayloadPtr(); }
-PayloadPtr toPayload(OctetStream content) { return PayloadPtr(); }
+
+PayloadPtr toPayload(OctetStream content) {
+  return make_shared<Payload>(
+      make_shared<DataFormat>(content.getValue(), DataType::OPAQUE));
+}
 
 ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) {
   auto endpoint =
