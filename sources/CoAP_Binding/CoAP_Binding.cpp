@@ -123,9 +123,8 @@ ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) {
       }
       return make_shared<ClientResponse>(endpoint, code, content);
     }
-  } else {
-    return make_shared<ClientResponse>(endpoint, code);
   }
+  return make_shared<ClientResponse>(endpoint, code);
 }
 
 CoAP::MessagePtr CoAP_Binding::handleResponse(CoAP::MessagePtr message) {
