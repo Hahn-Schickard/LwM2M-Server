@@ -80,9 +80,8 @@ ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
   auto code = toCodeType(message->getHeader()->getCodeType());
-  if (!message->getPayload()) {
+  if (auto payload = message->getPayload()) {
     PayloadPtr content;
-    auto payload = message->getPayload();
     auto options = message->getOptions();
     auto it = options.find(OptionNumber::CONTENT_FORMAT);
     if (it != options.end()) {
