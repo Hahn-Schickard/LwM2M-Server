@@ -9,6 +9,8 @@
 namespace LwM2M {
 
 struct ResponseReturnedAnErrorCode : protected std::runtime_error {
+  ResponseCode response_code_;
+
   ResponseReturnedAnErrorCode(ClientResponsePtr response,
                               ServerRequestPtr request);
 };

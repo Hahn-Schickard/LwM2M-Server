@@ -11,7 +11,8 @@ ResponseReturnedAnErrorCode::ResponseReturnedAnErrorCode(
     ClientResponsePtr response, ServerRequestPtr request)
     : runtime_error(response->name() + " returned " +
                     toString(response->response_code_) + " for " +
-                    request->name()) {}
+                    request->name()),
+      response_code_(response->response_code_) {}
 
 ResponseReturnedAnEmptyPayload::ResponseReturnedAnEmptyPayload(
     ClientResponsePtr response, ServerRequestPtr request)
