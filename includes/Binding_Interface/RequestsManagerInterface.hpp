@@ -13,6 +13,11 @@ struct ResponseReturnedAnErrorCode : protected std::runtime_error {
                               ServerRequestPtr request);
 };
 
+struct ResponseReturnedAnEmptyPayload : protected std::runtime_error {
+  ResponseReturnedAnEmptyPayload(ClientResponsePtr response,
+                                 ServerRequestPtr request);
+};
+
 /**
  * @brief Protocol specifc LwM2M::ServerRequest Dispatcher, that converts
  * outgoing LwM2M::ServerRequest instances into protocol specifc messages and

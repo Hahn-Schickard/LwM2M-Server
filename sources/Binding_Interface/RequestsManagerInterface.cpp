@@ -13,6 +13,11 @@ ResponseReturnedAnErrorCode::ResponseReturnedAnErrorCode(
                     toString(response->response_code_) + " for " +
                     request->name()) {}
 
+ResponseReturnedAnEmptyPayload::ResponseReturnedAnEmptyPayload(
+    ClientResponsePtr response, ServerRequestPtr request)
+    : runtime_error(response->name() + " has no payload " + " for " +
+                    request->name()) {}
+
 RequestsManagerInterface::RequestsManagerInterface(
     ResponseHandlerPtr requests_manager)
     : requests_manager_(requests_manager) {}
@@ -40,10 +45,13 @@ RequestsManagerInterface::handleResponseWithTargetContentVector(
   return async(launch::async,
                [&](ServerRequestPtr msg) -> TargetContentVector {
                  auto result = dispatchAndGet(msg);
-                 if (result->response_code_ == ResponseCode::CONTENT &&
-                     result->payload_) {
-                   return std::get<TargetContentVector>(
-                       result->payload_->data_);
+                 if (result->response_code_ == ResponseCode::CONTENT) {
+                   if (result->payload_) {
+                     return std::get<TargetContentVector>(
+                         result->payload_->data_);
+                   } else {
+                     throw ResponseReturnedAnEmptyPayload(result, msg);
+                   }
                  } else {
                    throw ResponseReturnedAnErrorCode(result, msg);
                  }
@@ -56,9 +64,12 @@ future<DataFormatPtr> RequestsManagerInterface::handleResponseWithDataFormat(
   return async(launch::async,
                [&](ServerRequestPtr msg) -> DataFormatPtr {
                  auto result = dispatchAndGet(msg);
-                 if (result->response_code_ == ResponseCode::CONTENT &&
-                     result->payload_) {
-                   return std::get<DataFormatPtr>(result->payload_->data_);
+                 if (result->response_code_ == ResponseCode::CONTENT) {
+                   if (result->payload_) {
+                     return std::get<DataFormatPtr>(result->payload_->data_);
+                   } else {
+                     throw ResponseReturnedAnEmptyPayload(result, msg);
+                   }
                  } else {
                    throw ResponseReturnedAnErrorCode(result, msg);
                  }
