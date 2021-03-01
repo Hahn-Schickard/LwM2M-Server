@@ -55,17 +55,32 @@ future<string> stringifyResourceValue(ResourceVariant variant) {
   return result.get_future();
 }
 
-void asyncRead(DevicePtr device) {
+void asyncRead(DevicePtr device, ResourceID id) {
   //@TODO: this leaks memory, REWORK IT!
   thread(
-      [](DevicePtr device) {
-        auto future =
-            stringifyResourceValue(device->getObject(3)->getResource(0, 2));
-        future.wait();
-        cout << "Device: " << device->getDeviceId()
-             << " Model Number of this device is: " << future.get() << endl;
+      [](DevicePtr device, ResourceID element_id) {
+        try {
+          auto future = stringifyResourceValue(
+              device->getObject(element_id.object_instance_.object_.id_)
+                  ->getResource(element_id.object_instance_.id_,
+                                element_id.id_));
+          future.wait();
+          cout << "Device: " << device->getDeviceId()
+               << " Model Number of this device is: " << future.get() << endl;
+        } catch (ResponseReturnedAnErrorCode &ex) {
+          string id;
+          for (auto element : element_id.toStrings()) {
+            id += element + " ";
+          }
+          cout << "Read request for Element " << id
+               << " failed! Received an error "
+                  "code: "
+               << toString(ex.response_code_) << endl;
+        } catch (exception &ex) {
+          cerr << "Cought an unhandeled exception: " << ex.what() << endl;
+        }
       },
-      device)
+      device, id)
       .detach();
 }
 
@@ -80,7 +95,8 @@ public:
       cout << "A new device with id: " << event->identifier_
            << " has been registered!" << endl;
       auto device = event->device_;
-      asyncRead(device);
+      asyncRead(device, ResourceID(3, 0, 4));
+      asyncRead(device, ResourceID(3303, 0, 5700));
       break;
     }
     case RegistryEventType::UPDATED: {
