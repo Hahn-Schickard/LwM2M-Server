@@ -50,8 +50,9 @@ HeaderPtr makeHeader(CodeType code) {
 
 CoAP::Options makeURI_PATH(ElmentIdVariant target) {
   Options options;
-  for (auto uri : toStrings(target)) {
-    auto option = build(OptionNumber::URI_PATH, uri);
+  auto uri_strings = toStrings(target);
+  for (auto uri = uri_strings.rbegin(); uri < uri_strings.rend(); uri++) {
+    auto option = build(OptionNumber::URI_PATH, *uri);
     options.emplace(OptionNumber::URI_PATH, option);
   }
   return options;
