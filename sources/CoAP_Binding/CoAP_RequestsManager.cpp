@@ -98,80 +98,80 @@ CoAP::Options makeOptions(ServerRequestPtr request) {
 
   options = toOptions(request->payload_);
 
-  if (request->interface_ == InterfaceType::DEVICE_MANAGMENT) {
-    switch (request->message_type_) {
-    case MessageType::READ: {
-      options.emplace(
-          OptionNumber::ACCEPT,
-          build(OptionNumber::ACCEPT,
-                to_string(ContentFormatEncodings::LwM2M_TLV::index)));
-      break;
-    }
-    case MessageType::READ_COMPOSITE: {
-      options.emplace(
-          OptionNumber::CONTENT_FORMAT,
-          build(OptionNumber::CONTENT_FORMAT,
-                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
-      break;
-    }
-    case MessageType::WRITE: {
-      options.emplace(
-          OptionNumber::CONTENT_FORMAT,
-          build(OptionNumber::CONTENT_FORMAT,
-                to_string(ContentFormatEncodings::LwM2M_TLV::index)));
-      break;
-    }
-    case MessageType::WRITE_COMPOSITE: {
-      options.emplace(
-          OptionNumber::CONTENT_FORMAT,
-          build(OptionNumber::CONTENT_FORMAT,
-                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
-      break;
-    }
-    case MessageType::EXECUTE: {
-      // check if there is some arguments first!
-      options.emplace(
-          OptionNumber::CONTENT_FORMAT,
-          build(OptionNumber::CONTENT_FORMAT,
-                to_string(ContentFormatEncodings::PlainText::index)));
-      break;
-    }
-    case MessageType::CREATE: {
-      options.emplace(
-          OptionNumber::CONTENT_FORMAT,
-          build(OptionNumber::CONTENT_FORMAT,
-                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
-      break;
-    }
-    default: { break; }
-    }
-  } else if (request->interface_ == InterfaceType::INFORMATION_REPORTING) {
-    switch (request->message_type_) {
-    case MessageType::OBSERVE_COMPOSITE: {
-      options.emplace(
-          OptionNumber::CONTENT_FORMAT,
-          build(OptionNumber::CONTENT_FORMAT,
-                to_string(ContentFormatEncodings::LwM2M_JSON::index)));
-      options.emplace(
-          OptionNumber::ACCEPT,
-          build(OptionNumber::ACCEPT,
-                to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
-      [[fallthrough]];
-    }
-    case MessageType::OBSERVE: {
-      options.emplace(OptionNumber::OBSERVE,
-                      build(OptionNumber::OBSERVE, to_string(true)));
-      break;
-    }
-    case MessageType::CANCEL_OBSERVATION:
-    case MessageType::CANCEL_OBSERVATION_COMPOSITE: {
-      options.emplace(OptionNumber::OBSERVE,
-                      build(OptionNumber::OBSERVE, to_string(false)));
-      break;
-    }
-    default: { break; }
-    }
-  }
+  // if (request->interface_ == InterfaceType::DEVICE_MANAGMENT) {
+  //   switch (request->message_type_) {
+  //   case MessageType::READ: {
+  //     options.emplace(
+  //         OptionNumber::ACCEPT,
+  //         build(OptionNumber::ACCEPT,
+  //               to_string(ContentFormatEncodings::LwM2M_TLV::index)));
+  //     break;
+  //   }
+  //   case MessageType::READ_COMPOSITE: {
+  //     options.emplace(
+  //         OptionNumber::CONTENT_FORMAT,
+  //         build(OptionNumber::CONTENT_FORMAT,
+  //               to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+  //     break;
+  //   }
+  //   case MessageType::WRITE: {
+  //     options.emplace(
+  //         OptionNumber::CONTENT_FORMAT,
+  //         build(OptionNumber::CONTENT_FORMAT,
+  //               to_string(ContentFormatEncodings::LwM2M_TLV::index)));
+  //     break;
+  //   }
+  //   case MessageType::WRITE_COMPOSITE: {
+  //     options.emplace(
+  //         OptionNumber::CONTENT_FORMAT,
+  //         build(OptionNumber::CONTENT_FORMAT,
+  //               to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+  //     break;
+  //   }
+  //   case MessageType::EXECUTE: {
+  //     // check if there is some arguments first!
+  //     options.emplace(
+  //         OptionNumber::CONTENT_FORMAT,
+  //         build(OptionNumber::CONTENT_FORMAT,
+  //               to_string(ContentFormatEncodings::PlainText::index)));
+  //     break;
+  //   }
+  //   case MessageType::CREATE: {
+  //     options.emplace(
+  //         OptionNumber::CONTENT_FORMAT,
+  //         build(OptionNumber::CONTENT_FORMAT,
+  //               to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+  //     break;
+  //   }
+  //   default: { break; }
+  //   }
+  // } else if (request->interface_ == InterfaceType::INFORMATION_REPORTING) {
+  //   switch (request->message_type_) {
+  //   case MessageType::OBSERVE_COMPOSITE: {
+  //     options.emplace(
+  //         OptionNumber::CONTENT_FORMAT,
+  //         build(OptionNumber::CONTENT_FORMAT,
+  //               to_string(ContentFormatEncodings::LwM2M_JSON::index)));
+  //     options.emplace(
+  //         OptionNumber::ACCEPT,
+  //         build(OptionNumber::ACCEPT,
+  //               to_string(ContentFormatEncodings::LwM2M_CBOR::index)));
+  //     [[fallthrough]];
+  //   }
+  //   case MessageType::OBSERVE: {
+  //     options.emplace(OptionNumber::OBSERVE,
+  //                     build(OptionNumber::OBSERVE, to_string(true)));
+  //     break;
+  //   }
+  //   case MessageType::CANCEL_OBSERVATION:
+  //   case MessageType::CANCEL_OBSERVATION_COMPOSITE: {
+  //     options.emplace(OptionNumber::OBSERVE,
+  //                     build(OptionNumber::OBSERVE, to_string(false)));
+  //     break;
+  //   }
+  //   default: { break; }
+  //   }
+  // }
 
   return options;
 }
