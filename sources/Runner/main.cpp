@@ -149,13 +149,13 @@ void printSupportedContentFormats() {
 
 int main(int argc, const char *argv[]) {
   try {
-    LoggerRepository::initialise("loggerConfig.json");
+    LoggerRepository::initialise("config/loggerConfig.json");
     auto logger =
         LoggerRepository::getInstance().registerLoger("Example_Runner");
     LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
     auto coap_binding = make_unique<CoAP_Binding>(
-        make_shared<DeviceRegistry>("model/descriptors.xml"));
+        make_shared<DeviceRegistry>("config/model/descriptors.xml"));
     auto registration_listener =
         make_unique<RegistrationListener>(coap_binding->getEventSource());
     printSupportedContentFormats();
