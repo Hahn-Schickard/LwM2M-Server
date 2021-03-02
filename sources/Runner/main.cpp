@@ -1,8 +1,8 @@
-#include "CoAP_Binding.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "Event_Model.hpp"
 #include "LoggerRepository.hpp"
 #include "RegistryEvent.hpp"
+#include "Server.hpp"
 #include "Variant_Visitor.hpp"
 
 #include <chrono>
@@ -60,13 +60,14 @@ void asyncRead(DevicePtr device, ResourceID id) {
   thread(
       [](DevicePtr device, ResourceID element_id) {
         try {
-          auto future = stringifyResourceValue(
-              device->getObject(element_id.object_instance_.object_.id_)
-                  ->getResource(element_id.object_instance_.id_,
-                                element_id.id_));
+          auto object =
+              device->getObject(element_id.object_instance_.object_.id_);
+          auto future = stringifyResourceValue(object->getResource(
+              element_id.object_instance_.id_, element_id.id_));
           future.wait();
-          cout << "Device: " << device->getDeviceId()
-               << " Model Number of this device is: " << future.get() << endl;
+          cout << "Device: " << device->getDeviceId() << " "
+               << object->getDescriptor()->name_
+               << " value is: " << future.get() << endl;
         } catch (ResponseReturnedAnErrorCode &ex) {
           string id;
           for (auto element : element_id.toStrings()) {
@@ -117,36 +118,6 @@ public:
   }
 };
 
-string isSupported(uint16_t index) {
-  return get<0>(CoAP::SupportedContentFormats::getSupportedContentFormat(
-             index)) == true
-             ? "is supported."
-             : "is NOT supported.";
-}
-
-void printSupportedContentFormats() {
-  cout << "Content Format: " << CoAP::ContentFormatEncodings::PlainText::index
-       << " " << CoAP::ContentFormatEncodings::PlainText::toString() << " "
-       << isSupported(CoAP::ContentFormatEncodings::PlainText::index) << endl;
-  cout << "Content Format: " << CoAP::ContentFormatEncodings::CoRE_Link::index
-       << " " << CoAP::ContentFormatEncodings::CoRE_Link::toString() << " "
-       << isSupported(CoAP::ContentFormatEncodings::CoRE_Link::index) << endl;
-  cout << "Content Format: "
-       << CoAP::ContentFormatEncodings::Octet_Stream::index << " "
-       << CoAP::ContentFormatEncodings::Octet_Stream::toString() << " "
-       << isSupported(CoAP::ContentFormatEncodings::Octet_Stream::index)
-       << endl;
-  cout << "Content Format: " << CoAP::ContentFormatEncodings::LwM2M_TLV::index
-       << " " << CoAP::ContentFormatEncodings::LwM2M_TLV::toString() << " "
-       << isSupported(CoAP::ContentFormatEncodings::LwM2M_TLV::index) << endl;
-  cout << "Content Format: " << CoAP::ContentFormatEncodings::LwM2M_CBOR::index
-       << " " << CoAP::ContentFormatEncodings::LwM2M_CBOR::toString() << " "
-       << isSupported(CoAP::ContentFormatEncodings::LwM2M_CBOR::index) << endl;
-  cout << "Content Format: " << CoAP::ContentFormatEncodings::LwM2M_JSON::index
-       << " " << CoAP::ContentFormatEncodings::LwM2M_JSON::toString() << " "
-       << isSupported(CoAP::ContentFormatEncodings::LwM2M_JSON::index) << endl;
-}
-
 int main(int argc, const char *argv[]) {
   try {
     LoggerRepository::initialise("config/loggerConfig.json");
@@ -154,13 +125,11 @@ int main(int argc, const char *argv[]) {
         LoggerRepository::getInstance().registerLoger("Example_Runner");
     LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
-    auto coap_binding = make_unique<CoAP_Binding>(
-        make_shared<DeviceRegistry>("config/model/descriptors.xml"));
+    auto server = make_unique<Server>("config/serverConfig.json");
     auto registration_listener =
-        make_unique<RegistrationListener>(coap_binding->getEventSource());
-    printSupportedContentFormats();
+        make_unique<RegistrationListener>(server->getEventSource());
     try {
-      coap_binding->start();
+      server->start();
       logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
       if (argc > 1) {
         int sleep_period = atoi(argv[1]);
@@ -174,7 +143,7 @@ int main(int argc, const char *argv[]) {
       cerr << e.what();
     }
 
-    coap_binding->stop();
+    server->stop();
     exit(EXIT_SUCCESS);
   } catch (const exception &ex) {
     cerr << ex.what();

@@ -11,7 +11,8 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PRIVATE
-                              CoAP_Binding
+                              Variant_Visitor::Variant_Visitor
+                              Server
                               HaSLL::HaSLL
                               Threads::Threads
 )
