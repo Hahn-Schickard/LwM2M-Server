@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.6)
 
 set(THIS CoAP_Binding)
 
+ADD_NEW_BINDING(${THIS})
+
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/CoAP_Binding
 )
@@ -20,7 +22,8 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC 
                               Binding_Interface
                               CoAPS4Cpp::CoAPS4Cpp
-                              Variant_Visitor::Variant_Visitor
+                              PRIVATE
+                              nlohmann_json::nlohmann_json
 )
 
 target_include_directories(${THIS} INTERFACE

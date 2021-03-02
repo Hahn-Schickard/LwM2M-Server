@@ -3,30 +3,23 @@
 #include "CoAP/OctetStream.hpp"
 #include "CoAP/OptionBuilder.hpp"
 #include "CoAP/PlainText.hpp"
+#include "CoAP_Config.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "CoAP_RequestsManager.hpp"
 #include "RegistrationInterfaceRequestsBuilder.hpp"
 #include "Utility.hpp"
-#include "Variant_Visitor.hpp"
 
 using namespace std;
 using namespace CoAP;
 
 namespace LwM2M {
 
-CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry,
-                           CoAP_BindingConfigPtr config) {
-  if (config) {
-    match(config->address_,
-          [&](bool ipv6_flag) {
-            socket_ = make_shared<Socket>(ipv6_flag, config->port_);
-          },
-          [&](string address) {
-            socket_ = make_shared<Socket>(address, config->port_);
-          });
-  } else {
-    socket_ = make_shared<Socket>();
+CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry, const string filepath) {
+  CoAP_Config config;
+  if (!filepath.empty()) {
+    config = getCoAP_Config(filepath);
   }
+  socket_ = make_shared<Socket>(config.address_, config.port_);
 
   SupportedContentFormats::addNewContentFormatType<
       ContentFormatEncodings::LwM2M_TLV>();
