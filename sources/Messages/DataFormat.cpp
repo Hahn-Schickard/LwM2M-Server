@@ -127,7 +127,7 @@ vector<uint8_t> toBytes(DataVariant data) {
 uint64_t toInt(vector<uint8_t> bytes, bool little_endian = false) {
   uint64_t result;
   if (little_endian) {
-    for (size_t i = bytes.size(); i >= 0; i--) {
+    for (int i = bytes.size(); i >= 0; i--) {
       result = (result << 8) + bytes[i];
     }
   } else {
