@@ -1,5 +1,5 @@
 #include "LoggerRepository.hpp"
-#include "LwM2M_Server.hpp"
+#include "LwM2M/Server.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -18,8 +18,7 @@ int main() {
 
   LwM2M::Server server;
   try {
-    server = LwM2M::Server(LwM2M::Configuration{string("model/descriptors.xml"),
-                                                string("0.0.0.0"), 5683, 5});
+    server = LwM2M::Server("config/serverConfig.json");
     server.start();
     logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
     this_thread::sleep_for(1s);

@@ -11,7 +11,7 @@ class PackageConan(ConanFile):
     build_requires = "gtest/1.10.0"
     requires = [
         "HaSLL/0.2.2@hahn-schickard/stable",
-        "CoAPS4Cpp/0.2.3@hahn-schickard/stable ",
+        "CoAPS4Cpp/0.2.3@hahn-schickard/stable",
         "Variant_Visitor/0.1.0@hahn-schickard/stable",
         "Stoppable/0.1.0@hahn-schickard/stable",
         "Event_Model/0.1.0@hahn-schickard/stable",
@@ -26,14 +26,12 @@ class PackageConan(ConanFile):
     default_user = "Hahn-Schickard"
     exports_sources = [
         "../cmake*",
-        "../model*",
+        "../config*",
         "../includes*",
         "../sources*",
         "../unit_tests*",
         "../CMakeLists.txt",
         "../conanfile.txt",
-        "../loggerConfig.json",
-        "../serverConfig.json",
         "../README.md",
         "../LICENSE",
         "../NOTICE",
@@ -67,7 +65,6 @@ class PackageConan(ConanFile):
     def build(self):
         cmake = self._configure_cmake()
         cmake.build()
-        cmake.test()
 
     def package(self):
         cmake = self._configure_cmake()
