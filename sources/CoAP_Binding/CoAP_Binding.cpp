@@ -35,11 +35,6 @@ CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry, const string filepath) {
                          registry);
 }
 
-void CoAP_Binding::start() {
-  socket_->start();
-  Stoppable::start();
-}
-
 ResponseCode toCodeType(CoAP::CodeType code) {
   // I will suffer, only if I f*ed up the CoAP::Socket implementation
   return static_cast<ResponseCode>(code);
@@ -250,6 +245,7 @@ CoAP::MessagePtr CoAP_Binding::handleMessage(CoAP::MessagePtr message) {
 }
 
 void CoAP_Binding::run() {
+  socket_->start();
   while (!stopRequested()) {
     auto message = inbox_->front();
     if (message) {
@@ -261,6 +257,7 @@ void CoAP_Binding::run() {
       inbox_->pop(message);
     }
   }
+  socket_->stop();
 }
 
 } // namespace LwM2M

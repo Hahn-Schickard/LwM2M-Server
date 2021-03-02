@@ -20,8 +20,6 @@ public:
   CoAP_Binding(DeviceRegistryPtr registry,
                const std::string filepath = std::string());
 
-  void start();
-
   void run() override final;
 };
 } // namespace LwM2M
