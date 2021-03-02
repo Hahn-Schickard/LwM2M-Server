@@ -18,9 +18,6 @@ protected:
     requests_manager_ = requests_manager;
     registrator_ = std::make_shared<Registrator>(registry, requests_manager_);
   }
-
-public:
-  EventSourcePtr getEventSource() { return registrator_->getEventSource(); }
 };
 
 using BindingInterfacePtr = std::shared_ptr<BindingInterface>;
