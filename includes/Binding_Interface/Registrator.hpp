@@ -3,6 +3,7 @@
 
 #include "Deregister.hpp"
 #include "DeviceRegistry.hpp"
+#include "Logger.hpp"
 #include "Register.hpp"
 #include "RequestsManagerInterface.hpp"
 #include "Update.hpp"
@@ -12,6 +13,7 @@ namespace LwM2M {
 class Registrator {
   DeviceRegistryPtr registry_;
   RequestsManagerInterfacePtr requester_;
+  std::shared_ptr<HaSLL::Logger> logger_;
 
   /**
    * @brief Assigns correct LwM2M::ObjecDescriptorMap based on given input.
@@ -27,6 +29,8 @@ class Registrator {
 public:
   Registrator(DeviceRegistryPtr registry,
               RequestsManagerInterfacePtr requester);
+
+  ~Registrator();
 
   /**
    * @brief Registers a new LwM2M::Device or Reregisters it, if it already
