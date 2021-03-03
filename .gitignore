@@ -1,6 +1,9 @@
 build
 logs
-.vscode/
+!/.vscode
+.vscode/*
+!/.vscode/cmake-variants.yaml
+!/.vscode/launch.json
 json.hpp
 valgrind_results/
 code_coverage_report/ 

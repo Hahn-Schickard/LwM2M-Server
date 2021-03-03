@@ -11,9 +11,8 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PRIVATE
-                              LwM2M_Server
-                              Event_Model::Event_Model
                               Variant_Visitor::Variant_Visitor
+                              Server
                               HaSLL::HaSLL
                               Threads::Threads
 )
@@ -22,24 +21,8 @@ target_compile_features(${THIS} PUBLIC cxx_std_17)
 
 add_custom_command(TARGET ${THIS} POST_BUILD 
                     COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        ${PROJECT_SOURCE_DIR}/model
-                        $<TARGET_FILE_DIR:${THIS}>/model 
-                    COMMENT "Copying LwM2M Model descriptors."
-                        VERBATIM
-)
-
-add_custom_command(TARGET ${THIS} POST_BUILD 
-                    COMMAND ${CMAKE_COMMAND} -E copy
-                        "${PROJECT_SOURCE_DIR}/loggerConfig.json"
-                        $<TARGET_FILE_DIR:${THIS}> 
-                    COMMENT "Copying Logger Configuration."
-                        VERBATIM
-)
-
-add_custom_command(TARGET ${THIS} POST_BUILD 
-                    COMMAND ${CMAKE_COMMAND} -E copy
-                        "${PROJECT_SOURCE_DIR}/serverConfig.json"
-                        $<TARGET_FILE_DIR:${THIS}> 
-                    COMMENT "Copying Server Configuration."
+                        ${PROJECT_SOURCE_DIR}/config
+                        $<TARGET_FILE_DIR:${THIS}>/config 
+                    COMMENT "Copying configuration files."
                         VERBATIM
 )
