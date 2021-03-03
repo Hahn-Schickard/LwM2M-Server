@@ -1,3 +1,48 @@
+## [0.2.0] - 2021.03.03
+### Added
+ - BindingInterface for Bindign abtractions
+ - Notifier placeholder for Observer implementation
+ - Registrator class to handle common registration interface Messages
+ - RequestsManagerInterface to handle common ServerRequests as well as an abstraction for Binding specific RequestsManager implementation
+ - ResponseHandler to handle ClientResponses 
+ - CoAP Binding implementation
+ - CoAP Configuration 
+ - CoAP TLV encoder/decoder 
+ - CoAP Requests Manager implementations
+ - Server Configuration
+ - Device Model test cases
+ - Message test cases
+ - Device Registry test cases
+ - Binding interface test cases
+ - CoAPS4Cpp library dependency
+ - ElementID variant to abstract various element types
+ - DataFormat and Payload classes to abstract data within LwM2M messages
+ - string converters for various enumerations
+ - added config/ directory to host various configuration files, including the xml model
+
+### Changed
+ - Message model to contain various message specializations for Device Managment, Registration and Infromation Reporting Messages
+ - Message class definition
+ - Readable resourses to be a seperate unit 
+ - Writable resourses to be a seperate unit 
+ - ReadAndWritable resourses to be a seperate unit 
+ - Executable resourses to be a seperate unit 
+ - Resource method of request
+ - loggerConfig.json location to config/ 
+ - serverConfig.json location to config/
+ - serverConfig.json content
+ - model/ directory to be under config/
+ - conan dependencies
+ - TLV implementation
+ - source file structure (packaged sources will be found under LwM2M directory, to avoid header name collisions)
+ - Server class implementation 
+
+### Removed
+ - CoAP implementation
+ - CoAP specific messages
+ - ASIO dependency
+ - utility primitive converters 
+
 ## [0.1.2] - 2020.10.07
 ### Added 
  - DataVariant parameter to writable resources
