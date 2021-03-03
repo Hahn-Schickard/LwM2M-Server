@@ -1,9 +1,11 @@
 #include "RequestsManagerInterface.hpp"
+#include "LoggerRepository.hpp"
 
 #include <algorithm>
 
 #define ERROR_CODES_VALUE 0x80
 
+using namespace HaSLL;
 using namespace std;
 
 namespace LwM2M {
@@ -21,16 +23,24 @@ ResponseReturnedAnEmptyPayload::ResponseReturnedAnEmptyPayload(
 
 RequestsManagerInterface::RequestsManagerInterface(
     ResponseHandlerPtr requests_manager)
-    : requests_manager_(requests_manager) {}
+    : requests_manager_(requests_manager),
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
 
-RequestsManagerInterface::~RequestsManagerInterface() { cleanup(); }
+RequestsManagerInterface::~RequestsManagerInterface() {
+  cleanup();
+  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+}
 
 void RequestsManagerInterface::cleanup() {
+  logger_->log(SeverityLevel::TRACE, "Cleaning up non dispatched requests");
   requests_manager_->cleanup(dispatched_);
 }
 
 ClientResponsePtr
 RequestsManagerInterface::dispatchAndGet(ServerRequestPtr request) {
+  logger_->log(SeverityLevel::TRACE, "Dispatching {} to {}:{}", request->name(),
+               request->endpoint_->endpoint_address_,
+               request->endpoint_->endpoint_port_);
   auto id = dispatch(request);
   auto result_future = requests_manager_->request(id);
   dispatched_.push_back(id);

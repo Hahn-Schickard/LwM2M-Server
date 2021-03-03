@@ -1,6 +1,7 @@
 #ifndef __LWM2M_REQUESTER_HPP
 #define __LWM2M_REQUESTER_HPP
 
+#include "Logger.hpp"
 #include "Requester.hpp"
 #include "ResponseHandler.hpp"
 
@@ -104,6 +105,7 @@ private:
 
   ResponseHandlerPtr requests_manager_;
   std::vector<uint64_t> dispatched_;
+  std::shared_ptr<HaSLL::Logger> logger_;
 };
 
 using RequestsManagerInterfacePtr = std::shared_ptr<RequestsManagerInterface>;
