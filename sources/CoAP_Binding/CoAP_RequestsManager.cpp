@@ -3,11 +3,13 @@
 #include "CoAP/OptionBuilder.hpp"
 #include "CoAP/PlainText.hpp"
 #include "CoAP_ContentTypes.hpp"
+#include "LoggerRepository.hpp"
 #include "TLV.hpp"
 #include "Utility.hpp"
 
 using namespace std;
 using namespace CoAP;
+using namespace HaSLL;
 
 #define TOKEN_SIZE 8
 
@@ -228,9 +230,15 @@ CoAP::PayloadPtr makePayload(ServerRequestPtr request) {
 
 CoAP_RequestsManager::CoAP_RequestsManager(ResponseHandlerPtr response_handler,
                                            CoAP::SocketPtr socket)
-    : RequestsManagerInterface(response_handler), socket_(socket) {}
+    : RequestsManagerInterface(response_handler), socket_(socket),
+      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+
+CoAP_RequestsManager::~CoAP_RequestsManager() {
+  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+}
 
 uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
+  logger_->log(SeverityLevel::TRACE, "Dispatching {}", request->name());
   auto header = makeHeader(toCodeType(request->message_type_));
   auto message = make_shared<CoAP::Message>(
       request->endpoint_->endpoint_address_, request->endpoint_->endpoint_port_,
