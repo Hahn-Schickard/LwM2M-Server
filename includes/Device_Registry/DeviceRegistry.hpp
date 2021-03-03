@@ -32,6 +32,7 @@ class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
 
 public:
   DeviceRegistry(const std::string &configuration_path);
+  ~DeviceRegistry();
 
   SupportedObjectDescripotrsMapPtr getSupportedDescriptors();
 

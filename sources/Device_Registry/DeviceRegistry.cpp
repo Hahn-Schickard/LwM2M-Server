@@ -22,6 +22,10 @@ DeviceRegistry::DeviceRegistry(const string &configuration_path)
   }
 }
 
+DeviceRegistry::~DeviceRegistry() {
+  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+}
+
 SupportedObjectDescripotrsMapPtr DeviceRegistry::getSupportedDescriptors() {
   return make_shared<SupportedObjectDescripotrsMap>(supported_descriptors_);
 }
