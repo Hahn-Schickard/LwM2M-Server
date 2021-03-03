@@ -1,6 +1,8 @@
 #include "ResponseHandler.hpp"
+#include "LoggerRepository.hpp"
 
 using namespace std;
+using namespace HaSLL;
 
 namespace LwM2M {
 
@@ -14,16 +16,29 @@ RequestAlreadyDispatched::RequestAlreadyDispatched(uint64_t response_identifier)
 
 RequestCanceled::RequestCanceled() : runtime_error("Request was cancled") {}
 
+ResponseHandler::ResponseHandler()
+    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+
+ResponseHandler::~ResponseHandler() {
+  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+}
+
 void ResponseHandler::cancelRequest(uint64_t response_identifier) {
+  logger_->log(SeverityLevel::TRACE, "Canceling request with id {}",
+               response_identifier);
   auto response_promise = response_promises_.find(response_identifier);
   if (response_promise != response_promises_.end()) {
     response_promise->second.set_exception(
         make_exception_ptr(RequestCanceled()));
     response_promises_.erase(response_promise);
+  } else {
+    logger_->log(SeverityLevel::WARNNING, "No request with id {} was found",
+                 response_identifier);
   }
 }
 
 void ResponseHandler::cleanup(vector<uint64_t> response_identifiers) {
+  logger_->log(SeverityLevel::TRACE, "Cleaning up unhandeled requests.");
   for (auto identifier : response_identifiers) {
     cancelRequest(identifier);
   }
@@ -31,6 +46,8 @@ void ResponseHandler::cleanup(vector<uint64_t> response_identifiers) {
 
 future<ClientResponsePtr>
 ResponseHandler::request(uint64_t response_identifier) {
+  logger_->log(SeverityLevel::TRACE, "Requesting a new request with id {}",
+               response_identifier);
   auto response_promise = response_promises_.find(response_identifier);
   if (response_promise == response_promises_.end()) {
     promise<ClientResponsePtr> response_promise;
@@ -50,6 +67,8 @@ bool ResponseHandler::exists(uint64_t identifier) {
 
 void ResponseHandler::respond(uint64_t response_identifier,
                               ClientResponsePtr response) {
+  logger_->log(SeverityLevel::TRACE, "Responding to request with id {}",
+               response_identifier);
   auto response_promise = response_promises_.find(response_identifier);
   if (response_promise != response_promises_.end()) {
     response_promise->second.set_value(response);

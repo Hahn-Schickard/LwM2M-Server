@@ -1,6 +1,7 @@
 #ifndef __LWM2M_REQUESTS_MANAGER_HPP
 #define __LWM2M_REQUESTS_MANAGER_HPP
 
+#include "Logger.hpp"
 #include "Message.hpp"
 
 #include <future>
@@ -42,6 +43,7 @@ using ResponseHandlerInterfacePtr = std::shared_ptr<ResponseHandlerInterface>;
 class ResponseHandler : public ResponseHandlerInterface {
   std::unordered_map<uint64_t, std::promise<ClientResponsePtr>>
       response_promises_;
+  std::shared_ptr<HaSLL::Logger> logger_;
 
   /**
    * @brief Removes a given request identifier and associated std::promise pair
@@ -53,6 +55,9 @@ class ResponseHandler : public ResponseHandlerInterface {
   void cancelRequest(uint64_t request_identifier);
 
 public:
+  ResponseHandler();
+  ~ResponseHandler();
+
   /**
    * @brief Removes given request ids from the requests map.
    * Called by LwM2M::Dispatcher destructor
