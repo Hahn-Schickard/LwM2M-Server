@@ -22,6 +22,7 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC 
                               Binding_Interface
                               CoAPS4Cpp::CoAPS4Cpp
+                              HaSLL::HaSLL
                               PRIVATE
                               nlohmann_json::nlohmann_json
 )

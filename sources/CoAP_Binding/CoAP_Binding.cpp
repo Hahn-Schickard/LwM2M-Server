@@ -6,15 +6,18 @@
 #include "CoAP_Config.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "CoAP_RequestsManager.hpp"
+#include "LoggerRepository.hpp"
 #include "RegistrationInterfaceRequestsBuilder.hpp"
 #include "Utility.hpp"
 
 using namespace std;
 using namespace CoAP;
+using namespace HaSLL;
 
 namespace LwM2M {
 
-CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry, const string filepath) {
+CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry, const string filepath)
+    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   CoAP_Config config;
   if (!filepath.empty()) {
     config = getCoAP_Config(filepath);
@@ -33,6 +36,10 @@ CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry, const string filepath) {
   BindingInterface::bind(make_shared<CoAP_RequestsManager>(
                              BindingInterface::response_handler_, socket_),
                          registry);
+}
+
+CoAP_Binding::~CoAP_Binding() {
+  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
 ResponseCode toCodeType(CoAP::CodeType code) {
@@ -116,14 +123,24 @@ ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) {
 }
 
 CoAP::MessagePtr CoAP_Binding::handleResponse(CoAP::MessagePtr message) {
+  logger_->log(SeverityLevel::TRACE,
+               "Handling incomming message from {}:{} as a Response.",
+               message->getAddressIP(), message->getAddressPort());
   auto identifier = generateHash(message);
   if (response_handler_->exists(identifier)) {
     response_handler_->respond(identifier, makeClientResponse(message));
+  } else {
+    logger_->log(SeverityLevel::WARNNING,
+                 "No Requests is Associated with {} response from {}:{}",
+                 message->getTokenHash(), message->getAddressIP(),
+                 message->getAddressPort());
   }
   return CoAP::MessagePtr();
 }
 
 CoAP::MessagePtr CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
+  logger_->log(SeverityLevel::CRITICAL,
+               "Notifications are not handeled by the server!");
   // create LwM2M::ValueUpdated
   // forward to LwM2M::Notifier
   return CoAP::MessagePtr();
@@ -135,6 +152,10 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
   auto option = options.find(CoAP::OptionNumber::URI_PATH);
   if (option != options.end()) {
     if (option->second->getAsString() == "rd") {
+      logger_->log(SeverityLevel::TRACE,
+                   "Handling incomming message from {}:{} as a Registratrion "
+                   "Interface message.",
+                   message->getAddressIP(), message->getAddressPort());
       try {
         if (message->getHeader()->getCodeType() == CoAP::CodeType::POST) {
           if (options.count(CoAP::OptionNumber::URI_PATH) > 1) {
@@ -160,6 +181,9 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
 }
 
 ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
+  logger_->log(SeverityLevel::TRACE,
+               "Handling incomming message from {}:{} as a Request",
+               message->getAddressIP(), message->getAddressPort());
   auto response = handleRegistrationRequest(message);
   if (response) {
     return move(response);
@@ -230,6 +254,8 @@ CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message) {
 }
 
 CoAP::MessagePtr CoAP_Binding::handleMessage(CoAP::MessagePtr message) {
+  logger_->log(SeverityLevel::INFO, "Handling incomming message from {}:{}",
+               message->getAddressIP(), message->getAddressPort());
   if (message->getHeader()->getMesageType() ==
       CoAP::MessageType::ACKNOWLEDGMENT) {
     return handleResponse(message);
@@ -245,6 +271,7 @@ CoAP::MessagePtr CoAP_Binding::handleMessage(CoAP::MessagePtr message) {
 }
 
 void CoAP_Binding::run() {
+  logger_->log(SeverityLevel::INFO, "CoAP Binding started!");
   socket_->start();
   while (!stopRequested()) {
     auto message = inbox_->front();
@@ -258,6 +285,7 @@ void CoAP_Binding::run() {
     }
   }
   socket_->stop();
+  logger_->log(SeverityLevel::INFO, "CoAP Binding stoped!");
 }
 
 } // namespace LwM2M
