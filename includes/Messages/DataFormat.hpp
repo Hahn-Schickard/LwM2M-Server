@@ -90,10 +90,20 @@ struct DataFormat {
    * @return T - contained data value as type T
    */
   template <typename T> T get() const { throw UnsuportedDataType(); }
+
   size_t size() const;
 
   friend bool operator==(const DataFormat &lhs, const DataFormat &rhs);
 };
+
+template <> void DataFormat::get<void>() const;
+template <> bool DataFormat::get<bool>() const;
+template <> int64_t DataFormat::get<int64_t>() const;
+template <> uint64_t DataFormat::get<uint64_t>() const;
+template <> double DataFormat::get<double>() const;
+template <> std::string DataFormat::get<std::string>() const;
+template <> ObjectLink DataFormat::get<ObjectLink>() const;
+template <> std::vector<uint8_t> DataFormat::get<std::vector<uint8_t>>() const;
 
 using DataFormatPtr = std::shared_ptr<DataFormat>;
 
