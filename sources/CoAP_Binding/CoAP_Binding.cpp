@@ -71,55 +71,64 @@ PayloadPtr toPayload(OctetStream content) {
   return make_shared<Payload>(make_shared<DataFormat>(content.getValue()));
 }
 
-ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) {
+ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
-  auto code = toCodeType(message->getHeader()->getCodeType());
-  if (auto payload = message->getPayload()) {
-    PayloadPtr content;
-    auto options = message->getOptions();
-    auto it = options.find(OptionNumber::CONTENT_FORMAT);
-    if (it != options.end()) {
-      auto content_format =
-          dynamic_pointer_cast<CoAP::ContentFormat>(it->second);
-      switch (content_format->getIndex()) {
-      case ContentFormatEncodings::PlainText::index: {
-        auto text = decode<PlainText>(payload);
-        content = toPayload(text);
-        break;
+  try {
+    auto code = toCodeType(message->getHeader()->getCodeType());
+    if (auto payload = message->getPayload()) {
+      PayloadPtr content;
+      auto options = message->getOptions();
+      auto it = options.find(OptionNumber::CONTENT_FORMAT);
+      if (it != options.end()) {
+        auto content_format =
+            dynamic_pointer_cast<CoAP::ContentFormat>(it->second);
+        switch (content_format->getIndex()) {
+        case ContentFormatEncodings::PlainText::index: {
+          auto text = decode<PlainText>(payload);
+          content = toPayload(text);
+          break;
+        }
+        case ContentFormatEncodings::CoRE_Link::index: {
+          auto core_links = decode<CoRE_Links>(payload);
+          content = toPayload(core_links);
+          break;
+        }
+        case ContentFormatEncodings::LwM2M_TLV::index: {
+          auto tlv = decode<TLV_Pack>(payload);
+          content = toPayload(tlv);
+          break;
+        }
+        case ContentFormatEncodings::LwM2M_CBOR::index: {
+          [[fallthrough]];
+        }
+        case ContentFormatEncodings::LwM2M_JSON::index: {
+          throw runtime_error(
+              string(ContentFormatEncodings::LwM2M_JSON::toString()) +
+              " is not supported");
+        }
+        case ContentFormatEncodings::Octet_Stream::index: {
+          auto octets = decode<OctetStream>(payload);
+          content = toPayload(octets);
+          break;
+        }
+        default: {
+          throw runtime_error("Unhandeled Content Format with index :" +
+                              content_format->getIndex());
+        }
+        }
+        return make_shared<ClientResponse>(endpoint, code, content);
       }
-      case ContentFormatEncodings::CoRE_Link::index: {
-        auto core_links = decode<CoRE_Links>(payload);
-        content = toPayload(core_links);
-        break;
-      }
-      case ContentFormatEncodings::LwM2M_TLV::index: {
-        auto tlv = decode<TLV_Pack>(payload);
-        content = toPayload(tlv);
-        break;
-      }
-      case ContentFormatEncodings::LwM2M_CBOR::index: {
-        [[fallthrough]];
-      }
-      case ContentFormatEncodings::LwM2M_JSON::index: {
-        throw runtime_error(
-            string(ContentFormatEncodings::LwM2M_JSON::toString()) +
-            " is not supported");
-      }
-      case ContentFormatEncodings::Octet_Stream::index: {
-        auto octets = decode<OctetStream>(payload);
-        content = toPayload(octets);
-        break;
-      }
-      default: {
-        throw runtime_error("Unhandeled Content Format with index :" +
-                            content_format->getIndex());
-      }
-      }
-      return make_shared<ClientResponse>(endpoint, code, content);
     }
+    return make_shared<ClientResponse>(endpoint, code);
+  } catch (exception &ex) {
+    logger_->log(SeverityLevel::CRITICAL,
+                 "Cought an unhandeled exception, while building a "
+                 "ClientResponse from message {} from {}:{}",
+                 message->getTokenHash(), message->getAddressIP(),
+                 message->getAddressPort());
+    return make_shared<ClientResponse>(endpoint, ResponseCode::BAD_REQUEST);
   }
-  return make_shared<ClientResponse>(endpoint, code);
 }
 
 CoAP::MessagePtr CoAP_Binding::handleResponse(CoAP::MessagePtr message) {
@@ -218,36 +227,45 @@ Options buildOptions(ServerResponsePtr message) {
       options.emplace(OptionNumber::LOCATION_PATH, move(location_path));
     }
   }
-
   return options;
 }
 
-CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message) {
+CoAP::MessagePtr CoAP_Binding::encode(CoAP::MessagePtr request,
+                                      ServerResponsePtr message) {
   if (message) {
-    auto header = make_shared<CoAP::Header>(
-        CoAP::MessageType::ACKNOWLEDGMENT, request->getToken().size(),
-        toCodeType(message->response_code_),
-        request->getHeader()->getMessageID());
-    auto response = make_shared<CoAP::Message>(
-        request->getAddressIP(), request->getAddressPort(), move(header));
+    try {
+      auto header = make_shared<CoAP::Header>(
+          CoAP::MessageType::ACKNOWLEDGMENT, request->getToken().size(),
+          toCodeType(message->response_code_),
+          request->getHeader()->getMessageID());
+      auto response = make_shared<CoAP::Message>(
+          request->getAddressIP(), request->getAddressPort(), move(header));
 
-    if (!request->getToken().empty()) {
-      *response += request->getToken();
-    }
-
-    auto options = buildOptions(message);
-    if (!options.empty()) {
-      *response += options;
-    }
-
-    if (message->payload_) {
-      auto payload = buildPayload(message);
-      if (payload) {
-        *response += payload;
+      if (!request->getToken().empty()) {
+        *response += request->getToken();
       }
-    }
 
-    return response;
+      auto options = buildOptions(message);
+      if (!options.empty()) {
+        *response += options;
+      }
+
+      if (message->payload_) {
+        auto payload = buildPayload(message);
+        if (payload) {
+          *response += payload;
+        }
+      }
+      return response;
+    } catch (exception &ex) {
+      logger_->log(SeverityLevel::CRITICAL,
+                   "Cought an unhandled exception while encoding {} for "
+                   "request {} form {}:{}. Exeception: {}",
+                   message->name(), request->getTokenHash(),
+                   request->getAddressIP(), request->getAddressPort(),
+                   ex.what());
+      return CoAP::MessagePtr();
+    }
   } else {
     return CoAP::MessagePtr();
   }

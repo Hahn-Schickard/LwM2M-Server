@@ -12,6 +12,9 @@ class CoAP_Binding : public BindingInterface {
   CoAP::InboxPtr inbox_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
+  ClientResponsePtr makeClientResponse(CoAP::MessagePtr message);
+  CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message);
+
   CoAP::MessagePtr handleResponse(CoAP::MessagePtr message);
   CoAP::MessagePtr handleNotification(CoAP::MessagePtr message);
   ServerResponsePtr handleRegistrationRequest(CoAP::MessagePtr message);
