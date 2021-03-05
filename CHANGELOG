@@ -1,3 +1,9 @@
+## [0.2.1] - 2021.03.05
+### Added
+ - Forward definitions for DataFormat getter template arguments
+ - Logging for ClientResponsePtr makeClientResponse(CoAP::MessagePtr message) method
+ - Logging for CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message) method
+
 ## [0.2.0] - 2021.03.03
 ### Added
  - BindingInterface for Bindign abtractions
