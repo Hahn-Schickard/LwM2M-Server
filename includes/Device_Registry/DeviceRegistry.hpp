@@ -2,7 +2,7 @@
 #define __LWM2M_MODEL_DEVICE_REGISTRY_HPP
 
 #include "Device.hpp"
-#include "Event_Model.hpp"
+#include "Event_Model/EventSource.hpp"
 #include "Logger.hpp"
 #include "RegistryEvent.hpp"
 

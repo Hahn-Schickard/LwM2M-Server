@@ -1,4 +1,5 @@
 #include "DeviceRegistry.hpp"
+#include "Event_Model/EventListenerInterface.hpp"
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -32,8 +33,10 @@ TEST(DeviceRegistryInstanciationTests, canBuildWithNonExistantModel) {
   }
 }
 
-struct MockRegistryListener : public Event_Model::EventListener<RegistryEvent> {
-  MockRegistryListener(DeviceRegistryPtr registry) : EventListener(registry) {}
+struct MockRegistryListener
+    : public Event_Model::EventListenerInterface<RegistryEvent> {
+  MockRegistryListener(DeviceRegistryPtr registry)
+      : EventListenerInterface(registry) {}
 
   MOCK_METHOD(void, handleEvent, (shared_ptr<RegistryEvent>), (override));
 };

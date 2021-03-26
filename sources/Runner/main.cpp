@@ -1,5 +1,5 @@
 #include "CoAP_ContentTypes.hpp"
-#include "Event_Model.hpp"
+#include "Event_Model/EventListenerInterface.hpp"
 #include "LoggerRepository.hpp"
 #include "RegistryEvent.hpp"
 #include "Server.hpp"
@@ -85,10 +85,11 @@ void asyncRead(DevicePtr device, ResourceID id) {
       .detach();
 }
 
-class RegistrationListener : public Event_Model::EventListener<RegistryEvent> {
+class RegistrationListener
+    : public Event_Model::EventListenerInterface<RegistryEvent> {
 public:
   RegistrationListener(EventSourcePtr registration)
-      : EventListener(registration) {}
+      : EventListenerInterface(registration) {}
 
   void handleEvent(RegistryEventPtr event) override {
     switch (event->type_) {
