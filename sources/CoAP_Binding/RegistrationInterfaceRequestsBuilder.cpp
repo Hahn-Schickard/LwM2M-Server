@@ -11,7 +11,8 @@ using namespace CoAP;
 
 namespace LwM2M {
 
-ParameterNotFound::ParameterNotFound(ServerResponsePtr response)
+RegistratrionInterfaceError::RegistratrionInterfaceError(
+    ServerResponsePtr response)
     : domain_error("Request " + response->endpoint_->endpoint_address_ + ":" +
                    to_string(response->endpoint_->endpoint_port_) +
                    " is missing one of mandatory parameters. Sending " +
@@ -52,9 +53,11 @@ optional<LwM2M_Version> getLwM2M_Version(Options options) {
       string version_string = option->getAsString().substr(6, 7);
       if (version_string == "1.0") {
         return LwM2M_Version::V1_0;
-      } else if (version_string == "1.1") {
-        return LwM2M_Version::V1_1;
       }
+      // @TODO: enable this block when LwM2M v1.1 is fully implemented
+      // else if (version_string == "1.1") {
+      //   return LwM2M_Version::V1_1;
+      // }
     }
   }
   return {};
@@ -173,10 +176,11 @@ RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message) {
           endpoint, life_time_, object_instances_map_, endpoint_name_, version_,
           binding_, queue_mode_, sms_number_);
     } catch (bad_optional_access &ex) {
-      throw ParameterNotFound(make_shared<RegisterResponse>(endpoint));
+      throw RegistratrionInterfaceError(
+          make_shared<RegisterResponse>(endpoint));
     }
   } catch (bad_optional_access &ex) {
-    throw ParameterNotFound(make_shared<RegisterResponse>(
+    throw RegistratrionInterfaceError(make_shared<RegisterResponse>(
         endpoint, ResponseCode::PRECOGNITION_FAILED));
   }
 }
@@ -208,7 +212,7 @@ UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message) {
     return make_shared<UpdateRequest>(endpoint, location, object_instances_map,
                                       life_time, binding, sms_number);
   } catch (bad_optional_access &ex) {
-    throw ParameterNotFound(make_shared<UpdateResponse>(endpoint));
+    throw RegistratrionInterfaceError(make_shared<UpdateResponse>(endpoint));
   }
 }
 
@@ -219,7 +223,8 @@ DeregisterRequestPtr buildDeregisterRequest(CoAP::MessagePtr message) {
     auto location = getLocation(message->getOptions()).value();
     return make_shared<DeregisterRequest>(endpoint, location);
   } catch (bad_optional_access &ex) {
-    throw ParameterNotFound(make_shared<DeregisterResponse>(endpoint));
+    throw RegistratrionInterfaceError(
+        make_shared<DeregisterResponse>(endpoint));
   }
 }
 

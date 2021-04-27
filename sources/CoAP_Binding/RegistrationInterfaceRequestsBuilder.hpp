@@ -9,9 +9,9 @@
 #include <stdexcept>
 
 namespace LwM2M {
-struct ParameterNotFound : protected std::domain_error {
+struct RegistratrionInterfaceError : protected std::domain_error {
   ServerResponsePtr response_;
-  ParameterNotFound(ServerResponsePtr response);
+  RegistratrionInterfaceError(ServerResponsePtr response);
 };
 
 RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message);

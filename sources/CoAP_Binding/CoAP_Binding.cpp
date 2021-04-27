@@ -179,7 +179,7 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
           auto request = buildDeregisterRequest(message);
           return registrator_->handleRquest(move(request));
         }
-      } catch (ParameterNotFound &ex) {
+      } catch (RegistratrionInterfaceError &ex) {
         auto endpoint = make_shared<Endpoint>(message->getAddressIP(),
                                               message->getAddressPort());
         return ex.response_;
