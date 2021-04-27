@@ -1,3 +1,12 @@
+## [0.2.3] - 2021.04.27
+### Fixed 
+ - CoAP Binding not setting default ContentFormat when none is provided
+ - Server not auto rejecting registration request for unsupported LwM2M versions
+
+### Changed
+ - CoAPS4Cpp to v0.2.4
+ - ParameterNotFound to RegistratrionInterfaceError in CoAP BInding RegistratrionInterfaceRequestBuilder
+
 ## [0.2.2] - 2021.04.01
 ### Changed
  - Event_Model to 0.2.0
