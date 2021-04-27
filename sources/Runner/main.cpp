@@ -97,8 +97,10 @@ public:
       cout << "A new device with id: " << event->identifier_
            << " has been registered!" << endl;
       auto device = event->device_;
-      asyncRead(device, ResourceID(3, 0, 4));
-      asyncRead(device, ResourceID(3303, 0, 5700));
+      asyncRead(device, ResourceID(3, 0, 4)); // try to read a not readable
+      asyncRead(device, ResourceID(3, 0, 8)); // try to read a non existant
+      asyncRead(device,
+                ResourceID(3303, 0, 5700)); // try to read temperature value
       break;
     }
     case RegistryEventType::UPDATED: {
