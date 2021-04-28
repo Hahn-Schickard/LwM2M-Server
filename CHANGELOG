@@ -1,4 +1,4 @@
-## [0.2.4] - 2021.04.28
+## [0.2.4] - NOT RELEASED
 ### Changed
  - ResponseReturnedAnErrorCode inheritance from std::runtime_error to public
  - ResponseReturnedAnEmptyPayload inheritance from std::runtime_error to public
