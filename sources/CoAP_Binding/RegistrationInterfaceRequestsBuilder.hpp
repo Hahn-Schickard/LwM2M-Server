@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 namespace LwM2M {
-struct RegistratrionInterfaceError : protected std::domain_error {
+struct RegistratrionInterfaceError : std::domain_error {
   ServerResponsePtr response_;
   RegistratrionInterfaceError(ServerResponsePtr response);
 };
