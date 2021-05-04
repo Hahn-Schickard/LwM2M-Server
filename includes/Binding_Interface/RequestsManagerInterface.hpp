@@ -9,14 +9,14 @@
 
 namespace LwM2M {
 
-struct ResponseReturnedAnErrorCode : std::runtime_error {
+struct ResponseReturnedAnErrorCode : public std::runtime_error {
   ResponseCode response_code_;
 
   ResponseReturnedAnErrorCode(ClientResponsePtr response,
                               ServerRequestPtr request);
 };
 
-struct ResponseReturnedAnEmptyPayload : std::runtime_error {
+struct ResponseReturnedAnEmptyPayload : public std::runtime_error {
   ResponseReturnedAnEmptyPayload(ClientResponsePtr response,
                                  ServerRequestPtr request);
 };

@@ -12,7 +12,7 @@
 
 namespace LwM2M {
 
-struct UnsupportedOperation : protected std::logic_error {
+struct UnsupportedOperation : public std::logic_error {
   UnsupportedOperation(std::string const &message);
 };
 
@@ -77,7 +77,7 @@ enum struct ResponseCode : uint8_t {
 
 std::string toString(ResponseCode type);
 
-struct UnsupportedResponseCode : protected std::logic_error {
+struct UnsupportedResponseCode : public std::logic_error {
   UnsupportedResponseCode(std::string const &message);
   UnsupportedResponseCode(
       std::string message_type, ResponseCode unsupported_response_code,

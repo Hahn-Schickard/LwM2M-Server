@@ -14,7 +14,7 @@
 
 namespace LwM2M {
 
-struct DeviceNotFound : std::runtime_error {
+struct DeviceNotFound : public std::runtime_error {
   DeviceNotFound(std::string const &identifier);
 };
 

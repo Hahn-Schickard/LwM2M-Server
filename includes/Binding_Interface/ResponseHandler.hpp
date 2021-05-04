@@ -9,15 +9,15 @@
 
 namespace LwM2M {
 
-struct RequestNotFound : protected std::runtime_error {
+struct RequestNotFound : public std::runtime_error {
   RequestNotFound(uint64_t request_identifier);
 };
 
-struct RequestAlreadyDispatched : protected std::runtime_error {
+struct RequestAlreadyDispatched : public std::runtime_error {
   RequestAlreadyDispatched(uint64_t request_identifier);
 };
 
-struct RequestCanceled : protected std::runtime_error {
+struct RequestCanceled : public std::runtime_error {
   RequestCanceled();
 };
 
