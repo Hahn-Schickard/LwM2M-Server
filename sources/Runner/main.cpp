@@ -56,14 +56,14 @@ future<string> stringifyResourceValue(ResourceVariant variant) {
 }
 
 void asyncRead(DevicePtr device, ResourceID id) {
-  //@TODO: this leaks memory, REWORK IT!
   thread(
       [](DevicePtr device, ResourceID element_id) {
         try {
           auto object =
               device->getObject(element_id.object_instance_.object_.id_);
-          auto future = stringifyResourceValue(object->getResource(
-              element_id.object_instance_.id_, element_id.id_));
+          auto resource = object->getResource(element_id.object_instance_.id_,
+                                              element_id.id_);
+          auto future = stringifyResourceValue(move(resource));
           future.wait();
           cout << "Device: " << device->getDeviceId() << " "
                << object->getDescriptor()->name_
@@ -77,6 +77,10 @@ void asyncRead(DevicePtr device, ResourceID id) {
                << " failed! Received an error "
                   "code: "
                << toString(ex.response_code_) << endl;
+        } catch (UnsupportedMethod &ex) {
+          cout << "Called an unsuported method: " << ex.what() << endl;
+        } catch (runtime_error &ex) {
+          cout << "Encountered a runtime error: " << ex.what() << endl;
         } catch (exception &ex) {
           cerr << "Cought an unhandeled exception: " << ex.what() << endl;
         }
