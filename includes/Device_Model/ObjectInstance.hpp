@@ -19,6 +19,11 @@ using ResourceVariant =
                  ResourcePtr<ObjectLink>, ResourcePtr<std::vector<uint8_t>>>;
 using Resources = std::unordered_map<uint32_t, ResourceVariant>;
 
+struct ResourceDoesNotExist : public std::runtime_error {
+  ResourceDoesNotExist(ResourceID id)
+      : runtime_error("Resource " + id.toString() + " does not exist.") {}
+};
+
 class ObjectInstance {
   RequesterPtr requester_;
   EndpointPtr endpoint_;

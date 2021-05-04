@@ -46,7 +46,7 @@ ObjectPtr Device::getObject(uint32_t id) {
   if (it != object_instances_.end()) {
     return it->second;
   } else {
-    return ObjectPtr();
+    throw ObjectDoesNotExist(ObjectID(id));
   }
 }
 

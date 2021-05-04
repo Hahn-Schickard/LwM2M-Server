@@ -37,52 +37,55 @@ ObjectInstance::ObjectInstance(
         resource_descriptors)
     : requester_(requester), endpoint_(endpoint), id_(id) {
   for (auto resource_pair : resource_descriptors) {
-    switch (resource_pair.second->data_type_) {
-    case DataType::FLOAT: {
-      resources_.emplace(resource_pair.first,
-                         makeResourcePtr<double>(requester_, endpoint, id_,
-                                                 resource_pair.second));
-      break;
-    }
-    case DataType::SIGNED_INTEGER: {
-      resources_.emplace(resource_pair.first,
-                         makeResourcePtr<int64_t>(requester_, endpoint, id_,
-                                                  resource_pair.second));
-      break;
-    }
-    case DataType::OBJECT_LINK: {
-      resources_.emplace(resource_pair.first,
-                         makeResourcePtr<ObjectLink>(requester_, endpoint, id_,
-                                                     resource_pair.second));
-      break;
-    }
-    case DataType::OPAQUE: {
-      resources_.emplace(resource_pair.first,
-                         makeResourcePtr<vector<uint8_t>>(
-                             requester_, endpoint, id_, resource_pair.second));
-      break;
-    }
-    case DataType::STRING: {
-      resources_.emplace(resource_pair.first,
-                         makeResourcePtr<string>(requester_, endpoint, id_,
-                                                 resource_pair.second));
-      break;
-    }
-    case DataType::TIME:
-    case DataType::UNSIGNED_INTEGER: {
-      resources_.emplace(resource_pair.first,
-                         makeResourcePtr<uint64_t>(requester_, endpoint, id_,
+    if (resource_pair.second->mandatory_) {
+      switch (resource_pair.second->data_type_) {
+      case DataType::FLOAT: {
+        resources_.emplace(resource_pair.first,
+                           makeResourcePtr<double>(requester_, endpoint, id_,
                                                    resource_pair.second));
-      break;
-    }
-    case DataType::BOOLEAN:
-    case DataType::NONE:
-    default: {
-      resources_.emplace(resource_pair.first,
-                         makeResourcePtr<bool>(requester_, endpoint, id_,
-                                               resource_pair.second));
-      break;
-    }
+        break;
+      }
+      case DataType::SIGNED_INTEGER: {
+        resources_.emplace(resource_pair.first,
+                           makeResourcePtr<int64_t>(requester_, endpoint, id_,
+                                                    resource_pair.second));
+        break;
+      }
+      case DataType::OBJECT_LINK: {
+        resources_.emplace(resource_pair.first, makeResourcePtr<ObjectLink>(
+                                                    requester_, endpoint, id_,
+                                                    resource_pair.second));
+        break;
+      }
+      case DataType::OPAQUE: {
+        resources_.emplace(
+            resource_pair.first,
+            makeResourcePtr<vector<uint8_t>>(requester_, endpoint, id_,
+                                             resource_pair.second));
+        break;
+      }
+      case DataType::STRING: {
+        resources_.emplace(resource_pair.first,
+                           makeResourcePtr<string>(requester_, endpoint, id_,
+                                                   resource_pair.second));
+        break;
+      }
+      case DataType::TIME:
+      case DataType::UNSIGNED_INTEGER: {
+        resources_.emplace(resource_pair.first,
+                           makeResourcePtr<uint64_t>(requester_, endpoint, id_,
+                                                     resource_pair.second));
+        break;
+      }
+      case DataType::BOOLEAN:
+      case DataType::NONE:
+      default: {
+        resources_.emplace(resource_pair.first,
+                           makeResourcePtr<bool>(requester_, endpoint, id_,
+                                                 resource_pair.second));
+        break;
+      }
+      }
     }
   }
 }
@@ -92,7 +95,7 @@ ResourceVariant ObjectInstance::getResource(uint32_t id) {
   if (it != resources_.end()) {
     return it->second;
   } else {
-    return ResourceVariant();
+    throw ResourceDoesNotExist(ResourceID(id_, id));
   }
 }
 

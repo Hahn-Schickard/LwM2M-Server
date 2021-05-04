@@ -17,6 +17,11 @@ using ObjectDescriptorPair =
     std::pair<ObjectDescriptorPtr, std::vector<uint32_t>>;
 using ObjectDescriptorsMap = std::unordered_map<uint32_t, ObjectDescriptorPair>;
 
+struct ObjectDoesNotExist : public std::runtime_error {
+  ObjectDoesNotExist(ObjectID id)
+      : runtime_error("Object " + id.toString() + "does not exits") {}
+};
+
 class Device {
   RequesterPtr requester_;
   EndpointPtr endpoint_;
