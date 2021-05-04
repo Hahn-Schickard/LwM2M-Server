@@ -65,7 +65,7 @@ TEST_F(RequestsManagerInterfaceTests, returnsDataFormatOnRequestData) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       auto result = result_future.get();
@@ -94,11 +94,11 @@ TEST_F(RequestsManagerInterfaceTests,
     auto response_test_result =
         async(launch::async, RespondWithCode(), response_handler_, endpoint,
               request_identifier, ResponseCode::NOT_FOUND);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       EXPECT_THROW({ result_future.get(); }, ResponseReturnedAnErrorCode);
@@ -129,11 +129,11 @@ TEST_F(RequestsManagerInterfaceTests, throwsRequestCanceledOnRequestData) {
                 requests_manager->doCleanup();
               },
               requests_manager_);
-    if (cleanup_test_result.wait_for(1ms) == future_status::timeout) {
+    if (cleanup_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response cleanup handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       EXPECT_THROW({ result_future.get(); }, RequestCanceled);
@@ -170,18 +170,18 @@ TEST_F(RequestsManagerInterfaceTests,
                     RequestAlreadyDispatched);
               },
               request, requester_);
-    if (duplicate_test_result.wait_for(1ms) == future_status::timeout) {
+    if (duplicate_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Duplicate message handling test timedout." << endl;
     }
 
     auto response_test_result =
         async(launch::async, RespondWithCode(), response_handler_, endpoint,
               request_identifier, ResponseCode::NOT_FOUND);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       EXPECT_THROW({ result_future.get(); }, ResponseReturnedAnErrorCode);
@@ -218,11 +218,11 @@ TEST_F(RequestsManagerInterfaceTests,
     auto response_test_result =
         async(launch::async, RespondWithContent(), response_handler_, endpoint,
               request_identifier, make_shared<Payload>(data));
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       auto result = result_future.get();
@@ -263,11 +263,11 @@ TEST_F(RequestsManagerInterfaceTests,
     auto response_test_result =
         async(launch::async, RespondWithCode(), response_handler_, endpoint,
               request_identifier, ResponseCode::UNAUTHORIZED);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       EXPECT_THROW({ result_future.get(); }, ResponseReturnedAnErrorCode);
@@ -303,11 +303,11 @@ TEST_F(RequestsManagerInterfaceTests,
                 requests_manager->doCleanup();
               },
               requests_manager_);
-    if (cleanup_test_result.wait_for(1ms) == future_status::timeout) {
+    if (cleanup_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response cleanup handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       EXPECT_THROW({ result_future.get(); }, RequestCanceled);
@@ -347,18 +347,18 @@ TEST_F(RequestsManagerInterfaceTests,
                     RequestAlreadyDispatched);
               },
               request, requester_);
-    if (duplicate_test_result.wait_for(1ms) == future_status::timeout) {
+    if (duplicate_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Duplicate message handling test timedout." << endl;
     }
 
     auto response_test_result =
         async(launch::async, RespondWithCode(), response_handler_, endpoint,
               request_identifier, ResponseCode::UNAUTHORIZED);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       EXPECT_THROW({ result_future.get(); }, ResponseReturnedAnErrorCode);
@@ -387,11 +387,11 @@ TEST_F(RequestsManagerInterfaceTests, returnsTrueOnRequestAction) {
     auto response_test_result =
         async(launch::async, RespondWithCode(), response_handler_, endpoint,
               request_identifier, ResponseCode::CHANGED);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       auto result = result_future.get();
@@ -419,11 +419,11 @@ TEST_F(RequestsManagerInterfaceTests, returnsFalseOnRequestAction) {
     auto response_test_result =
         async(launch::async, RespondWithCode(), response_handler_, endpoint,
               request_identifier, ResponseCode::BAD_REQUEST);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       auto result = result_future.get();
@@ -454,11 +454,11 @@ TEST_F(RequestsManagerInterfaceTests, throwsRequestCanceledOnRequestAction) {
                 requests_manager->doCleanup();
               },
               requests_manager_);
-    if (cleanup_test_result.wait_for(1ms) == future_status::timeout) {
+    if (cleanup_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response cleanup handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       EXPECT_THROW({ result_future.get(); }, RequestCanceled);
@@ -494,18 +494,18 @@ TEST_F(RequestsManagerInterfaceTests,
                     RequestAlreadyDispatched);
               },
               request, requester_);
-    if (duplicate_test_result.wait_for(1ms) == future_status::timeout) {
+    if (duplicate_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Duplicate message handling test timedout." << endl;
     }
 
     auto response_test_result =
         async(launch::async, RespondWithCode(), response_handler_, endpoint,
               request_identifier, ResponseCode::BAD_REQUEST);
-    if (response_test_result.wait_for(1ms) == future_status::timeout) {
+    if (response_test_result.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Response handling test timedout." << endl;
     }
 
-    if (result_future.wait_for(1ms) == future_status::timeout) {
+    if (result_future.wait_for(10ms) == future_status::timeout) {
       FAIL() << "Could not get the result in a timely manner" << endl;
     } else {
       auto result = result_future.get();
