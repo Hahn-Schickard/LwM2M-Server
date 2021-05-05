@@ -1,7 +1,25 @@
 ## [0.2.4] - NOT RELEASED
+### Added
+ - ObjectDoesNotExist exception 
+ - ObjectInstanceDoesNotExitst exception
+ - ResourceDoesNotExist exception 
+
 ### Changed
  - ResponseReturnedAnErrorCode inheritance from std::runtime_error to public
  - ResponseReturnedAnEmptyPayload inheritance from std::runtime_error to public
+ - RequestNotFound inheritance from std::runtime_error to public
+ - RequestAlreadyDispatched inheritance from std::runtime_error to public
+ - RequestCanceled inheritance from std::runtime_error to public
+ - UnsupportedOperation inheritance from std::logic_error to public
+ - UnsupportedResponseCode inheritance from std::logic_error to public
+ - RegistratrionInterfaceError inheritance from std::domain_error to public
+ - Device getObject() method to throw ObjectDoesNotExist instead of returtning an empty value
+ - Object getResource() method to throw ObjectInstanceDoesNotExitst instead of returtning an empty value
+ - ObjectInstance getResource() method to throw ResourceDoesNotExist instead of returtning an empty value
+ - disabled support for LwM2M optional resources
+ - RequestsManagerInterface to share internal logger with it's children
+ - GTest runner to throw on failed assertions
+ - GTest runner to repeat test cases 20 times
 
 ## [0.2.3] - 2021.04.27
 ### Fixed 
