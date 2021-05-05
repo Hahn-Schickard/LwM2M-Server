@@ -8,7 +8,6 @@
 namespace LwM2M {
 class CoAP_RequestsManager : public RequestsManagerInterface {
   CoAP::SocketPtr socket_;
-  std::shared_ptr<HaSLL::Logger> logger_;
 
 public:
   CoAP_RequestsManager(ResponseHandlerPtr response_handler,

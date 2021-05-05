@@ -22,9 +22,10 @@ ResponseReturnedAnEmptyPayload::ResponseReturnedAnEmptyPayload(
                     request->name()) {}
 
 RequestsManagerInterface::RequestsManagerInterface(
-    ResponseHandlerPtr requests_manager)
+    const string &name, ResponseHandlerPtr requests_manager)
     : requests_manager_(requests_manager),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+      logger_(LoggerRepository::getInstance().registerLoger(
+          name + string("_RequestsManagerInterface"))) {}
 
 RequestsManagerInterface::~RequestsManagerInterface() {
   cleanup();

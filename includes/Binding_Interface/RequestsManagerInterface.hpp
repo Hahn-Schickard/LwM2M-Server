@@ -28,7 +28,8 @@ struct ResponseReturnedAnEmptyPayload : public std::runtime_error {
  *
  */
 struct RequestsManagerInterface : Requester {
-  RequestsManagerInterface(ResponseHandlerPtr response_handler);
+  RequestsManagerInterface(const std::string &name,
+                           ResponseHandlerPtr response_handler);
   ~RequestsManagerInterface();
 
   /**
@@ -105,6 +106,8 @@ private:
 
   ResponseHandlerPtr requests_manager_;
   std::vector<uint64_t> dispatched_;
+
+protected:
   std::shared_ptr<HaSLL::Logger> logger_;
 };
 

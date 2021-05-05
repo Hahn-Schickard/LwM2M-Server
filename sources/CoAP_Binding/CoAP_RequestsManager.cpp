@@ -230,8 +230,7 @@ CoAP::PayloadPtr makePayload(ServerRequestPtr request) {
 
 CoAP_RequestsManager::CoAP_RequestsManager(ResponseHandlerPtr response_handler,
                                            CoAP::SocketPtr socket)
-    : RequestsManagerInterface(response_handler), socket_(socket),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+    : RequestsManagerInterface("CoAP", response_handler), socket_(socket) {}
 
 CoAP_RequestsManager::~CoAP_RequestsManager() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());

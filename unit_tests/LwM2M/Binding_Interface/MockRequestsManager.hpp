@@ -8,10 +8,10 @@
 namespace LwM2M {
 struct MockRequestsManager : public RequestsManagerInterface {
   MockRequestsManager()
-      : RequestsManagerInterface(std::make_shared<ResponseHandler>()) {}
+      : RequestsManagerInterface("Mock", std::make_shared<ResponseHandler>()) {}
 
   MockRequestsManager(ResponseHandlerPtr manager)
-      : RequestsManagerInterface(manager) {}
+      : RequestsManagerInterface("Mock", manager) {}
 
   MOCK_METHOD(uint64_t, dispatch, (ServerRequestPtr), (override));
 
