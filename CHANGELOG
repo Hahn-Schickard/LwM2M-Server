@@ -19,7 +19,6 @@
  - disabled support for LwM2M optional resources
  - RequestsManagerInterface to share internal logger with it's children
  - GTest runner to throw on failed assertions
- - GTest runner to repeat test cases 20 times
 
 ## [0.2.3] - 2021.04.27
 ### Fixed 
