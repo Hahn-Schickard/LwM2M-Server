@@ -78,11 +78,11 @@ void asyncRead(DevicePtr device, ResourceID id) {
                   "code: "
                << toString(ex.response_code_) << endl;
         } catch (UnsupportedMethod &ex) {
-          cout << "Called an unsuported method: " << ex.what() << endl;
+          cout << "Called an unsupported method: " << ex.what() << endl;
         } catch (runtime_error &ex) {
           cout << "Encountered a runtime error: " << ex.what() << endl;
         } catch (exception &ex) {
-          cerr << "Cought an unhandeled exception: " << ex.what() << endl;
+          cerr << "Caught an unhandled exception: " << ex.what() << endl;
         }
       },
       device, id)
@@ -105,6 +105,7 @@ public:
       asyncRead(device, ResourceID(3, 0, 8)); // try to read a non existant
       asyncRead(device,
                 ResourceID(3303, 0, 5700)); // try to read temperature value
+      asyncRead(device, ResourceID(3, 0, 11));
       break;
     }
     case RegistryEventType::UPDATED: {
