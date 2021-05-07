@@ -124,9 +124,9 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
   } catch (exception &ex) {
     logger_->log(SeverityLevel::CRITICAL,
                  "Caught an unhandled exception, while building a "
-                 "ClientResponse from message {} from {}:{}",
+                 "ClientResponse from message {} from {}:{}. Exception: {}",
                  message->getTokenHash(), message->getAddressIP(),
-                 message->getAddressPort());
+                 message->getAddressPort(), ex.what());
     return make_shared<ClientResponse>(endpoint, ResponseCode::BAD_REQUEST);
   }
 }
