@@ -1,5 +1,5 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
 
 #include "Message.hpp"
 
@@ -9,7 +9,7 @@ namespace LwM2M {
 
 /**
  * @brief Used to modify multiple Attributes of Objects/Object
- * Instances/Resoruces/Resource Instances in a single operation
+ * Instances/Resources/Resource Instances in a single operation
  *
  */
 struct WriteAttributesRequest : ServerRequest {
@@ -24,4 +24,4 @@ struct WriteAttributesRequest : ServerRequest {
 };
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_WRITE_ATTRIBUTE_MESSAGE_HPP

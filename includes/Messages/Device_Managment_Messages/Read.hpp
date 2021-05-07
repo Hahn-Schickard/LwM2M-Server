@@ -1,5 +1,5 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_READ_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_READ_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_READ_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_READ_MESSAGE_HPP
 
 #include "Message.hpp"
 
@@ -19,4 +19,4 @@ struct ReadRequest : ServerRequest {
 using ReadRequestPtr = std::shared_ptr<ReadRequest>;
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_READ_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_READ_MESSAGE_HPP

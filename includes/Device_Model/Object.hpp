@@ -14,8 +14,8 @@ namespace LwM2M {
 
 using ObjectInstances = std::unordered_map<uint32_t, ObjectInstacePtr>;
 
-struct ObjectInstanceDoesNotExitst : public std::runtime_error {
-  ObjectInstanceDoesNotExitst(ObjectInstanceID id)
+struct ObjectInstanceDoesNotExist : public std::runtime_error {
+  ObjectInstanceDoesNotExist(ObjectInstanceID id)
       : runtime_error("Object instance " + id.toString() + " does not exist") {}
 };
 

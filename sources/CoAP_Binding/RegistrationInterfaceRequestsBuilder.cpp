@@ -11,7 +11,7 @@ using namespace CoAP;
 
 namespace LwM2M {
 
-RegistratrionInterfaceError::RegistratrionInterfaceError(
+RegistrationInterfaceError::RegistrationInterfaceError(
     ServerResponsePtr response)
     : domain_error("Request " + response->endpoint_->endpoint_address_ + ":" +
                    to_string(response->endpoint_->endpoint_port_) +
@@ -127,7 +127,7 @@ pair<unsigned int, unsigned int> makeObjectInstancePair(CoRE_Link link) {
     return make_pair<unsigned int, unsigned int>(
         atoi(uri_targets.at(0).c_str()), atoi(uri_targets.at(1).c_str()));
   } else {
-    string error_msg = "CoRE Link conatins more than 2 uri targets";
+    string error_msg = "CoRE Link contains more than 2 uri targets";
     throw logic_error(move(error_msg));
   }
 }
@@ -176,11 +176,10 @@ RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message) {
           endpoint, life_time_, object_instances_map_, endpoint_name_, version_,
           binding_, queue_mode_, sms_number_);
     } catch (bad_optional_access &ex) {
-      throw RegistratrionInterfaceError(
-          make_shared<RegisterResponse>(endpoint));
+      throw RegistrationInterfaceError(make_shared<RegisterResponse>(endpoint));
     }
   } catch (bad_optional_access &ex) {
-    throw RegistratrionInterfaceError(make_shared<RegisterResponse>(
+    throw RegistrationInterfaceError(make_shared<RegisterResponse>(
         endpoint, ResponseCode::PRECOGNITION_FAILED));
   }
 }
@@ -212,7 +211,7 @@ UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message) {
     return make_shared<UpdateRequest>(endpoint, location, object_instances_map,
                                       life_time, binding, sms_number);
   } catch (bad_optional_access &ex) {
-    throw RegistratrionInterfaceError(make_shared<UpdateResponse>(endpoint));
+    throw RegistrationInterfaceError(make_shared<UpdateResponse>(endpoint));
   }
 }
 
@@ -223,8 +222,7 @@ DeregisterRequestPtr buildDeregisterRequest(CoAP::MessagePtr message) {
     auto location = getLocation(message->getOptions()).value();
     return make_shared<DeregisterRequest>(endpoint, location);
   } catch (bad_optional_access &ex) {
-    throw RegistratrionInterfaceError(
-        make_shared<DeregisterResponse>(endpoint));
+    throw RegistrationInterfaceError(make_shared<DeregisterResponse>(endpoint));
   }
 }
 

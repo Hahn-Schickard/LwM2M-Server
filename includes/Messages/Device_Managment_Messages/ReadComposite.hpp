@@ -1,5 +1,5 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_READ_COMPOSITE_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_READ_COMPOSITE_MESSAGE_HPP
 
 #include "Message.hpp"
 
@@ -12,22 +12,22 @@ namespace LwM2M {
  * Objects/Object Instances in a single request
  *
  */
-struct ReadComopositeRequest : ServerRequest {
+struct ReadCompositeRequest : ServerRequest {
   /**
-   * @brief Construct a new Read Comoposite Request object
+   * @brief Construct a new Read Composite Request object
    *
    * @param endpoint
-   * @param uri_targets - a list of Object/Object Instance/Resource/Resoruce
+   * @param uri_targets - a list of Object/Object Instance/Resource/Resource
    * Instance URIs that will be read
    */
-  ReadComopositeRequest(
+  ReadCompositeRequest(
       EndpointPtr endpoint,
       std::vector<ElmentIdVariant> targets = std::vector<ElmentIdVariant>());
 
   std::string name() override final;
 };
 
-using ReadComopositeRequestPtr = std::shared_ptr<ReadComopositeRequest>;
+using ReadCompositeRequestPtr = std::shared_ptr<ReadCompositeRequest>;
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_READ_COMPOSITE_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_READ_COMPOSITE_MESSAGE_HPP

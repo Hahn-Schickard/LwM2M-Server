@@ -58,7 +58,7 @@ TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
     EXPECT_TRUE(registry_->isRegistered(location));
     EXPECT_EQ(response->response_code_, ResponseCode::CREATED);
   } catch (exception &ex) {
-    FAIL() << "Cought an exception while handling registration request. "
+    FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
   }
@@ -80,7 +80,7 @@ TEST_F(RegistratorTests, returnsChangedOnUpdateRequest) {
     auto response = registrator_->handleRquest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::CHANGED);
   } catch (exception &ex) {
-    FAIL() << "Cought an exception while handling registration request. "
+    FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
   }
@@ -95,7 +95,7 @@ TEST_F(RegistratorTests, returnsNotFoundOnUpdateRequest) {
     auto response = registrator_->handleRquest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
   } catch (exception &ex) {
-    FAIL() << "Cought an exception while handling registration request. "
+    FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
   }
@@ -115,7 +115,7 @@ TEST_F(RegistratorTests, returnsDeletedOnDeregisterRequest) {
     auto response = registrator_->handleRquest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::DELETED);
   } catch (exception &ex) {
-    FAIL() << "Cought an exception while handling registration request. "
+    FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
   }
@@ -130,7 +130,7 @@ TEST_F(RegistratorTests, returnsNotFoundOnDeregisterRequest) {
     auto response = registrator_->handleRquest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
   } catch (exception &ex) {
-    FAIL() << "Cought an exception while handling registration request. "
+    FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
   }

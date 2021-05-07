@@ -132,16 +132,16 @@ ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
     if (resource_node.attribute("ID").hash_value()) {
       resource_id = resource_node.attribute("ID").as_ullong();
     } else {
-      throw runtime_error("Resource does not hane an Item ID.");
+      throw runtime_error("Resource does not have an Item ID.");
     }
     auto resource_name = getChildValue<string>(resource_node, "Name");
     auto resource_operations = convertToOperationsType(
         getChildValue<string>(resource_node, "Operations"));
-    auto resoruce_multiple_instances = convertInstanceType(
+    auto resource_multiple_instances = convertInstanceType(
         getChildValue<string>(resource_node, "MultipleInstances"));
     auto resource_mandatory =
         convertMandatoryType(getChildValue<string>(resource_node, "Mandatory"));
-    auto resoruce_data_type =
+    auto resource_data_type =
         converDataType(getChildValue<string>(resource_node, "Type"));
     auto resource_range_enum = getRangeEnumeration(resource_node);
     auto resource_units = getChildValue<string>(resource_node, "Units");
@@ -151,12 +151,12 @@ ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
     if (resource_range_enum.has_value()) {
       return make_shared<ResourceDescriptor>(
           resource_id, resource_name, resource_operations,
-          resoruce_multiple_instances, resource_mandatory, resoruce_data_type,
+          resource_multiple_instances, resource_mandatory, resource_data_type,
           resource_range_enum.value(), resource_units, resource_description);
     } else {
       return make_shared<ResourceDescriptor>(
           resource_id, resource_name, resource_operations,
-          resoruce_multiple_instances, resource_mandatory, resoruce_data_type,
+          resource_multiple_instances, resource_mandatory, resource_data_type,
           resource_units, resource_description);
     }
   } catch (exception &ex) {
@@ -202,16 +202,16 @@ deserializeModel(const string &filepath) {
   xml_document objects_document;
   filesystem::path root_path = filesystem::path(filepath).remove_filename();
   if (objects_document.load_file(filepath.c_str())) {
-    xml_node obpejct_descriptor_path = objects_document.child("IPSOModel");
+    xml_node object_descriptor_path = objects_document.child("IPSOModel");
     for (xml_node object_file_path :
-         obpejct_descriptor_path.children("IPSOPath")) {
+         object_descriptor_path.children("IPSOPath")) {
       filesystem::path object_descriptor_file_path = root_path;
       object_descriptor_file_path +=
           object_file_path.attribute("File").as_string();
-      xml_document object_descripotr;
-      if (object_descripotr.load_file(object_descriptor_file_path.c_str())) {
+      xml_document object_descriptor;
+      if (object_descriptor.load_file(object_descriptor_file_path.c_str())) {
         for (auto object :
-             object_descripotr.child("LWM2M").children("Object")) {
+             object_descriptor.child("LWM2M").children("Object")) {
           auto ObjectDescriptor = deserializeObject(object);
           objects.emplace(ObjectDescriptor->id_, ObjectDescriptor);
         }

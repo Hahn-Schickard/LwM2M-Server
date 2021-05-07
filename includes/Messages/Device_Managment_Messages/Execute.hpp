@@ -1,5 +1,5 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_EXECUTE_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_EXECUTE_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_EXECUTE_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_EXECUTE_MESSAGE_HPP
 
 #include "Message.hpp"
 
@@ -26,4 +26,4 @@ struct ExecuteRequest : ServerRequest {
 using ExecuteRequestPtr = std::shared_ptr<ExecuteRequest>;
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_EXECUTE_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_EXECUTE_MESSAGE_HPP

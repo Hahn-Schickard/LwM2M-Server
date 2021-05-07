@@ -52,7 +52,7 @@ PayloadPtr toPayload(PlainText content) {
 }
 
 PayloadPtr toPayload(CoRE_Links content) {
-  // TODO: handle CoRE Links for no nregistration purposes
+  // TODO: handle CoRE Links for non registration purposes
   return PayloadPtr();
 }
 
@@ -113,7 +113,7 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
           break;
         }
         default: {
-          throw runtime_error("Unhandeled Content Format with index :" +
+          throw runtime_error("Unhandled Content Format with index :" +
                               content_format->getIndex());
         }
         }
@@ -123,7 +123,7 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
     return make_shared<ClientResponse>(endpoint, code);
   } catch (exception &ex) {
     logger_->log(SeverityLevel::CRITICAL,
-                 "Cought an unhandeled exception, while building a "
+                 "Caught an unhandled exception, while building a "
                  "ClientResponse from message {} from {}:{}",
                  message->getTokenHash(), message->getAddressIP(),
                  message->getAddressPort());
@@ -133,7 +133,7 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
 
 CoAP::MessagePtr CoAP_Binding::handleResponse(CoAP::MessagePtr message) {
   logger_->log(SeverityLevel::TRACE,
-               "Handling incomming message from {}:{} as a Response.",
+               "Handling incoming message from {}:{} as a Response.",
                message->getAddressIP(), message->getAddressPort());
   auto identifier = generateHash(message);
   if (response_handler_->exists(identifier)) {
@@ -162,7 +162,7 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
   if (option != options.end()) {
     if (option->second->getAsString() == "rd") {
       logger_->log(SeverityLevel::TRACE,
-                   "Handling incomming message from {}:{} as a Registratrion "
+                   "Handling incoming message from {}:{} as a Registration "
                    "Interface message.",
                    message->getAddressIP(), message->getAddressPort());
       try {
@@ -179,7 +179,7 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
           auto request = buildDeregisterRequest(message);
           return registrator_->handleRquest(move(request));
         }
-      } catch (RegistratrionInterfaceError &ex) {
+      } catch (RegistrationInterfaceError &ex) {
         auto endpoint = make_shared<Endpoint>(message->getAddressIP(),
                                               message->getAddressPort());
         return ex.response_;
@@ -191,7 +191,7 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
 
 ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
   logger_->log(SeverityLevel::TRACE,
-               "Handling incomming message from {}:{} as a Request",
+               "Handling incoming message from {}:{} as a Request",
                message->getAddressIP(), message->getAddressPort());
   auto response = handleRegistrationRequest(message);
   if (response) {
@@ -259,8 +259,8 @@ CoAP::MessagePtr CoAP_Binding::encode(CoAP::MessagePtr request,
       return response;
     } catch (exception &ex) {
       logger_->log(SeverityLevel::CRITICAL,
-                   "Cought an unhandled exception while encoding {} for "
-                   "request {} form {}:{}. Exeception: {}",
+                   "Caught an unhandled exception while encoding {} for "
+                   "request {} form {}:{}. Exception: {}",
                    message->name(), request->getTokenHash(),
                    request->getAddressIP(), request->getAddressPort(),
                    ex.what());
@@ -272,7 +272,7 @@ CoAP::MessagePtr CoAP_Binding::encode(CoAP::MessagePtr request,
 }
 
 CoAP::MessagePtr CoAP_Binding::handleMessage(CoAP::MessagePtr message) {
-  logger_->log(SeverityLevel::INFO, "Handling incomming message from {}:{}",
+  logger_->log(SeverityLevel::INFO, "Handling incoming message from {}:{}",
                message->getAddressIP(), message->getAddressPort());
   if (message->getHeader()->getMesageType() ==
       CoAP::MessageType::ACKNOWLEDGMENT) {

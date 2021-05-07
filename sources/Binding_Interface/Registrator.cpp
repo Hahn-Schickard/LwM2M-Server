@@ -9,7 +9,7 @@ namespace LwM2M {
 ObjectDescriptorsMap Registrator::assignObjectDescriptors(
     const unordered_map<unsigned int, vector<unsigned int>>
         requested_object_instances) {
-  logger_->log(SeverityLevel::TRACE, "Assigining Objct Descriptors");
+  logger_->log(SeverityLevel::TRACE, "Assigning Object Descriptors");
   auto supported_object_descriptors = registry_->getSupportedDescriptors();
   ObjectDescriptorsMap result;
   for (auto requested_instance : requested_object_instances) {
@@ -62,7 +62,7 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
       return request->makeResponse(ResponseCode::CREATED, location);
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
-                   "An unhandeled exception occured while handling "
+                   "An unhandled exception occurred while handling "
                    "registration request. Exception: {}",
                    ex.what());
       return request->makeResponse(ResponseCode::BAD_REQUEST);
@@ -83,7 +83,7 @@ UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
         auto object_instances =
             assignObjectDescriptors(request->object_instances_map_);
         logger_->log(SeverityLevel::TRACE,
-                     "Assiging new Object Instance map to {}:{} device.",
+                     "Assigning new Object Instance map to {}:{} device.",
                      device->getDeviceId(), device->getName());
         device->updateObjectsMap(object_instances);
       }
@@ -126,7 +126,7 @@ DeregisterResponsePtr Registrator::handleRquest(DeregisterRequestPtr request) {
       return request->makeResponse(ResponseCode::NOT_FOUND);
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
-                   "An unhandeled exception occured while handling "
+                   "An unhandled exception occurred while handling "
                    "deregistration request. Exception: {}",
                    ex.what());
       return request->makeResponse();

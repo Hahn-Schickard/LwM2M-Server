@@ -10,13 +10,13 @@
 
 namespace LwM2M {
 /**
- * @brief Response to LwM2M::RegisterRequest, indicates wheater the request was
- * succefull, or not
+ * @brief Response to LwM2M::RegisterRequest, indicates if the request was
+ * successfull, or not
  *
  * Supported response codes:
  * - ResponseCode::CREATED - Operation was a success.
  * - ResponseCode::BAD_REQUEST - One of the mandatory parameters were not
- * specified, endpoint name does not match with CN field of X.509 Cerftificates
+ * specified, endpoint name does not match with CN field of X.509 Certificates
  * - ResponseCode::FORBIDDEN - A given endpoint name is not allowed within the
  * server.
  * - ResponseCode::PRECOGNITION_FAILED - Given LwM2M version is not supported by

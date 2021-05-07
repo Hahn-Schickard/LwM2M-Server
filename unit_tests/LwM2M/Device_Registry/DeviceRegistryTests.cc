@@ -9,7 +9,7 @@
 using namespace LwM2M;
 using namespace std;
 
-TEST(DeviceRegistryInstanciationTests, canBuildWithGoodModel) {
+TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithGoodModel) {
   try {
     auto registry = make_shared<DeviceRegistry>("model/passingModel2.xml");
     EXPECT_NE(registry, nullptr);
@@ -21,7 +21,7 @@ TEST(DeviceRegistryInstanciationTests, canBuildWithGoodModel) {
   }
 }
 
-TEST(DeviceRegistryInstanciationTests, canBuildWithNonExistantModel) {
+TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithNonExistantModel) {
   try {
     auto registry = make_shared<DeviceRegistry>("model/nonExistantModel.xml");
     EXPECT_NE(registry, nullptr);

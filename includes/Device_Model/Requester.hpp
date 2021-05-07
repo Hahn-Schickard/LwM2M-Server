@@ -41,7 +41,7 @@ struct Requester {
    * LwM2M::Dispatcher
    * @throws LwM2M::RequestAlreadyDispatched if this request was already
    * dispatched
-   * @throws std::logic_error if an internal failure occured
+   * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<TargetContentVector>
@@ -58,7 +58,7 @@ struct Requester {
    * LwM2M::Dispatcher
    * @throws LwM2M::RequestAlreadyDispatched if this request was already
    * dispatched
-   * @throws std::logic_error if an internal failure occured
+   * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<bool>

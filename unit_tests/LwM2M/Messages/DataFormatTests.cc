@@ -76,12 +76,12 @@ TEST_P(DataFormatTest, canGetCorrectValue) {
     }
     }
   } catch (exception &ex) {
-    FAIL() << "cought exception: " << ex.what() << endl;
+    FAIL() << "Caught exception: " << ex.what() << endl;
   }
 }
 
-TEST_P(DataFormatTest, UnsuportedDataType) {
-  EXPECT_THROW({ tested_->get<DataVariant>(); }, UnsuportedDataType);
+TEST_P(DataFormatTest, UnsupportedDataType) {
+  EXPECT_THROW({ tested_->get<DataVariant>(); }, UnsupportedDataType);
 }
 
 struct GenerateTestName {

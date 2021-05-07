@@ -26,14 +26,13 @@ DeviceRegistry::~DeviceRegistry() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
-SupportedObjectDescripotrsMapPtr DeviceRegistry::getSupportedDescriptors() {
-  return make_shared<SupportedObjectDescripotrsMap>(supported_descriptors_);
+SupportedObjectDescriptorsMapPtr DeviceRegistry::getSupportedDescriptors() {
+  return make_shared<SupportedObjectDescriptorsMap>(supported_descriptors_);
 }
 
 bool DeviceRegistry::isRegistered(string identifier) {
-  return (device_registery_.find(identifier) != device_registery_.end())
-             ? true
-             : false;
+  return (device_registry_.find(identifier) != device_registry_.end()) ? true
+                                                                       : false;
 }
 
 string DeviceRegistry::registerDevice(DevicePtr new_device) {
@@ -44,7 +43,7 @@ string DeviceRegistry::registerDevice(DevicePtr new_device) {
                    new_device->getName(), new_device->getDeviceId());
       deregisterDevice(new_device->getDeviceId());
     }
-    device_registery_.emplace(new_device->getDeviceId(), new_device);
+    device_registry_.emplace(new_device->getDeviceId(), new_device);
     logger_->log(SeverityLevel::TRACE,
                  "Device {} with id {} has been registered.",
                  new_device->getName(), new_device->getDeviceId());
@@ -59,8 +58,8 @@ string DeviceRegistry::registerDevice(DevicePtr new_device) {
 
 void DeviceRegistry::updateDevice(DevicePtr updated_device) {
   if (updated_device) {
-    auto it = device_registery_.find(updated_device->getDeviceId());
-    if (it != device_registery_.end()) {
+    auto it = device_registry_.find(updated_device->getDeviceId());
+    if (it != device_registry_.end()) {
       it->second = updated_device;
       logger_->log(SeverityLevel::TRACE,
                    "Device {} with id {} has been updated.",
@@ -77,9 +76,9 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
 }
 
 void DeviceRegistry::deregisterDevice(string identifier) {
-  auto it = device_registery_.find(identifier);
-  if (it != device_registery_.end()) {
-    device_registery_.erase(it);
+  auto it = device_registry_.find(identifier);
+  if (it != device_registry_.end()) {
+    device_registry_.erase(it);
     logger_->log(SeverityLevel::TRACE,
                  "Device with id {} has been removed from the registry.",
                  identifier);
@@ -91,8 +90,8 @@ void DeviceRegistry::deregisterDevice(string identifier) {
 }
 
 DevicePtr DeviceRegistry::getDevice(string identifier) {
-  auto it = device_registery_.find(identifier);
-  if (it != device_registery_.end()) {
+  auto it = device_registry_.find(identifier);
+  if (it != device_registry_.end()) {
     return it->second;
   } else {
     throw DeviceNotFound(identifier);

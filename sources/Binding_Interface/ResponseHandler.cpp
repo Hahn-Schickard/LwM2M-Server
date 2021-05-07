@@ -12,7 +12,7 @@ RequestNotFound::RequestNotFound(uint64_t response_identifier)
 
 RequestAlreadyDispatched::RequestAlreadyDispatched(uint64_t response_identifier)
     : runtime_error("Request " + to_string(response_identifier) +
-                    " was alread dispatched.") {}
+                    " was already dispatched.") {}
 
 RequestCanceled::RequestCanceled() : runtime_error("Request was cancled") {}
 
@@ -38,7 +38,7 @@ void ResponseHandler::cancelRequest(uint64_t response_identifier) {
 }
 
 void ResponseHandler::cleanup(vector<uint64_t> response_identifiers) {
-  logger_->log(SeverityLevel::TRACE, "Cleaning up unhandeled requests.");
+  logger_->log(SeverityLevel::TRACE, "Cleaning up unhandled requests.");
   for (auto identifier : response_identifiers) {
     cancelRequest(identifier);
   }

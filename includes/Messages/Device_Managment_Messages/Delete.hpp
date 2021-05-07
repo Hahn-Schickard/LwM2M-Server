@@ -1,5 +1,5 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_DELETE_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_DELETE_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_DELETE_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_DELETE_MESSAGE_HPP
 
 #include "Message.hpp"
 
@@ -18,4 +18,4 @@ struct DeleteRequest : public ServerRequest {
 using DeleteRequestPtr = std::shared_ptr<DeleteRequest>;
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_DELETE_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_DELETE_MESSAGE_HPP

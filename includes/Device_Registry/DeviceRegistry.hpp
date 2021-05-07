@@ -18,23 +18,23 @@ struct DeviceNotFound : public std::runtime_error {
   DeviceNotFound(std::string const &identifier);
 };
 
-using SupportedObjectDescripotrsMap =
+using SupportedObjectDescriptorsMap =
     std::unordered_map<uint32_t, ObjectDescriptorPtr>;
-using SupportedObjectDescripotrsMapPtr =
-    std::shared_ptr<SupportedObjectDescripotrsMap>;
+using SupportedObjectDescriptorsMapPtr =
+    std::shared_ptr<SupportedObjectDescriptorsMap>;
 
 class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
   using DeviceRegistryMap = std::unordered_map<std::string, DevicePtr>;
 
-  SupportedObjectDescripotrsMap supported_descriptors_;
-  DeviceRegistryMap device_registery_;
+  SupportedObjectDescriptorsMap supported_descriptors_;
+  DeviceRegistryMap device_registry_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
 public:
   DeviceRegistry(const std::string &configuration_path);
   ~DeviceRegistry();
 
-  SupportedObjectDescripotrsMapPtr getSupportedDescriptors();
+  SupportedObjectDescriptorsMapPtr getSupportedDescriptors();
 
   bool isRegistered(std::string identifier);
 

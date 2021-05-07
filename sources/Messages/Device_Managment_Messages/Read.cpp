@@ -6,7 +6,7 @@ namespace LwM2M {
 
 ReadRequest::ReadRequest(EndpointPtr endpoint, ElmentIdVariant target_id)
     : ServerRequest(endpoint, MessageType::READ,
-                    InterfaceType::DEVICE_MANAGMENT,
+                    InterfaceType::DEVICE_MANAGEMENT,
                     make_shared<Payload>(target_id)) {}
 
 string ReadRequest::name() { return "ReadRequest"; }

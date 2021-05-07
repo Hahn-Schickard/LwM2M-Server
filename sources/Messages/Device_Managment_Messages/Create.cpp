@@ -7,7 +7,7 @@ namespace LwM2M {
 CreateRequest::CreateRequest(EndpointPtr endpoint, ObjectID target_id,
                              DataFormatPtr content)
     : ServerRequest(endpoint, MessageType::CREATE,
-                    InterfaceType::DEVICE_MANAGMENT,
+                    InterfaceType::DEVICE_MANAGEMENT,
                     make_shared<Payload>(
                         make_pair(ElmentIdVariant(target_id), content))) {}
 

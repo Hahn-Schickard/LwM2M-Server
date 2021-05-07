@@ -1,5 +1,5 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_DISCOVER_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_DISCOVER_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_DISCOVER_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_DISCOVER_MESSAGE_HPP
 
 #include "Message.hpp"
 
@@ -20,4 +20,4 @@ struct DiscoverRequest : ServerRequest {
 using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_DISCOVER_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_DISCOVER_MESSAGE_HPP

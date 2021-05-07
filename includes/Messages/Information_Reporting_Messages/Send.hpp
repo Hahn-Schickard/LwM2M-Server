@@ -5,13 +5,13 @@
 
 namespace LwM2M {
 /**
- * @brief Response to LwM2M::SendRequest, indicates wheater
- * the request was succefull, requires more data or failed
+ * @brief Response to LwM2M::SendRequest, indicates if
+ * the request was successfull, requires more data or failed
  *
  * Supported response codes:
  * - ResponseCode::CHANGED - Operation was a success.
  * - ResponseCode::BAD_REQUEST - Given LwM2M::DataFormatPtr could not be
- * interpreted, or Server encountered an undetermened error.
+ * interpreted, or Server encountered an undetermined error.
  * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
  * valid element within the client.
  */

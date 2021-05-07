@@ -1,12 +1,12 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_WRITE_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_WRITE_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_WRITE_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_WRITE_MESSAGE_HPP
 
 #include "Message.hpp"
 
 namespace LwM2M {
 /**
- * @brief sed to change the value of a Resource, the value of a Resource
- * Instance, the values of an arrayof Resources Instances or the values of
+ * @brief Used to change the value of a Resource, the value of a Resource
+ * Instance, the values of an array of Resources Instances or the values of
  * multiple Resources from an Object Instance as well as request the deletion or
  * the allocation of specific Instances of a Multiple-Instance Resource
  *
@@ -24,4 +24,4 @@ struct WriteRequest : ServerRequest {
 using WriteRequestPtr = std::shared_ptr<WriteRequest>;
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_WRITE_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_WRITE_MESSAGE_HPP

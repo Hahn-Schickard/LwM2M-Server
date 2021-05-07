@@ -19,7 +19,7 @@ struct UnsupportedOperation : public std::logic_error {
 enum struct InterfaceType : uint8_t {
   NOT_RECOGNIZED,
   REGISTRATION = 0x10,
-  DEVICE_MANAGMENT = 0x20,
+  DEVICE_MANAGEMENT = 0x20,
   INFORMATION_REPORTING = 0x30,
   BOOTSTRAP = 0x40
 };
@@ -32,7 +32,7 @@ enum struct MessageType : uint8_t {
   REGISTER = 0x11,
   DEREGISTER = 0x12,
   UPDATE = 0x13,
-  // Device managment messages
+  // Device management messages
   READ = 0x21,
   WRITE = 0x22,
   EXECUTE = 0x23,
@@ -90,7 +90,7 @@ struct Message {
   const InterfaceType interface_;
   const PayloadPtr payload_;
   const bool response_ = false;
-  const bool incomming_ = false;
+  const bool incoming_ = false;
   const bool notification_ = false;
 
   /**
@@ -109,12 +109,12 @@ protected:
    * @param endpoint LwM2M::EndpointPtr
    * @param message_type LwM2M::MessageType
    * @param interface LwM2M::InterfaceType
-   * @param incomming bool
+   * @param incoming bool
    * @param response bool
    * @param notification bool
    */
   Message(EndpointPtr endpoint, MessageType message_type,
-          InterfaceType interface, PayloadPtr payload, bool incomming,
+          InterfaceType interface, PayloadPtr payload, bool incoming,
           bool response = false, bool notification = false);
 
   virtual ~Message() = default;
@@ -136,13 +136,13 @@ protected:
    * @param endpoint LwM2M::EndpointPtr
    * @param message_type LwM2M::MessageType
    * @param interface LwM2M::InterfaceType
-   * @param incomming bool
+   * @param incoming bool
    * @param supported_responses std::unordered_set<LwM2M::ResponseCode>
    * @param response_code LwM2M::ResponseCode
    * @param payload LwM2M::PayloadPtr
    */
   Response(EndpointPtr endpoint, MessageType message_type,
-           InterfaceType interface, bool incomming,
+           InterfaceType interface, bool incoming,
            std::unordered_set<ResponseCode> supported_responses,
            ResponseCode response_code, PayloadPtr payload);
 

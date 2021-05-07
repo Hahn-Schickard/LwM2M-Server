@@ -14,8 +14,8 @@ string toString(InterfaceType type) {
   case InterfaceType::REGISTRATION: {
     return "Registration Interface";
   }
-  case InterfaceType::DEVICE_MANAGMENT: {
-    return "Device Managment Interface";
+  case InterfaceType::DEVICE_MANAGEMENT: {
+    return "Device Management Interface";
   }
   case InterfaceType::INFORMATION_REPORTING: {
     return "Information Reporting Interface";
@@ -84,7 +84,7 @@ InterfaceType getInterfaceType(MessageType message_type) {
     return InterfaceType::REGISTRATION;
   }
   case 0x20: {
-    return InterfaceType::DEVICE_MANAGMENT;
+    return InterfaceType::DEVICE_MANAGEMENT;
   }
   case 0x30: {
     return InterfaceType::INFORMATION_REPORTING;
@@ -141,7 +141,7 @@ string toString(ResponseCode type) {
     return "Precognition Failed";
   }
   case ResponseCode::REQUEST_ENTITY_TOO_LARGE: {
-    return "Request Entitity Too Large";
+    return "Request Entity Too Large";
   }
   case ResponseCode::UNSUPPORTED_CONTENT_FORMAT: {
     return "Unsupported Content Format";
@@ -170,10 +170,10 @@ UnsupportedResponseCode::UnsupportedResponseCode(
 }
 
 Message::Message(EndpointPtr endpoint, MessageType message_type,
-                 InterfaceType interface, PayloadPtr payload, bool incomming,
+                 InterfaceType interface, PayloadPtr payload, bool incoming,
                  bool response, bool notification)
     : endpoint_(endpoint), message_type_(message_type), interface_(interface),
-      payload_(payload), response_(response), incomming_(incomming),
+      payload_(payload), response_(response), incoming_(incoming),
       notification_(notification) {
   if (!endpoint_) {
     throw invalid_argument("Endpoint can not be null!");
@@ -186,10 +186,10 @@ string Message::name() {
 }
 
 Response::Response(EndpointPtr endpoint, MessageType message_type,
-                   InterfaceType interface, bool incomming,
+                   InterfaceType interface, bool incoming,
                    unordered_set<ResponseCode> supported_responses,
                    ResponseCode response_code, PayloadPtr payload)
-    : Message(endpoint, message_type, interface, payload, incomming, true),
+    : Message(endpoint, message_type, interface, payload, incoming, true),
       supported_responses_(supported_responses), response_code_(response_code) {
 }
 

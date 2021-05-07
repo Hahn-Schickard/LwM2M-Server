@@ -5,8 +5,8 @@
 
 namespace LwM2M {
 /**
- * @brief Response to LwM2M::DeregisterRequest, indicates wheater the request
- * was succefull, or not
+ * @brief Response to LwM2M::DeregisterRequest, indicates if the request
+ * was successfull, or not
  *
  * Supported response codes:
  * - ResponseCode::DELETED - Operation was a success.

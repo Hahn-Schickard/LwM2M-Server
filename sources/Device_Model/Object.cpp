@@ -23,7 +23,7 @@ ResourceVariant Object::getResource(uint32_t instance_id,
     auto object_instance = it->second;
     return object_instance->getResource(resource_id);
   } else {
-    throw ObjectInstanceDoesNotExitst(
+    throw ObjectInstanceDoesNotExist(
         ObjectInstanceID(descriptor_->id_, instance_id));
   }
 }

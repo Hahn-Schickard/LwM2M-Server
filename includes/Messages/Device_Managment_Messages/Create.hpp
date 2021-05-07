@@ -1,5 +1,5 @@
-#ifndef __LWM2M_DEVICE_MANAGMENT_CREATE_MESSAGE_HPP
-#define __LWM2M_DEVICE_MANAGMENT_CREATE_MESSAGE_HPP
+#ifndef __LWM2M_DEVICE_MANAGEMENT_CREATE_MESSAGE_HPP
+#define __LWM2M_DEVICE_MANAGEMENT_CREATE_MESSAGE_HPP
 
 #include "Message.hpp"
 
@@ -22,4 +22,4 @@ struct CreateRequest : public ServerRequest {
 using CreateRequestPtr = std::shared_ptr<CreateRequest>;
 } // namespace LwM2M
 
-#endif //__LWM2M_DEVICE_MANAGMENT_CREATE_MESSAGE_HPP
+#endif //__LWM2M_DEVICE_MANAGEMENT_CREATE_MESSAGE_HPP

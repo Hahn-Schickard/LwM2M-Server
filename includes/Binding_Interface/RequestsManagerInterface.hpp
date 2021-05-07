@@ -36,7 +36,7 @@ struct RequestsManagerInterface : Requester {
    * @brief Converts a given request into the protocol specifc message and
    * assigns a unique id, which will be used to set the LwM2M::ClientResponse
    *
-   * @throws std::logic_error if an internal failure occured
+   * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return uint64_t - unique request id
@@ -67,7 +67,7 @@ private:
    * @brief Dispatches a given LwM2M::ServerRequest and handles the associated
    * LwM2M::ClientResponse payload as LwM2M::TargetContentVector.
    *
-   * @throws std::logic_error if an internal failure occured
+   * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<TargetContentVector>
@@ -79,7 +79,7 @@ private:
    * @brief Dispatches a given LwM2M::ServerRequest and handles the associated
    * LwM2M::ClientResponse payload as LwM2M::DataFormat.
    *
-   * @throws std::logic_error if an internal failure occured
+   * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<DataFormatPtr>

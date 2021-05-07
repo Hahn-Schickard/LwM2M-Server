@@ -48,7 +48,7 @@ class ResponseHandler : public ResponseHandlerInterface {
   /**
    * @brief Removes a given request identifier and associated std::promise pair
    * form the map. If a given request identifier does not have an associated
-   * std::promise, silentlly ignores it.
+   * std::promise, silently ignores it.
    *
    * @param request_identifier
    */
@@ -70,7 +70,7 @@ public:
    * @brief Assigns an LwM2M::Response future to a given identifier
    *
    * @throws RequestCanceled if the request was cancel by calling cleanup()
-   * @throws RequestAlreadyDispatched if a given identfier already has an
+   * @throws RequestAlreadyDispatched if a given identifer already has an
    * associated LwM2M::Response future
    *
    * @param request_identifier

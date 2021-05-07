@@ -10,11 +10,11 @@ TEST(XmlParserTests, canDeserializeModel) {
   EXPECT_NO_THROW(deserializeModel("model/passingModel1.xml"));
 }
 
-TEST(XmlParserTests, thorwsExceptionOnNonExistantConfigFile) {
+TEST(XmlParserTests, throwsExceptionOnNonExistantConfigFile) {
   EXPECT_THROW(deserializeModel("model/doesNotExist.xml"), runtime_error);
 }
 
-TEST(XmlParserTests, thorwsExceptionOnNonExistantDescriptor) {
+TEST(XmlParserTests, throwsExceptionOnNonExistantDescriptor) {
   EXPECT_THROW(deserializeModel("model/faillingModel1.xml"), runtime_error);
 }
 

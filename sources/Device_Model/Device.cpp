@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 string generateDeviceID(string name, EndpointPtr endpoint) {
   // Possible hash colissions, need to check the size of name and endpoint
-  // address, offset each by the lenghts and concat it with bit shifts
+  // address, offset each by the lengths and concat it with bit shifts
   size_t result = hash<string>{}(name) +
                   hash<string>{}(endpoint->endpoint_address_) +
                   endpoint->endpoint_port_;

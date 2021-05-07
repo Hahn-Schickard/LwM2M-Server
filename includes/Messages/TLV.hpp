@@ -1,5 +1,5 @@
-#ifndef __LWM2M_TYPE_LENGHT_VALUE_HPP
-#define __LWM2M_TYPE_LENGHT_VALUE_HPP
+#ifndef __LWM2M_TYPE_LENGTH_VALUE_HPP
+#define __LWM2M_TYPE_LENGTH_VALUE_HPP
 
 #include <cstdint>
 #include <memory>
@@ -77,4 +77,4 @@ using TLV_PackPtr = std::shared_ptr<TLV_Pack>;
 
 } // namespace LwM2M
 
-#endif //__LWM2M_TYPE_LENGHT_VALUE_HPP
+#endif //__LWM2M_TYPE_LENGTH_VALUE_HPP

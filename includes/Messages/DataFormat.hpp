@@ -61,15 +61,15 @@ enum class DataType : uint8_t {
 
 std::string toString(DataType type);
 
-struct UnsuportedDataType : public std::logic_error {
-  UnsuportedDataType();
+struct UnsupportedDataType : public std::logic_error {
+  UnsupportedDataType();
 };
 
 using DataVariant = std::variant<bool, int64_t, uint64_t, double, std::string,
                                  ObjectLink, std::vector<uint8_t>>;
 
 /**
- * @brief DataFormat - LwM2M data type cotainer
+ * @brief DataFormat - LwM2M data type container
  *
  */
 struct DataFormat {
@@ -82,14 +82,14 @@ struct DataFormat {
    * @brief Helper method to access underling DataVariant without defining a
    * visitor.
    *
-   * @throw LwM2M::UnsuportedDataType - on accesing non existant data type
+   * @throw LwM2M::UnsupportedDataType - on accesing non existant data type
    * @throw LwM2M::WrongDataType - on accessing incorrect data type
    * @throw std::bad_variant_access - on malformated DataVariant value
    *
    * @tparam T - requested data type
    * @return T - contained data value as type T
    */
-  template <typename T> T get() const { throw UnsuportedDataType(); }
+  template <typename T> T get() const { throw UnsupportedDataType(); }
 
   size_t size() const;
 

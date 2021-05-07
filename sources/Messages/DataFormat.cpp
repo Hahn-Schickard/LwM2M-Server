@@ -72,8 +72,8 @@ string toString(DataType type) {
   }
 }
 
-UnsuportedDataType::UnsuportedDataType()
-    : logic_error("Tried to access unhandeled data type!") {}
+UnsupportedDataType::UnsupportedDataType()
+    : logic_error("Tried to access unhandled data type!") {}
 
 vector<uint8_t> vectorize(uint64_t value, size_t size = sizeof(uint64_t)) {
   vector<uint8_t> result;
@@ -112,7 +112,7 @@ vector<uint8_t> toBytes(DataVariant data) {
   match(data, [&](bool value) { result.push_back(value); },
         [&](int64_t value) {
           // possible loss of signess here, but uint64_t (2^64 - 1) should have
-          // more spase than an int64_t (±(2^63 - 1)), thus int64_t should never
+          // more space than an int64_t (±(2^63 - 1)), thus int64_t should never
           // be able to use signess bit as a number
           result = vectorize((uint64_t)value);
         },

@@ -100,7 +100,7 @@ CoAP::Options makeOptions(ServerRequestPtr request) {
 
   options = toOptions(request->payload_);
 
-  if (request->interface_ == InterfaceType::DEVICE_MANAGMENT) {
+  if (request->interface_ == InterfaceType::DEVICE_MANAGEMENT) {
     switch (request->message_type_) {
     case MessageType::READ: {
       auto acceptable_format_index = ContentFormatEncodings::LwM2M_TLV::index;

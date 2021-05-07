@@ -1,6 +1,6 @@
 #include "MockRequestsManager.hpp"
 #include "Read.hpp"
-#include "ReadComoposite.hpp"
+#include "ReadComposite.hpp"
 #include "Write.hpp"
 
 #include "gtest/gtest.h"
@@ -104,9 +104,8 @@ TEST_F(RequestsManagerInterfaceTests,
       EXPECT_THROW({ result_future.get(); }, ResponseReturnedAnErrorCode);
     }
   } catch (exception &ex) {
-    FAIL()
-        << "Caught an unhandeled exception while requesting data. Exception: "
-        << ex.what() << endl;
+    FAIL() << "Caught an unhandled exception while requesting data. Exception: "
+           << ex.what() << endl;
   }
 }
 
@@ -139,9 +138,8 @@ TEST_F(RequestsManagerInterfaceTests, throwsRequestCanceledOnRequestData) {
       EXPECT_THROW({ result_future.get(); }, RequestCanceled);
     }
   } catch (exception &ex) {
-    FAIL()
-        << "Caught an unhandeled exception while requesting data. Exception: "
-        << ex.what() << endl;
+    FAIL() << "Caught an unhandled exception while requesting data. Exception: "
+           << ex.what() << endl;
   }
 }
 
@@ -187,9 +185,8 @@ TEST_F(RequestsManagerInterfaceTests,
       EXPECT_THROW({ result_future.get(); }, ResponseReturnedAnErrorCode);
     }
   } catch (exception &ex) {
-    FAIL()
-        << "Caught an unhandeled exception while requesting data. Exception: "
-        << ex.what() << endl;
+    FAIL() << "Caught an unhandled exception while requesting data. Exception: "
+           << ex.what() << endl;
   }
 }
 
@@ -199,7 +196,7 @@ TEST_F(RequestsManagerInterfaceTests,
   vector<ElmentIdVariant> targets{ElmentIdVariant(ObjectID(1)),
                                   ElmentIdVariant(ObjectID(2))};
   ServerRequestPtr request =
-      make_shared<ReadComopositeRequest>(endpoint, targets);
+      make_shared<ReadCompositeRequest>(endpoint, targets);
   uint64_t request_identifier = 1234;
 
   EXPECT_CALL(*requests_manager_, dispatch(request))
@@ -249,7 +246,7 @@ TEST_F(RequestsManagerInterfaceTests,
   vector<ElmentIdVariant> targets{ElmentIdVariant(ObjectID(1)),
                                   ElmentIdVariant(ObjectID(2))};
   ServerRequestPtr request =
-      make_shared<ReadComopositeRequest>(endpoint, targets);
+      make_shared<ReadCompositeRequest>(endpoint, targets);
   uint64_t request_identifier = 1234;
 
   EXPECT_CALL(*requests_manager_, dispatch(request))
@@ -274,7 +271,7 @@ TEST_F(RequestsManagerInterfaceTests,
     }
   } catch (exception &ex) {
     FAIL()
-        << "Caught an unhandeled exception while requesting multi target data. "
+        << "Caught an unhandled exception while requesting multi target data. "
            "Exception: "
         << ex.what() << endl;
   }
@@ -286,7 +283,7 @@ TEST_F(RequestsManagerInterfaceTests,
   vector<ElmentIdVariant> targets{ElmentIdVariant(ObjectID(1)),
                                   ElmentIdVariant(ObjectID(2))};
   ServerRequestPtr request =
-      make_shared<ReadComopositeRequest>(endpoint, targets);
+      make_shared<ReadCompositeRequest>(endpoint, targets);
   uint64_t request_identifier = 1234;
 
   EXPECT_CALL(*requests_manager_, dispatch(request))
@@ -313,9 +310,8 @@ TEST_F(RequestsManagerInterfaceTests,
       EXPECT_THROW({ result_future.get(); }, RequestCanceled);
     }
   } catch (exception &ex) {
-    FAIL()
-        << "Caught an unhandeled exception while requesting data. Exception: "
-        << ex.what() << endl;
+    FAIL() << "Caught an unhandled exception while requesting data. Exception: "
+           << ex.what() << endl;
   }
 }
 
@@ -325,7 +321,7 @@ TEST_F(RequestsManagerInterfaceTests,
   vector<ElmentIdVariant> targets{ElmentIdVariant(ObjectID(1)),
                                   ElmentIdVariant(ObjectID(2))};
   ServerRequestPtr request =
-      make_shared<ReadComopositeRequest>(endpoint, targets);
+      make_shared<ReadCompositeRequest>(endpoint, targets);
   uint64_t request_identifier = 1234;
 
   EXPECT_CALL(*requests_manager_, dispatch(request))
@@ -364,7 +360,7 @@ TEST_F(RequestsManagerInterfaceTests,
       EXPECT_THROW({ result_future.get(); }, ResponseReturnedAnErrorCode);
     }
   } catch (exception &ex) {
-    FAIL() << "Caught an unhandeled exception while requesting multi target "
+    FAIL() << "Caught an unhandled exception while requesting multi target "
               "data. "
               "Exception: "
            << ex.what() << endl;

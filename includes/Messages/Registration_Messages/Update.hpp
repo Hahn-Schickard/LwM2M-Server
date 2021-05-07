@@ -11,8 +11,8 @@
 namespace LwM2M {
 
 /**
- * @brief Response to LwM2M::UpdateRequest, indicates wheater the request was
- * succefull, or not
+ * @brief Response to LwM2M::UpdateRequest, indicates if the request was
+ * successfull, or not
  *
  * Supported response codes:
  * - ResponseCode::CHANGED - Operation was a success.

@@ -16,8 +16,8 @@ class Registrator {
   std::shared_ptr<HaSLL::Logger> logger_;
 
   /**
-   * @brief Assigns correct LwM2M::ObjecDescriptorMap based on given input.
-   * Ignores unsupproted object ids.
+   * @brief Assigns correct LwM2M::ObjectDescriptorMap based on given input.
+   * Ignores unsupported object ids.
    *
    * @param requested_object_instances
    * @return ObjectDescriptorsMap
@@ -33,7 +33,7 @@ public:
   ~Registrator();
 
   /**
-   * @brief Registers a new LwM2M::Device or Reregisters it, if it already
+   * @brief Registers a new LwM2M::Device or Registers it, if it already
    * exists in the LwM2M::DeviceRegistry. Returns an appropriate
    * LwM2M::RegisterResponse with corresponding LwM2M::ResponseCode and/or
    * unique LwM2M::Device id within the LwM2M::DeviceRegistry
