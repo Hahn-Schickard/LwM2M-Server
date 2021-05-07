@@ -1,8 +1,9 @@
 ## [0.2.4] - NOT RELEASED
 ### Added
  - ObjectDoesNotExist exception 
- - ObjectInstanceDoesNotExitst exception
+ - ObjectInstanceDoesNotExists exception
  - ResourceDoesNotExist exception 
+ - sanity checks for CoAP_Binding buildOptions method when dealing with Registration Interface Messages
 
 ### Changed
  - ResponseReturnedAnErrorCode inheritance from std::runtime_error to public
@@ -12,13 +13,18 @@
  - RequestCanceled inheritance from std::runtime_error to public
  - UnsupportedOperation inheritance from std::logic_error to public
  - UnsupportedResponseCode inheritance from std::logic_error to public
- - RegistratrionInterfaceError inheritance from std::domain_error to public
- - Device getObject() method to throw ObjectDoesNotExist instead of returtning an empty value
- - Object getResource() method to throw ObjectInstanceDoesNotExitst instead of returtning an empty value
- - ObjectInstance getResource() method to throw ResourceDoesNotExist instead of returtning an empty value
+ - RegistrationInterfaceError inheritance from std::domain_error to public
+ - Device getObject() method to throw ObjectDoesNotExist instead of returning an empty value
+ - Object getResource() method to throw ObjectInstanceDoesNotExists instead of returning an empty value
+ - ObjectInstance getResource() method to throw ResourceDoesNotExist instead of returning an empty value
  - disabled support for LwM2M optional resources
  - RequestsManagerInterface to share internal logger with it's children
  - GTest runner to throw on failed assertions
+
+ ### Fixed
+ - spelling mistakes throughout the code base
+ - spelling mistakes in the CHANGELOG
+ - spelling mistakes in the README
 
 ## [0.2.3] - 2021.04.27
 ### Fixed 
@@ -27,7 +33,7 @@
 
 ### Changed
  - CoAPS4Cpp to v0.2.4
- - ParameterNotFound to RegistratrionInterfaceError in CoAP BInding RegistratrionInterfaceRequestBuilder
+ - ParameterNotFound to RegistrationInterfaceError in CoAP BInding RegistrationInterfaceRequestBuilder
 
 ## [0.2.2] - 2021.04.01
 ### Changed
@@ -41,7 +47,7 @@
 
 ## [0.2.0] - 2021.03.03
 ### Added
- - BindingInterface for Bindign abtractions
+ - BindingInterface for Binding abstractions
  - Notifier placeholder for Observer implementation
  - Registrator class to handle common registration interface Messages
  - RequestsManagerInterface to handle common ServerRequests as well as an abstraction for Binding specific RequestsManager implementation
@@ -62,12 +68,12 @@
  - added config/ directory to host various configuration files, including the xml model
 
 ### Changed
- - Message model to contain various message specializations for Device Managment, Registration and Infromation Reporting Messages
+ - Message model to contain various message specializations for Device Management, Registration and Information Reporting Messages
  - Message class definition
- - Readable resourses to be a seperate unit 
- - Writable resourses to be a seperate unit 
- - ReadAndWritable resourses to be a seperate unit 
- - Executable resourses to be a seperate unit 
+ - Readable resources to be a separate unit 
+ - Writable resources to be a separate unit 
+ - ReadAndWritable resources to be a separate unit 
+ - Executable resources to be a separate unit 
  - Resource method of request
  - loggerConfig.json location to config/ 
  - serverConfig.json location to config/
@@ -90,13 +96,13 @@
  - Write Request generation
  - Write Request encoding
  - LwM2M::DataFormat to CoAP::PayloadFormat converter for CoAP_Encoder
- - Asynchronus Write method
+ - Asynchronous Write method
  - Write implementations for writable resources
  - TLV encoding
  - Exception handling for Unsupported resource parameter
 
 ### Changed
- - Integer convertion to vector<uint8_t> 
+ - Integer conversion to vector<uint8_t> 
  - Return type for Writable and Executable methods to void
  - Payload type to shared_ptr<DataFormat> for ServerRequest_Write 
 
@@ -121,7 +127,7 @@
  - LwM2M Message Decoder
  - LwM2M Response handler
  - LwM2M Server
- - Utility helpes for String Splitint, primitive convertions and hashing
+ - Utility helpers for String Splitter, primitive conversions and hashing
  - unit tests
  - conan packaging
  - conan package integration test
