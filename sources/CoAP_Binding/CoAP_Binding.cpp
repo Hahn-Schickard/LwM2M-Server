@@ -220,11 +220,18 @@ Options buildOptions(ServerResponsePtr message) {
        message->message_type_ == MessageType::UPDATE)) {
     if (holds_alternative<DataFormatPtr>(message->payload_->data_)) {
       auto data = std::get<DataFormatPtr>(message->payload_->data_);
-      auto location = data->get<string>();
-      auto rd_path = build(OptionNumber::LOCATION_PATH, "rd");
-      auto location_path = build(OptionNumber::LOCATION_PATH, location);
-      options.emplace(OptionNumber::LOCATION_PATH, move(rd_path));
-      options.emplace(OptionNumber::LOCATION_PATH, move(location_path));
+      if (data) {
+        auto location = data->get<string>();
+        auto rd_path = build(OptionNumber::LOCATION_PATH, "rd");
+        auto location_path = build(OptionNumber::LOCATION_PATH, location);
+        options.emplace(OptionNumber::LOCATION_PATH, move(rd_path));
+        options.emplace(OptionNumber::LOCATION_PATH, move(location_path));
+      } else {
+        throw logic_error("LOCATION_PATH option value can not be an empty");
+      }
+    } else {
+      throw logic_error(
+          "LOCATION_PATH option value must be of DataFormatPtr type");
     }
   }
   return options;
