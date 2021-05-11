@@ -2,6 +2,9 @@
 #include "Variant_Visitor.hpp"
 
 #include <algorithm>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -75,6 +78,17 @@ string toString(DataType type) {
 UnsupportedDataType::UnsupportedDataType()
     : logic_error("Tried to access unhandled data type!") {}
 
+TimeStamp::TimeStamp(uint64_t posix_timestamp) : value_(posix_timestamp) {}
+
+string TimeStamp::toString() {
+  tm tm = *localtime(&value_);
+  stringstream ss;
+  ss << put_time(&tm, "%F %T %Z");
+  return ss.str();
+}
+
+time_t TimeStamp::getValue() const { return value_; }
+
 vector<uint8_t> vectorize(uint64_t value, size_t size = sizeof(uint64_t)) {
   vector<uint8_t> result;
   result.reserve(size);
@@ -117,6 +131,10 @@ vector<uint8_t> toBytes(DataVariant data) {
           result = vectorize((uint64_t)value);
         },
         [&](uint64_t value) { result = vectorize(value); },
+        [&](TimeStamp value) {
+          uint64_t converted = value.getValue();
+          result = vectorize(converted);
+        },
         [&](double value) { result = vectorize(value); },
         [&](string value) { result = vectorize(value); },
         [&](ObjectLink value) { result = vectorize(value); },
@@ -163,6 +181,14 @@ template <> int64_t DataFormat::get<int64_t>() const {
 template <> uint64_t DataFormat::get<uint64_t>() const {
   if (data_.size() <= sizeof(uint64_t)) {
     return toInt(data_);
+  } else {
+    throw logic_error("Could not convert to uint64_t");
+  }
+}
+
+template <> TimeStamp DataFormat::get<TimeStamp>() const {
+  if (data_.size() <= sizeof(uint64_t)) {
+    return TimeStamp(toInt(data_));
   } else {
     throw logic_error("Could not convert to uint64_t");
   }

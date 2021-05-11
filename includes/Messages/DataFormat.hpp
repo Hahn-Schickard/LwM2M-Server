@@ -65,8 +65,19 @@ struct UnsupportedDataType : public std::logic_error {
   UnsupportedDataType();
 };
 
-using DataVariant = std::variant<bool, int64_t, uint64_t, double, std::string,
-                                 ObjectLink, std::vector<uint8_t>>;
+struct TimeStamp {
+  TimeStamp(uint64_t posix_timestamp);
+
+  std::string toString();
+
+  time_t getValue() const;
+
+private:
+  time_t value_;
+};
+
+using DataVariant = std::variant<bool, int64_t, uint64_t, TimeStamp, double,
+                                 std::string, ObjectLink, std::vector<uint8_t>>;
 
 /**
  * @brief DataFormat - LwM2M data type container
@@ -100,6 +111,7 @@ template <> void DataFormat::get<void>() const;
 template <> bool DataFormat::get<bool>() const;
 template <> int64_t DataFormat::get<int64_t>() const;
 template <> uint64_t DataFormat::get<uint64_t>() const;
+template <> TimeStamp DataFormat::get<TimeStamp>() const;
 template <> double DataFormat::get<double>() const;
 template <> std::string DataFormat::get<std::string>() const;
 template <> ObjectLink DataFormat::get<ObjectLink>() const;
