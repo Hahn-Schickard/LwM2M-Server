@@ -37,7 +37,8 @@ ObjectInstance::ObjectInstance(
         resource_descriptors)
     : requester_(requester), endpoint_(endpoint), id_(id) {
   for (auto resource_pair : resource_descriptors) {
-    if (resource_pair.second->mandatory_) {
+    if (resource_pair.second->mandatory_ &&
+        (resource_pair.second->multiple_instances_ == false)) {
       switch (resource_pair.second->data_type_) {
       case DataType::FLOAT: {
         resources_.emplace(resource_pair.first,
