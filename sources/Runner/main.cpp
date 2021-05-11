@@ -13,46 +13,59 @@ using namespace HaSLL;
 using namespace LwM2M;
 using namespace std;
 
-future<string> stringifyResourceValue(ResourceVariant variant) {
-  promise<string> result;
+string stringifyResourceValue(ResourceVariant variant) {
+  string name;
+  string response;
   match(variant,
         [&](ResourcePtr<bool> resource) {
+          name = resource->getDescriptor()->name_;
           auto resource_future = resource->read();
           bool value = resource_future.get();
-          result.set_value(value ? "True" : "False");
+          response = value ? "True" : "False";
         },
         [&](ResourcePtr<int64_t> resource) {
+          name = resource->getDescriptor()->name_;
           auto resource_future = resource->read();
           int64_t value = resource_future.get();
-          result.set_value(to_string(value));
+          response = to_string(value);
         },
         [&](ResourcePtr<double> resource) {
+          name = resource->getDescriptor()->name_;
           auto resource_future = resource->read();
           double value = resource_future.get();
-          result.set_value(to_string(value));
+          response = to_string(value);
         },
         [&](ResourcePtr<string> resource) {
+          name = resource->getDescriptor()->name_;
           auto resource_future = resource->read();
-          result.set_value(resource_future.get());
+          response = resource_future.get();
         },
         [&](ResourcePtr<uint64_t> resource) {
+          name = resource->getDescriptor()->name_;
           auto resource_future = resource->read();
           uint64_t value = resource_future.get();
-          result.set_value(to_string(value));
+          response = to_string(value);
+        },
+        [&](ResourcePtr<TimeStamp> resource) {
+          name = resource->getDescriptor()->name_;
+          auto resource_future = resource->read();
+          auto value = resource_future.get();
+          response = value.toString();
         },
         [&](ResourcePtr<ObjectLink> resource) {
+          name = resource->getDescriptor()->name_;
           auto resource_future = resource->read();
           ObjectLink value = resource_future.get();
-          string stringy = "Object link:" + to_string(value.object_id_) + ":" +
-                           to_string(value.instance_id_);
-          result.set_value(stringy);
+          response = "Object link:" + to_string(value.object_id_) + ":" +
+                     to_string(value.instance_id_);
         },
         [&](ResourcePtr<vector<uint8_t>> resource) {
+          name = resource->getDescriptor()->name_;
           auto resource_future = resource->read();
           vector<uint8_t> value = resource_future.get();
-          result.set_value(string(value.begin(), value.end()));
+          response = string(value.begin(), value.end());
         });
-  return result.get_future();
+  return string("Resource " + name + " value is: " + response);
 }
 
 void asyncRead(DevicePtr device, ResourceID id) {
@@ -63,11 +76,9 @@ void asyncRead(DevicePtr device, ResourceID id) {
               device->getObject(element_id.object_instance_.object_.id_);
           auto resource = object->getResource(element_id.object_instance_.id_,
                                               element_id.id_);
-          auto future = stringifyResourceValue(move(resource));
-          future.wait();
+          auto value = stringifyResourceValue(move(resource));
           cout << "Device: " << device->getDeviceId() << " "
-               << object->getDescriptor()->name_
-               << " value is: " << future.get() << endl;
+               << object->getDescriptor()->name_ << " " << value << endl;
         } catch (ResponseReturnedAnErrorCode &ex) {
           string id;
           for (auto element : element_id.toStrings()) {
@@ -102,10 +113,16 @@ public:
            << " has been registered!" << endl;
       auto device = event->device_;
       asyncRead(device, ResourceID(3, 0, 4)); // try to read a not readable
-      asyncRead(device, ResourceID(3, 0, 8)); // try to read a non existant
+      asyncRead(device, ResourceID(3, 0, 8)); // try to read optional resource
+      asyncRead(device,
+                ResourceID(3, 0, 11)); // try to read multiple instance resource
+      asyncRead(device, ResourceID(3, 0, 16));
+      asyncRead(device, ResourceID(6, 0, 0)); // try to read Latitude as float
+      asyncRead(device, ResourceID(6, 0, 1)); // try to read Longitude as float
+      asyncRead(device, ResourceID(6, 0, 5)); // try to read Timestamp
       asyncRead(device,
                 ResourceID(3303, 0, 5700)); // try to read temperature value
-      asyncRead(device, ResourceID(3, 0, 11));
+
       break;
     }
     case RegistryEventType::UPDATED: {
