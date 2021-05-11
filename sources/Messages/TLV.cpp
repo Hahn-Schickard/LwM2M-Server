@@ -70,21 +70,21 @@ TLV::TLV(vector<uint8_t> &bytestream) {
   }
   case Length_Type::Byte_Long: {
     length_ = *it;
+    ++it;
     break;
   }
   case Length_Type::Short_Long: {
     length_ = (*it << 8) | *(it + 1);
-    ++it;
+    it += 2;
     break;
   }
   case Length_Type::Full_Length:
   default: {
     length_ = (*it << 16) | (*(it + 1) << 8) | *(it + 2);
-    it += 2;
+    it += 3;
     break;
   }
   }
-  ++it;
 
   // Multiple Resources type value is a nested TLV
   if (header_->identifier_ != Identifier_Type::Multiple_Resources) {
@@ -100,6 +100,8 @@ TLV::TLV(vector<uint8_t> &bytestream) {
                          to_string(distance(it, bytestream.end())) + " bytes.";
       throw length_error(error_msg);
     }
+  } else {
+    // how to handle multiple resource instance TLVs?
   }
 }
 
