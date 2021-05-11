@@ -71,7 +71,12 @@ ObjectInstance::ObjectInstance(
                                                    resource_pair.second));
         break;
       }
-      case DataType::TIME:
+      case DataType::TIME: {
+        resources_.emplace(resource_pair.first,
+                           makeResourcePtr<TimeStamp>(requester_, endpoint, id_,
+                                                      resource_pair.second));
+        break;
+      }
       case DataType::UNSIGNED_INTEGER: {
         resources_.emplace(resource_pair.first,
                            makeResourcePtr<uint64_t>(requester_, endpoint, id_,
