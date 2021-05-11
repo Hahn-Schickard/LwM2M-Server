@@ -4,6 +4,8 @@
  - ObjectInstanceDoesNotExists exception
  - ResourceDoesNotExist exception 
  - sanity checks for CoAP_Binding buildOptions method when dealing with Registration Interface Messages
+ - Timestamp data value 
+ - Resources with Timestamp support
 
 ### Changed
  - ResponseReturnedAnErrorCode inheritance from std::runtime_error to public
@@ -17,14 +19,17 @@
  - Device getObject() method to throw ObjectDoesNotExist instead of returning an empty value
  - Object getResource() method to throw ObjectInstanceDoesNotExists instead of returning an empty value
  - ObjectInstance getResource() method to throw ResourceDoesNotExist instead of returning an empty value
- - disabled support for LwM2M optional resources
  - RequestsManagerInterface to share internal logger with it's children
  - GTest runner to throw on failed assertions
 
- ### Fixed
+### Fixed
  - spelling mistakes throughout the code base
  - spelling mistakes in the CHANGELOG
  - spelling mistakes in the README
+
+### Removed 
+ - support for LwM2M optional resources
+ - support for LwM2M multiple instance resources
 
 ## [0.2.3] - 2021.04.27
 ### Fixed 
