@@ -1,4 +1,13 @@
-## [0.2.4] - NOT RELEASED
+## [0.2.5] - NOT RELEASED
+### Added
+ - explicit Endpoint constructors 
+ - toString method for Endpoint struct
+ - a check if message payload is empty for buildOptions function in CoAP_Binding unit
+
+### Removed
+ - default Endpoint constructor
+
+## [0.2.4] - 2021.05.11
 ### Added
  - ObjectDoesNotExist exception 
  - ObjectInstanceDoesNotExists exception
