@@ -293,7 +293,7 @@ ResourceVariant makeTestResource(TestRequesterPtr requester,
 ResourceTestParameter makeTestParameter(ResourceDescriptorPtr descriptor,
                                         DataFormat result) {
   auto requester = make_shared<TestRequester>();
-  auto endpoint = make_shared<Endpoint>();
+  auto endpoint = make_shared<Endpoint>("0.0.0.0", 86544);
 
   ResourceVariant resource;
   switch (descriptor->data_type_) {

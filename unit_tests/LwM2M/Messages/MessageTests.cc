@@ -87,7 +87,7 @@ struct GenerateTestName {
   }
 };
 
-EndpointPtr tested_endpoint = make_shared<Endpoint>();
+EndpointPtr tested_endpoint = make_shared<Endpoint>("0.0.0.0", 86524);
 
 template <typename T>
 MessageTestParameter

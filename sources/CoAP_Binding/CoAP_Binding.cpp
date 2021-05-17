@@ -218,20 +218,27 @@ Options buildOptions(ServerResponsePtr message) {
   if (message->interface_ == InterfaceType::REGISTRATION &&
       (message->message_type_ == MessageType::REGISTER ||
        message->message_type_ == MessageType::UPDATE)) {
-    if (holds_alternative<DataFormatPtr>(message->payload_->data_)) {
-      auto data = std::get<DataFormatPtr>(message->payload_->data_);
-      if (data) {
-        auto location = data->get<string>();
-        auto rd_path = build(OptionNumber::LOCATION_PATH, "rd");
-        auto location_path = build(OptionNumber::LOCATION_PATH, location);
-        options.emplace(OptionNumber::LOCATION_PATH, move(rd_path));
-        options.emplace(OptionNumber::LOCATION_PATH, move(location_path));
+    if (message->payload_) {
+      if (holds_alternative<DataFormatPtr>(message->payload_->data_)) {
+        auto data = std::get<DataFormatPtr>(message->payload_->data_);
+        if (data) {
+          auto location = data->get<string>();
+          auto rd_path = build(OptionNumber::LOCATION_PATH, "rd");
+          auto location_path = build(OptionNumber::LOCATION_PATH, location);
+          options.emplace(OptionNumber::LOCATION_PATH, move(rd_path));
+          options.emplace(OptionNumber::LOCATION_PATH, move(location_path));
+        } else {
+          throw logic_error("LOCATION_PATH option value can not be an empty");
+        }
       } else {
-        throw logic_error("LOCATION_PATH option value can not be an empty");
+        throw logic_error(
+            "LOCATION_PATH option value must be of DataFormatPtr type");
       }
     } else {
-      throw logic_error(
-          "LOCATION_PATH option value must be of DataFormatPtr type");
+      string error_msg = message->name() + " for " +
+                         message->endpoint_->toString() +
+                         " does not have a payload to build options from!";
+      throw logic_error(move(error_msg));
     }
   }
   return options;
