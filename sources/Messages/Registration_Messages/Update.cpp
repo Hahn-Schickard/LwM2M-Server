@@ -6,12 +6,18 @@ namespace LwM2M {
 
 UpdateResponse::UpdateResponse(EndpointPtr endpoint, ResponseCode response_code)
     : ServerResponse(endpoint, MessageType::UPDATE, InterfaceType::REGISTRATION,
-                     unordered_set<ResponseCode>{ResponseCode::CHANGED,
-                                                 ResponseCode::BAD_REQUEST,
+                     unordered_set<ResponseCode>{ResponseCode::BAD_REQUEST,
                                                  ResponseCode::NOT_FOUND},
                      response_code) {
   checkResponseCode(response_code);
 }
+
+UpdateResponse::UpdateResponse(EndpointPtr endpoint, string location)
+    : ServerResponse(endpoint, MessageType::UPDATE, InterfaceType::REGISTRATION,
+                     unordered_set<ResponseCode>{ResponseCode::CHANGED},
+                     ResponseCode::CHANGED,
+                     make_shared<Payload>(
+                         make_shared<DataFormat>(DataVariant(location)))) {}
 
 string UpdateResponse::name() { return "UpdateResponse"; }
 
@@ -27,6 +33,9 @@ UpdateRequest::UpdateRequest(
 string UpdateRequest::name() { return "UpdateRequest"; }
 
 UpdateResponsePtr UpdateRequest::makeResponse(ResponseCode response_code) {
-  return make_shared<UpdateResponse>(endpoint_, response_code);
+  if (response_code == ResponseCode::CHANGED)
+    return make_shared<UpdateResponse>(endpoint_, location_);
+  else
+    return make_shared<UpdateResponse>(endpoint_, response_code);
 }
 } // namespace LwM2M

@@ -8,14 +8,32 @@ namespace LwM2M {
  * @brief Response to LwM2M::DeregisterRequest, indicates if the request
  * was successfull, or not
  *
- * Supported response codes:
- * - ResponseCode::DELETED - Operation was a success.
- * - ResponseCode::BAD_REQUEST - No location was given in the request.
- * - ResponseCode::NOT_FOUND - Given location could not be found in the server
  */
 struct DeregisterResponse : ServerResponse {
-  DeregisterResponse(EndpointPtr endpoint,
-                     ResponseCode response_code = ResponseCode::BAD_REQUEST);
+  /**
+   * @brief Creates a DeregisterResponse with one of the supported failure
+   * codes.
+   *
+   * Used to indicate failure.
+   *
+   * Supported response codes:
+   * - ResponseCode::BAD_REQUEST - No location was given in the request.
+   * - ResponseCode::NOT_FOUND - Given location could not be found in the server
+   *
+   * @param endpoint
+   * @param response_code
+   */
+  DeregisterResponse(EndpointPtr endpoint, ResponseCode response_code);
+
+  /**
+   * @brief Creates a DeregisterResponse with assigned endpoint location.
+   *
+   * Used to indicate success.
+   *
+   * @param endpoint
+   * @param location
+   */
+  DeregisterResponse(EndpointPtr endpoint, std::string location);
 
   std::string name() override final;
 };
@@ -30,12 +48,11 @@ using DeregisterResponsePtr = std::shared_ptr<DeregisterResponse>;
 struct DeregisterRequest : ClientRequest {
   const std::string location_;
 
-  DeregisterRequest(EndpointPtr endpoint, std::string location = std::string());
+  DeregisterRequest(EndpointPtr endpoint, std::string location);
 
   std::string name() override final;
 
-  DeregisterResponsePtr
-  makeResponse(ResponseCode response_code = ResponseCode::BAD_REQUEST);
+  DeregisterResponsePtr makeResponse(ResponseCode response_code);
 };
 
 using DeregisterRequestPtr = std::shared_ptr<DeregisterRequest>;

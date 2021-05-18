@@ -234,11 +234,6 @@ Options buildOptions(ServerResponsePtr message) {
         throw logic_error(
             "LOCATION_PATH option value must be of DataFormatPtr type");
       }
-    } else {
-      string error_msg = message->name() + " for " +
-                         message->endpoint_->toString() +
-                         " does not have a payload to build options from!";
-      throw logic_error(move(error_msg));
     }
   }
   return options;

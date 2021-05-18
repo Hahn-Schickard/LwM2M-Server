@@ -4,17 +4,23 @@ using namespace std;
 
 namespace LwM2M {
 RegisterResponse::RegisterResponse(EndpointPtr endpoint,
-                                   ResponseCode response_code, string location)
-    : ServerResponse(
-          endpoint, MessageType::REGISTER, InterfaceType::REGISTRATION,
-          unordered_set<ResponseCode>{
-              ResponseCode::CREATED, ResponseCode::BAD_REQUEST,
-              ResponseCode::FORBIDDEN, ResponseCode::PRECOGNITION_FAILED},
-          response_code,
-          make_shared<Payload>(
-              make_shared<DataFormat>(DataVariant(location)))) {
+                                   ResponseCode response_code)
+    : ServerResponse(endpoint, MessageType::REGISTER,
+                     InterfaceType::REGISTRATION,
+                     unordered_set<ResponseCode>{
+                         ResponseCode::BAD_REQUEST, ResponseCode::FORBIDDEN,
+                         ResponseCode::PRECOGNITION_FAILED},
+                     response_code) {
   checkResponseCode(response_code);
 }
+
+RegisterResponse::RegisterResponse(EndpointPtr endpoint, string location)
+    : ServerResponse(endpoint, MessageType::REGISTER,
+                     InterfaceType::REGISTRATION,
+                     unordered_set<ResponseCode>{ResponseCode::CREATED},
+                     ResponseCode::CREATED,
+                     make_shared<Payload>(
+                         make_shared<DataFormat>(DataVariant(location)))) {}
 
 string RegisterResponse::name() { return "RegisterResponse"; }
 
@@ -32,8 +38,11 @@ RegisterRequest::RegisterRequest(
 
 string RegisterRequest::name() { return "RegisterRequest"; }
 
-RegisterResponsePtr RegisterRequest::makeResponse(ResponseCode response_code,
-                                                  string location) {
-  return make_shared<RegisterResponse>(endpoint_, response_code, location);
+RegisterResponsePtr RegisterRequest::makeResponse(ResponseCode response_code) {
+  return make_shared<RegisterResponse>(endpoint_, response_code);
+}
+
+RegisterResponsePtr RegisterRequest::makeResponse(string location) {
+  return make_shared<RegisterResponse>(endpoint_, location);
 }
 } // namespace LwM2M

@@ -13,19 +13,37 @@ namespace LwM2M {
  * @brief Response to LwM2M::RegisterRequest, indicates if the request was
  * successfull, or not
  *
- * Supported response codes:
- * - ResponseCode::CREATED - Operation was a success.
- * - ResponseCode::BAD_REQUEST - One of the mandatory parameters were not
- * specified, endpoint name does not match with CN field of X.509 Certificates
- * - ResponseCode::FORBIDDEN - A given endpoint name is not allowed within the
- * server.
- * - ResponseCode::PRECOGNITION_FAILED - Given LwM2M version is not supported by
- * the server.
  */
 struct RegisterResponse : ServerResponse {
-  RegisterResponse(EndpointPtr endpoint,
-                   ResponseCode response_code = ResponseCode::BAD_REQUEST,
-                   std::string location = std::string());
+  /**
+   * @brief Creates a RegisterResponse with one of the supported failure codes.
+   *
+   * Used to indicate failure.
+   *
+   * Supported response codes:
+   * - ResponseCode::BAD_REQUEST - One of the mandatory parameters were not
+   * specified, endpoint name does not match with CN field of X.509 Certificates
+   * - ResponseCode::FORBIDDEN - A given endpoint name is not allowed within the
+   * server.
+   * - ResponseCode::PRECOGNITION_FAILED - Given LwM2M version is not supported
+   * by the server.
+   *
+   * @param endpoint
+   * @param response_code
+   */
+  RegisterResponse(EndpointPtr endpoint, ResponseCode response_code);
+
+  /**
+   * @brief Creates a RegisterResponse with assigned endpoint location.
+   *
+   * Used to indicate success.
+   *
+   * @param endpoint
+   * @param location
+   */
+  RegisterResponse(EndpointPtr endpoint, std::string location);
+
+  RegisterResponse(EndpointPtr endpoint);
 
   std::string name() override final;
 };
@@ -59,9 +77,21 @@ struct RegisterRequest : ClientRequest {
 
   std::string name() override final;
 
-  RegisterResponsePtr
-  makeResponse(ResponseCode response_code = ResponseCode::FORBIDDEN,
-               std::string location = std::string());
+  /**
+   * @brief Creates a response that indicates failure.
+   *
+   * @param response_code
+   * @return RegisterResponsePtr
+   */
+  RegisterResponsePtr makeResponse(ResponseCode response_code);
+
+  /**
+   * @brief Creates a response that indicates success.
+   *
+   * @param location
+   * @return RegisterResponsePtr
+   */
+  RegisterResponsePtr makeResponse(std::string location);
 };
 
 using RegisterRequestPtr = std::shared_ptr<RegisterRequest>;

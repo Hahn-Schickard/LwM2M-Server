@@ -176,7 +176,8 @@ RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message) {
           endpoint, life_time_, object_instances_map_, endpoint_name_, version_,
           binding_, queue_mode_, sms_number_);
     } catch (bad_optional_access &ex) {
-      throw RegistrationInterfaceError(make_shared<RegisterResponse>(endpoint));
+      throw RegistrationInterfaceError(
+          make_shared<RegisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
     }
   } catch (bad_optional_access &ex) {
     throw RegistrationInterfaceError(make_shared<RegisterResponse>(
@@ -211,7 +212,8 @@ UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message) {
     return make_shared<UpdateRequest>(endpoint, location, object_instances_map,
                                       life_time, binding, sms_number);
   } catch (bad_optional_access &ex) {
-    throw RegistrationInterfaceError(make_shared<UpdateResponse>(endpoint));
+    throw RegistrationInterfaceError(
+        make_shared<UpdateResponse>(endpoint, ResponseCode::BAD_REQUEST));
   }
 }
 
@@ -222,7 +224,8 @@ DeregisterRequestPtr buildDeregisterRequest(CoAP::MessagePtr message) {
     auto location = getLocation(message->getOptions()).value();
     return make_shared<DeregisterRequest>(endpoint, location);
   } catch (bad_optional_access &ex) {
-    throw RegistrationInterfaceError(make_shared<DeregisterResponse>(endpoint));
+    throw RegistrationInterfaceError(
+        make_shared<DeregisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
   }
 }
 

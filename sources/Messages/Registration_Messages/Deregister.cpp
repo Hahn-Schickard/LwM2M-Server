@@ -7,12 +7,19 @@ DeregisterResponse::DeregisterResponse(EndpointPtr endpoint,
                                        ResponseCode response_code)
     : ServerResponse(endpoint, MessageType::DEREGISTER,
                      InterfaceType::REGISTRATION,
-                     unordered_set<ResponseCode>{ResponseCode::DELETED,
-                                                 ResponseCode::BAD_REQUEST,
+                     unordered_set<ResponseCode>{ResponseCode::BAD_REQUEST,
                                                  ResponseCode::NOT_FOUND},
                      response_code) {
   checkResponseCode(response_code);
 }
+
+DeregisterResponse::DeregisterResponse(EndpointPtr endpoint, string location)
+    : ServerResponse(endpoint, MessageType::DEREGISTER,
+                     InterfaceType::REGISTRATION,
+                     unordered_set<ResponseCode>{ResponseCode::DELETED},
+                     ResponseCode::DELETED,
+                     make_shared<Payload>(
+                         make_shared<DataFormat>(DataVariant(location)))) {}
 
 string DeregisterResponse::name() { return "DeregisterResponse"; }
 
@@ -25,6 +32,9 @@ string DeregisterRequest::name() { return "DeregisterRequest"; }
 
 DeregisterResponsePtr
 DeregisterRequest::makeResponse(ResponseCode response_code) {
-  return make_shared<DeregisterResponse>(endpoint_, response_code);
+  if (response_code == ResponseCode::DELETED)
+    return make_shared<DeregisterResponse>(endpoint_, location_);
+  else
+    return make_shared<DeregisterResponse>(endpoint_, response_code);
 }
 } // namespace LwM2M

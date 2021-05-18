@@ -59,7 +59,7 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
           request->binding_.value_or(BindingType::UDP),
           request->queue_mode_.value_or(false));
       auto location = registry_->registerDevice(device);
-      return request->makeResponse(ResponseCode::CREATED, location);
+      return request->makeResponse(location);
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
                    "An unhandled exception occurred while handling "
@@ -101,7 +101,7 @@ UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
       }
       if (request->sms_number_.has_value()) {
         logger_->log(SeverityLevel::ERROR, "SMS numbers are not supported!");
-        return request->makeResponse();
+        return request->makeResponse(ResponseCode::BAD_REQUEST);
       }
       registry_->updateDevice(device);
       return request->makeResponse(ResponseCode::CHANGED);
@@ -129,7 +129,7 @@ DeregisterResponsePtr Registrator::handleRquest(DeregisterRequestPtr request) {
                    "An unhandled exception occurred while handling "
                    "deregistration request. Exception: {}",
                    ex.what());
-      return request->makeResponse();
+      return request->makeResponse(ResponseCode::BAD_REQUEST);
     }
   } else {
     throw invalid_argument("Deregister Request can not be a nullptr");

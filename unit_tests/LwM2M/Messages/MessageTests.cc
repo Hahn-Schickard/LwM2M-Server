@@ -89,6 +89,30 @@ struct GenerateTestName {
 
 EndpointPtr tested_endpoint = make_shared<Endpoint>("0.0.0.0", 86524);
 
+template <typename T> shared_ptr<T> makeDefaultMessage(EndpointPtr endpoint) {
+  return make_shared<T>(endpoint);
+}
+
+template <> RegisterResponsePtr makeDefaultMessage(EndpointPtr endpoint) {
+  return make_shared<RegisterResponse>(endpoint, "");
+}
+
+template <> UpdateRequestPtr makeDefaultMessage(EndpointPtr endpoint) {
+  return make_shared<UpdateRequest>(endpoint, "");
+}
+
+template <> UpdateResponsePtr makeDefaultMessage(EndpointPtr endpoint) {
+  return make_shared<UpdateResponse>(endpoint, "");
+}
+
+template <> DeregisterRequestPtr makeDefaultMessage(EndpointPtr endpoint) {
+  return make_shared<DeregisterRequest>(endpoint, "");
+}
+
+template <> DeregisterResponsePtr makeDefaultMessage(EndpointPtr endpoint) {
+  return make_shared<DeregisterResponse>(endpoint, "");
+}
+
 template <typename T>
 MessageTestParameter
 makeTestParameter(const MessageTestExpectations &valid_expectations) {
@@ -96,7 +120,7 @@ makeTestParameter(const MessageTestExpectations &valid_expectations) {
 
   shared_ptr<T> message;
   try {
-    message = make_shared<T>(tested_endpoint);
+    message = makeDefaultMessage<T>(tested_endpoint);
   } catch (exception &ex) {
     cerr << "Caught an unhandled exception while building "
          << toString(valid_expectations.message_type_)
