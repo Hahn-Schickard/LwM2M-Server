@@ -1,15 +1,19 @@
 #include "Device.hpp"
 
+#include <iomanip>
+#include <sstream>
+
 using namespace std;
 
 namespace LwM2M {
 string generateDeviceID(string name, EndpointPtr endpoint) {
-  // Possible hash colissions, need to check the size of name and endpoint
-  // address, offset each by the lengths and concat it with bit shifts
-  size_t result = hash<string>{}(name) +
-                  hash<string>{}(endpoint->endpoint_address_) +
-                  endpoint->endpoint_port_;
-  return to_string(result);
+  auto address = endpoint->toString();
+  auto offset = address.size();
+  size_t result = hash<string>{}(name) << offset;
+  result |= hash<string>{}(address);
+  stringstream stream;
+  stream << hex << result;
+  return stream.str();
 }
 
 Device::Device(RequesterPtr requester, EndpointPtr endpoint,
