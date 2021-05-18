@@ -3,6 +3,26 @@
  - explicit Endpoint constructors 
  - toString method for Endpoint struct
  - a check if message payload is empty for buildOptions function in CoAP_Binding unit
+ - explicit RegisterResponse ctor to signify failure
+ - explicit RegisterResponse ctor to signify success
+ - explicit UpdateResponse ctor to signify failure
+ - explicit UpdateResponse ctor to signify success
+ - explicit DeregisterResponse ctor to signify failure
+ - explicit DeregisterResponse ctor to signify success
+ - RegisterRequest method to build successful RegisterResponse 
+ - RegisterRequest method to build failed RegisterResponse 
+ - makeDefaultMessage function to MessageTests.cc 
+
+### Changed
+ - UpdateRequest makeResponse method to auto resolve the correct UpdateResponse ctor
+ - DeregisterRequest makeResponse method to auto resolve the correct DeregisterResponse ctor
+ - Device ID generation function to create hex id with proper hash calculation
+ - RegistrationInterfaceRequestsBuilder to explicitly set either ResponseCode or Response value 
+ - Registrator to explicitly set failure codes as ResponseCode
+ 
+### Fixed 
+ - ResourceTests.cc to set correct ctor parameters
+ - Register.cc to set correct ctor parameters
 
 ### Removed
  - default Endpoint constructor
