@@ -6,15 +6,18 @@
 #include "RequestsManagerInterface.hpp"
 
 namespace LwM2M {
-class CoAP_RequestsManager : public RequestsManagerInterface {
-  CoAP::SocketPtr socket_;
+struct CoAP_RequestsManager : public RequestsManagerInterface {
+  using Requester =
+      std::function<std::future<CoAP::MessagePtr>(CoAP::MessagePtr)>;
 
-public:
   CoAP_RequestsManager(ResponseHandlerPtr response_handler,
-                       CoAP::SocketPtr socket);
+                       Requester requester);
   ~CoAP_RequestsManager();
 
   uint64_t dispatch(ServerRequestPtr request) override;
+
+private:
+  Requester requester_;
 };
 } // namespace LwM2M
 

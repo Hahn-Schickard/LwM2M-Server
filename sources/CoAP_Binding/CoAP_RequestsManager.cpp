@@ -229,8 +229,9 @@ CoAP::PayloadPtr makePayload(ServerRequestPtr request) {
 }
 
 CoAP_RequestsManager::CoAP_RequestsManager(ResponseHandlerPtr response_handler,
-                                           CoAP::SocketPtr socket)
-    : RequestsManagerInterface("CoAP", response_handler), socket_(socket) {}
+                                           Requester requester)
+    : RequestsManagerInterface("CoAP", response_handler),
+      requester_(requester) {}
 
 CoAP_RequestsManager::~CoAP_RequestsManager() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
@@ -252,7 +253,7 @@ uint64_t CoAP_RequestsManager::dispatch(ServerRequestPtr request) {
     *message += payload;
   }
 
-  auto sent = socket_->send(message);
+  auto sent = requester_(message);
   sent.get();
 
   return generateHash(message);
