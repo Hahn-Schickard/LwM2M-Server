@@ -5,14 +5,16 @@
 #include "DeviceRegistry.hpp"
 #include "Logger.hpp"
 #include "Register.hpp"
-#include "RequestsManagerInterface.hpp"
+#include "Requester.hpp"
 #include "Update.hpp"
+
+#include <memory>
 
 namespace LwM2M {
 
-class Registrator {
+class Registrator : public Requester,
+                    public std::enable_shared_from_this<Requester> {
   DeviceRegistryPtr registry_;
-  RequestsManagerInterfacePtr requester_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
   /**
@@ -27,8 +29,7 @@ class Registrator {
           requested_object_instances);
 
 public:
-  Registrator(DeviceRegistryPtr registry,
-              RequestsManagerInterfacePtr requester);
+  Registrator(DeviceRegistryPtr registry);
 
   ~Registrator();
 

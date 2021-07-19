@@ -2,28 +2,17 @@
 #define __LWM2M_COAP_BINDING_HPP
 
 #include "Binding.hpp"
-#include "CoAP/Socket.hpp"
-#include "CoAP_Config.hpp"
-#include "Logger.hpp"
+
+#include "CoAP_Server.hpp"
 
 namespace LwM2M {
 
-class CoAP_Binding : public BindingInterface, public CoAP::Socket {
-  std::shared_ptr<HaSLL::Logger> logger_;
-
-  ClientResponsePtr makeClientResponse(CoAP::MessagePtr message);
-  CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr message);
-
-  void handleResponse(CoAP::MessagePtr message);
-  void handleNotification(CoAP::MessagePtr message);
-  ServerResponsePtr handleRegistrationRequest(CoAP::MessagePtr message);
-  ServerResponsePtr handleRequest(CoAP::MessagePtr message);
-
-  void handleReceived(CoAP::MessagePtr message) override final;
+class CoAP_Binding : public BindingInterface {
+  CoAP_ServerPtr server_;
 
 public:
+  CoAP_Binding(DeviceRegistryPtr registry, const std::string &config_filepath);
   CoAP_Binding(DeviceRegistryPtr registry, const CoAP_Config &config);
-  ~CoAP_Binding();
 
   void start() override final;
   void stop() override final;

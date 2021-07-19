@@ -4,8 +4,27 @@
 #include "Message.hpp"
 
 #include <future>
+#include <stdexcept>
 
 namespace LwM2M {
+
+struct ResponseReturnedAnErrorCode : public std::runtime_error {
+  ResponseCode response_code_;
+
+  ResponseReturnedAnErrorCode(ClientResponsePtr response,
+                              ServerRequestPtr request)
+      : runtime_error(response->name() + " returned " +
+                      toString(response->response_code_) + " for " +
+                      request->name()),
+        response_code_(response->response_code_) {}
+};
+
+struct ResponseReturnedAnEmptyPayload : public std::runtime_error {
+  ResponseReturnedAnEmptyPayload(ClientResponsePtr response,
+                                 ServerRequestPtr request)
+      : runtime_error(response->name() + " has no payload " + " for " +
+                      request->name()) {}
+};
 
 /**
  * @brief Implemented by LwM2M::DispatcherInterface
@@ -24,12 +43,14 @@ struct Requester {
    * LwM2M::Dispatcher
    * @throws LwM2M::RequestAlreadyDispatched if this request was already
    * dispatched
-   * @throws std::logic_error if an internal failure occured
+   * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<DataFormat>
    */
-  virtual std::future<DataFormatPtr> requestData(ServerRequestPtr message) = 0;
+  virtual std::future<DataFormatPtr> requestData(ServerRequestPtr message) {
+    throw std::runtime_error("Called based requestData implementation.");
+  }
 
   /**
    * @brief Requests multiple instances of LwM2M:DataFormat objects, wrapped in
@@ -47,7 +68,10 @@ struct Requester {
    * @return std::future<TargetContentVector>
    */
   virtual std::future<TargetContentVector>
-  requestMultiTargetData(ServerRequestPtr message) = 0;
+  requestMultiTargetData(ServerRequestPtr message) {
+    throw std::runtime_error(
+        "Called based requestMultiTargetData implementation.");
+  }
 
   /**
    * @brief Request LwM2M::Device to do an Action
@@ -63,7 +87,9 @@ struct Requester {
    * @param message
    * @return std::future<bool>
    */
-  virtual std::future<bool> requestAction(ServerRequestPtr message) = 0;
+  virtual std::future<bool> requestAction(ServerRequestPtr message) {
+    throw std::runtime_error("Called based requestAction implementation.");
+  }
 };
 
 using RequesterPtr = std::shared_ptr<Requester>;

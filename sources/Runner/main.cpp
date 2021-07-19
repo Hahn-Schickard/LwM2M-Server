@@ -151,8 +151,8 @@ int main(int argc, const char *argv[]) {
     LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
     auto server = make_unique<Server>("config/serverConfig.json");
-    auto registration_listener =
-        make_unique<RegistrationListener>(server->getEventSource());
+    auto source = server->getEventSource();
+    auto registration_listener = make_unique<RegistrationListener>(source);
     try {
       server->start();
       logger->log(SeverityLevel::INFO, "Started LwM2M Server!");

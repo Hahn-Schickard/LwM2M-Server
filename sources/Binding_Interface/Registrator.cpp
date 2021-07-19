@@ -28,15 +28,11 @@ ObjectDescriptorsMap Registrator::assignObjectDescriptors(
   return result;
 }
 
-Registrator::Registrator(DeviceRegistryPtr registry,
-                         RequestsManagerInterfacePtr requester)
-    : registry_(registry), requester_(requester),
+Registrator::Registrator(DeviceRegistryPtr registry)
+    : registry_(registry),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   if (!registry_) {
     throw invalid_argument("Device Registry can not be a nullptr.");
-  }
-  if (!requester_) {
-    throw invalid_argument("Requester can not be a nullptr.");
   }
 }
 
@@ -53,8 +49,9 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
     auto object_instances =
         assignObjectDescriptors(request->object_instances_map_);
     try {
+      RequesterPtr requester = shared_from_this();
       auto device = make_shared<Device>(
-          requester_, request->endpoint_, object_instances, request->life_time_,
+          requester, request->endpoint_, object_instances, request->life_time_,
           request->endpoint_name_.value_or(string()), request->version_,
           request->binding_.value_or(BindingType::UDP),
           request->queue_mode_.value_or(false));

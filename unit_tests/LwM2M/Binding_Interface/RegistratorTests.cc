@@ -1,6 +1,7 @@
-#include "MockRequestsManager.hpp"
 #include "Registrator.hpp"
+#include "Requester.hpp"
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 #include <memory>
@@ -8,35 +9,33 @@
 using namespace LwM2M;
 using namespace std;
 
-TEST(RegistratorInstantiationTests,
-     throwsInvalidArgumentForNullptrDeviceRegistry) {
-  EXPECT_THROW(
-      {
-        make_shared<Registrator>(DeviceRegistryPtr(), MockRequestsManagerPtr());
-      },
-      invalid_argument);
-}
+struct MockRegistrator : public Registrator {
+
+  MockRegistrator(DeviceRegistryPtr registry) : Registrator(registry) {}
+
+  MOCK_METHOD(std::future<DataFormatPtr>, requestData, (ServerRequestPtr),
+              (override));
+  MOCK_METHOD(std::future<TargetContentVector>, requestMultiTargetData,
+              (ServerRequestPtr message), (override));
+  MOCK_METHOD(std::future<bool>, requestAction, (ServerRequestPtr), (override));
+};
+
+using MockRequesterPtr = std::shared_ptr<MockRegistrator>;
 
 TEST(RegistratorInstantiationTests,
-     throwsInvalidArgumentForNullptrDispatcherInterface) {
-  EXPECT_THROW(
-      {
-        make_shared<Registrator>(
-            make_shared<DeviceRegistry>("thisDoesNotMatter"),
-            MockRequestsManagerPtr());
-      },
-      invalid_argument);
+     throwsInvalidArgumentForNullptrDeviceRegistry) {
+  EXPECT_THROW({ make_shared<MockRegistrator>(DeviceRegistryPtr()); },
+               invalid_argument);
 }
 
 class RegistratorTests : public ::testing::Test {
 protected:
   void SetUp() override {
     registry_ = make_shared<DeviceRegistry>("model/passingModel1.xml");
-    auto DispatcherInterface = make_shared<MockRequestsManager>();
-    registrator_ = make_shared<Registrator>(registry_, DispatcherInterface);
-    initial_device_ = make_shared<Device>(
-        DispatcherInterface, make_shared<Endpoint>("0.0.0.0", 10),
-        ObjectDescriptorsMap(), 10, "initial_device");
+    registrator_ = make_shared<MockRegistrator>(registry_);
+    initial_device_ =
+        make_shared<Device>(registrator_, make_shared<Endpoint>("0.0.0.0", 10),
+                            ObjectDescriptorsMap(), 10, "initial_device");
     registry_->registerDevice(initial_device_);
   }
   DeviceRegistryPtr registry_;
