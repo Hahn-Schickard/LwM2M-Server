@@ -1,31 +1,40 @@
 #include "Registrator.hpp"
+#include "Discover.hpp"
 #include "LoggerRepository.hpp"
+
+#include <iterator>
+#include <vector>
 
 using namespace std;
 using namespace HaSLL;
 
+#define ERROR_CODES_VALUE 0x80
+
 namespace LwM2M {
 
-ObjectDescriptorsMap Registrator::assignObjectDescriptors(
-    const unordered_map<unsigned int, vector<unsigned int>>
-        requested_object_instances) {
-  logger_->log(SeverityLevel::TRACE, "Assigning Object Descriptors");
-  auto supported_object_descriptors = registry_->getSupportedDescriptors();
-  ObjectDescriptorsMap result;
-  for (auto requested_instance : requested_object_instances) {
-    auto descriptor =
-        supported_object_descriptors->find(requested_instance.first);
-    if (descriptor != supported_object_descriptors->end()) {
-      ObjectDescriptorPair instace_descriptor_pair =
-          make_pair(descriptor->second, requested_instance.second);
-      result.emplace(descriptor->first, move(instace_descriptor_pair));
-    } else {
-      logger_->log(SeverityLevel::WARNNING,
-                   "Object id {} is not supported by the server.",
-                   requested_instance.first);
+vector<DiscoverRequestPtr> makeDiscoverRequests(
+    EndpointPtr endpoint,
+    const RegisterRequest::ObjectInstancesMap object_instances) {
+  vector<DiscoverRequestPtr> discover_requests;
+  for (auto object_instance_pair : object_instances) {
+    for (auto instance_id : object_instance_pair.second) {
+      auto object_instance =
+          ObjectID(object_instance_pair.first, ObjectInstanceID(instance_id));
+      auto discover = make_shared<DiscoverRequest>(endpoint, object_instance);
+      discover_requests.emplace_back(move(discover));
     }
   }
-  return result;
+  return move(discover_requests);
+}
+
+ObjectIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
+  if (holds_alternative<ObjectIDs>(discover_response->payload_->data_)) {
+    return std::get<ObjectIDs>(discover_response->payload_->data_);
+  } else {
+    string error_msg =
+        "Request does not contain a vector of ObjectID instances";
+    throw logic_error(error_msg);
+  }
 }
 
 Registrator::Registrator(DeviceRegistryPtr registry)
@@ -40,18 +49,73 @@ Registrator::~Registrator() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
+ObjectDescriptorsMap
+Registrator::assignAvailableDescriptors(ObjectIDs requested_instances) {
+  logger_->log(SeverityLevel::TRACE, "Assigning Available Descriptors");
+  auto supported_object_descriptors = registry_->getSupportedDescriptors();
+  ObjectDescriptorsMap result;
+  for (auto object : requested_instances) {
+    auto descriptor = supported_object_descriptors->find(object.getID());
+    if (descriptor != supported_object_descriptors->end()) {
+      result.emplace(object, descriptor->second);
+    } else {
+      logger_->log(SeverityLevel::WARNNING,
+                   "Object id {} is not supported by the server.",
+                   object.getID());
+    }
+  }
+  return result;
+}
+
+ObjectIDs Registrator::discoverAvailableDescriptors(
+    EndpointPtr endpoint,
+    const RegisterRequest::ObjectInstancesMap object_instances) {
+  auto requests = makeDiscoverRequests(endpoint, object_instances);
+
+  ObjectIDs requested_instances;
+  for (auto it = requests.begin(); it != requests.end();) {
+    try {
+      auto response_future = this->request(*it);
+      auto response = response_future.get();
+      if (static_cast<uint8_t>(response->response_code_) > ERROR_CODES_VALUE) {
+        throw ResponseReturnedAnErrorCode(response, *it);
+      } else {
+        if (response->payload_) {
+          auto resource_instances = handleDiscoverResponse(move(response));
+          if (!resource_instances.empty()) {
+            requested_instances.insert(requested_instances.end(),
+                                       resource_instances.begin(),
+                                       resource_instances.end());
+          }
+        } else {
+          throw ResponseReturnedAnEmptyPayload(response, *it);
+        }
+      }
+      ++it;
+    } catch (exception &ex) {
+      logger_->log(SeverityLevel::ERROR,
+                   "Failed to handle {} to {}, due to an exception: {}. "
+                   "Discarding it from available descriptors.",
+                   (*it)->name(), (*it)->endpoint_->toString(), ex.what());
+      it = requests.erase(it);
+    }
+  }
+  return requested_instances;
+}
+
 RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE,
                  "Handling a Registration request from {}:{}",
                  request->endpoint_->endpoint_address_,
                  request->endpoint_->endpoint_port_);
-    auto object_instances =
-        assignObjectDescriptors(request->object_instances_map_);
+    auto instances = discoverAvailableDescriptors(
+        request->endpoint_, request->object_instances_map_);
+    auto object_ids = assignAvailableDescriptors(instances);
     try {
       RequesterPtr requester = shared_from_this();
       auto device = make_shared<Device>(
-          requester, request->endpoint_, object_instances, request->life_time_,
+          requester, request->endpoint_, object_ids, request->life_time_,
           request->endpoint_name_.value_or(string()), request->version_,
           request->binding_.value_or(BindingType::UDP),
           request->queue_mode_.value_or(false));
@@ -77,8 +141,9 @@ UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
     try {
       auto device = registry_->getDevice(request->location_);
       if (!request->object_instances_map_.empty()) {
-        auto object_instances =
-            assignObjectDescriptors(request->object_instances_map_);
+        auto instances = discoverAvailableDescriptors(
+            request->endpoint_, request->object_instances_map_);
+        auto object_instances = assignAvailableDescriptors(instances);
         logger_->log(SeverityLevel::TRACE,
                      "Assigning new Object Instance map to {}:{} device.",
                      device->getDeviceId(), device->getName());

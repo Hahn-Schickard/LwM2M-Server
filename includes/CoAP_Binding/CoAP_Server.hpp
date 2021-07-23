@@ -18,6 +18,8 @@ struct CoAP_Server : public Registrator, public CoAP::Socket {
   std::future<TargetContentVector>
   requestMultiTargetData(ServerRequestPtr message) override final;
   std::future<bool> requestAction(ServerRequestPtr message) override final;
+  std::future<ClientResponsePtr>
+  request(ServerRequestPtr message) override final;
 
   // Socket interface implementation
   void handleReceived(CoAP::MessagePtr message) override final;

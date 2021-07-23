@@ -39,17 +39,15 @@ struct Requester {
    *
    * @throws LwM2M::ResponseReturnedAnErrorCode if the corresponding
    * LwM2M::Response contained an error code
-   * @throws LwM2M::RequestCanceled if request was canceled by the
-   * LwM2M::Dispatcher
-   * @throws LwM2M::RequestAlreadyDispatched if this request was already
-   * dispatched
+   * @throws LwM2M::ResponseReturnedAnEmptyPayload if response contains no
+   * payload
    * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<DataFormat>
    */
-  virtual std::future<DataFormatPtr> requestData(ServerRequestPtr message) {
-    throw std::runtime_error("Called based requestData implementation.");
+  virtual std::future<DataFormatPtr> requestData(ServerRequestPtr /*message*/) {
+    throw std::runtime_error("Called base requestData implementation.");
   }
 
   /**
@@ -58,19 +56,17 @@ struct Requester {
    *
    * @throws LwM2M::ResponseReturnedAnErrorCode if the corresponding
    * LwM2M::Response contained an error code
-   * @throws LwM2M::RequestCanceled if request was canceled by the
-   * LwM2M::Dispatcher
-   * @throws LwM2M::RequestAlreadyDispatched if this request was already
-   * dispatched
+   * * @throws LwM2M::ResponseReturnedAnEmptyPayload if response contains no
+   * payload
    * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<TargetContentVector>
    */
   virtual std::future<TargetContentVector>
-  requestMultiTargetData(ServerRequestPtr message) {
+  requestMultiTargetData(ServerRequestPtr /*message*/) {
     throw std::runtime_error(
-        "Called based requestMultiTargetData implementation.");
+        "Called base requestMultiTargetData implementation.");
   }
 
   /**
@@ -78,17 +74,25 @@ struct Requester {
    *
    * @throws LwM2M::ResponseReturnedAnErrorCode if the corresponding
    * LwM2M::Response contained an error code
-   * @throws LwM2M::RequestCanceled if request was canceled by the
-   * LwM2M::Dispatcher
-   * @throws LwM2M::RequestAlreadyDispatched if this request was already
-   * dispatched
    * @throws std::logic_error if an internal failure occurred
    *
    * @param message
    * @return std::future<bool>
    */
-  virtual std::future<bool> requestAction(ServerRequestPtr message) {
-    throw std::runtime_error("Called based requestAction implementation.");
+  virtual std::future<bool> requestAction(ServerRequestPtr /*message*/) {
+    throw std::runtime_error("Called base requestAction implementation.");
+  }
+
+  /**
+   * @brief Requests LwM2M::Device a generic LwM2M Server Request
+   *
+   * @throws std::logic_error if an internal failure occurred
+   *
+   * @param message
+   * @return std::future<ClientResponse>
+   */
+  virtual std::future<ClientResponsePtr> request(ServerRequestPtr /*message*/) {
+    throw std::runtime_error("Called base request implementation.");
   }
 };
 

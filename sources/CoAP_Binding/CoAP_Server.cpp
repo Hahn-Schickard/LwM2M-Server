@@ -64,10 +64,9 @@ HeaderPtr makeHeader(CodeType code) {
                              CoAP::TokenSize::_8, code);
 }
 
-CoAP::Options makeURI_PATH(ElmentIdVariant target) {
+CoAP::Options makeURI_PATH(ObjectID target) {
   Options options;
-  auto uri_strings = toStrings(target);
-  for (auto uri : uri_strings) {
+  for (auto uri : target.toStrings()) {
     options += build(OptionNumber::URI_PATH, uri);
   }
   return options;
@@ -87,11 +86,11 @@ CoAP::Options toOptions(LwM2M::PayloadPtr payload) {
         auto uri_path = makeURI_PATH(target_content.first);
         options.insert(uri_path.begin(), uri_path.end());
       }
-    } else if (holds_alternative<ElmentIdVariant>(data)) {
-      auto target = get<ElmentIdVariant>(data);
+    } else if (holds_alternative<ObjectID>(data)) {
+      auto target = get<ObjectID>(data);
       options = makeURI_PATH(target);
-    } else if (holds_alternative<vector<ElmentIdVariant>>(data)) {
-      auto targets = get<vector<ElmentIdVariant>>(data);
+    } else if (holds_alternative<ObjectIDs>(data)) {
+      auto targets = get<ObjectIDs>(data);
       for (auto target : targets) {
         auto uri_path = makeURI_PATH(target);
         options.insert(uri_path.begin(), uri_path.end());
@@ -231,9 +230,31 @@ LwM2M::PayloadPtr toPayload(PlainText content) {
       make_shared<DataFormat>(content.toString()));
 }
 
+/**
+ * @brief Converts CoRE_Links content to std::vector<ElmentIdVariant> wrapped by
+ * LwM2M::PayloadPtr
+ *
+ * @param content
+ * @return LwM2M::PayloadPtr
+ */
 LwM2M::PayloadPtr toPayload(CoRE_Links content) {
-  // TODO: handle CoRE Links for non registration purposes
-  return LwM2M::PayloadPtr();
+  ObjectIDs result;
+  for (auto link : content.getLinks()) {
+    auto targets = link.splitTarget('/');
+    // focus on resource targets
+    if (targets.size() == 3) {
+      auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
+      auto instance_id = toUnsignedInteger(targets[1], IntegerBase::BASE_10);
+      auto resource_id = toUnsignedInteger(targets[2], IntegerBase::BASE_10);
+      result.emplace_back(ObjectID(
+          object_id, ObjectInstanceID(instance_id, ResourceID(resource_id))));
+    }
+  }
+  if (!result.empty()) {
+    return make_shared<LwM2M::Payload>(result);
+  } else {
+    return LwM2M::PayloadPtr();
+  }
 }
 
 LwM2M::PayloadPtr toPayload(TLV_Pack content) {
@@ -347,6 +368,10 @@ CoAP::MessagePtr encode(ServerRequestPtr request) {
       move(header));
   message->generateToken();
   auto options = makeOptions(request);
+  if (request->message_type_ == LwM2M::MessageType::DISCOVER) {
+    auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
+    options += build(OptionNumber::ACCEPT, content_format_index);
+  }
   if (!options.empty()) {
     *message += options;
   }
@@ -495,6 +520,16 @@ future<bool> CoAP_Server::requestAction(ServerRequestPtr message) {
                                 ERROR_CODES_VALUE
                             ? true
                             : false;
+               },
+               message);
+}
+
+future<ClientResponsePtr> CoAP_Server::request(ServerRequestPtr message) {
+  return async(launch::async,
+               [this](ServerRequestPtr request) -> ClientResponsePtr {
+                 auto response_future = CoAP::Socket::request(encode(request));
+                 auto response = makeClientResponse(response_future.get());
+                 return move(response);
                },
                message);
 }

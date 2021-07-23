@@ -8,15 +8,17 @@ namespace LwM2M {
 template <typename T>
 class Executable : public Resource<T>, protected ResourceMetaInfo {
 public:
-  Executable(RequesterPtr requester, EndpointPtr endpoint,
-             ObjectInstanceID parent, ResourceDescriptorPtr descriptor)
+  Executable(RequesterPtr requester, EndpointPtr endpoint, ObjectID parent,
+             ResourceDescriptorPtr descriptor)
       : Resource<T>(),
         ResourceMetaInfo(requester, endpoint, parent, descriptor) {}
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
   std::future<bool> execute(std::string arguments) override {
-    auto message = std::make_shared<ExecuteRequest>(endpoint_, id_, arguments);
+    auto message = std::make_shared<ExecuteRequest>(
+        endpoint_, ObjectID(parent_, parent_instance_, descriptor_->id_),
+        arguments);
 
     return requester_->requestAction(message);
   }

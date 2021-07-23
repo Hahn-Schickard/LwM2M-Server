@@ -4,128 +4,145 @@
 using namespace std;
 
 namespace LwM2M {
+ResourceID::ResourceID(uint16_t id, uint16_t instance)
+    : id_(id), resource_instances_(vector<uint16_t>{instance}) {}
 
-ObjectID::ObjectID(uint16_t id) : id_(id) {}
+ResourceID::ResourceID(uint16_t id, std::vector<uint16_t> instances)
+    : id_(id), resource_instances_(instances) {}
 
-string ObjectID::toString() const { return to_string(id_); }
+uint16_t ResourceID::getID() const { return id_; }
 
-vector<string> ObjectID::toStrings() const {
-  return vector<string>{toString()};
-}
-
-bool operator==(const ObjectID &lhs, const ObjectID &rhs) {
-  return lhs.id_ == rhs.id_ ? true : false;
-}
-
-ObjectInstanceID::ObjectInstanceID(ObjectID object_id, uint16_t instance_id)
-    : object_(object_id), id_(instance_id) {}
-
-ObjectInstanceID::ObjectInstanceID(uint16_t object_id, uint16_t instance_id)
-    : ObjectInstanceID(ObjectID(object_id), instance_id) {}
-
-string ObjectInstanceID::toString() const { return to_string(id_); }
-
-vector<string> ObjectInstanceID::toStrings() const {
-  auto buffer = object_.toStrings();
-  buffer.push_back(toString());
-  return buffer;
-}
-
-bool operator==(const ObjectInstanceID &lhs, const ObjectInstanceID &rhs) {
-  if (lhs.object_ == rhs.object_ && lhs.id_ == rhs.id_) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-ResourceID::ResourceID(ObjectInstanceID object_instance_id,
-                       uint16_t resource_id)
-    : object_instance_(object_instance_id), id_(resource_id) {}
-
-ResourceID::ResourceID(ObjectID object_id, uint16_t object_instance_id,
-                       uint16_t resource_id)
-    : ResourceID(ObjectInstanceID(object_id, object_instance_id), resource_id) {
-}
-
-ResourceID::ResourceID(uint16_t object_id, uint16_t object_instance_id,
-                       uint16_t resource_id)
-    : ResourceID(ObjectInstanceID(object_id, object_instance_id), resource_id) {
+std::vector<uint16_t> ResourceID::getResourceInstanceIDs() const {
+  return resource_instances_;
 }
 
 string ResourceID::toString() const { return to_string(id_); }
 
 vector<string> ResourceID::toStrings() const {
-  auto buffer = object_instance_.toStrings();
-  buffer.push_back(toString());
-  return buffer;
+  vector<string> result;
+  for (auto instance_id : resource_instances_) {
+    result.emplace_back(toString() + "/" + to_string(instance_id));
+  }
+  return result;
 }
+
+size_t ResourceID::size() const {
+  return resource_instances_.size() + sizeof(id_);
+}
+
+bool ResourceID::hasInstances() const { return resource_instances_.empty(); }
 
 bool operator==(const ResourceID &lhs, const ResourceID &rhs) {
-  if (lhs.object_instance_ == rhs.object_instance_ && lhs.id_ == rhs.id_) {
-    return true;
-  } else {
-    return false;
-  }
+  return (lhs.id_ == rhs.id_ &&
+          lhs.resource_instances_ == rhs.resource_instances_)
+             ? true
+             : false;
 }
 
-ResourceInstanceID::ResourceInstanceID(ResourceID resource_id,
-                                       uint16_t resource_instance_id)
-    : resource_(resource_id), id_(resource_instance_id) {}
+ObjectInstanceID::ObjectInstanceID(uint16_t id, ResourceID resource)
+    : id_(id), resources_(ResourceIDs{resource}) {}
 
-ResourceInstanceID::ResourceInstanceID(ObjectInstanceID object_instance_id,
-                                       uint16_t resource_id,
-                                       uint16_t resource_instance_id)
-    : ResourceInstanceID(ResourceID(object_instance_id, resource_id),
-                         resource_instance_id) {}
+ObjectInstanceID::ObjectInstanceID(uint16_t id, ResourceIDs resources)
+    : id_(id), resources_(resources) {}
 
-ResourceInstanceID::ResourceInstanceID(ObjectID object_id,
-                                       uint16_t object_instance_id,
-                                       uint16_t resource_id,
-                                       uint16_t resource_instance_id)
-    : ResourceInstanceID(ResourceID(object_id, object_instance_id, resource_id),
-                         resource_instance_id) {}
+uint16_t ObjectInstanceID::getID() const { return id_; }
 
-ResourceInstanceID::ResourceInstanceID(uint16_t object_id,
-                                       uint16_t object_instance_id,
-                                       uint16_t resource_id,
-                                       uint16_t resource_instance_id)
-    : ResourceInstanceID(ResourceID(object_id, object_instance_id, resource_id),
-                         resource_instance_id) {}
-
-string ResourceInstanceID::toString() const { return to_string(id_); }
-
-vector<string> ResourceInstanceID::toStrings() const {
-  auto buffer = resource_.toStrings();
-  buffer.push_back(toString());
-  return buffer;
+ObjectInstanceID::ResourceIDs ObjectInstanceID::getResourceIDs() const {
+  return resources_;
 }
 
-bool operator==(const ResourceInstanceID &lhs, const ResourceInstanceID &rhs) {
-  if (lhs.resource_ == rhs.resource_ && lhs.id_ == rhs.id_) {
-    return true;
-  } else {
-    return false;
-  }
-}
+string ObjectInstanceID::toString() const { return to_string(id_); }
 
-size_t size_of(ElmentIdVariant value) {
-  size_t result = 0;
-  match(value, [&](ObjectID /*target*/) { result = 4; },
-        [&](ObjectInstanceID /*target*/) { result = 8; },
-        [&](ResourceID /*target*/) { result = 12; },
-        [&](ResourceInstanceID /*target*/) { result = 16; });
-
-  return result;
-}
-
-vector<string> toStrings(ElmentIdVariant value) {
+vector<string> ObjectInstanceID::toStrings() const {
   vector<string> result;
-  match(value, [&](ObjectID target) { result = target.toStrings(); },
-        [&](ObjectInstanceID target) { result = target.toStrings(); },
-        [&](ResourceID target) { result = target.toStrings(); },
-        [&](ResourceInstanceID target) { result = target.toStrings(); });
-
+  for (auto resource : resources_) {
+    if (resource.hasInstances()) {
+      for (auto resource_instance : resource.toStrings()) {
+        result.emplace_back(toString() + "/" + resource_instance);
+      }
+    } else {
+      result.emplace_back(toString() + "/" + resource.toString());
+    }
+  }
   return result;
+}
+
+size_t ObjectInstanceID::size() const {
+  return resources_.size() + sizeof(id_);
+}
+
+bool ObjectInstanceID::hasResources() const { return resources_.empty(); }
+
+bool operator==(const ObjectInstanceID &lhs, const ObjectInstanceID &rhs) {
+  return (lhs.id_ == rhs.id_ && lhs.resources_ == rhs.resources_) ? true
+                                                                  : false;
+}
+
+ObjectID::ObjectID(uint16_t id, uint16_t instance, uint16_t resource)
+    : ObjectID(id, ObjectInstanceID(instance, ResourceID(resource))) {}
+
+ObjectID::ObjectID(uint16_t id, uint16_t instance, uint16_t resource,
+                   uint16_t resource_instance)
+    : ObjectID(id, ObjectInstanceID(instance,
+                                    ResourceID(resource, resource_instance))) {}
+
+ObjectID::ObjectID(uint16_t id, uint16_t instance, uint16_t resource,
+                   vector<uint16_t> resource_instances)
+    : ObjectID(id, ObjectInstanceID(instance,
+                                    ResourceID(resource, resource_instances))) {
+}
+
+ObjectID::ObjectID(uint16_t id, ObjectInstanceID instance)
+    : id_(id), instances_(ObjectInstanceIDs{instance}) {}
+
+ObjectID::ObjectID(uint16_t id, ObjectInstanceIDs instances)
+    : id_(id), instances_(instances) {}
+
+uint16_t ObjectID::getID() const { return id_; }
+
+ObjectID::ObjectInstanceIDs ObjectID::getObjectInstanceIDs() const {
+  return instances_;
+}
+
+string ObjectID::toString() const { return to_string(id_); }
+
+vector<string> ObjectID::toStrings() const {
+  vector<string> result;
+  for (auto instance : instances_) {
+    if (instance.hasResources()) {
+      for (auto resource : instance.toStrings()) {
+        result.emplace_back(toString() + "/" + resource);
+      }
+    } else {
+      result.emplace_back(toString() + "/" + instance.toString());
+    }
+  }
+  return result;
+}
+
+size_t ObjectID::size() const { return instances_.size() + sizeof(id_); }
+
+bool operator==(const ObjectID &lhs, const ObjectID &rhs) {
+  return (lhs.id_ == rhs.id_ && lhs.instances_ == rhs.instances_) ? true
+                                                                  : false;
 }
 } // namespace LwM2M
+
+namespace std {
+
+std::size_t hash<LwM2M::ResourceID>::
+operator()(const LwM2M::ResourceID &resource) const {
+  return resource.getID();
+}
+
+std::size_t hash<LwM2M::ObjectInstanceID>::
+operator()(const LwM2M::ObjectInstanceID &instance) const {
+  return instance.getID();
+}
+
+std::size_t hash<LwM2M::ObjectID>::
+operator()(const LwM2M::ObjectID &object) const {
+  return object.getID();
+}
+
+} // namespace std

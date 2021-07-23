@@ -12,7 +12,7 @@
 
 namespace LwM2M {
 
-using ObjectInstances = std::unordered_map<uint32_t, ObjectInstacePtr>;
+using ObjectInstances = std::unordered_map<ObjectInstanceID, ObjectInstacePtr>;
 
 struct ObjectInstanceDoesNotExist : public std::runtime_error {
   ObjectInstanceDoesNotExist(ObjectInstanceID id)
@@ -27,12 +27,12 @@ class Object {
 
 public:
   Object(RequesterPtr requester, EndpointPtr endpoint,
-         std::vector<uint32_t> instances, ObjectDescriptorPtr descriptor);
+         ObjectID::ObjectInstanceIDs instances, ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();
   ObjectInstances getInstances();
 
-  ResourceVariant getResource(uint32_t instance_id, uint32_t resource_id);
+  ResourceVariant getResource(ObjectInstanceID instance, ResourceID resource);
 };
 
 using ObjectPtr = std::shared_ptr<Object>;

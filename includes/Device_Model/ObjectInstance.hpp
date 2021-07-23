@@ -33,11 +33,12 @@ class ObjectInstance {
 
 public:
   ObjectInstance(
-      RequesterPtr requester, EndpointPtr endpoint, ObjectInstanceID id,
+      RequesterPtr requester, EndpointPtr endpoint, uint16_t parent,
+      ObjectInstanceID id,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
 
-  ResourceVariant getResource(uint32_t id);
+  ResourceVariant getResource(ResourceID resource);
   Resources getResources();
 };
 

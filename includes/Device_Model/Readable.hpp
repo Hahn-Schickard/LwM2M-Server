@@ -18,15 +18,16 @@ class Readable : public Resource<T>, protected ResourceMetaInfo {
   }
 
 public:
-  Readable(RequesterPtr requester, EndpointPtr endpoint,
-           ObjectInstanceID parent, ResourceDescriptorPtr descriptor)
+  Readable(RequesterPtr requester, EndpointPtr endpoint, ObjectID parent,
+           ResourceDescriptorPtr descriptor)
       : Resource<T>(),
         ResourceMetaInfo(requester, endpoint, parent, descriptor) {}
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
   std::future<T> read() override {
-    auto message = std::make_shared<ReadRequest>(endpoint_, id_);
+    auto message = std::make_shared<ReadRequest>(
+        endpoint_, ObjectID(parent_, parent_instance_, descriptor_->id_));
     return asyncDataRequest(message);
   }
 };

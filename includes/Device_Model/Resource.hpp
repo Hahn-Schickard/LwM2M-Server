@@ -23,12 +23,14 @@ struct ResourceMetaInfo {
   RequesterPtr requester_;
   EndpointPtr endpoint_;
   ResourceDescriptorPtr descriptor_;
-  ResourceID id_;
+  uint16_t parent_;
+  uint16_t parent_instance_;
 
   ResourceMetaInfo(RequesterPtr requester, EndpointPtr endpoint,
-                   ObjectInstanceID parent, ResourceDescriptorPtr descriptor)
+                   ObjectID parent, ResourceDescriptorPtr descriptor)
       : requester_(requester), endpoint_(endpoint), descriptor_(descriptor),
-        id_(ResourceID(parent, descriptor_->id_)) {
+        parent_(parent.getID()),
+        parent_instance_(parent.getObjectInstanceIDs()[0].getID()) {
     if (!descriptor_) {
       throw std::invalid_argument("Resource descriptor can not be nullptr");
     }

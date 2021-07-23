@@ -12,10 +12,8 @@
 
 namespace LwM2M {
 
-using ObjectsMap = std::unordered_map<uint32_t, ObjectPtr>;
-using ObjectDescriptorPair =
-    std::pair<ObjectDescriptorPtr, std::vector<uint32_t>>;
-using ObjectDescriptorsMap = std::unordered_map<uint32_t, ObjectDescriptorPair>;
+using ObjectsMap = std::unordered_map<ObjectID, ObjectPtr>;
+using ObjectDescriptorsMap = std::unordered_map<ObjectID, ObjectDescriptorPtr>;
 
 struct ObjectDoesNotExist : public std::runtime_error {
   ObjectDoesNotExist(ObjectID id)
@@ -45,7 +43,7 @@ public:
 
   std::string getDeviceId();
   std::string getName();
-  ObjectPtr getObject(uint32_t id);
+  ObjectPtr getObject(ObjectID id);
   ObjectsMap getObjects();
 
   void updateBinding(BindingType binding);

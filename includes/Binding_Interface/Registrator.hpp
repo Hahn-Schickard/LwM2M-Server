@@ -9,11 +9,14 @@
 #include "Update.hpp"
 
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace LwM2M {
 
 class Registrator : public Requester,
                     public std::enable_shared_from_this<Requester> {
+
   DeviceRegistryPtr registry_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
@@ -21,12 +24,15 @@ class Registrator : public Requester,
    * @brief Assigns correct LwM2M::ObjectDescriptorMap based on given input.
    * Ignores unsupported object ids.
    *
-   * @param requested_object_instances
+   * @param requested_instances
    * @return ObjectDescriptorsMap
    */
-  ObjectDescriptorsMap assignObjectDescriptors(
-      const std::unordered_map<unsigned int, std::vector<unsigned int>>
-          requested_object_instances);
+  ObjectDescriptorsMap
+  assignAvailableDescriptors(ObjectIDs requested_instances);
+
+  ObjectIDs discoverAvailableDescriptors(
+      EndpointPtr endpoint,
+      const RegisterRequest::ObjectInstancesMap object_instances);
 
 public:
   Registrator(DeviceRegistryPtr registry);
