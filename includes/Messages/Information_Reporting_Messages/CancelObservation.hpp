@@ -9,7 +9,8 @@ namespace LwM2M {
  *
  */
 struct CancelObservationRequest : ServerRequest {
-  CancelObservationRequest(EndpointPtr endpoint, ObjectID target_id);
+  CancelObservationRequest(EndpointPtr endpoint,
+                           ObjectID target_id = ObjectID(0));
 
   std::string name() override final;
 };
