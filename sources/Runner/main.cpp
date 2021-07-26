@@ -83,20 +83,23 @@ void asyncRead(DevicePtr device, ObjectID id) {
             }
           }
         } catch (ResponseReturnedAnErrorCode &ex) {
-          string id;
-          for (auto element : element_id.toStrings()) {
-            id += element + " ";
-          }
-          cout << "Read request for Element " << id
+          cout << "Read request for device " << device->getName() << " "
+               << " element " << element_id.toString()
                << " failed! Received an error "
                   "code: "
                << toString(ex.response_code_) << endl;
         } catch (UnsupportedMethod &ex) {
-          cout << "Called an unsupported method: " << ex.what() << endl;
+          cout << "Called an unsupported method for device "
+               << device->getName() << " element " << element_id.toString()
+               << ". Exception is: " << ex.what() << endl;
         } catch (runtime_error &ex) {
-          cout << "Encountered a runtime error: " << ex.what() << endl;
+          cout << "Encountered a runtime error while processing device "
+               << device->getName() << " element " << element_id.toString()
+               << ". Exception is: " << ex.what() << endl;
         } catch (exception &ex) {
-          cerr << "Caught an unhandled exception: " << ex.what() << endl;
+          cerr << "Caught an unhandled exception while processing device "
+               << device->getName() << " element " << element_id.toString()
+               << ". Exception is: " << ex.what() << endl;
         }
       },
       device, id)
