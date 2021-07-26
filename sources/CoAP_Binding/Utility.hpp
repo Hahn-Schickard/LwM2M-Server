@@ -65,10 +65,10 @@ enum class IntegerBase : uint8_t {
 inline intmax_t toSignedInteger(std::string integer, IntegerBase base,
                                 bool ignore_non_numerics = false) {
   const char *c_string = integer.c_str();
-  char **remaining_c_string;
+  char *remaining_c_string = nullptr;
   errno = 0;
   intmax_t value =
-      strtoll(c_string, remaining_c_string, static_cast<uint8_t>(base));
+      strtoll(c_string, &remaining_c_string, static_cast<uint8_t>(base));
   if (errno == ERANGE) {
     if (value == std::numeric_limits<intmax_t>::max() ||
         value > std::numeric_limits<intmax_t>::max()) {
@@ -83,11 +83,16 @@ inline intmax_t toSignedInteger(std::string integer, IntegerBase base,
           integer + " value is too small to fit into largest availabe integer "
                     "type.";
       throw std::underflow_error(error_msg);
+    } else if (ignore_non_numerics && *remaining_c_string) {
+      std::string error_msg = std::string(remaining_c_string) + " from " +
+                              integer + " is not recognizable as a integer";
+      throw std::invalid_argument(error_msg);
+    } else {
+      std::string error_msg =
+          "An unspecified range error occurred while processing string: " +
+          integer + " as an signed integer";
+      throw std::range_error(error_msg);
     }
-  } else if (ignore_non_numerics && *remaining_c_string) {
-    std::string error_msg = std::string(*remaining_c_string) + " from " +
-                            integer + " is not recognizable as a integer";
-    throw std::invalid_argument(error_msg);
   } else {
     return value;
   }
@@ -110,10 +115,10 @@ inline intmax_t toSignedInteger(std::string integer, IntegerBase base,
 inline size_t toUnsignedInteger(std::string integer, IntegerBase base,
                                 bool ignore_non_numerics = false) {
   const char *c_string = integer.c_str();
-  char **remaining_c_string;
+  char *remaining_c_string = nullptr;
   errno = 0;
   size_t value =
-      strtoll(c_string, remaining_c_string, static_cast<uint8_t>(base));
+      strtoll(c_string, &remaining_c_string, static_cast<uint8_t>(base));
   if (errno == ERANGE) {
     if (value == std::numeric_limits<size_t>::max() ||
         value > std::numeric_limits<size_t>::max()) {
@@ -121,11 +126,16 @@ inline size_t toUnsignedInteger(std::string integer, IntegerBase base,
           integer + " value is too large to fit into largest availabe integer "
                     "type.";
       throw std::overflow_error(error_msg);
+    } else if (ignore_non_numerics && *remaining_c_string) {
+      std::string error_msg = std::string(remaining_c_string) + " from " +
+                              integer + " is not recognizable as a integer";
+      throw std::invalid_argument(error_msg);
+    } else {
+      std::string error_msg =
+          "An unspecified range error occurred while processing string: " +
+          integer + " as an unsigned integer";
+      throw std::range_error(error_msg);
     }
-  } else if (ignore_non_numerics && *remaining_c_string) {
-    std::string error_msg = std::string(*remaining_c_string) + " from " +
-                            integer + " is not recognizable as a integer";
-    throw std::invalid_argument(error_msg);
   } else {
     return value;
   }
