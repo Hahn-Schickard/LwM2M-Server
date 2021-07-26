@@ -16,9 +16,9 @@ public:
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
   std::future<bool> execute(std::string arguments) override {
-    auto message = std::make_shared<ExecuteRequest>(
-        endpoint_, ObjectID(parent_, parent_instance_, descriptor_->id_),
-        arguments);
+    auto target = ObjectID(parent_, parent_instance_, descriptor_->id_);
+    auto message =
+        std::make_shared<ExecuteRequest>(endpoint_, target, arguments);
 
     return requester_->requestAction(message);
   }

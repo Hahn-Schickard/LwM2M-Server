@@ -17,9 +17,9 @@ public:
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
   std::future<bool> write(DataVariant data) override {
-    auto message = std::make_shared<WriteRequest>(
-        endpoint_, ObjectID(parent_, parent_instance_, descriptor_->id_),
-        std::make_shared<DataFormat>(data));
+    auto target = ObjectID(parent_, parent_instance_, descriptor_->id_);
+    auto payload = std::make_shared<DataFormat>(data);
+    auto message = std::make_shared<WriteRequest>(endpoint_, target, payload);
 
     return requester_->requestAction(message);
   }

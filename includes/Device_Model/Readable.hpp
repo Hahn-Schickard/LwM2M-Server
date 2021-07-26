@@ -26,8 +26,9 @@ public:
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
   std::future<T> read() override {
-    auto message = std::make_shared<ReadRequest>(
-        endpoint_, ObjectID(parent_, parent_instance_, descriptor_->id_));
+    auto id = descriptor_->id_;
+    auto target = ObjectID(parent_, parent_instance_, id);
+    auto message = std::make_shared<ReadRequest>(endpoint_, target);
     return asyncDataRequest(message);
   }
 };
