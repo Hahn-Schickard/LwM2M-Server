@@ -66,9 +66,7 @@ HeaderPtr makeHeader(CodeType code) {
 
 CoAP::Options makeURI_PATH(ObjectID target) {
   Options options;
-  for (auto uri : target.toStrings()) {
-    options += build(OptionNumber::URI_PATH, uri);
-  }
+  options += build(OptionNumber::URI_PATH, target.toString());
   return options;
 }
 
@@ -116,38 +114,33 @@ CoAP::Options makeOptions(ServerRequestPtr request) {
     switch (request->message_type_) {
     case LwM2M::MessageType::READ: {
       auto acceptable_format_index = ContentFormatEncodings::LwM2M_TLV::index;
-      auto acceptable =
+      options +=
           build(OptionNumber::ACCEPT, to_string(acceptable_format_index));
-      options.emplace(OptionNumber::ACCEPT, move(acceptable));
       break;
     }
     case LwM2M::MessageType::READ_COMPOSITE: {
       auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
-      auto content_format =
+      options +=
           build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
-      options.emplace(OptionNumber::CONTENT_FORMAT, move(content_format));
       break;
     }
     case LwM2M::MessageType::WRITE: {
       auto content_format_index = ContentFormatEncodings::LwM2M_TLV::index;
-      auto content_format =
+      options +=
           build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
-      options.emplace(OptionNumber::CONTENT_FORMAT, move(content_format));
       break;
     }
     case LwM2M::MessageType::WRITE_COMPOSITE: {
       auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
-      auto content_format =
+      options +=
           build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
-      options.emplace(OptionNumber::CONTENT_FORMAT, move(content_format));
       break;
     }
     case LwM2M::MessageType::EXECUTE: {
       // check if there is some arguments first!
       auto content_format_index = ContentFormatEncodings::PlainText::index;
-      auto content_format =
+      options +=
           build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
-      options.emplace(OptionNumber::CONTENT_FORMAT, move(content_format));
       break;
     }
     case LwM2M::MessageType::CREATE: {
@@ -156,6 +149,10 @@ CoAP::Options makeOptions(ServerRequestPtr request) {
           build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
       options.emplace(OptionNumber::CONTENT_FORMAT, move(content_format));
       break;
+    }
+    case LwM2M::MessageType::DISCOVER: {
+      auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
+      options += build(OptionNumber::ACCEPT, content_format_index);
     }
     default: { break; }
     }
@@ -368,10 +365,7 @@ CoAP::MessagePtr encode(ServerRequestPtr request) {
       move(header));
   message->generateToken();
   auto options = makeOptions(request);
-  if (request->message_type_ == LwM2M::MessageType::DISCOVER) {
-    auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
-    options += build(OptionNumber::ACCEPT, content_format_index);
-  }
+
   if (!options.empty()) {
     *message += options;
   }
