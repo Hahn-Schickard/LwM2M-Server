@@ -16,12 +16,28 @@ std::vector<uint16_t> ResourceID::getResourceInstanceIDs() const {
   return resource_instances_;
 }
 
-string ResourceID::toString() const { return to_string(id_); }
+string ResourceID::toString() const {
+  string result;
+  auto instances = toStrings();
+  if (instances.size() > 1) {
+    result = "{";
+    for (auto instance : instances) {
+      result += instance;
+    }
+    result += "}";
+  } else if (!instances.empty()) {
+    result = instances[0];
+  } else {
+    result = to_string(id_);
+  }
+
+  return result;
+}
 
 vector<string> ResourceID::toStrings() const {
   vector<string> result;
   for (auto instance_id : resource_instances_) {
-    result.emplace_back(toString() + "/" + to_string(instance_id));
+    result.emplace_back(to_string(id_) + "/" + to_string(instance_id));
   }
   return result;
 }
@@ -51,17 +67,33 @@ ObjectInstanceID::ResourceIDs ObjectInstanceID::getResourceIDs() const {
   return resources_;
 }
 
-string ObjectInstanceID::toString() const { return to_string(id_); }
+string ObjectInstanceID::toString() const {
+  string result;
+  auto resources = toStrings();
+  if (resources.size() > 1) {
+    result = "{";
+    for (auto instance : resources) {
+      result += instance;
+    }
+    result += "}";
+  } else if (!resources.empty()) {
+    result = resources[0];
+  } else {
+    result = to_string(id_);
+  }
+
+  return result;
+}
 
 vector<string> ObjectInstanceID::toStrings() const {
   vector<string> result;
   for (auto resource : resources_) {
     if (resource.hasInstances()) {
       for (auto resource_instance : resource.toStrings()) {
-        result.emplace_back(toString() + "/" + resource_instance);
+        result.emplace_back(to_string(id_) + "/" + resource_instance);
       }
     } else {
-      result.emplace_back(toString() + "/" + resource.toString());
+      result.emplace_back(to_string(id_) + "/" + resource.toString());
     }
   }
   return result;
@@ -104,17 +136,33 @@ ObjectID::ObjectInstanceIDs ObjectID::getObjectInstanceIDs() const {
   return instances_;
 }
 
-string ObjectID::toString() const { return to_string(id_); }
+string ObjectID::toString() const {
+  string result;
+  auto instances = toStrings();
+  if (instances.size() > 1) {
+    result = "{";
+    for (auto instance : instances) {
+      result += instance;
+    }
+    result += "}";
+  } else if (!instances.empty()) {
+    result = instances[0];
+  } else {
+    result = to_string(id_);
+  }
+
+  return result;
+}
 
 vector<string> ObjectID::toStrings() const {
   vector<string> result;
   for (auto instance : instances_) {
     if (instance.hasResources()) {
       for (auto resource : instance.toStrings()) {
-        result.emplace_back(toString() + "/" + resource);
+        result.emplace_back(to_string(id_) + "/" + resource);
       }
     } else {
-      result.emplace_back(toString() + "/" + instance.toString());
+      result.emplace_back(to_string(id_) + "/" + instance.toString());
     }
   }
   return result;

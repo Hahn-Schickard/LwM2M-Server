@@ -66,7 +66,9 @@ HeaderPtr makeHeader(CodeType code) {
 
 CoAP::Options makeURI_PATH(ObjectID target) {
   Options options;
-  options += build(OptionNumber::URI_PATH, target.toString());
+  for (auto uri_path : target.toStrings()) {
+    options += build(OptionNumber::URI_PATH, uri_path);
+  }
   return options;
 }
 
