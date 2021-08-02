@@ -8,10 +8,9 @@ namespace LwM2M {
 template <typename T>
 class Executable : public Resource<T>, protected ResourceMetaInfo {
 public:
-  Executable(RequesterPtr requester, EndpointPtr endpoint,
-             ObjectInstanceID parent, ResourceDescriptorPtr descriptor)
-      : Resource<T>(),
-        ResourceMetaInfo(requester, endpoint, parent, descriptor) {}
+  Executable(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+             ResourceDescriptorPtr descriptor)
+      : Resource<T>(), ResourceMetaInfo(requester, endpoint, id, descriptor) {}
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 

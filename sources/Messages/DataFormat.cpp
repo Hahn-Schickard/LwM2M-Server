@@ -275,9 +275,9 @@ Payload::Payload(DataFormatPtr data) : Payload(PayloadData(data)) {}
 
 Payload::Payload(TargetContent data) : Payload(PayloadData(data)) {}
 
-Payload::Payload(ElmentIdVariant data) : Payload(PayloadData(data)) {}
+Payload::Payload(ElementID data) : Payload(PayloadData(data)) {}
 
-Payload::Payload(vector<ElmentIdVariant> data) : Payload(PayloadData(data)) {}
+Payload::Payload(ElementIDs data) : Payload(PayloadData(data)) {}
 
 Payload::Payload(vector<TargetContent> data) : Payload(PayloadData(data)) {}
 
@@ -287,7 +287,11 @@ Payload::Payload(PayloadData data, MediaType format)
     : data_(data), media_type_(format) {}
 
 size_t size_of(TargetContent value) {
-  return size_of(value.first) + value.second->size();
+  return value.first.size() + value.second->size();
+}
+
+size_t size_of(TargetAttribute value) {
+  return value.first.size() + value.second->size();
 }
 
 size_t size_of(TargetContentVector value) {
@@ -298,24 +302,25 @@ size_t size_of(TargetContentVector value) {
   return result;
 }
 
-size_t Payload::size() {
+size_t size_of(PayloadData data) {
   size_t result = 0;
-  match(data_, [&](DataFormatPtr value) { result = value->size(); },
+  match(data, [&](DataFormatPtr value) { result = value->size(); },
         [&](TargetContent value) { result = size_of(value); },
         [&](TargetContentVector value) { result = size_of(value); },
-        [&](ElmentIdVariant value) { result = size_of(value); },
-        [&](vector<ElmentIdVariant> value) {
+        [&](ElementID value) { result = value.size(); },
+        [&](ElementIDs value) {
           for (auto elment_id : value) {
-            result += size_of(elment_id);
+            result += elment_id.size();
           }
         },
         [&](vector<TargetAttribute> value) {
           for (auto target_attribute : value) {
-            result += size_of(target_attribute.first) +
-                      target_attribute.second->size();
+            result += size_of(target_attribute);
           }
         });
 
   return result;
 }
+
+size_t Payload::size() { return size_of(data_); }
 } // namespace LwM2M

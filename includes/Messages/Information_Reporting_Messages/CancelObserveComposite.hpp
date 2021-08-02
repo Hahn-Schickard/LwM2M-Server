@@ -9,9 +9,8 @@ namespace LwM2M {
  *
  */
 struct CancelObserveCompositeRequest : ServerRequest {
-  CancelObserveCompositeRequest(
-      EndpointPtr endpoint,
-      std::vector<ElmentIdVariant> target_ids = std::vector<ElmentIdVariant>());
+  CancelObserveCompositeRequest(EndpointPtr endpoint,
+                                ElementIDs target_ids = ElementIDs());
 
   std::string name() override final;
 };

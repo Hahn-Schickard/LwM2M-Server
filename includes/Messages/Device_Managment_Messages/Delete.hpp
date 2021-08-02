@@ -9,8 +9,7 @@ namespace LwM2M {
  *
  */
 struct DeleteRequest : public ServerRequest {
-  DeleteRequest(EndpointPtr endpoint,
-                ObjectInstanceID target_id = ObjectInstanceID(0, 0));
+  DeleteRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
   std::string name() override final;
 };

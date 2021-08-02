@@ -4,7 +4,7 @@ using namespace std;
 
 namespace LwM2M {
 
-ObserveRequest::ObserveRequest(EndpointPtr endpoint, ElmentIdVariant target_id)
+ObserveRequest::ObserveRequest(EndpointPtr endpoint, ElementID target_id)
     : ServerRequest(endpoint, MessageType::OBSERVE,
                     InterfaceType::INFORMATION_REPORTING,
                     make_shared<Payload>(target_id)) {}

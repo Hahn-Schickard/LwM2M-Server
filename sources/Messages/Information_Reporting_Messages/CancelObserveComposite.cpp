@@ -4,7 +4,7 @@ using namespace std;
 
 namespace LwM2M {
 CancelObserveCompositeRequest::CancelObserveCompositeRequest(
-    EndpointPtr endpoint, vector<ElmentIdVariant> target_ids)
+    EndpointPtr endpoint, ElementIDs target_ids)
     : ServerRequest(endpoint, MessageType::CANCEL_OBSERVATION_COMPOSITE,
                     InterfaceType::INFORMATION_REPORTING,
                     make_shared<Payload>(target_ids)) {}

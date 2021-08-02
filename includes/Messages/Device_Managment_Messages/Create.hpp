@@ -14,7 +14,7 @@ namespace LwM2M {
  *
  */
 struct CreateRequest : public ServerRequest {
-  CreateRequest(EndpointPtr endpoint, ObjectID target_id = ObjectID(0),
+  CreateRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0),
                 DataFormatPtr content = DataFormatPtr());
   std::string name() override final;
 };

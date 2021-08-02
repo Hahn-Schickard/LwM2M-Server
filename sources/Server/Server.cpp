@@ -1,12 +1,15 @@
 #include "Server.hpp"
 #include "CoAP_Binding.hpp"
 #include "Config.hpp"
+#include "LoggerRepository.hpp"
 
 using namespace std;
+using namespace HaSLL;
 
 namespace LwM2M {
 
-Server::Server(const string filepath) {
+Server::Server(const string filepath)
+    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   Configuration config;
   if (!filepath.empty()) {
     config = getConfig(filepath);
@@ -16,8 +19,8 @@ Server::Server(const string filepath) {
   for (auto binding : config.bindings_) {
     switch (binding.first) {
     case ServerBindingType::CoAP: {
-      auto coap_binding = make_unique<CoAP_Binding>(registry_);
-      bindings_.emplace_back(move(coap_binding), "CoAP Binding");
+      auto coap_binding = make_unique<CoAP_Binding>(registry_, binding.second);
+      bindings_.emplace_back(move(coap_binding));
       break;
     }
     default: { break; }
@@ -25,16 +28,26 @@ Server::Server(const string filepath) {
   }
 }
 
+Server::~Server() {
+  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+}
+
 void Server::start() {
-  for (auto &binding : bindings_) {
-    binding.startTask();
+  logger_->log(SeverityLevel::TRACE, "Starting bindings.");
+  for (auto binding : bindings_) {
+    binding->start();
   }
+  logger_->log(SeverityLevel::TRACE,
+               "All registered bindings have been started.");
 }
 
 void Server::stop() {
-  for (auto &binding : bindings_) {
-    binding.stopTask();
+  logger_->log(SeverityLevel::TRACE, "Stopping bindings.");
+  for (auto binding : bindings_) {
+    binding->stop();
   }
+  logger_->log(SeverityLevel::TRACE,
+               "All registered bindings have been stopped.");
 }
 
 EventSourcePtr Server::getEventSource() { return registry_; }

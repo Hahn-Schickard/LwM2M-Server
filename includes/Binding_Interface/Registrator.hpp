@@ -5,30 +5,37 @@
 #include "DeviceRegistry.hpp"
 #include "Logger.hpp"
 #include "Register.hpp"
-#include "RequestsManagerInterface.hpp"
+#include "Requester.hpp"
 #include "Update.hpp"
+
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace LwM2M {
 
-class Registrator {
+class Registrator : public Requester,
+                    public std::enable_shared_from_this<Requester> {
+
   DeviceRegistryPtr registry_;
-  RequestsManagerInterfacePtr requester_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
   /**
    * @brief Assigns correct LwM2M::ObjectDescriptorMap based on given input.
    * Ignores unsupported object ids.
    *
-   * @param requested_object_instances
+   * @param requested_instances
    * @return ObjectDescriptorsMap
    */
-  ObjectDescriptorsMap assignObjectDescriptors(
-      const std::unordered_map<unsigned int, std::vector<unsigned int>>
-          requested_object_instances);
+  ObjectDescriptorsMap
+  assignAvailableDescriptors(ElementIDs requested_instances);
+
+  ElementIDs discoverAvailableDescriptors(
+      EndpointPtr endpoint,
+      const RegisterRequest::ObjectInstancesMap object_instances);
 
 public:
-  Registrator(DeviceRegistryPtr registry,
-              RequestsManagerInterfacePtr requester);
+  Registrator(DeviceRegistryPtr registry);
 
   ~Registrator();
 

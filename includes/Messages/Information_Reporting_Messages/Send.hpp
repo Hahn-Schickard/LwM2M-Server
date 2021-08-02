@@ -30,7 +30,7 @@ using SendResponsePtr = std::shared_ptr<SendResponse>;
  */
 struct SendRequest : ClientRequest {
   SendRequest(EndpointPtr endpoint,
-              TargetContent content = TargetContent(ObjectID(0),
+              TargetContent content = TargetContent(ElementID(0),
                                                     DataFormatPtr()));
 
   std::string name() override final;

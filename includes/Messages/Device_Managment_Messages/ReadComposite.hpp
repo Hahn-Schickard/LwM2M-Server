@@ -17,12 +17,10 @@ struct ReadCompositeRequest : ServerRequest {
    * @brief Construct a new Read Composite Request object
    *
    * @param endpoint
-   * @param uri_targets - a list of Object/Object Instance/Resource/Resource
+   * @param targets - a list of Object/Object Instance/Resource/Resource
    * Instance URIs that will be read
    */
-  ReadCompositeRequest(
-      EndpointPtr endpoint,
-      std::vector<ElmentIdVariant> targets = std::vector<ElmentIdVariant>());
+  ReadCompositeRequest(EndpointPtr endpoint, ElementIDs targets = ElementIDs());
 
   std::string name() override final;
 };

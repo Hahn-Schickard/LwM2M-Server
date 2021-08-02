@@ -15,7 +15,7 @@ namespace LwM2M {
  * data formats
  */
 struct WriteRequest : ServerRequest {
-  WriteRequest(EndpointPtr endpoint, ElmentIdVariant target_id = ObjectID(0),
+  WriteRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0),
                DataFormatPtr content = DataFormatPtr());
 
   std::string name() override final;

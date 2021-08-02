@@ -55,9 +55,11 @@ using RegisterResponsePtr = std::shared_ptr<RegisterResponse>;
  *
  */
 struct RegisterRequest : ClientRequest {
+  using ObjectInstancesMap =
+      std::unordered_map<unsigned int, std::vector<unsigned int>>;
+
   const size_t life_time_;
-  const std::unordered_map<unsigned int, std::vector<unsigned int>>
-      object_instances_map_;
+  const ObjectInstancesMap object_instances_map_;
   const std::optional<std::string> endpoint_name_;
   const LwM2M_Version version_;
   const std::optional<BindingType> binding_;
@@ -66,9 +68,7 @@ struct RegisterRequest : ClientRequest {
 
   RegisterRequest(
       EndpointPtr endpoint, size_t life_time = 0,
-      std::unordered_map<unsigned int, std::vector<unsigned int>>
-          object_instances_map =
-              std::unordered_map<unsigned int, std::vector<unsigned int>>(),
+      ObjectInstancesMap object_instances_map = ObjectInstancesMap(),
       std::optional<std::string> endpoint_name = std::nullopt,
       LwM2M_Version version = LwM2M_Version::V1_0,
       std::optional<BindingType> binding = std::nullopt,

@@ -68,32 +68,34 @@ string stringifyResourceValue(ResourceVariant variant) {
   return string("Resource " + name + " value is: " + response);
 }
 
-void asyncRead(DevicePtr device, ResourceID id) {
+void asyncRead(DevicePtr device, ElementID id) {
   thread(
-      [](DevicePtr device, ResourceID element_id) {
+      [](DevicePtr device, ElementID element_id) {
         try {
-          auto object =
-              device->getObject(element_id.object_instance_.object_.id_);
-          auto resource = object->getResource(element_id.object_instance_.id_,
-                                              element_id.id_);
-          auto value = stringifyResourceValue(move(resource));
+          auto object = device->getObject(element_id);
+          auto resource_value = object->getResource(element_id);
+          auto value = stringifyResourceValue(move(resource_value));
           cout << "Device: " << device->getDeviceId() << " "
                << object->getDescriptor()->name_ << " " << value << endl;
+
         } catch (ResponseReturnedAnErrorCode &ex) {
-          string id;
-          for (auto element : element_id.toStrings()) {
-            id += element + " ";
-          }
-          cout << "Read request for Element " << id
+          cout << "Read request for device " << device->getName() << " "
+               << " element " << element_id.toString()
                << " failed! Received an error "
                   "code: "
                << toString(ex.response_code_) << endl;
         } catch (UnsupportedMethod &ex) {
-          cout << "Called an unsupported method: " << ex.what() << endl;
+          cout << "Called an unsupported method for device "
+               << device->getName() << " element " << element_id.toString()
+               << ". Exception is: " << ex.what() << endl;
         } catch (runtime_error &ex) {
-          cout << "Encountered a runtime error: " << ex.what() << endl;
+          cout << "Encountered a runtime error while processing device "
+               << device->getName() << " element " << element_id.toString()
+               << ". Exception is: " << ex.what() << endl;
         } catch (exception &ex) {
-          cerr << "Caught an unhandled exception: " << ex.what() << endl;
+          cerr << "Caught an unhandled exception while processing device "
+               << device->getName() << " element " << element_id.toString()
+               << ". Exception is: " << ex.what() << endl;
         }
       },
       device, id)
@@ -112,16 +114,16 @@ public:
       cout << "A new device with id: " << event->identifier_
            << " has been registered!" << endl;
       auto device = event->device_;
-      asyncRead(device, ResourceID(3, 0, 4)); // try to read a not readable
-      asyncRead(device, ResourceID(3, 0, 8)); // try to read optional resource
+      asyncRead(device, ElementID(3, 0, 4)); // try to read a not readable
+      asyncRead(device, ElementID(3, 0, 8)); // try to read optional resource
       asyncRead(device,
-                ResourceID(3, 0, 11)); // try to read multiple instance resource
-      asyncRead(device, ResourceID(3, 0, 16));
-      asyncRead(device, ResourceID(6, 0, 0)); // try to read Latitude as float
-      asyncRead(device, ResourceID(6, 0, 1)); // try to read Longitude as float
-      asyncRead(device, ResourceID(6, 0, 5)); // try to read Timestamp
+                ElementID(3, 0, 11)); // try to read multiple instance resource
+      asyncRead(device, ElementID(3, 0, 16));
+      asyncRead(device, ElementID(6, 0, 0)); // try to read Latitude as float
+      asyncRead(device, ElementID(6, 0, 1)); // try to read Longitude as float
+      asyncRead(device, ElementID(6, 0, 5)); // try to read Timestamp
       asyncRead(device,
-                ResourceID(3303, 0, 5700)); // try to read temperature value
+                ElementID(3303, 0, 5700)); // try to read temperature value
 
       break;
     }
@@ -151,8 +153,8 @@ int main(int argc, const char *argv[]) {
     LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
 
     auto server = make_unique<Server>("config/serverConfig.json");
-    auto registration_listener =
-        make_unique<RegistrationListener>(server->getEventSource());
+    auto source = server->getEventSource();
+    auto registration_listener = make_unique<RegistrationListener>(source);
     try {
       server->start();
       logger->log(SeverityLevel::INFO, "Started LwM2M Server!");

@@ -18,10 +18,9 @@ class ReadAndWritable : public Resource<T>, protected ResourceMetaInfo {
   }
 
 public:
-  ReadAndWritable(RequesterPtr requester, EndpointPtr endpoint,
-                  ObjectInstanceID parent, ResourceDescriptorPtr descriptor)
-      : Resource<T>(),
-        ResourceMetaInfo(requester, endpoint, parent, descriptor) {}
+  ReadAndWritable(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+                  ResourceDescriptorPtr descriptor)
+      : Resource<T>(), ResourceMetaInfo(requester, endpoint, id, descriptor) {}
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
@@ -31,8 +30,8 @@ public:
   }
 
   std::future<bool> write(DataVariant data) override {
-    auto message = std::make_shared<WriteRequest>(
-        endpoint_, id_, std::make_shared<DataFormat>(data));
+    auto payload = std::make_shared<DataFormat>(data);
+    auto message = std::make_shared<WriteRequest>(endpoint_, id_, payload);
 
     return requester_->requestAction(message);
   }

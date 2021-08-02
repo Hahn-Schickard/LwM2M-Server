@@ -26,7 +26,7 @@ string RegisterResponse::name() { return "RegisterResponse"; }
 
 RegisterRequest::RegisterRequest(
     EndpointPtr endpoint, size_t life_time,
-    unordered_map<unsigned int, vector<unsigned int>> object_instances_map,
+    RegisterRequest::ObjectInstancesMap object_instances_map,
     optional<string> endpoint_name, LwM2M_Version version,
     optional<BindingType> binding, optional<bool> queue_mode,
     optional<string> sms_number)

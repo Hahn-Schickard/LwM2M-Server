@@ -33,11 +33,20 @@ Device::Device(RequesterPtr requester, EndpointPtr endpoint,
 
 void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
   for (auto object_descriptor_pair : object_descriptors_map) {
-    auto object_instance_pair = object_descriptor_pair.second;
-    auto object =
-        make_shared<Object>(requester_, endpoint_, object_instance_pair.second,
-                            object_instance_pair.first);
-    object_instances_.emplace(object_descriptor_pair.first, move(object));
+    auto descriptor = object_descriptor_pair.second;
+    auto object_id = object_descriptor_pair.first;
+
+    RequiredObjectInstances object_instances;
+    auto range = object_descriptors_map.equal_range(object_id);
+    for (auto instance = range.first; instance != range.second; ++instance) {
+      object_instances.emplace(instance->first);
+    }
+
+    auto object = make_shared<Object>(requester_, endpoint_, object_instances,
+                                      descriptor);
+
+    object_instances_.emplace(object_descriptor_pair.first.getObjectID(),
+                              move(object));
   }
 }
 
@@ -45,12 +54,12 @@ string Device::getDeviceId() { return device_id_; }
 
 string Device::getName() { return name_; }
 
-ObjectPtr Device::getObject(uint32_t id) {
-  auto it = object_instances_.find(id);
+ObjectPtr Device::getObject(ElementID id) {
+  auto it = object_instances_.find(id.getObjectID());
   if (it != object_instances_.end()) {
     return it->second;
   } else {
-    throw ObjectDoesNotExist(ObjectID(id));
+    throw ObjectDoesNotExist(id);
   }
 }
 

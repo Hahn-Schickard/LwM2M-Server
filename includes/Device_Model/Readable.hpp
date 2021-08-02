@@ -18,10 +18,9 @@ class Readable : public Resource<T>, protected ResourceMetaInfo {
   }
 
 public:
-  Readable(RequesterPtr requester, EndpointPtr endpoint,
-           ObjectInstanceID parent, ResourceDescriptorPtr descriptor)
-      : Resource<T>(),
-        ResourceMetaInfo(requester, endpoint, parent, descriptor) {}
+  Readable(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+           ResourceDescriptorPtr descriptor)
+      : Resource<T>(), ResourceMetaInfo(requester, endpoint, id, descriptor) {}
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
