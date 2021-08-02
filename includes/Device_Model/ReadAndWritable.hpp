@@ -18,23 +18,20 @@ class ReadAndWritable : public Resource<T>, protected ResourceMetaInfo {
   }
 
 public:
-  ReadAndWritable(RequesterPtr requester, EndpointPtr endpoint, ObjectID parent,
+  ReadAndWritable(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
                   ResourceDescriptorPtr descriptor)
-      : Resource<T>(),
-        ResourceMetaInfo(requester, endpoint, parent, descriptor) {}
+      : Resource<T>(), ResourceMetaInfo(requester, endpoint, id, descriptor) {}
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
   std::future<T> read() override {
-    auto target = ObjectID(parent_, parent_instance_, descriptor_->id_);
-    auto message = std::make_shared<ReadRequest>(endpoint_, target);
+    auto message = std::make_shared<ReadRequest>(endpoint_, id_);
     return asyncDataRequest(message);
   }
 
   std::future<bool> write(DataVariant data) override {
-    auto target = ObjectID(parent_, parent_instance_, descriptor_->id_);
     auto payload = std::make_shared<DataFormat>(data);
-    auto message = std::make_shared<WriteRequest>(endpoint_, target, payload);
+    auto message = std::make_shared<WriteRequest>(endpoint_, id_, payload);
 
     return requester_->requestAction(message);
   }

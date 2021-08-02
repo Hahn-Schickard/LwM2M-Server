@@ -17,19 +17,16 @@ vector<DiscoverRequestPtr> makeDiscoverRequests(
     const RegisterRequest::ObjectInstancesMap object_instances) {
   vector<DiscoverRequestPtr> discover_requests;
   for (auto object_instance_pair : object_instances) {
-    for (auto instance_id : object_instance_pair.second) {
-      auto object_instance =
-          ObjectID(object_instance_pair.first, ObjectInstanceID(instance_id));
-      auto discover = make_shared<DiscoverRequest>(endpoint, object_instance);
-      discover_requests.emplace_back(move(discover));
-    }
+    auto object_instance = ElementID(object_instance_pair.first);
+    auto discover = make_shared<DiscoverRequest>(endpoint, object_instance);
+    discover_requests.emplace_back(move(discover));
   }
   return move(discover_requests);
 }
 
-ObjectIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
-  if (holds_alternative<ObjectIDs>(discover_response->payload_->data_)) {
-    return std::get<ObjectIDs>(discover_response->payload_->data_);
+ElementIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
+  if (holds_alternative<ElementIDs>(discover_response->payload_->data_)) {
+    return std::get<ElementIDs>(discover_response->payload_->data_);
   } else {
     string error_msg =
         "Request does not contain a vector of ObjectID instances";
@@ -50,29 +47,29 @@ Registrator::~Registrator() {
 }
 
 ObjectDescriptorsMap
-Registrator::assignAvailableDescriptors(ObjectIDs requested_instances) {
+Registrator::assignAvailableDescriptors(ElementIDs requested_instances) {
   logger_->log(SeverityLevel::TRACE, "Assigning Available Descriptors");
   auto supported_object_descriptors = registry_->getSupportedDescriptors();
   ObjectDescriptorsMap result;
   for (auto object : requested_instances) {
-    auto descriptor = supported_object_descriptors->find(object.getID());
+    auto descriptor = supported_object_descriptors->find(object.getObjectID());
     if (descriptor != supported_object_descriptors->end()) {
       result.emplace(object, descriptor->second);
     } else {
       logger_->log(SeverityLevel::WARNNING,
                    "Object id {} is not supported by the server.",
-                   object.getID());
+                   object.getObjectID());
     }
   }
   return result;
 }
 
-ObjectIDs Registrator::discoverAvailableDescriptors(
+ElementIDs Registrator::discoverAvailableDescriptors(
     EndpointPtr endpoint,
     const RegisterRequest::ObjectInstancesMap object_instances) {
   auto requests = makeDiscoverRequests(endpoint, object_instances);
 
-  ObjectIDs requested_instances;
+  ElementIDs requested_instances;
   for (auto it = requests.begin(); it != requests.end();) {
     try {
       auto response_future = this->request(*it);

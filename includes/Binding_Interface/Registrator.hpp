@@ -28,9 +28,9 @@ class Registrator : public Requester,
    * @return ObjectDescriptorsMap
    */
   ObjectDescriptorsMap
-  assignAvailableDescriptors(ObjectIDs requested_instances);
+  assignAvailableDescriptors(ElementIDs requested_instances);
 
-  ObjectIDs discoverAvailableDescriptors(
+  ElementIDs discoverAvailableDescriptors(
       EndpointPtr endpoint,
       const RegisterRequest::ObjectInstancesMap object_instances);
 

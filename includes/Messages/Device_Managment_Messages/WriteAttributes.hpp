@@ -16,7 +16,7 @@ struct WriteAttributesRequest : ServerRequest {
   WriteAttributesRequest(EndpointPtr endpoint);
   WriteAttributesRequest(EndpointPtr endpoint,
                          std::vector<TargetAttribute> content);
-  WriteAttributesRequest(EndpointPtr endpoint, ObjectIDs targets,
+  WriteAttributesRequest(EndpointPtr endpoint, ElementIDs targets,
                          NotifyAttributePtr attribute);
 
   std::string name() override final;

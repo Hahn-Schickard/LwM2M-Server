@@ -20,7 +20,7 @@ struct ReadCompositeRequest : ServerRequest {
    * @param targets - a list of Object/Object Instance/Resource/Resource
    * Instance URIs that will be read
    */
-  ReadCompositeRequest(EndpointPtr endpoint, ObjectIDs targets = ObjectIDs());
+  ReadCompositeRequest(EndpointPtr endpoint, ElementIDs targets = ElementIDs());
 
   std::string name() override final;
 };

@@ -21,24 +21,23 @@ using ResourceVariant =
 using Resources = std::unordered_map<uint32_t, ResourceVariant>;
 
 struct ResourceDoesNotExist : public std::runtime_error {
-  ResourceDoesNotExist(ResourceID id)
+  ResourceDoesNotExist(ElementID id)
       : runtime_error("Resource " + id.toString() + " does not exist.") {}
 };
 
 class ObjectInstance {
   RequesterPtr requester_;
   EndpointPtr endpoint_;
-  ObjectInstanceID id_;
+  ElementID id_;
   Resources resources_;
 
 public:
   ObjectInstance(
-      RequesterPtr requester, EndpointPtr endpoint, uint16_t parent,
-      ObjectInstanceID id,
+      RequesterPtr requester, EndpointPtr endpoint, ElementID id,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
 
-  ResourceVariant getResource(ResourceID resource);
+  ResourceVariant getResource(ElementID id);
   Resources getResources();
 };
 

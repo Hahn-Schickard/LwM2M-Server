@@ -264,7 +264,7 @@ struct GenerateTestName {
 
 template <typename T>
 ResourceVariant makeTestResource(TestRequesterPtr requester,
-                                 EndpointPtr endpoint, ObjectID parent,
+                                 EndpointPtr endpoint, ElementID parent,
                                  ResourceDescriptorPtr descriptor) {
   switch (descriptor->operations_) {
   case OperationsType::READ: {
@@ -298,39 +298,39 @@ ResourceTestParameter makeTestParameter(ResourceDescriptorPtr descriptor,
   ResourceVariant resource;
   switch (descriptor->data_type_) {
   case DataType::BOOLEAN: {
-    resource = makeTestResource<bool>(requester, endpoint, ObjectID(0, 0, 0),
+    resource = makeTestResource<bool>(requester, endpoint, ElementID(0, 0, 0),
                                       descriptor);
     break;
   }
   case DataType::SIGNED_INTEGER: {
-    resource = makeTestResource<int64_t>(requester, endpoint, ObjectID(0, 0, 0),
-                                         descriptor);
+    resource = makeTestResource<int64_t>(requester, endpoint,
+                                         ElementID(0, 0, 0), descriptor);
     break;
   }
   case DataType::UNSIGNED_INTEGER:
   case DataType::TIME: {
     resource = makeTestResource<uint64_t>(requester, endpoint,
-                                          ObjectID(0, 0, 0), descriptor);
+                                          ElementID(0, 0, 0), descriptor);
     break;
   }
   case DataType::FLOAT: {
-    resource = makeTestResource<double>(requester, endpoint, ObjectID(0, 0, 0),
+    resource = makeTestResource<double>(requester, endpoint, ElementID(0, 0, 0),
                                         descriptor);
     break;
   }
   case DataType::STRING: {
-    resource = makeTestResource<string>(requester, endpoint, ObjectID(0, 0, 0),
+    resource = makeTestResource<string>(requester, endpoint, ElementID(0, 0, 0),
                                         descriptor);
     break;
   }
   case DataType::OPAQUE: {
-    resource = makeTestResource<vector<uint8_t>>(requester, endpoint,
-                                                 ObjectID(0, 0, 0), descriptor);
+    resource = makeTestResource<vector<uint8_t>>(
+        requester, endpoint, ElementID(0, 0, 0), descriptor);
     break;
   }
   case DataType::OBJECT_LINK: {
     resource = makeTestResource<ObjectLink>(requester, endpoint,
-                                            ObjectID(0, 0, 0), descriptor);
+                                            ElementID(0, 0, 0), descriptor);
     break;
   }
   default: {

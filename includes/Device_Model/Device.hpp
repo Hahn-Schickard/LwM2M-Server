@@ -10,14 +10,32 @@
 #include <string>
 #include <unordered_map>
 
+struct ObjectIDHasher {
+  std::size_t operator()(const LwM2M::ElementID &id) const {
+    using std::hash;
+    using std::size_t;
+
+    return hash<uint16_t>{}(id.getObjectID());
+  }
+};
+
+struct ObjectIDComparator {
+  bool operator()(const LwM2M::ElementID &lhs,
+                  const LwM2M::ElementID &rhs) const {
+    return (lhs.getObjectID() == rhs.getObjectID());
+  }
+};
+
 namespace LwM2M {
 
-using ObjectsMap = std::unordered_map<ObjectID, ObjectPtr>;
-using ObjectDescriptorsMap = std::unordered_map<ObjectID, ObjectDescriptorPtr>;
+using ObjectsMap = std::unordered_map<uint16_t, ObjectPtr>;
+using ObjectDescriptorsMap =
+    std::unordered_multimap<ElementID, ObjectDescriptorPtr, ObjectIDHasher,
+                            ObjectIDComparator>;
 
 struct ObjectDoesNotExist : public std::runtime_error {
-  ObjectDoesNotExist(ObjectID id)
-      : runtime_error("Object " + id.toString() + "does not exits") {}
+  ObjectDoesNotExist(ElementID id)
+      : runtime_error("Object " + id.toString() + " does not exits") {}
 };
 
 class Device {
@@ -43,7 +61,7 @@ public:
 
   std::string getDeviceId();
   std::string getName();
-  ObjectPtr getObject(ObjectID id);
+  ObjectPtr getObject(ElementID id);
   ObjectsMap getObjects();
 
   void updateBinding(BindingType binding);

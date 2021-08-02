@@ -10,7 +10,7 @@ namespace LwM2M {
  */
 struct CancelObserveCompositeRequest : ServerRequest {
   CancelObserveCompositeRequest(EndpointPtr endpoint,
-                                ObjectIDs target_ids = ObjectIDs());
+                                ElementIDs target_ids = ElementIDs());
 
   std::string name() override final;
 };

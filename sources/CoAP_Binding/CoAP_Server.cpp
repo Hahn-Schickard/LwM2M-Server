@@ -64,9 +64,10 @@ HeaderPtr makeHeader(CodeType code) {
                              CoAP::TokenSize::_8, code);
 }
 
-CoAP::Options makeURI_PATH(ObjectID target) {
+CoAP::Options makeURI_PATH(ElementID target) {
   Options options;
-  for (auto uri_path : target.toStrings()) {
+  auto targets = target.toStrings();
+  for (auto uri_path : targets) {
     options += build(OptionNumber::URI_PATH, uri_path);
   }
   return options;
@@ -86,11 +87,11 @@ CoAP::Options toOptions(LwM2M::PayloadPtr payload) {
         auto uri_path = makeURI_PATH(target_content.first);
         options.insert(uri_path.begin(), uri_path.end());
       }
-    } else if (holds_alternative<ObjectID>(data)) {
-      auto target = get<ObjectID>(data);
+    } else if (holds_alternative<ElementID>(data)) {
+      auto target = get<ElementID>(data);
       options = makeURI_PATH(target);
-    } else if (holds_alternative<ObjectIDs>(data)) {
-      auto targets = get<ObjectIDs>(data);
+    } else if (holds_alternative<ElementIDs>(data)) {
+      auto targets = get<ElementIDs>(data);
       for (auto target : targets) {
         auto uri_path = makeURI_PATH(target);
         options.insert(uri_path.begin(), uri_path.end());
@@ -237,7 +238,7 @@ LwM2M::PayloadPtr toPayload(PlainText content) {
  * @return LwM2M::PayloadPtr
  */
 LwM2M::PayloadPtr toPayload(CoRE_Links content) {
-  ObjectIDs result;
+  ElementIDs result;
   for (auto link : content.getLinks()) {
     auto targets = link.splitTarget('/');
     // focus on resource targets
@@ -245,8 +246,7 @@ LwM2M::PayloadPtr toPayload(CoRE_Links content) {
       auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
       auto instance_id = toUnsignedInteger(targets[1], IntegerBase::BASE_10);
       auto resource_id = toUnsignedInteger(targets[2], IntegerBase::BASE_10);
-      result.emplace_back(ObjectID(
-          object_id, ObjectInstanceID(instance_id, ResourceID(resource_id))));
+      result.emplace_back(ElementID(object_id, instance_id, resource_id));
     }
   }
   if (!result.empty()) {

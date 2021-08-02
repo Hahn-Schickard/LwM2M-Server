@@ -23,19 +23,17 @@ struct ResourceMetaInfo {
   RequesterPtr requester_;
   EndpointPtr endpoint_;
   ResourceDescriptorPtr descriptor_;
-  uint16_t parent_;
-  uint16_t parent_instance_;
+  ElementID id_;
 
-  ResourceMetaInfo(RequesterPtr requester, EndpointPtr endpoint,
-                   ObjectID parent, ResourceDescriptorPtr descriptor)
+  ResourceMetaInfo(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+                   ResourceDescriptorPtr descriptor)
       : requester_(requester), endpoint_(endpoint), descriptor_(descriptor),
-        parent_(parent.getID()),
-        parent_instance_(parent.getObjectInstanceIDs()[0].getID()) {
+        id_(id) {
     if (!descriptor_) {
       throw std::invalid_argument("Resource descriptor can not be nullptr");
     }
   }
-};
+}; // namespace LwM2M
 
 template <typename T> class Resource {
 public:

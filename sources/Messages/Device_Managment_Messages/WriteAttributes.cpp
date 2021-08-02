@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 vector<TargetAttribute>
-makeTargetAtributesVector(ObjectIDs targets, NotifyAttributePtr attribute) {
+makeTargetAtributesVector(ElementIDs targets, NotifyAttributePtr attribute) {
   vector<TargetAttribute> result;
   for (auto target : targets) {
     auto target_attribute = make_pair(target, attribute);
@@ -25,7 +25,7 @@ WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
                     make_shared<Payload>(content)) {}
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
-                                               ObjectIDs targets,
+                                               ElementIDs targets,
                                                NotifyAttributePtr attribute)
     : WriteAttributesRequest(endpoint,
                              makeTargetAtributesVector(targets, attribute)) {}

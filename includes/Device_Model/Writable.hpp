@@ -9,17 +9,15 @@ namespace LwM2M {
 template <typename T>
 class Writable : public Resource<T>, protected ResourceMetaInfo {
 public:
-  Writable(RequesterPtr requester, EndpointPtr endpoint, ObjectID parent,
+  Writable(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
            ResourceDescriptorPtr descriptor)
-      : Resource<T>(),
-        ResourceMetaInfo(requester, endpoint, parent, descriptor) {}
+      : Resource<T>(), ResourceMetaInfo(requester, endpoint, id, descriptor) {}
 
   ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
 
   std::future<bool> write(DataVariant data) override {
-    auto target = ObjectID(parent_, parent_instance_, descriptor_->id_);
     auto payload = std::make_shared<DataFormat>(data);
-    auto message = std::make_shared<WriteRequest>(endpoint_, target, payload);
+    auto message = std::make_shared<WriteRequest>(endpoint_, id_, payload);
 
     return requester_->requestAction(message);
   }

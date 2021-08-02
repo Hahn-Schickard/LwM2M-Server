@@ -12,7 +12,7 @@ namespace LwM2M {
  */
 struct ObserveCompositeRequest : ServerRequest {
   ObserveCompositeRequest(EndpointPtr endpoint,
-                          ObjectIDs target_ids = ObjectIDs());
+                          ElementIDs target_ids = ElementIDs());
 
   std::string name() override final;
 };

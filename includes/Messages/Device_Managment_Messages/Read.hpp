@@ -11,7 +11,7 @@ namespace LwM2M {
  *
  */
 struct ReadRequest : ServerRequest {
-  ReadRequest(EndpointPtr endpoint, ObjectID target_id = ObjectID(0));
+  ReadRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
   std::string name() override final;
 };

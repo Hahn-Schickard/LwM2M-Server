@@ -275,9 +275,9 @@ Payload::Payload(DataFormatPtr data) : Payload(PayloadData(data)) {}
 
 Payload::Payload(TargetContent data) : Payload(PayloadData(data)) {}
 
-Payload::Payload(ObjectID data) : Payload(PayloadData(data)) {}
+Payload::Payload(ElementID data) : Payload(PayloadData(data)) {}
 
-Payload::Payload(ObjectIDs data) : Payload(PayloadData(data)) {}
+Payload::Payload(ElementIDs data) : Payload(PayloadData(data)) {}
 
 Payload::Payload(vector<TargetContent> data) : Payload(PayloadData(data)) {}
 
@@ -307,8 +307,8 @@ size_t size_of(PayloadData data) {
   match(data, [&](DataFormatPtr value) { result = value->size(); },
         [&](TargetContent value) { result = size_of(value); },
         [&](TargetContentVector value) { result = size_of(value); },
-        [&](ObjectID value) { result = value.size(); },
-        [&](ObjectIDs value) {
+        [&](ElementID value) { result = value.size(); },
+        [&](ElementIDs value) {
           for (auto elment_id : value) {
             result += elment_id.size();
           }

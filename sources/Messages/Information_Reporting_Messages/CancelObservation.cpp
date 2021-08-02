@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 CancelObservationRequest::CancelObservationRequest(EndpointPtr endpoint,
-                                                   ObjectID target_id)
+                                                   ElementID target_id)
     : ServerRequest(endpoint, MessageType::CANCEL_OBSERVATION,
                     InterfaceType::INFORMATION_REPORTING,
                     make_shared<Payload>(target_id)) {}

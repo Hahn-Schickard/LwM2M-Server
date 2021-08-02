@@ -7,11 +7,11 @@ namespace LwM2M {
 using ResourceDescriptorMap = unordered_map<uint32_t, ResourceDescriptorPtr>;
 
 ResourceDescriptorMap
-assignResourceDescriptors(ObjectInstanceID::ResourceIDs requrired,
+assignResourceDescriptors(ElementIDs requrired,
                           ResourceDescriptorMap supported) {
   ResourceDescriptorMap result;
   for (auto resource : requrired) {
-    auto it = supported.find(resource.getID());
+    auto it = supported.find(resource.getResourceID());
     if (it != supported.end()) {
       result.emplace(*it);
     }
@@ -20,28 +20,34 @@ assignResourceDescriptors(ObjectInstanceID::ResourceIDs requrired,
 }
 
 Object::Object(RequesterPtr requester, EndpointPtr endpoint,
-               ObjectID::ObjectInstanceIDs instances,
+               RequiredObjectInstances instances,
                ObjectDescriptorPtr descriptor)
     : requester_(requester), endpoint_(endpoint), descriptor_(descriptor) {
   for (auto instance : instances) {
-    auto resources = instance.getResourceIDs();
+    ElementIDs resources;
+    auto range = instances.equal_range(instance);
+    for (auto resource = range.first; resource != range.second; ++resource) {
+      resources.emplace_back(*resource);
+    }
+
     auto available_descriptors =
         assignResourceDescriptors(resources, descriptor_->resources_);
     instances_.emplace(
-        instance.getID(),
-        make_shared<ObjectInstance>(requester_, endpoint, descriptor->id_,
-                                    instance.getID(), available_descriptors));
+        instance.getObjectInstanceID(),
+        make_shared<ObjectInstance>(
+            requester_, endpoint,
+            ElementID(instance.getObjectID(), instance.getObjectInstanceID()),
+            available_descriptors));
   }
 }
 
-ResourceVariant Object::getResource(ObjectInstanceID instance,
-                                    ResourceID resource) {
-  auto it = instances_.find(instance.getID());
+ResourceVariant Object::getResource(ElementID id) {
+  auto it = instances_.find(id.getObjectInstanceID());
   if (it != instances_.end()) {
     auto object_instance = it->second;
-    return object_instance->getResource(resource.getID());
+    return object_instance->getResource(id);
   } else {
-    throw ObjectInstanceDoesNotExist(instance);
+    throw ObjectInstanceDoesNotExist(id);
   }
 }
 

@@ -4,7 +4,7 @@ using namespace std;
 
 namespace LwM2M {
 
-WriteRequest::WriteRequest(EndpointPtr endpoint, ObjectID target_id,
+WriteRequest::WriteRequest(EndpointPtr endpoint, ElementID target_id,
                            DataFormatPtr content)
     : ServerRequest(endpoint, MessageType::WRITE,
                     InterfaceType::DEVICE_MANAGEMENT,

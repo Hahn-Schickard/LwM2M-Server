@@ -141,12 +141,12 @@ struct NotifyAttribute {
 };
 
 using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;
-using TargetAttribute = std::pair<ObjectID, NotifyAttributePtr>;
-using TargetContent = std::pair<ObjectID, DataFormatPtr>;
+using TargetAttribute = std::pair<ElementID, NotifyAttributePtr>;
+using TargetContent = std::pair<ElementID, DataFormatPtr>;
 using TargetContentVector = std::vector<TargetContent>;
 using PayloadData =
-    std::variant<DataFormatPtr, TargetContent, TargetContentVector, ObjectID,
-                 ObjectIDs, std::vector<TargetAttribute>>;
+    std::variant<DataFormatPtr, TargetContent, TargetContentVector, ElementID,
+                 ElementIDs, std::vector<TargetAttribute>>;
 
 size_t size_of(TargetAttribute value);
 size_t size_of(TargetContent value);
@@ -160,8 +160,8 @@ struct Payload {
   Payload(DataFormatPtr data);
   Payload(TargetContentVector data);
   Payload(TargetContent data);
-  Payload(ObjectID data);
-  Payload(ObjectIDs data);
+  Payload(ElementID data);
+  Payload(ElementIDs data);
   Payload(std::vector<TargetAttribute> data);
   Payload(PayloadData data, MediaType format = MediaType::NOT_SPECIFIED);
 

@@ -9,7 +9,7 @@ namespace LwM2M {
  *
  */
 struct ObserveRequest : ServerRequest {
-  ObserveRequest(EndpointPtr endpoint, ObjectID target_id = ObjectID(0));
+  ObserveRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
   std::string name() override final;
 };
