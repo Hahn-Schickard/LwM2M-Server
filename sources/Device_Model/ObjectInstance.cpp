@@ -124,6 +124,8 @@ ObjectInstance::ObjectInstance(
   }
 }
 
+ElementID ObjectInstance::getId() { return id_; }
+
 ResourceVariant ObjectInstance::getResource(ElementID id) {
   auto it = resources_.find(id.getResourceID());
   if (it != resources_.end()) {

@@ -36,6 +36,7 @@ public:
       RequesterPtr requester, EndpointPtr endpoint, ElementID id,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
+  ElementID getId();
 
   ResourceVariant getResource(ElementID id);
   Resources getResources();
