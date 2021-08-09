@@ -1,4 +1,4 @@
-## [0.2.5] - NOT RELEASED
+## [0.3.0] - 2021.08.09
 ### Added
  - explicit Endpoint constructors 
  - toString method for Endpoint struct
@@ -12,6 +12,11 @@
  - RegisterRequest method to build successful RegisterResponse 
  - RegisterRequest method to build failed RegisterResponse 
  - makeDefaultMessage function to MessageTests.cc 
+ - support for LwM2M optional resources
+ - support for LwM2M multiple instance resources
+ - device discovery mechanism
+ - ElementID to model Object, Object Instance, Resource and Resource Instance IDs
+ - parametrized ctors to CoAP_Binding
 
 ### Changed
  - UpdateRequest makeResponse method to auto resolve the correct UpdateResponse ctor
@@ -19,13 +24,20 @@
  - Device ID generation function to create hex id with proper hash calculation
  - RegistrationInterfaceRequestsBuilder to explicitly set either ResponseCode or Response value 
  - Registrator to explicitly set failure codes as ResponseCode
+ - LwM2M Server internal runner mechanism
+ - main cpp to better showcase Server and Listener functionality
+ - CoAPS4Cpp to v0.3.0
+ - Event_Model to v0.3.0
+ - Object, Object Instance, Resource and Resource Instance ID modelling
  
 ### Fixed 
  - ResourceTests.cc to set correct ctor parameters
  - Register.cc to set correct ctor parameters
+ - CoAP socket blocks
 
 ### Removed
  - default Endpoint constructor
+ - direct Stoppable dependency
 
 ## [0.2.4] - 2021.05.11
 ### Added
