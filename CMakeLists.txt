@@ -25,7 +25,6 @@ list(APPEND DEPENDENCIES_LIST
             HaSLL
             CoAPS4Cpp
             Variant_Visitor
-            Stoppable
             Event_Model
             pugixml
             nlohmann_json
