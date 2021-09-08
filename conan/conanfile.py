@@ -11,7 +11,7 @@ class PackageConan(ConanFile):
     build_requires = "gtest/1.10.0"
     requires = [
         "HaSLL/0.2.2@hahn-schickard/stable",
-        "CoAPS4Cpp/0.3.0@hahn-schickard/stable",
+        "CoAPS4Cpp/0.3.1@hahn-schickard/stable",
         "Variant_Visitor/0.1.0@hahn-schickard/stable",
         "Event_Model/0.3.0@hahn-schickard/stable",
         "nlohmann_json/3.7.3",
