@@ -3,7 +3,7 @@
 
 #include "Binding.hpp"
 #include "CoAP/Socket.hpp"
-#include "CoAP_Config.hpp"
+// #include "CoAP/Config.hpp"
 #include "Logger.hpp"
 #include "Registrator.hpp"
 
@@ -13,7 +13,7 @@ struct CoAP_Binding : public BindingInterface,
                       public Registrator,
                       public CoAP::Socket {
   CoAP_Binding(DeviceRegistryPtr registry, const std::string &config_filepath);
-  CoAP_Binding(DeviceRegistryPtr registry, const CoAP_Config &config);
+  CoAP_Binding(DeviceRegistryPtr registry, const CoAP::Configuration &config);
 
   ~CoAP_Binding();
 

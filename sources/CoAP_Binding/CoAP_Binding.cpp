@@ -381,12 +381,11 @@ CoAP::MessagePtr encode(ServerRequestPtr request) {
 
 CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry,
                            const string &config_filepath)
-    : CoAP_Binding(registry, getCoAP_Config(config_filepath)) {}
+    : CoAP_Binding(registry, getConfig(config_filepath)) {}
 
 CoAP_Binding::CoAP_Binding(DeviceRegistryPtr registry,
-                           const CoAP_Config &config)
-    : BindingInterface(registry), Registrator(registry),
-      Socket(config.address_, config.port_),
+                           const CoAP::Configuration &config)
+    : BindingInterface(registry), Registrator(registry), Socket(config),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   logger_->log(SeverityLevel::TRACE, "Registering CoAP Server");
 
