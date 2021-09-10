@@ -53,12 +53,24 @@ ElementIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
   }
 }
 
-ElementIDs handleReadResponse(ReadRequestPtr read_request,
-                              ClientResponsePtr read_response) {
+ElementIDs handleReadResponse(ClientResponsePtr response,
+                              ReadRequestPtr request) {
   ElementIDs result;
-  if (read_response->response_code_ != ResponseCode::METHOD_NOT_ALLOWED) {
-    // handle object instance read here
-    result.push_back(read_request->target_);
+  if (response->response_code_ == ResponseCode::CONTENT) {
+    if (holds_alternative<TargetContentVector>(response->payload_->data_)) {
+      auto targets_and_values =
+          std::get<TargetContentVector>(response->payload_->data_);
+      for (auto target_value : targets_and_values) {
+        // This is a very dumb way, but response does not have a valid object
+        // id, since it is set in a request. Who needs redundancy anyways?
+        auto id = ElementID(request->target_.getObjectID(),
+                            target_value.first.getObjectInstanceID(),
+                            target_value.first.getResourceID());
+        result.push_back(id);
+      }
+    }
+  } else {
+    throw ResponseReturnedAnErrorCode(response, request);
   }
   return result;
 }
@@ -116,16 +128,17 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
         if (response->message_type_ == MessageType::DISCOVER) {
           return handleDiscoverResponse(move(response));
         } else {
-          // we need the original read request, to identify the target, since we
-          // dont care about the read response content here
-          return handleReadResponse(static_pointer_cast<ReadRequest>(request),
-                                    move(response));
+          // we use request in case of failure code, to create and throw an
+          // exception
+          return handleReadResponse(move(response),
+                                    static_pointer_cast<ReadRequest>(request));
         }
       } else {
         throw ResponseReturnedAnEmptyPayload(response, request);
       }
     }
   } else {
+    // something hands here
     cancelRequest(request);
     try {
       response_future.get(); // this must throw;
@@ -145,7 +158,9 @@ ElementIDs Registrator::discoverAvailableDescriptors(
   for (auto it = requests.begin(); it != requests.end();) {
     try {
       requested_instances += discover(*it);
-    } catch (DiscoveryTimeout & /*timeout*/) {
+    }
+    // @TODO: handle method not allowed and similar exceptions
+    catch (DiscoveryTimeout & /*timeout*/) {
       try {
         requested_instances += discover(makeReadRequest(*it));
       } catch (DiscoveryTimeout & /*timeout*/) {
