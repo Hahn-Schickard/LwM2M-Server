@@ -258,13 +258,28 @@ LwM2M::PayloadPtr toPayload(CoRE_Links content) {
 
 LwM2M::PayloadPtr toPayload(TLV_Pack content) {
   auto values = content.getPackAsVector();
-  if (!values.empty()) {
-    if (values.size() == 1) {
+  if (values.size() == 1) {
+    if (values[0]->getIdentifierType() == Identifier_Type::Resource_Value) {
       auto data = make_shared<DataFormat>(values[0]->getValue());
       return make_shared<LwM2M::Payload>(data);
+    } else if (values[0]->getIdentifierType() ==
+               Identifier_Type::Object_Instance) {
+      LwM2M::TargetContentVector targets_and_values;
+      auto tlv_subpack = TLV_Pack(values[0]->getBytes());
+      auto sub_values = tlv_subpack.getPackAsVector();
+      for (auto sub_value : sub_values) {
+        if (sub_value->getIdentifierType() == Identifier_Type::Resource_Value) {
+          // Object id is in the request, so there is no way to get it from
+          // response
+          auto target = ElementID(0, values[0]->getIdentifier(),
+                                  sub_value->getIdentifier());
+          auto value = make_shared<DataFormat>(sub_value->getValue());
+          targets_and_values.emplace_back(target, value);
+        }
+      }
+      return make_shared<LwM2M::Payload>(targets_and_values);
     }
   }
-  return LwM2M::PayloadPtr();
 }
 
 LwM2M::PayloadPtr toPayload(OctetStream content) {
