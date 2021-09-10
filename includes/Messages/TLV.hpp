@@ -52,6 +52,7 @@ public:
       std::vector<uint8_t> value);
 
   uint16_t getIdentifier();
+  Identifier_Type getIdentifierType();
   std::vector<uint8_t> getValue();
   std::vector<uint8_t> getBytes();
 };

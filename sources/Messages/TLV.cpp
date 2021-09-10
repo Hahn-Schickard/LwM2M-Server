@@ -112,6 +112,8 @@ TLV::TLV(shared_ptr<TLV_Header> header, uint16_t identifier, uint32_t length,
 
 uint16_t TLV::getIdentifier() { return identifier_; }
 
+Identifier_Type TLV::getIdentifierType() { return header_->identifier_; }
+
 vector<uint8_t> TLV::getValue() { return value_; }
 
 vector<uint8_t> TLV::getBytes() {
