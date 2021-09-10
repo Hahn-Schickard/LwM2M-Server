@@ -14,6 +14,8 @@ struct ReadRequest : ServerRequest {
   ReadRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
   std::string name() override final;
+
+  ElementID target_;
 };
 
 using ReadRequestPtr = std::shared_ptr<ReadRequest>;

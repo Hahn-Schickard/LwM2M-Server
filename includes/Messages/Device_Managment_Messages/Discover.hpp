@@ -14,6 +14,8 @@ struct DiscoverRequest : ServerRequest {
   DiscoverRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
   std::string name() override final;
+
+  ElementID target_;
 };
 
 using DiscoverRequestPtr = std::shared_ptr<DiscoverRequest>;
