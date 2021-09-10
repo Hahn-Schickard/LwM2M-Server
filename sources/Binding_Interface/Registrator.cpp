@@ -1,6 +1,7 @@
 #include "Registrator.hpp"
 #include "Discover.hpp"
 #include "LoggerRepository.hpp"
+#include "Read.hpp"
 
 #include <iterator>
 #include <vector>
@@ -9,8 +10,22 @@ using namespace std;
 using namespace HaSLL;
 
 #define ERROR_CODES_VALUE 0x80
+#define REQUEST_TIMEOUT_MS 2000
 
 namespace LwM2M {
+
+struct DiscoveryTimeout : public exception {
+  const char *what() const noexcept override {
+    return "Discovery request timed out!";
+  }
+};
+
+ElementIDs &operator+=(ElementIDs &lhs, const ElementIDs &rhs) {
+  if (!rhs.empty()) {
+    lhs.insert(lhs.end(), rhs.begin(), rhs.end());
+  }
+  return lhs;
+}
 
 vector<DiscoverRequestPtr> makeDiscoverRequests(
     EndpointPtr endpoint,
@@ -24,6 +39,10 @@ vector<DiscoverRequestPtr> makeDiscoverRequests(
   return move(discover_requests);
 }
 
+ReadRequestPtr makeReadRequest(DiscoverRequestPtr discover) {
+  return make_shared<ReadRequest>(discover->endpoint_, discover->target_);
+}
+
 ElementIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
   if (holds_alternative<ElementIDs>(discover_response->payload_->data_)) {
     return std::get<ElementIDs>(discover_response->payload_->data_);
@@ -32,6 +51,16 @@ ElementIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
         "Request does not contain a vector of ObjectID instances";
     throw logic_error(error_msg);
   }
+}
+
+ElementIDs handleReadResponse(ReadRequestPtr read_request,
+                              ClientResponsePtr read_response) {
+  ElementIDs result;
+  if (read_response->response_code_ != ResponseCode::METHOD_NOT_ALLOWED) {
+    // handle object instance read here
+    result.push_back(read_request->target_);
+  }
+  return result;
 }
 
 Registrator::Registrator(DeviceRegistryPtr registry)
@@ -44,6 +73,17 @@ Registrator::Registrator(DeviceRegistryPtr registry)
 
 Registrator::~Registrator() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+}
+
+void Registrator::cancelDiscovery(ServerRequestPtr request) {
+  try {
+    this->cancelRequest(request);
+  } catch (exception &ex) {
+    logger_->log(
+        SeverityLevel::CRITICAL,
+        "Could not cancel a discover request to {}, due to an exception: {}",
+        request->endpoint_->toString(), ex.what());
+  }
 }
 
 ObjectDescriptorsMap
@@ -64,6 +104,38 @@ Registrator::assignAvailableDescriptors(ElementIDs requested_instances) {
   return result;
 }
 
+ElementIDs Registrator::discover(ServerRequestPtr request) {
+  auto response_future = this->request(request);
+  if (response_future.wait_for(chrono::milliseconds(REQUEST_TIMEOUT_MS)) !=
+      future_status::timeout) {
+    auto response = response_future.get();
+    if (static_cast<uint8_t>(response->response_code_) > ERROR_CODES_VALUE) {
+      throw ResponseReturnedAnErrorCode(response, request);
+    } else {
+      if (response->payload_) {
+        if (response->message_type_ == MessageType::DISCOVER) {
+          return handleDiscoverResponse(move(response));
+        } else {
+          // we need the original read request, to identify the target, since we
+          // dont care about the read response content here
+          return handleReadResponse(static_pointer_cast<ReadRequest>(request),
+                                    move(response));
+        }
+      } else {
+        throw ResponseReturnedAnEmptyPayload(response, request);
+      }
+    }
+  } else {
+    cancelRequest(request);
+    try {
+      response_future.get(); // this must throw;
+    } catch (exception & /*ex*/) {
+      // safe to ignore, since canceled response, must throw an exception
+    }
+    throw DiscoveryTimeout();
+  }
+}
+
 ElementIDs Registrator::discoverAvailableDescriptors(
     EndpointPtr endpoint,
     const RegisterRequest::ObjectInstancesMap object_instances) {
@@ -72,30 +144,30 @@ ElementIDs Registrator::discoverAvailableDescriptors(
   ElementIDs requested_instances;
   for (auto it = requests.begin(); it != requests.end();) {
     try {
-      auto response_future = this->request(*it);
-      auto response = response_future.get();
-      if (static_cast<uint8_t>(response->response_code_) > ERROR_CODES_VALUE) {
-        throw ResponseReturnedAnErrorCode(response, *it);
-      } else {
-        if (response->payload_) {
-          auto resource_instances = handleDiscoverResponse(move(response));
-          if (!resource_instances.empty()) {
-            requested_instances.insert(requested_instances.end(),
-                                       resource_instances.begin(),
-                                       resource_instances.end());
-          }
-        } else {
-          throw ResponseReturnedAnEmptyPayload(response, *it);
-        }
+      requested_instances += discover(*it);
+    } catch (DiscoveryTimeout & /*timeout*/) {
+      try {
+        requested_instances += discover(makeReadRequest(*it));
+      } catch (DiscoveryTimeout & /*timeout*/) {
+        logger_->log(
+            SeverityLevel::WARNNING,
+            "Manual discovery for {} object {} failed due to a message "
+            "timeout. Discarding it from available descriptors.",
+            (*it)->endpoint_->toString(), (*it)->target_.toString());
+      } catch (exception &ex) {
+        logger_->log(
+            SeverityLevel::ERROR,
+            "Manual discovery for {} object {} failed due to an exception: {}. "
+            "Discarding it from available descriptors.",
+            (*it)->endpoint_->toString(), (*it)->target_.toString(), ex.what());
       }
-      ++it;
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
                    "Failed to handle {} to {}, due to an exception: {}. "
                    "Discarding it from available descriptors.",
                    (*it)->name(), (*it)->endpoint_->toString(), ex.what());
-      it = requests.erase(it);
     }
+    ++it;
   }
   return requested_instances;
 }
