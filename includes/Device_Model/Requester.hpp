@@ -42,12 +42,25 @@ struct Requester {
    * @throws LwM2M::ResponseReturnedAnEmptyPayload if response contains no
    * payload
    * @throws std::logic_error if an internal failure occurred
+   * @throws std::runtime_error exception if called base virtual implementation
+   * or if canceled
    *
    * @param message
    * @return std::future<DataFormat>
    */
   virtual std::future<DataFormatPtr> requestData(ServerRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestData implementation.");
+  }
+
+  /**
+   * @brief Cancels an issued request. Canceled requests must throw and
+   * exception, so issues can clean up the memory of the response future
+   *
+   * @throws std::runtime_error exception if called base virtual implementation
+   *
+   */
+  virtual void cancelRequest(ServerRequestPtr /*message*/) {
+    throw std::runtime_error("Called base cancelRequest implementation.");
   }
 
   /**
@@ -59,6 +72,7 @@ struct Requester {
    * * @throws LwM2M::ResponseReturnedAnEmptyPayload if response contains no
    * payload
    * @throws std::logic_error if an internal failure occurred
+   * @throws std::runtime_error exception if called base virtual implementation
    *
    * @param message
    * @return std::future<TargetContentVector>
@@ -75,6 +89,7 @@ struct Requester {
    * @throws LwM2M::ResponseReturnedAnErrorCode if the corresponding
    * LwM2M::Response contained an error code
    * @throws std::logic_error if an internal failure occurred
+   * @throws std::runtime_error exception if called base virtual implementation
    *
    * @param message
    * @return std::future<bool>
@@ -87,6 +102,7 @@ struct Requester {
    * @brief Requests LwM2M::Device a generic LwM2M Server Request
    *
    * @throws std::logic_error if an internal failure occurred
+   * @throws std::runtime_error exception if called base virtual implementation
    *
    * @param message
    * @return std::future<ClientResponse>
