@@ -129,8 +129,10 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
   } else {
     try {
       logger_->log(SeverityLevel::INFO,
-                   "{} request to {} has timed out. Cancelling it.",
-                   request->name(), request->endpoint_->toString());
+                   "{} for element {} to {} has timed out. Cancelling it.",
+                   request->name(),
+                   std::get<ElementID>(request->payload_->data_).toString(),
+                   request->endpoint_->toString());
       this->cancelRequest(request);
       try {
         response_future.get(); // this must throw;
@@ -155,11 +157,17 @@ ElementIDs Registrator::discoverAvailableDescriptors(
   ElementIDs requested_instances;
   for (auto it = requests.begin(); it != requests.end();) {
     try {
+      logger_->log(SeverityLevel::INFO, "Discovering object {} from {}",
+                   (*it)->target_.toString(), (*it)->endpoint_->toString());
       requested_instances += discover(makeReadRequest(*it));
     }
     // @TODO: handle method not allowed and similar exceptions
     catch (DiscoveryTimeout & /*timeout*/) {
       try {
+        logger_->log(SeverityLevel::INFO,
+                     "Discovery for object {} from {} has timedout. Doing a "
+                     "manual read.",
+                     (*it)->target_.toString(), (*it)->endpoint_->toString());
         requested_instances += discover(makeReadRequest(*it));
       } catch (DiscoveryTimeout & /*timeout*/) {
         logger_->log(
