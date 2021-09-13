@@ -550,6 +550,10 @@ future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr message) {
                message);
 }
 
+void CoAP_Binding::cancelRequest(ServerRequestPtr message) {
+  CoAP::Socket::cancelRequest(encode(message));
+}
+
 void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
   logger_->log(SeverityLevel::CRITICAL,
                "Notifications are not handeled by the server!");

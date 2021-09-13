@@ -25,6 +25,7 @@ struct CoAP_Binding : public BindingInterface,
   std::future<bool> requestAction(ServerRequestPtr message) override final;
   std::future<ClientResponsePtr>
   request(ServerRequestPtr message) override final;
+  void cancelRequest(ServerRequestPtr message) override final;
 
   void start();
   void stop();
