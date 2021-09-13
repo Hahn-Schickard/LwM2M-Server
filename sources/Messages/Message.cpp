@@ -227,3 +227,22 @@ ServerResponse::ServerResponse(EndpointPtr endpoint, MessageType message_type,
                response_code, payload) {}
 
 } // namespace LwM2M
+
+size_t std::hash<LwM2M::Message>::
+operator()(const LwM2M::Message &message) const {
+  auto endoint_string = message.endpoint_->toString();
+  size_t result = hash<string>{}(endoint_string);
+  result <<= endoint_string.length();
+  result |= static_cast<size_t>(message.message_type_);
+  result <<= sizeof(message.message_type_);
+  result |= static_cast<size_t>(message.interface_);
+  result <<= sizeof(message.interface_);
+  result |= hash<LwM2M::Payload>{}(*message.payload_);
+  result <<= message.payload_->size();
+  result |= message.response_;
+  result <<= 1;
+  result |= message.incoming_;
+  result <<= 1;
+  result |= message.notification_;
+  return result;
+}

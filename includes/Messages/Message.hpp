@@ -203,4 +203,10 @@ protected:
 
 using ServerResponsePtr = std::shared_ptr<ServerResponse>;
 } // namespace LwM2M
+
+namespace std {
+template <> struct hash<LwM2M::Message> {
+  size_t operator()(const LwM2M::Message &message) const;
+};
+} // namespace std
 #endif //__LWM2M_MESSAGE_HPP
