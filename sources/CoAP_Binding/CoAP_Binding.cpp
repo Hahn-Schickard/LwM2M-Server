@@ -501,32 +501,36 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
 }
 
 future<DataFormatPtr> CoAP_Binding::requestData(ServerRequestPtr message) {
-  return async(launch::async,
-               [this](ServerRequestPtr request) -> DataFormatPtr {
-                 auto coap_request = encodeRequest(request);
-                 logger_->log(SeverityLevel::TRACE,
-                              "Dispatching {}:{} as a data request to {}",
-                              request->name(), coap_request->getTokenHash(),
-                              request->endpoint_->toString());
-                 auto response_future = CoAP::Socket::request(coap_request);
-                 auto coap_response = response_future.get();
-                 auto response = makeClientResponse(coap_response);
-                 logger_->log(SeverityLevel::TRACE,
-                              "Received a {} to a data request {} from {}",
-                              coap_response->getTokenHash(), request->name(),
-                              request->endpoint_->toString());
-                 dispatched_.erase(std::hash<Message>{}(*request));
-                 if (response->response_code_ == ResponseCode::CONTENT) {
-                   if (response->payload_) {
-                     return std::get<DataFormatPtr>(response->payload_->data_);
-                   } else {
-                     throw ResponseReturnedAnEmptyPayload(response, request);
-                   }
-                 } else {
-                   throw ResponseReturnedAnErrorCode(response, request);
-                 }
-               },
-               message);
+  return async(
+      launch::async,
+      [this](ServerRequestPtr request) -> DataFormatPtr {
+        auto coap_request = encodeRequest(request);
+        logger_->log(SeverityLevel::TRACE,
+                     "Dispatching {}:{} as a data request to {}",
+                     request->name(), coap_request->getTokenHash(),
+                     request->endpoint_->toString());
+        auto response_future = CoAP::Socket::request(coap_request);
+        auto coap_response = response_future.get();
+        logger_->log(
+            SeverityLevel::TRACE,
+            "Received a response with token {} to data request {} from {}",
+            coap_response->getTokenHash(), request->name(),
+            request->endpoint_->toString());
+        auto response = makeClientResponse(coap_response);
+        logger_->log(SeverityLevel::TRACE, "Decoded {} as a {}",
+                     coap_response->getTokenHash(), response->name());
+        dispatched_.erase(std::hash<Message>{}(*request));
+        if (response->response_code_ == ResponseCode::CONTENT) {
+          if (response->payload_) {
+            return std::get<DataFormatPtr>(response->payload_->data_);
+          } else {
+            throw ResponseReturnedAnEmptyPayload(response, request);
+          }
+        } else {
+          throw ResponseReturnedAnErrorCode(response, request);
+        }
+      },
+      message);
 }
 
 future<TargetContentVector>
@@ -541,11 +545,14 @@ CoAP_Binding::requestMultiTargetData(ServerRequestPtr message) {
                      request->endpoint_->toString());
         auto response_future = CoAP::Socket::request(coap_request);
         auto coap_response = response_future.get();
-        auto response = makeClientResponse(coap_response);
         logger_->log(SeverityLevel::TRACE,
-                     "Received a {} to a multi target request {} from {}",
+                     "Received a response with token {} to multi target "
+                     "request {} from {}",
                      coap_response->getTokenHash(), request->name(),
                      request->endpoint_->toString());
+        auto response = makeClientResponse(coap_response);
+        logger_->log(SeverityLevel::TRACE, "Decoded {} as a {}",
+                     coap_response->getTokenHash(), response->name());
         dispatched_.erase(std::hash<Message>{}(*request));
         if (response->response_code_ == ResponseCode::CONTENT) {
           if (response->payload_) {
@@ -561,48 +568,56 @@ CoAP_Binding::requestMultiTargetData(ServerRequestPtr message) {
 }
 
 future<bool> CoAP_Binding::requestAction(ServerRequestPtr message) {
-  return async(launch::async,
-               [this](ServerRequestPtr request) -> bool {
-                 auto coap_request = encodeRequest(request);
-                 logger_->log(SeverityLevel::TRACE,
-                              "Dispatching {}:{} as an action to {}",
-                              request->name(), coap_request->getTokenHash(),
-                              request->endpoint_->toString());
-                 auto response_future = CoAP::Socket::request(coap_request);
-                 auto coap_response = response_future.get();
-                 auto response = makeClientResponse(coap_response);
-                 logger_->log(SeverityLevel::TRACE,
-                              "Received a {} to an action {} from {}",
-                              response->name(), coap_response->getTokenHash(),
-                              request->endpoint_->toString());
-                 dispatched_.erase(std::hash<Message>{}(*request));
-                 return static_cast<uint8_t>(response->response_code_) <
-                                ERROR_CODES_VALUE
-                            ? true
-                            : false;
-               },
-               message);
+  return async(
+      launch::async,
+      [this](ServerRequestPtr request) -> bool {
+        auto coap_request = encodeRequest(request);
+        logger_->log(SeverityLevel::TRACE,
+                     "Dispatching {}:{} as an action to {}", request->name(),
+                     coap_request->getTokenHash(),
+                     request->endpoint_->toString());
+        auto response_future = CoAP::Socket::request(coap_request);
+        auto coap_response = response_future.get();
+        logger_->log(
+            SeverityLevel::TRACE,
+            "Received a response with token {} to an action {} from {}",
+            coap_response->getTokenHash(), request->name(),
+            request->endpoint_->toString());
+        auto response = makeClientResponse(coap_response);
+        logger_->log(SeverityLevel::TRACE, "Decoded {} as a {}",
+                     coap_response->getTokenHash(), response->name());
+        dispatched_.erase(std::hash<Message>{}(*request));
+        return static_cast<uint8_t>(response->response_code_) <
+                       ERROR_CODES_VALUE
+                   ? true
+                   : false;
+      },
+      message);
 }
 
 future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr message) {
-  return async(launch::async,
-               [this](ServerRequestPtr request) -> ClientResponsePtr {
-                 auto coap_request = encodeRequest(request);
-                 logger_->log(SeverityLevel::TRACE,
-                              "Dispatching {}:{} as a generic request to {}",
-                              request->name(), coap_request->getTokenHash(),
-                              request->endpoint_->toString());
-                 auto response_future = CoAP::Socket::request(coap_request);
-                 auto coap_response = response_future.get();
-                 auto response = makeClientResponse(coap_response);
-                 logger_->log(SeverityLevel::TRACE,
-                              "Received a {} to generic request {} from {}",
-                              coap_response->getTokenHash(), request->name(),
-                              request->endpoint_->toString());
-                 dispatched_.erase(std::hash<Message>{}(*request));
-                 return move(response);
-               },
-               message);
+  return async(
+      launch::async,
+      [this](ServerRequestPtr request) -> ClientResponsePtr {
+        auto coap_request = encodeRequest(request);
+        logger_->log(SeverityLevel::TRACE,
+                     "Dispatching {}:{} as a generic request to {}",
+                     request->name(), coap_request->getTokenHash(),
+                     request->endpoint_->toString());
+        auto response_future = CoAP::Socket::request(coap_request);
+        auto coap_response = response_future.get();
+        logger_->log(
+            SeverityLevel::TRACE,
+            "Received a response with token {} to generic request {} from {}",
+            coap_response->getTokenHash(), request->name(),
+            request->endpoint_->toString());
+        auto response = makeClientResponse(coap_response);
+        logger_->log(SeverityLevel::TRACE, "Decoded {} as a {}",
+                     coap_response->getTokenHash(), response->name());
+        dispatched_.erase(std::hash<Message>{}(*request));
+        return move(response);
+      },
+      message);
 }
 
 void CoAP_Binding::cancelRequest(ServerRequestPtr message) {
