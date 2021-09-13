@@ -87,17 +87,6 @@ Registrator::~Registrator() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
-void Registrator::cancelDiscovery(ServerRequestPtr request) {
-  try {
-    this->cancelRequest(request);
-  } catch (exception &ex) {
-    logger_->log(
-        SeverityLevel::CRITICAL,
-        "Could not cancel a discover request to {}, due to an exception: {}",
-        request->endpoint_->toString(), ex.what());
-  }
-}
-
 ObjectDescriptorsMap
 Registrator::assignAvailableDescriptors(ElementIDs requested_instances) {
   logger_->log(SeverityLevel::TRACE, "Assigning Available Descriptors");
@@ -138,8 +127,14 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
       }
     }
   } else {
-    // something hands here
-    cancelRequest(request);
+    try {
+      this->cancelRequest(request);
+    } catch (exception &ex) {
+      logger_->log(
+          SeverityLevel::CRITICAL,
+          "Could not cancel a discover request to {}, due to an exception: {}",
+          request->endpoint_->toString(), ex.what());
+    }
     try {
       response_future.get(); // this must throw;
     } catch (exception & /*ex*/) {

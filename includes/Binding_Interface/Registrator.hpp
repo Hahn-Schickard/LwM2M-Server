@@ -35,7 +35,6 @@ class Registrator : public Requester,
       const RegisterRequest::ObjectInstancesMap object_instances);
 
   ElementIDs discover(ServerRequestPtr request);
-  void cancelDiscovery(ServerRequestPtr request);
 
 public:
   Registrator(DeviceRegistryPtr registry);
