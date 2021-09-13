@@ -128,17 +128,20 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
     }
   } else {
     try {
+      logger_->log(SeverityLevel::INFO,
+                   "{} request to {} has timed out. Cancelling it.",
+                   request->name(), request->endpoint_->toString());
       this->cancelRequest(request);
+      try {
+        response_future.get(); // this must throw;
+      } catch (exception & /*ex*/) {
+        // safe to ignore, since canceled response, must throw an exception
+      }
     } catch (exception &ex) {
       logger_->log(
           SeverityLevel::CRITICAL,
           "Could not cancel a discover request to {}, due to an exception: {}",
           request->endpoint_->toString(), ex.what());
-    }
-    try {
-      response_future.get(); // this must throw;
-    } catch (exception & /*ex*/) {
-      // safe to ignore, since canceled response, must throw an exception
     }
     throw DiscoveryTimeout();
   }
@@ -152,7 +155,7 @@ ElementIDs Registrator::discoverAvailableDescriptors(
   ElementIDs requested_instances;
   for (auto it = requests.begin(); it != requests.end();) {
     try {
-      requested_instances += discover(*it);
+      requested_instances += discover(makeReadRequest(*it));
     }
     // @TODO: handle method not allowed and similar exceptions
     catch (DiscoveryTimeout & /*timeout*/) {
