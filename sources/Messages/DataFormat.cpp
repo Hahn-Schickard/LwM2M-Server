@@ -324,3 +324,108 @@ size_t size_of(PayloadData data) {
 
 size_t Payload::size() { return size_of(data_); }
 } // namespace LwM2M
+
+size_t std::hash<LwM2M::DataFormat>::
+operator()(const LwM2M::DataFormat &data) const {
+  size_t hash_value = 0;
+  for (auto byte : data.get<std::vector<uint8_t>>()) {
+    hash_value |= byte << 8;
+  }
+  return hash_value;
+}
+
+size_t std::hash<LwM2M::TargetContent>::
+operator()(const LwM2M::TargetContent &data) const {
+  size_t hash_value = 0;
+  hash_value |= hash<LwM2M::ElementID>{}(data.first);
+  hash_value <<= data.first.size();
+  hash_value |= hash<LwM2M::DataFormat>{}(*(data.second));
+  return hash_value;
+}
+
+size_t std::hash<LwM2M::NotifyAttribute>::
+operator()(const LwM2M::NotifyAttribute &data) const {
+  size_t hash_value = 0;
+
+  if (data.minimum_period_) {
+    hash_value |= data.minimum_period_.value()
+                  << sizeof(data.minimum_period_.value());
+  }
+  if (data.maximum_period_) {
+    hash_value |= data.maximum_period_.value()
+                  << sizeof(data.maximum_period_.value());
+  }
+  if (data.greater_than_) {
+    hash_value |= hash<double>{}(data.greater_than_.value())
+                  << sizeof(data.greater_than_.value());
+  }
+  if (data.less_than_) {
+    hash_value |= hash<double>{}(data.less_than_.value())
+                  << sizeof(data.less_than_.value());
+  }
+  if (data.step_) {
+    hash_value |= hash<double>{}(data.step_.value())
+                  << sizeof(data.step_.value());
+  }
+  if (data.minimum_evaluation_period_) {
+    hash_value |= data.minimum_evaluation_period_.value()
+                  << sizeof(data.minimum_evaluation_period_.value());
+  }
+  if (data.maximum_evaluation_period_) {
+    hash_value |= data.maximum_evaluation_period_.value()
+                  << sizeof(data.maximum_evaluation_period_.value());
+  }
+
+  return hash_value;
+}
+
+size_t std::hash<LwM2M::TargetAttribute>::
+operator()(const LwM2M::TargetAttribute &data) const {
+  size_t hash_value = 0;
+  hash_value |= hash<LwM2M::ElementID>{}(data.first);
+  hash_value <<= data.first.size();
+  hash_value |= hash<LwM2M::NotifyAttribute>{}(*(data.second));
+  return hash_value;
+}
+
+size_t std::hash<LwM2M::PayloadData>::
+operator()(const LwM2M::PayloadData &data) const {
+  size_t hash_value = 0;
+  match(data,
+        [&](LwM2M::DataFormatPtr value) {
+          hash_value = hash<LwM2M::DataFormat>{}(*value);
+        },
+        [&](LwM2M::TargetContent value) {
+          hash_value = hash<LwM2M::TargetContent>{}(value);
+        },
+        [&](LwM2M::TargetContentVector value) {
+          for (auto target_value : value) {
+            hash_value |= hash<LwM2M::TargetContent>{}(target_value)
+                          << size_of(target_value);
+          }
+        },
+        [&](LwM2M::ElementID value) {
+          hash_value = hash<LwM2M::ElementID>{}(value);
+        },
+        [&](LwM2M::ElementIDs value) {
+          for (auto elment_id : value) {
+            hash_value |= hash<LwM2M::ElementID>{}(elment_id)
+                          << elment_id.size();
+          }
+        },
+        [&](vector<LwM2M::TargetAttribute> value) {
+          for (auto target_attribute : value) {
+            hash_value |= hash<LwM2M::TargetAttribute>{}(target_attribute)
+                          << size_of(target_attribute);
+          }
+        });
+  return hash_value;
+}
+
+size_t std::hash<LwM2M::Payload>::
+operator()(const LwM2M::Payload &payload) const {
+  auto result = hash<LwM2M::PayloadData>{}(payload.data_);
+  result <<= LwM2M::size_of(payload.data_);
+  result |= static_cast<size_t>(payload.media_type_);
+  return result;
+}

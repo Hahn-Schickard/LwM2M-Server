@@ -171,4 +171,30 @@ struct Payload {
 using PayloadPtr = std::shared_ptr<Payload>;
 } // namespace LwM2M
 
+namespace std {
+template <> struct hash<LwM2M::DataFormat> {
+  size_t operator()(const LwM2M::DataFormat &data) const;
+};
+
+template <> struct hash<LwM2M::TargetContent> {
+  size_t operator()(const LwM2M::TargetContent &data) const;
+};
+
+template <> struct hash<LwM2M::NotifyAttribute> {
+  size_t operator()(const LwM2M::NotifyAttribute &data) const;
+};
+
+template <> struct hash<LwM2M::TargetAttribute> {
+  size_t operator()(const LwM2M::TargetAttribute &data) const;
+};
+
+template <> struct hash<LwM2M::PayloadData> {
+  size_t operator()(const LwM2M::PayloadData &data) const;
+};
+
+template <> struct hash<LwM2M::Payload> {
+  size_t operator()(const LwM2M::Payload &payload) const;
+};
+} // namespace std
+
 #endif //__LWM2M_DATA_FORMAT_TYPE_HPP
