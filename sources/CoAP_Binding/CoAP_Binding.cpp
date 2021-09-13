@@ -489,9 +489,10 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
 future<DataFormatPtr> CoAP_Binding::requestData(ServerRequestPtr message) {
   return async(launch::async,
                [this](ServerRequestPtr request) -> DataFormatPtr {
-                 auto response_future = CoAP::Socket::request(encode(request));
+                 auto response_future =
+                     CoAP::Socket::request(encodeRequest(request));
                  auto response = makeClientResponse(response_future.get());
-
+                 dispatched_.erase(std::hash<Message>{}(*request));
                  if (response->response_code_ == ResponseCode::CONTENT) {
                    if (response->payload_) {
                      return std::get<DataFormatPtr>(response->payload_->data_);
@@ -507,31 +508,32 @@ future<DataFormatPtr> CoAP_Binding::requestData(ServerRequestPtr message) {
 
 future<TargetContentVector>
 CoAP_Binding::requestMultiTargetData(ServerRequestPtr message) {
-  return async(launch::async,
-               [this](ServerRequestPtr request) -> TargetContentVector {
-                 auto response_future = CoAP::Socket::request(encode(request));
-                 auto response = makeClientResponse(response_future.get());
-
-                 if (response->response_code_ == ResponseCode::CONTENT) {
-                   if (response->payload_) {
-                     return std::get<TargetContentVector>(
-                         response->payload_->data_);
-                   } else {
-                     throw ResponseReturnedAnEmptyPayload(response, request);
-                   }
-                 } else {
-                   throw ResponseReturnedAnErrorCode(response, request);
-                 }
-               },
-               message);
+  return async(
+      launch::async,
+      [this](ServerRequestPtr request) -> TargetContentVector {
+        auto response_future = CoAP::Socket::request(encodeRequest(request));
+        auto response = makeClientResponse(response_future.get());
+        dispatched_.erase(std::hash<Message>{}(*request));
+        if (response->response_code_ == ResponseCode::CONTENT) {
+          if (response->payload_) {
+            return std::get<TargetContentVector>(response->payload_->data_);
+          } else {
+            throw ResponseReturnedAnEmptyPayload(response, request);
+          }
+        } else {
+          throw ResponseReturnedAnErrorCode(response, request);
+        }
+      },
+      message);
 }
 
 future<bool> CoAP_Binding::requestAction(ServerRequestPtr message) {
   return async(launch::async,
                [this](ServerRequestPtr request) -> bool {
-                 auto response_future = CoAP::Socket::request(encode(request));
+                 auto response_future =
+                     CoAP::Socket::request(encodeRequest(request));
                  auto response = makeClientResponse(response_future.get());
-
+                 dispatched_.erase(std::hash<Message>{}(*request));
                  return static_cast<uint8_t>(response->response_code_) <
                                 ERROR_CODES_VALUE
                             ? true
@@ -543,15 +545,17 @@ future<bool> CoAP_Binding::requestAction(ServerRequestPtr message) {
 future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr message) {
   return async(launch::async,
                [this](ServerRequestPtr request) -> ClientResponsePtr {
-                 auto response_future = CoAP::Socket::request(encode(request));
+                 auto response_future =
+                     CoAP::Socket::request(encodeRequest(request));
                  auto response = makeClientResponse(response_future.get());
+                 dispatched_.erase(std::hash<Message>{}(*request));
                  return move(response);
                },
                message);
 }
 
 void CoAP_Binding::cancelRequest(ServerRequestPtr message) {
-  CoAP::Socket::cancelRequest(encode(message));
+  CoAP::Socket::cancelRequest(encodeRequest(message));
 }
 
 void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
@@ -622,5 +626,17 @@ void CoAP_Binding::handleReceived(CoAP::MessagePtr message) {
              CoAP::MessageType::CONFIRMABLE) {
     auto response = encode(message, handleRequest(message));
     respond(response);
+  }
+}
+
+CoAP::MessagePtr CoAP_Binding::encodeRequest(ServerRequestPtr request) {
+  auto hash = std::hash<Message>{}(*request);
+  auto it = dispatched_.find(hash);
+  if (it == dispatched_.end()) {
+    auto msg = encode(request);
+    dispatched_.emplace(hash, msg);
+    return msg;
+  } else {
+    return it->second;
   }
 }

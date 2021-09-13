@@ -39,7 +39,10 @@ private:
   // Socket interface implementation
   void handleReceived(CoAP::MessagePtr message) override final;
 
+  CoAP::MessagePtr encodeRequest(ServerRequestPtr request);
+
   std::shared_ptr<HaSLL::Logger> logger_;
+  std::unordered_map<std::size_t, CoAP::MessagePtr> dispatched_;
 };
 } // namespace LwM2M
 
