@@ -121,10 +121,16 @@ vector<string> split(const string &s, char delimiter) {
   return tokens;
 }
 
-pair<unsigned int, unsigned int> makeObjectInstancePair(CoRE_Link link) {
+pair<unsigned int, optional<unsigned int>>
+makeObjectInstancePair(CoRE_Link link) {
   vector<string> uri_targets = split(link.getTarget(), '/');
-  if (uri_targets.size() == 2) {
-    return make_pair<unsigned int, unsigned int>(
+  if (uri_targets.size() == 1) {
+    // object without an instance (should be created)
+    return make_pair<unsigned int, optional<unsigned int>>(
+        atoi(uri_targets.at(0).c_str()), nullopt);
+  } else if (uri_targets.size() == 2) {
+    // object with an instance
+    return make_pair<unsigned int, optional<unsigned int>>(
         atoi(uri_targets.at(0).c_str()), atoi(uri_targets.at(1).c_str()));
   } else {
     string error_msg = "CoRE Link contains more than 2 uri targets";
@@ -133,12 +139,16 @@ pair<unsigned int, unsigned int> makeObjectInstancePair(CoRE_Link link) {
 }
 
 void addToMap(unordered_map<unsigned int, vector<unsigned int>> &map,
-              pair<unsigned int, unsigned int> instance) {
-  auto it = map.find(instance.first);
-  if (it != map.end()) {
-    it->second.push_back(instance.second);
-  } else {
-    map.emplace(instance.first, vector<unsigned int>{instance.second});
+              pair<unsigned int, optional<unsigned int>> instance) {
+  // Ignore object without an instance for now
+  if (instance.second.has_value()) {
+    auto it = map.find(instance.first);
+    if (it != map.end()) {
+      it->second.push_back(instance.second.value());
+    } else {
+      map.emplace(instance.first,
+                  vector<unsigned int>{instance.second.value()});
+    }
   }
 }
 
@@ -148,10 +158,14 @@ getObjectList(CoAP::PayloadPtr payload) {
   if (payload) {
     auto core_links = decode<CoRE_Links>(payload);
     for (auto core_link : core_links.getLinks()) {
-      // ignore content attributes
-      if (core_link.getTarget() != "/" && !core_link.getTarget().empty()) {
-        auto object_instance = makeObjectInstancePair(core_link);
-        addToMap(result, object_instance);
+      auto version_attribute =
+          core_link.getAttributes().find(CoRELinkAttribute::VERSION);
+      // ignore core links that are newer than 1.0
+      if (version_attribute == core_link.getAttributes().end()) {
+        if (core_link.getTarget() != "/" && !core_link.getTarget().empty()) {
+          auto object_instance = makeObjectInstancePair(core_link);
+          addToMap(result, object_instance);
+        }
       }
     }
   }
