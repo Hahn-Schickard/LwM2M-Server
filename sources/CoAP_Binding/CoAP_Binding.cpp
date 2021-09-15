@@ -291,12 +291,11 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
             targets_and_values.emplace_back(target, value);
           }
         }
-        return make_shared<LwM2M::Payload>(targets_and_values);
       }
+      return make_shared<LwM2M::Payload>(targets_and_values);
     }
-  } else {
-    return LwM2M::PayloadPtr();
   }
+  return LwM2M::PayloadPtr();
 }
 
 LwM2M::PayloadPtr toPayload(OctetStream content) {
