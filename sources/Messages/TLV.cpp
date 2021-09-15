@@ -116,22 +116,17 @@ TLV::TLV(vector<uint8_t> &bytestream) {
   }
   }
 
-  // Multiple Resources type value is a nested TLV
-  if (header_->identifier_ != Identifier_Type::Multiple_Resources) {
-    auto value_end = it + length_;
-    if (value_end <= bytestream.end()) {
-      value_ = vector<uint8_t>(++it, value_end);
-      bytestream.erase(bytestream.begin(), value_end);
-    } else {
-      string error_msg = "TLV Value length exceeded bytesream size. TLV Header "
-                         "specyfies that the value is " +
-                         to_string(length_) +
-                         " bytes long, but bytesream only contains " +
-                         to_string(distance(it, bytestream.end())) + " bytes.";
-      throw length_error(error_msg);
-    }
+  auto value_end = it + length_;
+  if (value_end <= bytestream.end()) {
+    value_ = vector<uint8_t>(it, value_end);
+    bytestream.erase(bytestream.begin(), value_end);
   } else {
-    // how to handle multiple resource instance TLVs?
+    string error_msg = "TLV Value length exceeded bytesream size. TLV Header "
+                       "specyfies that the value is " +
+                       to_string(length_) +
+                       " bytes long, but bytesream only contains " +
+                       to_string(distance(it, bytestream.end())) + " bytes.";
+    throw length_error(error_msg);
   }
 }
 
