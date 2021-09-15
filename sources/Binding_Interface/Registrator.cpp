@@ -92,9 +92,17 @@ Registrator::assignAvailableDescriptors(ElementIDs requested_instances) {
   logger_->log(SeverityLevel::TRACE, "Assigning Available Descriptors");
   auto supported_object_descriptors = registry_->getSupportedDescriptors();
   ObjectDescriptorsMap result;
+  logger_->log(SeverityLevel::TRACE,
+               "Trying to assing descriptors for {} elements.",
+               requested_instances.size());
   for (auto object : requested_instances) {
+    logger_->log(SeverityLevel::TRACE, "Looking for {} descriptor.",
+                 object.toString());
     auto descriptor = supported_object_descriptors->find(object.getObjectID());
     if (descriptor != supported_object_descriptors->end()) {
+      logger_->log(SeverityLevel::TRACE,
+                   "Assigning {} object as a descriptor for {}",
+                   descriptor->second->name_, object.toString());
       result.emplace(object, descriptor->second);
     } else {
       logger_->log(SeverityLevel::WARNNING,
