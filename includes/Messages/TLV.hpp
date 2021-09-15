@@ -14,12 +14,16 @@ enum class Identifier_Type : uint8_t {
   Resource_Value = 0b11
 };
 
+std::string toString(Identifier_Type type);
+
 enum class Length_Type : uint8_t {
   No_Length = 0b00,
   Byte_Long = 0b01,
   Short_Long = 0b10,
   Full_Length = 0b11
 };
+
+std::string toString(Length_Type type);
 
 Length_Type getLengthType(std::vector<uint8_t> value);
 

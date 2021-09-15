@@ -4,6 +4,36 @@ using namespace std;
 
 namespace LwM2M {
 
+string toString(Identifier_Type type) {
+  switch (type) {
+  case Identifier_Type::Multiple_Resources:
+    return "Multiple Resources";
+  case Identifier_Type::Resource_Instance:
+    return "Resource Instance";
+  case Identifier_Type::Resource_Value:
+    return "Resource value";
+  case Identifier_Type::Object_Instance:
+    [[fallthrough]];
+  default:
+    return "Object Instance";
+  }
+}
+
+string toString(Length_Type type) {
+  switch (type) {
+  case Length_Type::Full_Length:
+    return "24 bit long length field";
+  case Length_Type::Short_Long:
+    return "16 bit long length field";
+  case Length_Type::Byte_Long:
+    return "8 bit long length field";
+  case Length_Type::No_Length:
+    [[fallthrough]];
+  default:
+    return "No length field";
+  }
+}
+
 Length_Type getLengthType(vector<uint8_t> value) {
   if (value.size() < 8) {
     return Length_Type::No_Length;
