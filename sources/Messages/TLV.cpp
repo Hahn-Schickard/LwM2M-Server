@@ -120,7 +120,7 @@ TLV::TLV(vector<uint8_t> &bytestream) {
   if (header_->identifier_ != Identifier_Type::Multiple_Resources) {
     auto value_end = it + length_;
     if (value_end <= bytestream.end()) {
-      value_ = vector<uint8_t>(it, value_end);
+      value_ = vector<uint8_t>(++it, value_end);
       bytestream.erase(bytestream.begin(), value_end);
     } else {
       string error_msg = "TLV Value length exceeded bytesream size. TLV Header "
