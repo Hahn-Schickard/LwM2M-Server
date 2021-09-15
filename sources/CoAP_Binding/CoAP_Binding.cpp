@@ -265,7 +265,8 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
     } else if (values[0]->getIdentifierType() ==
                Identifier_Type::Object_Instance) {
       LwM2M::TargetContentVector targets_and_values;
-      auto tlv_subpack = TLV_Pack(values[0]->getBytes());
+      auto bytes = values[0]->getBytes();
+      auto tlv_subpack = TLV_Pack(bytes);
       auto sub_values = tlv_subpack.getPackAsVector();
       for (auto sub_value : sub_values) {
         if (sub_value->getIdentifierType() == Identifier_Type::Resource_Value) {
@@ -275,10 +276,10 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
                                   sub_value->getIdentifier());
           auto value = make_shared<DataFormat>(sub_value->getValue());
           targets_and_values.emplace_back(target, value);
-        }
-        if (sub_value->getIdentifierType() ==
-            Identifier_Type::Multiple_Resources) {
-          auto sub_sub_subpack = TLV_Pack(sub_value->getBytes());
+        } else if (sub_value->getIdentifierType() ==
+                   Identifier_Type::Multiple_Resources) {
+          auto subpack_bytes = sub_value->getBytes();
+          auto sub_sub_subpack = TLV_Pack(subpack_bytes);
           auto sub_sub_values = tlv_subpack.getPackAsVector();
           for (auto sub_sub_value : sub_sub_values) {
             // Same as before, Object ID is a mystery, without checkin the
@@ -286,13 +287,15 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
             auto target = ElementID(0, values[0]->getIdentifier(),
                                     sub_value->getIdentifier(),
                                     sub_sub_value->getIdentifier());
-            auto value = make_shared<DataFormat>(sub_value->getValue());
+            auto value = make_shared<DataFormat>(sub_sub_value->getValue());
             targets_and_values.emplace_back(target, value);
           }
         }
+        return make_shared<LwM2M::Payload>(targets_and_values);
       }
-      return make_shared<LwM2M::Payload>(targets_and_values);
     }
+  } else {
+    return LwM2M::PayloadPtr();
   }
 }
 
