@@ -44,11 +44,16 @@ ReadRequestPtr makeReadRequest(DiscoverRequestPtr discover) {
 }
 
 ElementIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
-  if (holds_alternative<ElementIDs>(discover_response->payload_->data_)) {
-    return std::get<ElementIDs>(discover_response->payload_->data_);
+  if (discover_response->payload_->hasData()) {
+    if (holds_alternative<ElementIDs>(discover_response->payload_->data_)) {
+      return std::get<ElementIDs>(discover_response->payload_->data_);
+    } else {
+      string error_msg =
+          "Request does not contain a vector of ObjectID instances";
+      throw logic_error(error_msg);
+    }
   } else {
-    string error_msg =
-        "Request does not contain a vector of ObjectID instances";
+    string error_msg = "Discover response has no payload";
     throw logic_error(error_msg);
   }
 }
@@ -57,17 +62,22 @@ ElementIDs handleReadResponse(ClientResponsePtr response,
                               ReadRequestPtr request) {
   ElementIDs result;
   if (response->response_code_ == ResponseCode::CONTENT) {
-    if (holds_alternative<TargetContentVector>(response->payload_->data_)) {
-      auto targets_and_values =
-          std::get<TargetContentVector>(response->payload_->data_);
-      for (auto target_value : targets_and_values) {
-        // This is a very dumb way, but response does not have a valid object
-        // id, since it is set in a request. Who needs redundancy anyways?
-        auto id = ElementID(request->target_.getObjectID(),
-                            target_value.first.getObjectInstanceID(),
-                            target_value.first.getResourceID());
-        result.push_back(id);
+    if (response->payload_->hasData()) {
+      if (holds_alternative<TargetContentVector>(response->payload_->data_)) {
+        auto targets_and_values =
+            std::get<TargetContentVector>(response->payload_->data_);
+        for (auto target_value : targets_and_values) {
+          // This is a very dumb way, but response does not have a valid object
+          // id, since it is set in a request. Who needs redundancy anyways?
+          auto id = ElementID(request->target_.getObjectID(),
+                              target_value.first.getObjectInstanceID(),
+                              target_value.first.getResourceID());
+          result.push_back(id);
+        }
       }
+    } else {
+      string error_msg = "Read response for manual discover has no payload";
+      throw logic_error(error_msg);
     }
   } else {
     throw ResponseReturnedAnErrorCode(response, request);
@@ -167,7 +177,11 @@ ElementIDs Registrator::discoverAvailableDescriptors(
     try {
       logger_->log(SeverityLevel::INFO, "Discovering object {} from {}",
                    (*it)->target_.toString(), (*it)->endpoint_->toString());
+      auto pre_discover_size = requested_instances.size();
       requested_instances += discover(*it);
+      logger_->log(SeverityLevel::TRACE, "Discovered {} elements for target {}",
+                   requested_instances.size() - pre_discover_size,
+                   (*it)->target_.toString());
     }
     // @TODO: handle method not allowed and similar exceptions
     catch (DiscoveryTimeout & /*timeout*/) {
