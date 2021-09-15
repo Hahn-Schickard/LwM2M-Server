@@ -323,6 +323,36 @@ size_t size_of(PayloadData data) {
 }
 
 size_t Payload::size() { return size_of(data_); }
+
+string Payload::dataType() {
+  string result;
+  match(
+      data_, [&](DataFormatPtr /*value*/) { result = "Data Variant"; },
+      [&](TargetContent /*value*/) { result = "Target Content"; },
+      [&](TargetContentVector /*value*/) { result = "Target Content Vector"; },
+      [&](ElementID /*value*/) { result = "Element ID"; },
+      [&](ElementIDs /*value*/) { result = "Element ID vector"; },
+      [&](vector<TargetAttribute> /*value*/) {
+        result = "Target Attribute Vector";
+      });
+
+  return result;
+}
+
+bool Payload::hasData() {
+  bool result;
+  match(data_, [&](DataFormatPtr value) { result = value ? true : false; },
+        [&](TargetContent value) {
+          result = (value.first.size() != 0 ? true : false) &&
+                   (value.second ? true : false);
+        },
+        [&](TargetContentVector value) { result = !(value.empty()); },
+        [&](ElementID value) { result = value.size() != 0 ? true : false; },
+        [&](ElementIDs value) { result = !(value.empty()); },
+        [&](vector<TargetAttribute> value) { result = !(value.empty()); });
+
+  return result;
+}
 } // namespace LwM2M
 
 size_t std::hash<LwM2M::DataFormat>::

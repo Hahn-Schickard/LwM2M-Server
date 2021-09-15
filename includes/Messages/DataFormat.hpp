@@ -166,6 +166,8 @@ struct Payload {
   Payload(PayloadData data, MediaType format = MediaType::NOT_SPECIFIED);
 
   size_t size();
+  std::string dataType();
+  bool hasData();
 };
 
 using PayloadPtr = std::shared_ptr<Payload>;
