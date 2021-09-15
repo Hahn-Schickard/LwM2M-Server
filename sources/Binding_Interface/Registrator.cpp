@@ -167,7 +167,7 @@ ElementIDs Registrator::discoverAvailableDescriptors(
     try {
       logger_->log(SeverityLevel::INFO, "Discovering object {} from {}",
                    (*it)->target_.toString(), (*it)->endpoint_->toString());
-      requested_instances += discover(makeReadRequest(*it));
+      requested_instances += discover(*it);
     }
     // @TODO: handle method not allowed and similar exceptions
     catch (DiscoveryTimeout & /*timeout*/) {
