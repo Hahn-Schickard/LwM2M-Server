@@ -132,7 +132,7 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
       throw ResponseReturnedAnErrorCode(response, request);
     } else {
       if (response->payload_) {
-        if (response->message_type_ == MessageType::DISCOVER) {
+        if (request->message_type_ == MessageType::DISCOVER) {
           return handleDiscoverResponse(move(response));
         } else {
           // we use request in case of failure code, to create and throw an
