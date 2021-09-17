@@ -519,11 +519,6 @@ future<DataFormatPtr> CoAP_Binding::requestData(ServerRequestPtr message) {
             coap_response->getTokenHash(), request->name(),
             request->endpoint_->toString());
         auto response = makeClientResponse(coap_response);
-        logger_->log(SeverityLevel::TRACE,
-                     "Decoded {} as a {} with {} bytes of payload with {} data",
-                     coap_response->getTokenHash(), response->name(),
-                     response->payload_->size(),
-                     response->payload_->dataType());
         dispatched_.erase(std::hash<Message>{}(*request));
         if (response->response_code_ == ResponseCode::CONTENT) {
           if (response->payload_) {
@@ -556,11 +551,6 @@ CoAP_Binding::requestMultiTargetData(ServerRequestPtr message) {
                      coap_response->getTokenHash(), request->name(),
                      request->endpoint_->toString());
         auto response = makeClientResponse(coap_response);
-        logger_->log(SeverityLevel::TRACE,
-                     "Decoded {} as a {} with {} bytes of payload with {} data",
-                     coap_response->getTokenHash(), response->name(),
-                     response->payload_->size(),
-                     response->payload_->dataType());
         dispatched_.erase(std::hash<Message>{}(*request));
         if (response->response_code_ == ResponseCode::CONTENT) {
           if (response->payload_) {
@@ -592,11 +582,6 @@ future<bool> CoAP_Binding::requestAction(ServerRequestPtr message) {
             coap_response->getTokenHash(), request->name(),
             request->endpoint_->toString());
         auto response = makeClientResponse(coap_response);
-        logger_->log(SeverityLevel::TRACE,
-                     "Decoded {} as a {} with {} bytes of payload with {} data",
-                     coap_response->getTokenHash(), response->name(),
-                     response->payload_->size(),
-                     response->payload_->dataType());
         dispatched_.erase(std::hash<Message>{}(*request));
         return static_cast<uint8_t>(response->response_code_) <
                        ERROR_CODES_VALUE
@@ -623,11 +608,6 @@ future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr message) {
             coap_response->getTokenHash(), request->name(),
             request->endpoint_->toString());
         auto response = makeClientResponse(coap_response);
-        logger_->log(SeverityLevel::TRACE,
-                     "Decoded {} as a {} with {} bytes of payload with {} data",
-                     coap_response->getTokenHash(), response->name(),
-                     response->payload_->size(),
-                     response->payload_->dataType());
         dispatched_.erase(std::hash<Message>{}(*request));
         return move(response);
       },
