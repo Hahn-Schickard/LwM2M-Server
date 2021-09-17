@@ -30,6 +30,8 @@ class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
   DeviceRegistryMap device_registry_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
+  void logListenerException(std::exception_ptr ex);
+
 public:
   DeviceRegistry(const std::string &configuration_path);
   ~DeviceRegistry();

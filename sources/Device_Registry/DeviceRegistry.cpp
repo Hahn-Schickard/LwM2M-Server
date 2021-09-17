@@ -11,7 +11,8 @@ DeviceNotFound::DeviceNotFound(string const &identifier)
                     " could not be found in the registry.") {}
 
 DeviceRegistry::DeviceRegistry(const string &configuration_path)
-    : Event_Model::EventSource<RegistryEvent>(),
+    : Event_Model::EventSource<RegistryEvent>(
+          bind(&DeviceRegistry::logListenerException, this, placeholders::_1)),
       logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
@@ -24,6 +25,19 @@ DeviceRegistry::DeviceRegistry(const string &configuration_path)
 
 DeviceRegistry::~DeviceRegistry() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+}
+
+void DeviceRegistry::logListenerException(std::exception_ptr eptr) {
+  try {
+    if (eptr) {
+      std::rethrow_exception(eptr);
+    }
+  } catch (const std::exception &ex) {
+    logger_->log(SeverityLevel::ERROR,
+                 "One of the listeners threw an exception, while handing an "
+                 "event notification. Exception: {}",
+                 ex.what());
+  }
 }
 
 SupportedObjectDescriptorsMapPtr DeviceRegistry::getSupportedDescriptors() {
