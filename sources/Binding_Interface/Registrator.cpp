@@ -115,8 +115,9 @@ Registrator::assignAvailableDescriptors(ElementIDs requested_instances) {
       if (resource_descriptor != object_resources.end()) {
         if (!resource_descriptor->second->multiple_instances_) {
           logger_->log(SeverityLevel::TRACE,
-                       "Assigning {} object as a descriptor for {}",
-                       descriptor->second->name_, object.toString());
+                       "Assigning {} object {} resource as a descriptor for {}",
+                       descriptor->second->name_,
+                       resource_descriptor->second->name_, object.toString());
           result.emplace(object, descriptor->second);
         } else {
           logger_->log(SeverityLevel::WARNNING,
