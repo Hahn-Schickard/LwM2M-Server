@@ -33,9 +33,9 @@ protected:
   void SetUp() override {
     registry_ = make_shared<DeviceRegistry>("model/passingModel1.xml");
     registrator_ = make_shared<MockRegistrator>(registry_);
-    initial_device_ =
-        make_shared<Device>(registrator_, make_shared<Endpoint>("0.0.0.0", 10),
-                            ObjectDescriptorsMap(), 10, "initial_device");
+    initial_device_ = make_shared<Device>(
+        registrator_, make_shared<Endpoint>("0.0.0.0", 10),
+        ObjectDescriptorsMap(), "123456", 10, "initial_device");
     registry_->registerDevice(initial_device_);
   }
   DeviceRegistryPtr registry_;

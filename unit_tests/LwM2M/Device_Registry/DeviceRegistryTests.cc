@@ -48,7 +48,7 @@ protected:
     listener_ = make_shared<MockRegistryListener>(registry_);
     initial_device_ = make_shared<Device>(
         RequesterPtr(), make_shared<Endpoint>("0.0.0.0", 10),
-        ObjectDescriptorsMap(), 10, "initial_device");
+        ObjectDescriptorsMap(), "1234", 10, "initial_device");
     registry_->registerDevice(initial_device_);
   }
 
@@ -67,7 +67,7 @@ MATCHER_P(EventPtrIsEqual, value, "") {
 TEST_F(DeviceRegistryTests, canRegisterDevice) {
   auto device =
       make_shared<Device>(RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
-                          ObjectDescriptorsMap(), 10, "test_device");
+                          ObjectDescriptorsMap(), "1243135", 10, "test_device");
 
   EXPECT_CALL(
       *listener_,
@@ -76,8 +76,7 @@ TEST_F(DeviceRegistryTests, canRegisterDevice) {
       .Times(1);
 
   try {
-    auto location = registry_->registerDevice(device);
-    EXPECT_EQ(location, device->getDeviceId());
+    registry_->registerDevice(device);
     EXPECT_TRUE(registry_->isRegistered(device->getDeviceId()));
   } catch (exception &ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
@@ -110,9 +109,9 @@ TEST_F(DeviceRegistryTests, deregisterDeviceThrowsDeviceNotFound) {
 }
 
 TEST_F(DeviceRegistryTests, canReregisterDevice) {
-  auto device =
-      make_shared<Device>(RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
-                          ObjectDescriptorsMap(), 10, "test_device");
+  auto device = make_shared<Device>(
+      RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
+      ObjectDescriptorsMap(), "12412325", 10, "test_device");
 
   EXPECT_CALL(
       *listener_,
@@ -125,9 +124,8 @@ TEST_F(DeviceRegistryTests, canReregisterDevice) {
       .Times(1);
 
   try {
-    auto location = registry_->registerDevice(device);
-    location = registry_->registerDevice(device);
-    EXPECT_EQ(location, device->getDeviceId());
+    registry_->registerDevice(device);
+    registry_->registerDevice(device);
     EXPECT_TRUE(registry_->isRegistered(device->getDeviceId()));
   } catch (exception &ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
@@ -153,9 +151,9 @@ TEST_F(DeviceRegistryTests, canUpdateDevice) {
 }
 
 TEST_F(DeviceRegistryTests, updateDeviceThrowsDeviceNotFound) {
-  auto device =
-      make_shared<Device>(RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
-                          ObjectDescriptorsMap(), 10, "test_device");
+  auto device = make_shared<Device>(
+      RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
+      ObjectDescriptorsMap(), "1251212214", 10, "test_device");
   EXPECT_THROW({ registry_->updateDevice(device); }, DeviceNotFound);
 }
 

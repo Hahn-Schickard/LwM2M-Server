@@ -1,12 +1,8 @@
 #ifndef __LWM2M_REGISTRATION_INTERFACE_REGISTER_MESSAGE_HPP
 #define __LWM2M_REGISTRATION_INTERFACE_REGISTER_MESSAGE_HPP
 
+#include "DeviceMetaInfo.hpp"
 #include "Message.hpp"
-#include "ModelType.hpp"
-
-#include <optional>
-#include <unordered_map>
-#include <vector>
 
 namespace LwM2M {
 /**
@@ -55,25 +51,17 @@ using RegisterResponsePtr = std::shared_ptr<RegisterResponse>;
  *
  */
 struct RegisterRequest : ClientRequest {
-  using ObjectInstancesMap =
-      std::unordered_map<unsigned int, std::vector<unsigned int>>;
+  const DeviceMetaInfo device_info_;
 
-  const size_t life_time_;
-  const ObjectInstancesMap object_instances_map_;
-  const std::optional<std::string> endpoint_name_;
-  const LwM2M_Version version_;
-  const std::optional<BindingType> binding_;
-  const std::optional<bool> queue_mode_;
-  const std::optional<std::string> sms_number_;
-
-  RegisterRequest(
-      EndpointPtr endpoint, size_t life_time = 0,
-      ObjectInstancesMap object_instances_map = ObjectInstancesMap(),
-      std::optional<std::string> endpoint_name = std::nullopt,
-      LwM2M_Version version = LwM2M_Version::V1_0,
-      std::optional<BindingType> binding = std::nullopt,
-      std::optional<bool> queue_mode = std::nullopt,
-      std::optional<std::string> sms_number = std::nullopt);
+  RegisterRequest(EndpointPtr endpoint, DeviceMetaInfo device_info);
+  RegisterRequest(EndpointPtr endpoint, size_t life_time = 0,
+                  DeviceMetaInfo::ObjectInstancesMap object_instances_map =
+                      DeviceMetaInfo::ObjectInstancesMap(),
+                  std::optional<std::string> endpoint_name = std::nullopt,
+                  LwM2M_Version version = LwM2M_Version::V1_0,
+                  std::optional<BindingType> binding = std::nullopt,
+                  std::optional<bool> queue_mode = std::nullopt,
+                  std::optional<std::string> sms_number = std::nullopt);
 
   std::string name() override final;
 

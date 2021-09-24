@@ -20,19 +20,15 @@ class Registrator : public Requester,
   DeviceRegistryPtr registry_;
   std::shared_ptr<HaSLL::Logger> logger_;
 
-  /**
-   * @brief Assigns correct LwM2M::ObjectDescriptorMap based on given input.
-   * Ignores unsupported object ids.
-   *
-   * @param requested_instances
-   * @return ObjectDescriptorsMap
-   */
+  void makeDevice(std::string device_id, EndpointPtr device_address,
+                  DeviceMetaInfo device_info);
+
   ObjectDescriptorsMap
   assignAvailableDescriptors(ElementIDs requested_instances);
 
   ElementIDs discoverAvailableDescriptors(
       EndpointPtr endpoint,
-      const RegisterRequest::ObjectInstancesMap object_instances);
+      const DeviceMetaInfo::ObjectInstancesMap object_instances);
 
   ElementIDs discover(ServerRequestPtr request);
 

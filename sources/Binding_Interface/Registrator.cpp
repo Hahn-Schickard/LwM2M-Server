@@ -3,7 +3,9 @@
 #include "LoggerRepository.hpp"
 #include "Read.hpp"
 
+#include <iomanip>
 #include <iterator>
+#include <sstream>
 #include <vector>
 
 using namespace std;
@@ -20,6 +22,16 @@ struct DiscoveryTimeout : public exception {
   }
 };
 
+string generateDeviceID(string name, EndpointPtr endpoint) {
+  auto address = endpoint->toString();
+  auto offset = address.size();
+  size_t result = hash<string>{}(name) << offset;
+  result |= hash<string>{}(address);
+  stringstream stream;
+  stream << hex << result;
+  return stream.str();
+}
+
 ElementIDs &operator+=(ElementIDs &lhs, const ElementIDs &rhs) {
   if (!rhs.empty()) {
     lhs.insert(lhs.end(), rhs.begin(), rhs.end());
@@ -29,7 +41,7 @@ ElementIDs &operator+=(ElementIDs &lhs, const ElementIDs &rhs) {
 
 vector<DiscoverRequestPtr> makeDiscoverRequests(
     EndpointPtr endpoint,
-    const RegisterRequest::ObjectInstancesMap object_instances) {
+    const DeviceMetaInfo::ObjectInstancesMap object_instances) {
   vector<DiscoverRequestPtr> discover_requests;
   for (auto object_instance_pair : object_instances) {
     auto object_instance = ElementID(object_instance_pair.first);
@@ -181,7 +193,7 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
 
 ElementIDs Registrator::discoverAvailableDescriptors(
     EndpointPtr endpoint,
-    const RegisterRequest::ObjectInstancesMap object_instances) {
+    const DeviceMetaInfo::ObjectInstancesMap object_instances) {
   auto requests = makeDiscoverRequests(endpoint, object_instances);
 
   ElementIDs requested_instances;
@@ -227,23 +239,41 @@ ElementIDs Registrator::discoverAvailableDescriptors(
   return requested_instances;
 }
 
+void Registrator::makeDevice(string device_id, EndpointPtr device_address,
+                             DeviceMetaInfo device_info) {
+  auto instances = discoverAvailableDescriptors(
+      device_address, device_info.object_instances_map_);
+  auto object_ids = assignAvailableDescriptors(instances);
+  RequesterPtr requester = shared_from_this();
+  auto device =
+      make_shared<Device>(requester, device_address, object_ids, device_id,
+                          device_info.life_time_.value_or(300),
+                          device_info.endpoint_name_.value_or(string()),
+                          device_info.version_.value_or(LwM2M_Version::V1_0),
+                          device_info.binding_.value_or(BindingType::UDP),
+                          device_info.queue_mode_.value_or(false));
+
+  registry_->registerDevice(device);
+}
+
 RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE,
                  "Handling a Registration request from {}:{}",
                  request->endpoint_->endpoint_address_,
                  request->endpoint_->endpoint_port_);
-    auto instances = discoverAvailableDescriptors(
-        request->endpoint_, request->object_instances_map_);
-    auto object_ids = assignAvailableDescriptors(instances);
     try {
-      RequesterPtr requester = shared_from_this();
-      auto device = make_shared<Device>(
-          requester, request->endpoint_, object_ids, request->life_time_,
-          request->endpoint_name_.value_or(string()), request->version_,
-          request->binding_.value_or(BindingType::UDP),
-          request->queue_mode_.value_or(false));
-      auto location = registry_->registerDevice(device);
+      auto location = generateDeviceID(
+          request->device_info_.endpoint_name_.value_or(string()),
+          request->endpoint_);
+
+      thread(
+          [this](string device_id, EndpointPtr device_address,
+                 DeviceMetaInfo device_info) {
+            makeDevice(device_id, device_address, device_info);
+          },
+          location, request->endpoint_, request->device_info_)
+          .detach();
       return request->makeResponse(location);
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
@@ -264,28 +294,29 @@ UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
                  request->endpoint_->endpoint_port_);
     try {
       auto device = registry_->getDevice(request->location_);
-      if (!request->object_instances_map_.empty()) {
+      auto device_info = request->device_info_;
+      if (!device_info.object_instances_map_.empty()) {
         auto instances = discoverAvailableDescriptors(
-            request->endpoint_, request->object_instances_map_);
+            request->endpoint_, device_info.object_instances_map_);
         auto object_instances = assignAvailableDescriptors(instances);
         logger_->log(SeverityLevel::TRACE,
                      "Assigning new Object Instance map to {}:{} device.",
                      device->getDeviceId(), device->getName());
         device->updateObjectsMap(object_instances);
       }
-      if (request->lifetime_.has_value()) {
+      if (device_info.life_time_.has_value()) {
         logger_->log(SeverityLevel::TRACE, "Updating lifetime of {}:{} device.",
                      device->getDeviceId(), device->getName());
-        device->updateLifetime(request->lifetime_.value());
+        device->updateLifetime(device_info.life_time_.value());
       }
-      if (request->binding_.has_value()) {
+      if (device_info.binding_.has_value()) {
         logger_->log(SeverityLevel::TRACE,
                      "Changing {}:{} device binding type to {}.",
                      device->getDeviceId(), device->getName(),
-                     toString(request->binding_.value()));
-        device->updateBinding(request->binding_.value());
+                     toString(device_info.binding_.value()));
+        device->updateBinding(device_info.binding_.value());
       }
-      if (request->sms_number_.has_value()) {
+      if (device_info.sms_number_.has_value()) {
         logger_->log(SeverityLevel::ERROR, "SMS numbers are not supported!");
         return request->makeResponse(ResponseCode::BAD_REQUEST);
       }

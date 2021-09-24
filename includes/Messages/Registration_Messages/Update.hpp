@@ -1,12 +1,8 @@
 #ifndef __LWM2M_REGISTRATION_INTERFACE_UPDATE_MESSAGE_HPP
 #define __LWM2M_REGISTRATION_INTERFACE_UPDATE_MESSAGE_HPP
 
+#include "DeviceMetaInfo.hpp"
 #include "Message.hpp"
-#include "ModelType.hpp"
-
-#include <optional>
-#include <unordered_map>
-#include <vector>
 
 namespace LwM2M {
 
@@ -52,21 +48,17 @@ using UpdateResponsePtr = std::shared_ptr<UpdateResponse>;
  *
  */
 struct UpdateRequest : ClientRequest {
-  const std::string location_;
-  const std::unordered_map<unsigned int, std::vector<unsigned int>>
-      object_instances_map_;
-  const std::optional<size_t> lifetime_;
-  const std::optional<BindingType> binding_;
-  const std::optional<std::string> sms_number_;
+  std::string location_;
+  const DeviceMetaInfo device_info_;
 
-  UpdateRequest(
-      EndpointPtr endpoint, std::string location,
-      std::unordered_map<unsigned int, std::vector<unsigned int>>
-          object_instances_map =
-              std::unordered_map<unsigned int, std::vector<unsigned int>>(),
-      std::optional<size_t> lifetime = std::nullopt,
-      std::optional<BindingType> binding = std::nullopt,
-      std::optional<std::string> sms_number = std::nullopt);
+  UpdateRequest(EndpointPtr endpoint, std::string location,
+                DeviceMetaInfo device_info);
+  UpdateRequest(EndpointPtr endpoint, std::string location,
+                DeviceMetaInfo::ObjectInstancesMap object_instances_map =
+                    DeviceMetaInfo::ObjectInstancesMap(),
+                std::optional<size_t> lifetime = std::nullopt,
+                std::optional<BindingType> binding = std::nullopt,
+                std::optional<std::string> sms_number = std::nullopt);
 
   std::string name() override final;
 

@@ -42,8 +42,8 @@ class Device {
   RequesterPtr requester_;
   EndpointPtr endpoint_;
   ObjectsMap object_instances_;
-  size_t life_time_;
   std::string device_id_;
+  size_t life_time_;
   std::string name_;
   LwM2M_Version version_;
   BindingType binding_;
@@ -54,8 +54,8 @@ class Device {
 public:
   Device() = default;
   Device(RequesterPtr requester, EndpointPtr endpoint,
-         ObjectDescriptorsMap object_descriptors_map, size_t life_time,
-         std::string name = std::string(),
+         ObjectDescriptorsMap object_descriptors_map, std::string device_id,
+         size_t life_time, std::string name = std::string(),
          LwM2M_Version version = LwM2M_Version::V1_0,
          BindingType binding = BindingType::UDP, bool queue_mode = false);
 

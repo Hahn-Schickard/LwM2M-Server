@@ -21,14 +21,20 @@ UpdateResponse::UpdateResponse(EndpointPtr endpoint, string location)
 
 string UpdateResponse::name() { return "UpdateResponse"; }
 
+UpdateRequest::UpdateRequest(EndpointPtr endpoint, string location,
+                             DeviceMetaInfo device_info)
+    : ClientRequest(endpoint, MessageType::UPDATE, InterfaceType::REGISTRATION),
+      location_(location), device_info_(device_info) {}
+
 UpdateRequest::UpdateRequest(
     EndpointPtr endpoint, string location,
-    unordered_map<unsigned int, vector<unsigned int>> object_instances_map,
+    DeviceMetaInfo::ObjectInstancesMap object_instances_map,
     optional<size_t> lifetime, optional<BindingType> binding,
     optional<string> sms_number)
     : ClientRequest(endpoint, MessageType::UPDATE, InterfaceType::REGISTRATION),
-      location_(location), object_instances_map_(object_instances_map),
-      lifetime_(lifetime), binding_(binding), sms_number_(sms_number) {}
+      location_(location),
+      device_info_(DeviceMetaInfo(lifetime, object_instances_map, nullopt,
+                                  nullopt, binding, nullopt, sms_number)) {}
 
 string UpdateRequest::name() { return "UpdateRequest"; }
 

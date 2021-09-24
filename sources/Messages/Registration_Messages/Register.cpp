@@ -24,17 +24,23 @@ RegisterResponse::RegisterResponse(EndpointPtr endpoint, string location)
 
 string RegisterResponse::name() { return "RegisterResponse"; }
 
+RegisterRequest::RegisterRequest(EndpointPtr endpoint,
+                                 DeviceMetaInfo device_info)
+    : ClientRequest(endpoint, MessageType::REGISTER,
+                    InterfaceType::REGISTRATION),
+      device_info_(device_info) {}
+
 RegisterRequest::RegisterRequest(
     EndpointPtr endpoint, size_t life_time,
-    RegisterRequest::ObjectInstancesMap object_instances_map,
+    DeviceMetaInfo::ObjectInstancesMap object_instances_map,
     optional<string> endpoint_name, LwM2M_Version version,
     optional<BindingType> binding, optional<bool> queue_mode,
     optional<string> sms_number)
     : ClientRequest(endpoint, MessageType::REGISTER,
                     InterfaceType::REGISTRATION),
-      life_time_(life_time), object_instances_map_(object_instances_map),
-      endpoint_name_(endpoint_name), version_(version), binding_(binding),
-      queue_mode_(queue_mode), sms_number_(sms_number) {}
+      device_info_(DeviceMetaInfo(life_time, object_instances_map,
+                                  endpoint_name, version, binding, queue_mode,
+                                  sms_number)) {}
 
 string RegisterRequest::name() { return "RegisterRequest"; }
 
