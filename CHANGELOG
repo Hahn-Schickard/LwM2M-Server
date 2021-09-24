@@ -1,3 +1,35 @@
+## [0.3.1] - NOT RELEASED
+### Added
+ - DeviceMetaInfo class to store device information from Registration Interface
+ - makeDevice method to Registrator class
+ - manual discovery mechanism, inc case of DiscoverRequest failure
+ - ObjectInstance Read support
+ - TargetContentVector payload support in handleReadResponse method of Registrator class
+ - cancelRequest to allow for cancellation of discovery 
+ - ElementID field to DiscoverRequest for easier discovery mechanism
+ - ElementID field to ReadRequest for easier manual discovery mechanism
+ - getIdentifierType method to TLV class
+ - Payload hashers
+ - save mechanism to CoAP_Binding for encoded coap messages to support cancelRequest
+ - multi resource read support
+ - tlv identifier and length field converters
+ - draft handler for object without instance
+ - hasData checker to PayloadPtr
+
+### Changed
+ - CoAPS4Cpp to v0.3.1
+ - handleRequest(RegisterRequest) method to assign register location before DevicePtr is built
+ - RegisterRequest to use DeviceMetaInfo class
+ - UpdateRequest to use DeviceMetaInfo class
+ - Device ID generation to be done in Registrator instead of Device ctor
+ - Device ctor to accept device id specification
+ - DeviceRegistryTests to use new registration request handler
+ - RegistratorTests to use new Device ctor
+ - Event creation and dispatchment in DeviceRegistry
+
+### Removed
+ - unused nlohmann_json links
+
 ## [0.3.0] - 2021.08.09
 ### Added
  - explicit Endpoint constructors 
@@ -29,7 +61,7 @@
  - CoAPS4Cpp to v0.3.0
  - Event_Model to v0.3.0
  - Object, Object Instance, Resource and Resource Instance ID modelling
- 
+
 ### Fixed 
  - ResourceTests.cc to set correct ctor parameters
  - Register.cc to set correct ctor parameters
