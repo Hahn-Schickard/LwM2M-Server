@@ -50,7 +50,7 @@ public:
    *
    * @param new_device
    */
-  std::string registerDevice(DevicePtr new_device);
+  void registerDevice(DevicePtr new_device);
 
   /**
    * @brief Check if a given LwM2M::Device exists in the current registry and

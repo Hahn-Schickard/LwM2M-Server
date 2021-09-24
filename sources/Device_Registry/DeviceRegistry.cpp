@@ -49,7 +49,7 @@ bool DeviceRegistry::isRegistered(string identifier) {
                                                                        : false;
 }
 
-string DeviceRegistry::registerDevice(DevicePtr new_device) {
+void DeviceRegistry::registerDevice(DevicePtr new_device) {
   if (new_device) {
     if (isRegistered(new_device->getDeviceId())) {
       logger_->log(SeverityLevel::TRACE,
@@ -67,7 +67,6 @@ string DeviceRegistry::registerDevice(DevicePtr new_device) {
                  "Dispatching registration event for device {}:{}",
                  new_device->getName(), new_device->getDeviceId());
     notify(event);
-    return new_device->getDeviceId();
   } else {
     throw invalid_argument("Target device can not be a null pointer.");
   }
