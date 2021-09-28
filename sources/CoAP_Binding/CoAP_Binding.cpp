@@ -664,6 +664,15 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
         auto endpoint = make_shared<Endpoint>(message->getAddressIP(),
                                               message->getAddressPort());
         return ex.response_;
+      } catch (exception &ex) {
+        logger_->log(SeverityLevel::CRITICAL,
+                     "Received an unhandled exception while decoding a "
+                     "registration request. Exception: {};",
+                     ex.what());
+        auto endpoint = make_shared<Endpoint>(message->getAddressIP(),
+                                              message->getAddressPort());
+        return make_shared<RegisterResponse>(endpoint,
+                                             ResponseCode::BAD_REQUEST);
       }
     }
   }
