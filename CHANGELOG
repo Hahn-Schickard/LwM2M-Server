@@ -15,6 +15,7 @@
  - tlv identifier and length field converters
  - draft handler for object without instance
  - hasData checker to PayloadPtr
+ - fallback mechanism when building registration request, in case of Content Format option not being set by the caller
 
 ### Changed
  - CoAPS4Cpp to v0.3.1
