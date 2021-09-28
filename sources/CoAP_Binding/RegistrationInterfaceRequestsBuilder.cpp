@@ -1,5 +1,6 @@
 #include "RegistrationInterfaceRequestsBuilder.hpp"
 #include "CoAP/CoRE_Link.hpp"
+#include "CoAP/SupportedContentFormats.hpp"
 
 #include <optional>
 #include <sstream>
@@ -156,7 +157,25 @@ unordered_map<unsigned int, vector<unsigned int>>
 getObjectList(CoAP::PayloadPtr payload) {
   unordered_map<unsigned int, vector<unsigned int>> result;
   if (payload) {
-    auto core_links = decode<CoRE_Links>(payload);
+    CoRE_Links core_links;
+    try {
+      core_links = decode<CoRE_Links>(payload);
+    } catch (CoAP::WrongContentFormatTypeDecoder &ex) {
+      auto content_format = ex.format_type_;
+      uint16_t octect_stream_index =
+          CoAP::ContentFormatEncodings::Octet_Stream::index;
+      if (content_format->getIndex() == octect_stream_index) {
+        // do manual decoding, because someone was naughty and did NOT set the
+        // proper Content Format option
+        auto buffer = payload->getBytes();
+        core_links = CoRE_Links(string(buffer.begin(), buffer.end()));
+      } else {
+        string error_msg = to_string(content_format->getIndex()) +
+                           " is not a supported CoAP Content Format type for "
+                           "registration interface!";
+        throw runtime_error(error_msg);
+      }
+    }
     for (auto core_link : core_links.getLinks()) {
       auto version_attribute =
           core_link.getAttributes().find(CoRELinkAttribute::VERSION);
