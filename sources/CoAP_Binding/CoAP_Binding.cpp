@@ -241,6 +241,10 @@ LwM2M::PayloadPtr toPayload(CoRE_Links content) {
   ElementIDs result;
   for (auto link : content.getLinks()) {
     auto targets = link.splitTarget('/');
+    // ignore empty root element
+    if (targets.begin()->empty()) {
+      targets.erase(targets.begin());
+    }
     // focus on resource targets
     if (targets.size() == 3) {
       auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
@@ -652,7 +656,7 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
             auto request = buildUpdateRequest(message);
             return Registrator::handleRquest(move(request));
           } else {
-            auto request = buildRegisterRequest(message);
+            auto request = buildRegisterRequest(message, logger_);
             return Registrator::handleRquest(move(request));
           }
         } else if (message->getHeader()->getCodeType() ==

@@ -125,6 +125,10 @@ vector<string> split(const string &s, char delimiter) {
 pair<unsigned int, optional<unsigned int>>
 makeObjectInstancePair(CoRE_Link link) {
   vector<string> uri_targets = split(link.getTarget(), '/');
+  // ignore empty root element
+  if (uri_targets.begin()->empty()) {
+    uri_targets.erase(uri_targets.begin());
+  }
   if (uri_targets.size() == 1) {
     // object without an instance (should be created)
     return make_pair<unsigned int, optional<unsigned int>>(
@@ -177,14 +181,10 @@ getObjectList(CoAP::PayloadPtr payload) {
       }
     }
     for (auto core_link : core_links.getLinks()) {
-      auto version_attribute =
-          core_link.getAttributes().find(CoRELinkAttribute::VERSION);
-      // ignore core links that are newer than 1.0
-      if (version_attribute == core_link.getAttributes().end()) {
-        if (core_link.getTarget() != "/" && !core_link.getTarget().empty()) {
-          auto object_instance = makeObjectInstancePair(core_link);
-          addToMap(result, object_instance);
-        }
+      // ignore root and empty targets
+      if (core_link.getTarget() != "/" && !core_link.getTarget().empty()) {
+        auto object_instance = makeObjectInstancePair(core_link);
+        addToMap(result, object_instance);
       }
     }
   }
