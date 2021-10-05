@@ -37,9 +37,9 @@ int main(int argc, const char *argv[]) {
     }
 
     server->stop();
-    exit(EXIT_SUCCESS);
   } catch (const exception &ex) {
     cerr << ex.what();
     exit(EXIT_FAILURE);
   }
+  exit(EXIT_SUCCESS);
 }
