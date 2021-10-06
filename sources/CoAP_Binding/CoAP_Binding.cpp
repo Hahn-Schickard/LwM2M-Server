@@ -449,9 +449,26 @@ void CoAP_Binding::stop() {
 ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
+  logger_->log(
+      SeverityLevel::TRACE,
+      "Creating a Client Response from {}:{} CoAP response with Token {}",
+      message->getAddressIP(), message->getAddressPort(),
+      message->getTokenAsHexString());
   try {
     auto code = toResponseCode(message->getHeader()->getCodeType());
+    logger_->log(
+        SeverityLevel::TRACE,
+        "Assigning {} Response Code to Client Response from {}:{} CoAP "
+        "response with Token {}",
+        toString(code), message->getAddressIP(), message->getAddressPort(),
+        message->getTokenAsHexString());
     if (auto payload = message->getPayload()) {
+      logger_->log(
+          SeverityLevel::TRACE,
+          "Assigning payload of {} bytes to Client Response from {}:{} CoAP "
+          "response with Token {}",
+          payload->getBytes().size(), message->getAddressIP(),
+          message->getAddressPort(), message->getTokenAsHexString());
       LwM2M::PayloadPtr content;
       auto options = message->getOptions();
       auto it = options.find(OptionNumber::CONTENT_FORMAT);
@@ -460,16 +477,34 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
             dynamic_pointer_cast<CoAP::ContentFormat>(it->second);
         switch (content_format->getIndex()) {
         case ContentFormatEncodings::PlainText::index: {
+          logger_->log(SeverityLevel::TRACE,
+                       "Decoding payload as Plain Text for Client Response "
+                       "from {}:{} CoAP "
+                       "response with Token {}",
+                       message->getAddressIP(), message->getAddressPort(),
+                       message->getTokenAsHexString());
           auto text = decode<PlainText>(payload);
           content = toPayload(text);
           break;
         }
         case ContentFormatEncodings::CoRE_Link::index: {
+          logger_->log(SeverityLevel::TRACE,
+                       "Decoding payload as CoRE Links for Client Response "
+                       "from {}:{} CoAP "
+                       "response with Token {}",
+                       message->getAddressIP(), message->getAddressPort(),
+                       message->getTokenAsHexString());
           auto core_links = decode<CoRE_Links>(payload);
           content = toPayload(core_links);
           break;
         }
         case ContentFormatEncodings::LwM2M_TLV::index: {
+          logger_->log(SeverityLevel::TRACE,
+                       "Decoding payload as LwM2M TLV for Client Response "
+                       "from {}:{} CoAP "
+                       "response with Token {}",
+                       message->getAddressIP(), message->getAddressPort(),
+                       message->getTokenAsHexString());
           auto tlv = decode<TLV_Pack>(payload);
           content = toPayload(tlv);
           break;
@@ -483,6 +518,12 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
               " is not supported");
         }
         case ContentFormatEncodings::Octet_Stream::index: {
+          logger_->log(SeverityLevel::TRACE,
+                       "Decoding payload as Octet stream for Client Response "
+                       "from {}:{} CoAP "
+                       "response with Token {}",
+                       message->getAddressIP(), message->getAddressPort(),
+                       message->getTokenAsHexString());
           auto octets = decode<OctetStream>(payload);
           content = toPayload(octets);
           break;
