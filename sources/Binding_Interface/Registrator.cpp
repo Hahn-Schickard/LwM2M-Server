@@ -23,9 +23,12 @@ struct DiscoveryTimeout : public exception {
 };
 
 string generateDeviceID(string name, EndpointPtr endpoint) {
+  size_t result = 0;
   auto address = endpoint->toString();
-  auto offset = address.size();
-  size_t result = hash<string>{}(name) << offset;
+  if (!name.empty()) {
+    auto offset = address.size();
+    result |= hash<string>{}(name) << offset;
+  }
   result |= hash<string>{}(address);
   stringstream stream;
   stream << hex << result;
