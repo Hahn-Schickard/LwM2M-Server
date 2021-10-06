@@ -269,7 +269,11 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
       auto location = generateDeviceID(
           request->device_info_.endpoint_name_.value_or(string()),
           request->endpoint_);
-
+      logger_->log(
+          SeverityLevel::TRACE,
+          "Assigning {} as an id for a Registration request from {}:{}",
+          location, request->endpoint_->endpoint_address_,
+          request->endpoint_->endpoint_port_);
       thread(
           [this](string device_id, EndpointPtr device_address,
                  DeviceMetaInfo device_info) {
