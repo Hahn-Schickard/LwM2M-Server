@@ -342,9 +342,15 @@ Options buildOptions(ServerResponsePtr message) {
         if (data) {
           options += build(OptionNumber::LOCATION_PATH, "rd");
           auto location = data->get<string>();
-          options += build(OptionNumber::LOCATION_PATH, location);
+          if (!location.empty()) {
+            options += build(OptionNumber::LOCATION_PATH, location);
+          } else {
+            throw logic_error(
+                "LOCATION_PATH option value can not be an empty string");
+          }
         } else {
-          throw logic_error("LOCATION_PATH option value can not be an empty");
+          throw logic_error(
+              "LOCATION_PATH option value can not be an empty DataFormatPtr");
         }
       } else {
         throw logic_error(
