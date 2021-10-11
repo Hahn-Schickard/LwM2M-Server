@@ -271,7 +271,7 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
           request->endpoint_);
       logger_->log(
           SeverityLevel::TRACE,
-          "Assigning {} as an id for a Registration request from {}:{}",
+          "Assigning {} as a Device id for a Registration request from {}:{}",
           location, request->endpoint_->endpoint_address_,
           request->endpoint_->endpoint_port_);
       thread(
