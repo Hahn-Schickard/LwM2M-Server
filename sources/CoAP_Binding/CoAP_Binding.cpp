@@ -230,6 +230,40 @@ LwM2M::PayloadPtr toPayload(PlainText content) {
       make_shared<DataFormat>(content.toString()));
 }
 
+ElementID toElementID(vector<string> targets) {
+  switch (targets.size()) {
+  case 1: {
+    auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
+    return ElementID(object_id);
+  }
+  case 2: {
+    auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
+    auto instance_id = toUnsignedInteger(targets[1], IntegerBase::BASE_10);
+    return ElementID(object_id, instance_id);
+  }
+  case 3: {
+    auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
+    auto instance_id = toUnsignedInteger(targets[1], IntegerBase::BASE_10);
+    auto resource_id = toUnsignedInteger(targets[2], IntegerBase::BASE_10);
+    return ElementID(object_id, instance_id, resource_id);
+  }
+  case 4: {
+    auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
+    auto instance_id = toUnsignedInteger(targets[1], IntegerBase::BASE_10);
+    auto resource_id = toUnsignedInteger(targets[2], IntegerBase::BASE_10);
+    auto resource_instance_id =
+        toUnsignedInteger(targets[3], IntegerBase::BASE_10);
+    return ElementID(object_id, instance_id, resource_id, resource_instance_id);
+  }
+  default: {
+    string error_msg =
+        "Unsupported CoRE Link Target format. Target is split into " +
+        to_string(targets.size()) + " parts, expected 1,2,3 or 4 parts.";
+    throw runtime_error(error_msg);
+  }
+  }
+}
+
 /**
  * @brief Converts CoRE_Links content to std::vector<ElmentIdVariant> wrapped by
  * LwM2M::PayloadPtr
@@ -240,18 +274,14 @@ LwM2M::PayloadPtr toPayload(PlainText content) {
 LwM2M::PayloadPtr toPayload(CoRE_Links content) {
   ElementIDs result;
   for (auto link : content.getLinks()) {
-    auto targets = link.splitTarget('/');
+    auto target = link.splitTarget('/');
     // ignore empty root element
-    if (targets.begin()->empty()) {
-      targets.erase(targets.begin());
+    if (target.begin()->empty()) {
+      target.erase(target.begin());
     }
-    // focus on resource targets
-    if (targets.size() == 3) {
-      auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
-      auto instance_id = toUnsignedInteger(targets[1], IntegerBase::BASE_10);
-      auto resource_id = toUnsignedInteger(targets[2], IntegerBase::BASE_10);
-      result.emplace_back(ElementID(object_id, instance_id, resource_id));
-    }
+    // @TODO: possibly silently ignore targets that throw runtime_error with a
+    // try-catch block
+    result.emplace_back(toElementID(target));
   }
   if (!result.empty()) {
     return make_shared<LwM2M::Payload>(result);
