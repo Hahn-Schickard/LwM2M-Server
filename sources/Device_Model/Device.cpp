@@ -1,4 +1,5 @@
 #include "Device.hpp"
+#include <optional>
 
 using namespace std;
 
@@ -25,7 +26,11 @@ void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
     RequiredObjectInstances object_instances;
     auto range = object_descriptors_map.equal_range(object_id);
     for (auto instance = range.first; instance != range.second; ++instance) {
-      object_instances.emplace(instance->first);
+      try {
+        object_instances.emplace(instance->first);
+      } catch (bad_optional_access &ex) {
+        // silently ignore element ids without an object instance
+      }
     }
 
     auto object = make_shared<Object>(requester_, endpoint_, object_instances,
