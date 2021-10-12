@@ -33,8 +33,7 @@ shared_ptr<Resource<T>> makeResourcePtr(RequesterPtr requester,
 
 ObjectInstance::ObjectInstance(
     RequesterPtr requester, EndpointPtr endpoint, ElementID id,
-    unordered_map<uint32_t, shared_ptr<ResourceDescriptor>>
-        resource_descriptors)
+    unordered_map<uint32_t, ResourceDescriptorPtr> resource_descriptors)
     : requester_(requester), endpoint_(endpoint), id_(id) {
   for (auto resource_pair : resource_descriptors) {
     switch (resource_pair.second->data_type_) {
