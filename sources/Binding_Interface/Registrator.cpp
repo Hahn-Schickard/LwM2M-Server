@@ -125,22 +125,7 @@ Registrator::assignAvailableDescriptors(ElementIDs requested_instances) {
                  object.toString());
     auto descriptor = supported_object_descriptors->find(object.getObjectID());
     if (descriptor != supported_object_descriptors->end()) {
-      auto object_resources = descriptor->second->resources_;
-      auto resource_descriptor = object_resources.find(object.getResourceID());
-      if (resource_descriptor != object_resources.end()) {
-        if (!resource_descriptor->second->multiple_instances_) {
-          logger_->log(SeverityLevel::TRACE,
-                       "Assigning {} object {} resource as a descriptor for {}",
-                       descriptor->second->name_,
-                       resource_descriptor->second->name_, object.toString());
-          result.emplace(object, descriptor->second);
-        } else {
-          logger_->log(SeverityLevel::WARNNING,
-                       "Ignoring {} resource, since multiple instance "
-                       "resources are not supported",
-                       object.toString());
-        }
-      }
+      result.emplace(object, descriptor->second);
     } else {
       logger_->log(SeverityLevel::WARNNING,
                    "Object id {} is not supported by the server.",
