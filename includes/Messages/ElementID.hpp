@@ -25,6 +25,13 @@ struct ElementID {
    */
   uint16_t getObjectInstanceID() const;
   /**
+   * @brief Checks if Object Instance ID is available
+   *
+   * @return true
+   * @return false
+   */
+  bool hasObjectInstanceID() const;
+  /**
    * @brief Get the Resource ID
    *
    * @throws std::bad_optional_access when there is no value
@@ -33,6 +40,13 @@ struct ElementID {
    */
   uint16_t getResourceID() const;
   /**
+   * @brief Checks if Resource ID is available
+   *
+   * @return true
+   * @return false
+   */
+  bool hastResourceID() const;
+  /**
    * @brief Get the Resource Instance ID
    *
    * @throws std::bad_optional_access when there is no value
@@ -40,8 +54,27 @@ struct ElementID {
    * @return uint16_t
    */
   uint16_t getResourceInstanceID() const;
-
+  /**
+   * @brief Checks if Resource Instance ID is available
+   *
+   * @return true
+   * @return false
+   */
+  bool hasResourceInstanceID() const;
+  /**
+   * @brief Converts the entire Element ID into a string, each sub ID seperated
+   * via `/` character
+   *
+   * @return std::string
+   */
   std::string toString() const;
+  /**
+   * @brief Converts each sub ID within Element ID into a vector of strings,
+   * starting with the object then the object instance, then resource and
+   * resource instance
+   *
+   * @return std::vector<std::string>
+   */
   std::vector<std::string> toStrings() const;
   std::size_t hash() const;
   std::size_t size() const;

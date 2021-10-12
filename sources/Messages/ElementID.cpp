@@ -20,22 +20,34 @@ ElementID::ElementID(uint16_t object, uint16_t object_instance,
 
 uint16_t ElementID::getObjectID() const { return object_; }
 
-uint16_t ElementID::getObjectInstanceID() const { return *object_instance_; }
+uint16_t ElementID::getObjectInstanceID() const {
+  return object_instance_.value();
+}
 
-uint16_t ElementID::getResourceID() const { return *resource_; }
+bool ElementID::hasObjectInstanceID() const {
+  return object_instance_.has_value();
+}
+
+uint16_t ElementID::getResourceID() const { return resource_.value(); }
+
+bool ElementID::hastResourceID() const { return resource_.has_value(); }
 
 uint16_t ElementID::getResourceInstanceID() const {
-  return *resource_instance_;
+  return resource_instance_.value();
+}
+
+bool ElementID::hasResourceInstanceID() const {
+  return resource_instance_.has_value();
 }
 
 string ElementID::toString() const {
   auto result = to_string(object_);
   if (object_instance_) {
-    result += '/' + to_string(*object_instance_);
+    result += '/' + to_string(object_instance_.value());
     if (resource_) {
-      result += '/' + to_string(*resource_);
+      result += '/' + to_string(resource_.value());
       if (resource_instance_) {
-        result += '/' + to_string(*resource_instance_);
+        result += '/' + to_string(resource_instance_.value());
       }
     }
   }
@@ -45,11 +57,11 @@ string ElementID::toString() const {
 vector<string> ElementID::toStrings() const {
   vector<string> result = {to_string(object_)};
   if (object_instance_) {
-    result.emplace_back(to_string(*object_instance_));
+    result.emplace_back(to_string(object_instance_.value()));
     if (resource_) {
-      result.emplace_back(to_string(*resource_));
+      result.emplace_back(to_string(resource_.value()));
       if (resource_instance_) {
-        result.emplace_back(to_string(*resource_instance_));
+        result.emplace_back(to_string(resource_instance_.value()));
       }
     }
   }
@@ -59,14 +71,14 @@ vector<string> ElementID::toStrings() const {
 size_t ElementID::hash() const {
   size_t hash_value = object_;
   if (object_instance_) {
-    hash_value <<= sizeof(*object_instance_) * 2;
-    hash_value |= *object_instance_;
+    hash_value <<= sizeof(object_instance_.value()) * 2;
+    hash_value |= object_instance_.value();
     if (resource_) {
-      hash_value <<= sizeof(*resource_) * 2;
-      hash_value |= *resource_;
+      hash_value <<= sizeof(resource_.value()) * 2;
+      hash_value |= resource_.value();
       if (resource_instance_) {
-        hash_value <<= sizeof(*resource_instance_) * 2;
-        hash_value |= *resource_instance_;
+        hash_value <<= sizeof(resource_instance_.value()) * 2;
+        hash_value |= resource_instance_.value();
       }
     }
   }
@@ -76,11 +88,11 @@ size_t ElementID::hash() const {
 size_t ElementID::size() const {
   size_t result = sizeof(object_);
   if (object_instance_) {
-    result += sizeof(*object_instance_);
+    result += sizeof(object_instance_.value());
     if (resource_) {
-      result += sizeof(*resource_);
+      result += sizeof(resource_.value());
       if (resource_instance_) {
-        result += sizeof(*resource_instance_);
+        result += sizeof(resource_instance_.value());
       }
     }
   }
