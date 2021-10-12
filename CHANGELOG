@@ -16,6 +16,7 @@
  - draft handler for object without instance
  - hasData checker to PayloadPtr
  - fallback mechanism when building registration request, in case of Content Format option not being set by the caller
+ - more trace logging messages in CoAP_Binding::makeClientResponse() method
 
 ### Changed
  - CoAPS4Cpp to v0.3.1
@@ -27,6 +28,12 @@
  - DeviceRegistryTests to use new registration request handler
  - RegistratorTests to use new Device ctor
  - Event creation and dispatchment in DeviceRegistry
+ - multiple_instance resources to be filter down in ObjectInstance class and not in Registrator 
+ - ElementID::getObjectInstanceID(), ElementID::getResourceID() and ElementID::getResourceInstanceID() to correctly return the value or throw std::bad_optional_access exception
+ - Object constructor to silently ignore objects without and assigned instance
+ - Object class internal helper function assignResourceDescriptors() to build mandatory resources first and then check for optional resources
+ - CoRE Link payload decoder in CoAP_Binding to support all available targets
+ - size_of() functions in DataFormat unit, to accept const references instead of values
 
 ### Removed
  - unused nlohmann_json links
