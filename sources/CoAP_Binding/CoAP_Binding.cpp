@@ -811,7 +811,7 @@ CoAP_Binding::handleRegistrationRequest(CoAP::MessagePtr message) {
             auto request = buildUpdateRequest(message);
             return Registrator::handleRquest(move(request));
           } else {
-            auto request = buildRegisterRequest(message, logger_);
+            auto request = buildRegisterRequest(message);
             return Registrator::handleRquest(move(request));
           }
         } else if (message->getHeader()->getCodeType() ==
