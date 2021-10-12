@@ -1,5 +1,7 @@
 #include "Object.hpp"
 
+#include <optional>
+
 using namespace std;
 
 namespace LwM2M {
@@ -10,10 +12,25 @@ ResourceDescriptorMap
 assignResourceDescriptors(ElementIDs requrired,
                           ResourceDescriptorMap supported) {
   ResourceDescriptorMap result;
+  // Assign mandatory resources first
+  for (auto resource : supported) {
+    if (resource.second->mandatory_) {
+      result.emplace(resource);
+    }
+  }
+
   for (auto resource : requrired) {
-    auto it = supported.find(resource.getResourceID());
-    if (it != supported.end()) {
-      result.emplace(*it);
+    try {
+      auto it = supported.find(resource.getResourceID());
+      // Check if resource is supported and not previously assigned
+      if (it != supported.end() && result.find(it->first) == result.end()) {
+        // ignore multiple resource instances
+        if (!it->second->multiple_instances_) {
+          result.emplace(*it);
+        }
+      }
+    } catch (bad_optional_access &ex) {
+      // silently ignore element ids without any resources
     }
   }
   return result;
