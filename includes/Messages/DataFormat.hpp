@@ -148,10 +148,10 @@ using PayloadData =
     std::variant<DataFormatPtr, TargetContent, TargetContentVector, ElementID,
                  ElementIDs, std::vector<TargetAttribute>>;
 
-size_t size_of(TargetAttribute value);
-size_t size_of(TargetContent value);
-size_t size_of(TargetContentVector value);
-size_t size_of(PayloadData data);
+size_t size_of(const TargetAttribute &value);
+size_t size_of(const TargetContent &value);
+size_t size_of(const TargetContentVector &value);
+size_t size_of(const PayloadData &data);
 
 struct Payload {
   const PayloadData data_;

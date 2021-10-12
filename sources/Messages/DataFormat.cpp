@@ -286,15 +286,15 @@ Payload::Payload(vector<TargetAttribute> data) : Payload(PayloadData(data)) {}
 Payload::Payload(PayloadData data, MediaType format)
     : data_(data), media_type_(format) {}
 
-size_t size_of(TargetContent value) {
+size_t size_of(const TargetContent &value) {
   return value.first.size() + value.second->size();
 }
 
-size_t size_of(TargetAttribute value) {
+size_t size_of(const TargetAttribute &value) {
   return value.first.size() + value.second->size();
 }
 
-size_t size_of(TargetContentVector value) {
+size_t size_of(const TargetContentVector &value) {
   size_t result = 0;
   for (auto target_content : value) {
     result += size_of(target_content);
@@ -302,9 +302,14 @@ size_t size_of(TargetContentVector value) {
   return result;
 }
 
-size_t size_of(PayloadData data) {
+size_t size_of(const PayloadData &data) {
   size_t result = 0;
-  match(data, [&](DataFormatPtr value) { result = value->size(); },
+  match(data,
+        [&](DataFormatPtr value) {
+          if (value) {
+            result = value->size();
+          }
+        },
         [&](TargetContent value) { result = size_of(value); },
         [&](TargetContentVector value) { result = size_of(value); },
         [&](ElementID value) { result = value.size(); },
@@ -318,7 +323,6 @@ size_t size_of(PayloadData data) {
             result += size_of(target_attribute);
           }
         });
-
   return result;
 }
 
