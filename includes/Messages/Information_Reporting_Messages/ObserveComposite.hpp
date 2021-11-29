@@ -1,7 +1,7 @@
 #ifndef __LWM2M_INFORMATION_REPORTING_INTERFACE_OBSERVE_COMPOSITE_MESSAGE_HPP
 #define __LWM2M_INFORMATION_REPORTING_INTERFACE_OBSERVE_COMPOSITE_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "InformationReporingMessage.hpp"
 
 #include <vector>
 
@@ -10,7 +10,7 @@ namespace LwM2M {
  * @brief Used to start observing the given elements within the Client.
  *
  */
-struct ObserveCompositeRequest : ServerRequest {
+struct ObserveCompositeRequest : InformationReportingRequest {
   ObserveCompositeRequest(EndpointPtr endpoint,
                           ElementIDs target_ids = ElementIDs());
 

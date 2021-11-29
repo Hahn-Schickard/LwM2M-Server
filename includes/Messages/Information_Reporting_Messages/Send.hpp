@@ -1,7 +1,7 @@
 #ifndef __LWM2M_INFORMATION_REPORTING_INTERFACE_SEND_MESSAGE_HPP
 #define __LWM2M_INFORMATION_REPORTING_INTERFACE_SEND_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "InformationReporingMessage.hpp"
 
 namespace LwM2M {
 /**
@@ -15,7 +15,7 @@ namespace LwM2M {
  * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
  * valid element within the client.
  */
-struct SendResponse : ServerResponse {
+struct SendResponse : InformationReportingDownlinkResponse {
   SendResponse(EndpointPtr endpoint,
                ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
@@ -28,7 +28,7 @@ using SendResponsePtr = std::shared_ptr<SendResponse>;
  * @brief Used by the Client to send data value changes without prior request
  *
  */
-struct SendRequest : ClientRequest {
+struct SendRequest : InformationReportingDownlinkRequest {
   SendRequest(EndpointPtr endpoint,
               TargetContent content = TargetContent(ElementID(0),
                                                     DataFormatPtr()));

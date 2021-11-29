@@ -1,7 +1,7 @@
 #ifndef __LWM2M_INFORMATION_REPORTING_INTERFACE_VALUE_UPDATED_MESSAGE_HPP
 #define __LWM2M_INFORMATION_REPORTING_INTERFACE_VALUE_UPDATED_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "InformationReporingMessage.hpp"
 
 namespace LwM2M {
 /**

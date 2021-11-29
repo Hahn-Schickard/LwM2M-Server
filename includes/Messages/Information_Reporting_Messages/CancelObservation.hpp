@@ -1,14 +1,14 @@
 #ifndef __LWM2M_INFORMATION_REPORTING_INTERFACE_CANCEL_OBSERVE_MESSAGE_HPP
 #define __LWM2M_INFORMATION_REPORTING_INTERFACE_CANCEL_OBSERVE_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "InformationReporingMessage.hpp"
 
 namespace LwM2M {
 /**
  * @brief Used stop the observation of a given element within the Client.
  *
  */
-struct CancelObservationRequest : ServerRequest {
+struct CancelObservationRequest : InformationReportingRequest {
   CancelObservationRequest(EndpointPtr endpoint,
                            ElementID target_id = ElementID(0));
 
