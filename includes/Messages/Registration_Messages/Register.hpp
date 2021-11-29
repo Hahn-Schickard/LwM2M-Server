@@ -2,7 +2,7 @@
 #define __LWM2M_REGISTRATION_INTERFACE_REGISTER_MESSAGE_HPP
 
 #include "DeviceMetaInfo.hpp"
-#include "Message.hpp"
+#include "RegistrationInterfaceMessage.hpp"
 
 namespace LwM2M {
 /**
@@ -10,7 +10,7 @@ namespace LwM2M {
  * successfull, or not
  *
  */
-struct RegisterResponse : ServerResponse {
+struct RegisterResponse : RegistrationInterfaceResponse {
   /**
    * @brief Creates a RegisterResponse with one of the supported failure codes.
    *
@@ -50,7 +50,7 @@ using RegisterResponsePtr = std::shared_ptr<RegisterResponse>;
  * @brief Used to add a new device to the server
  *
  */
-struct RegisterRequest : ClientRequest {
+struct RegisterRequest : RegistrationInterfaceRequest {
   const DeviceMetaInfo device_info_;
 
   RegisterRequest(EndpointPtr endpoint, DeviceMetaInfo device_info);

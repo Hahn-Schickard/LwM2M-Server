@@ -2,7 +2,7 @@
 #define __LWM2M_REGISTRATION_INTERFACE_UPDATE_MESSAGE_HPP
 
 #include "DeviceMetaInfo.hpp"
-#include "Message.hpp"
+#include "RegistrationInterfaceMessage.hpp"
 
 namespace LwM2M {
 
@@ -11,7 +11,7 @@ namespace LwM2M {
  * successfull, or not
  *
  */
-struct UpdateResponse : ServerResponse {
+struct UpdateResponse : RegistrationInterfaceResponse {
   /**
    * @brief Creates a UpdateResponse with one of the supported failure codes.
    *
@@ -47,7 +47,7 @@ using UpdateResponsePtr = std::shared_ptr<UpdateResponse>;
  * @brief Used to update certain LwM2M::Device fields
  *
  */
-struct UpdateRequest : ClientRequest {
+struct UpdateRequest : RegistrationInterfaceRequest {
   std::string location_;
   const DeviceMetaInfo device_info_;
 

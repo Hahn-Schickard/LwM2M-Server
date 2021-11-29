@@ -5,27 +5,26 @@ using namespace std;
 namespace LwM2M {
 DeregisterResponse::DeregisterResponse(EndpointPtr endpoint,
                                        ResponseCode response_code)
-    : ServerResponse(endpoint, MessageType::DEREGISTER,
-                     InterfaceType::REGISTRATION,
-                     unordered_set<ResponseCode>{ResponseCode::BAD_REQUEST,
-                                                 ResponseCode::NOT_FOUND},
-                     response_code) {
+    : RegistrationInterfaceResponse(
+          endpoint, MessageType::DEREGISTER,
+          unordered_set<ResponseCode>{ResponseCode::BAD_REQUEST,
+                                      ResponseCode::NOT_FOUND},
+          response_code) {
   checkResponseCode(response_code);
 }
 
 DeregisterResponse::DeregisterResponse(EndpointPtr endpoint, string location)
-    : ServerResponse(endpoint, MessageType::DEREGISTER,
-                     InterfaceType::REGISTRATION,
-                     unordered_set<ResponseCode>{ResponseCode::DELETED},
-                     ResponseCode::DELETED,
-                     make_shared<Payload>(
-                         make_shared<DataFormat>(DataVariant(location)))) {}
+    : RegistrationInterfaceResponse(
+          endpoint, MessageType::DEREGISTER,
+          unordered_set<ResponseCode>{ResponseCode::DELETED},
+          ResponseCode::DELETED,
+          make_shared<Payload>(
+              make_shared<DataFormat>(DataVariant(location)))) {}
 
 string DeregisterResponse::name() { return "DeregisterResponse"; }
 
 DeregisterRequest::DeregisterRequest(EndpointPtr endpoint, string location)
-    : ClientRequest(endpoint, MessageType::DEREGISTER,
-                    InterfaceType::REGISTRATION),
+    : RegistrationInterfaceRequest(endpoint, MessageType::DEREGISTER),
       location_(location) {}
 
 string DeregisterRequest::name() { return "DeregisterRequest"; }

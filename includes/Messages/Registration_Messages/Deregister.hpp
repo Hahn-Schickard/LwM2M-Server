@@ -1,7 +1,7 @@
 #ifndef __LWM2M_REGISTRATION_INTERFACE_DEREGISTER_MESSAGE_HPP
 #define __LWM2M_REGISTRATION_INTERFACE_DEREGISTER_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "RegistrationInterfaceMessage.hpp"
 
 namespace LwM2M {
 /**
@@ -9,7 +9,7 @@ namespace LwM2M {
  * was successfull, or not
  *
  */
-struct DeregisterResponse : ServerResponse {
+struct DeregisterResponse : RegistrationInterfaceResponse {
   /**
    * @brief Creates a DeregisterResponse with one of the supported failure
    * codes.
@@ -45,7 +45,7 @@ using DeregisterResponsePtr = std::shared_ptr<DeregisterResponse>;
  * by unique DeviceID, specified in the location argument
  *
  */
-struct DeregisterRequest : ClientRequest {
+struct DeregisterRequest : RegistrationInterfaceRequest {
   const std::string location_;
 
   DeregisterRequest(EndpointPtr endpoint, std::string location);
