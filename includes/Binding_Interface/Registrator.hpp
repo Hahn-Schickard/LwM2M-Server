@@ -32,6 +32,9 @@ class Registrator : public Requester,
 
   ElementIDs discover(ServerRequestPtr request);
 
+  void handleDeviceException(std::string device_id,
+                             std::exception_ptr exception_ptr);
+
 public:
   Registrator(DeviceRegistryPtr registry);
 

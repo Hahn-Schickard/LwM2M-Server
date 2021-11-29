@@ -227,6 +227,18 @@ ElementIDs Registrator::discoverAvailableDescriptors(
   return requested_instances;
 }
 
+void Registrator::handleDeviceException(std::string device_id,
+                                        std::exception_ptr exception_ptr) {
+  try {
+    if (exception_ptr) {
+      std::rethrow_exception(exception_ptr);
+    }
+  } catch (const std::exception &exp) {
+    logger_->log(SeverityLevel::ERROR, "Device {} threw an exception: {}",
+                 device_id, exp.what());
+  }
+}
+
 void Registrator::makeDevice(string device_id, EndpointPtr device_address,
                              DeviceMetaInfo device_info) {
   auto instances = discoverAvailableDescriptors(
@@ -234,7 +246,9 @@ void Registrator::makeDevice(string device_id, EndpointPtr device_address,
   auto object_ids = assignAvailableDescriptors(instances);
   RequesterPtr requester = shared_from_this();
   auto device =
-      make_shared<Device>(requester, device_address, object_ids, device_id,
+      make_shared<Device>(bind(&Registrator::handleDeviceException, this,
+                               device_id, placeholders::_1),
+                          requester, device_address, object_ids, device_id,
                           device_info.life_time_.value_or(300),
                           device_info.endpoint_name_.value_or(string()),
                           device_info.version_.value_or(LwM2M_Version::V1_0),
