@@ -70,6 +70,13 @@ protected:
       : ClientRequest(endpoint, message_type,
                       InterfaceType::INFORMATION_REPORTING, payload) {}
 };
+
+using InformationReportingRequestPtr =
+    std::shared_ptr<InformationReportingRequest>;
+using InformationReportingDownlinkResponsePtr =
+    std::shared_ptr<InformationReportingDownlinkResponse>;
+using InformationReportingDownlinkRequestPtr =
+    std::shared_ptr<InformationReportingDownlinkRequest>;
 } // namespace LwM2M
 
 #endif //__LWM2M_INFORMATION_REPORTING_INTERFACE_MESSAGE_HPP
