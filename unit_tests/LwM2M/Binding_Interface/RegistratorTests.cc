@@ -15,11 +15,21 @@ struct MockRegistrator : public Registrator, public ExceptionHandlerInterface {
 
   MockRegistrator(DeviceRegistryPtr registry) : Registrator(registry) {}
 
-  MOCK_METHOD(std::future<DataFormatPtr>, requestData, (ServerRequestPtr),
-              (override));
+  MOCK_METHOD(std::future<DataFormatPtr>, requestData,
+              (DeviceManagementRequestPtr), (override));
+  MOCK_METHOD(void, cancelRequest, (ServerRequestPtr), (override));
   MOCK_METHOD(std::future<TargetContentVector>, requestMultiTargetData,
-              (ServerRequestPtr message), (override));
-  MOCK_METHOD(std::future<bool>, requestAction, (ServerRequestPtr), (override));
+              (DeviceManagementRequestPtr message), (override));
+  MOCK_METHOD(std::future<bool>, requestAction, (DeviceManagementRequestPtr),
+              (override));
+  MOCK_METHOD(size_t, requestObservation,
+              (std::function<void(DataFormatPtr)>,
+               InformationReportingRequestPtr),
+              (override));
+  MOCK_METHOD(void, cancelObservation, (size_t, InformationReportingRequestPtr),
+              (override));
+  MOCK_METHOD(std::future<ClientResponsePtr>, request, (ServerRequestPtr),
+              (override));
   MOCK_METHOD(void, handleDeviceException, (std::exception_ptr), (override));
 };
 

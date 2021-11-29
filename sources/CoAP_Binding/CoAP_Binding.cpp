@@ -600,10 +600,11 @@ ClientResponsePtr CoAP_Binding::makeClientResponse(CoAP::MessagePtr message) {
   }
 }
 
-future<DataFormatPtr> CoAP_Binding::requestData(ServerRequestPtr message) {
+future<DataFormatPtr>
+CoAP_Binding::requestData(DeviceManagementRequestPtr message) {
   return async(
       launch::async,
-      [this](ServerRequestPtr request) -> DataFormatPtr {
+      [this](DeviceManagementRequestPtr request) -> DataFormatPtr {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
                      "Dispatching {}:{} as a data request to {}",
@@ -632,10 +633,10 @@ future<DataFormatPtr> CoAP_Binding::requestData(ServerRequestPtr message) {
 }
 
 future<TargetContentVector>
-CoAP_Binding::requestMultiTargetData(ServerRequestPtr message) {
+CoAP_Binding::requestMultiTargetData(DeviceManagementRequestPtr message) {
   return async(
       launch::async,
-      [this](ServerRequestPtr request) -> TargetContentVector {
+      [this](DeviceManagementRequestPtr request) -> TargetContentVector {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
                      "Dispatching {}:{} as a multi target request to {}",
@@ -663,10 +664,10 @@ CoAP_Binding::requestMultiTargetData(ServerRequestPtr message) {
       message);
 }
 
-future<bool> CoAP_Binding::requestAction(ServerRequestPtr message) {
+future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr message) {
   return async(
       launch::async,
-      [this](ServerRequestPtr request) -> bool {
+      [this](DeviceManagementRequestPtr request) -> bool {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
                      "Dispatching {}:{} as an action to {}", request->name(),
@@ -714,11 +715,11 @@ future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr message) {
 
 size_t
 CoAP_Binding::requestObservation(std::function<void(DataFormatPtr)> notify_cb,
-                                 ServerRequestPtr message) {
+                                 InformationReportingRequestPtr message) {
   if (message) {
     if (message->interface_ == InterfaceType::INFORMATION_REPORTING) {
-      // auto request = encodeObserveRequest(message);
-    } else {
+    // auto request = encodeObserveRequest(message);
+  } else {
       throw invalid_argument("requestObservation ServerRequestPtr must be a "
                              "type of Information Reporting message");
     }
@@ -740,7 +741,7 @@ CoAP_Binding::requestObservation(std::function<void(DataFormatPtr)> notify_cb,
 }
 
 void CoAP_Binding::cancelObservation(size_t observer_id,
-                                     ServerRequestPtr message) {
+                                     InformationReportingRequestPtr message) {
   // check if a given observer_id exists in observed_elements_ map, if not, exit
   // check if a given message is a type of information reporting request
   // encode it to CoAP message

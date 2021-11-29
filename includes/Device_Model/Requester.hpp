@@ -1,7 +1,8 @@
 #ifndef __LWM2M_REQUESTER_INTERFACE_HPP
 #define __LWM2M_REQUESTER_INTERFACE_HPP
 
-#include "Message.hpp"
+#include "Device_Managment_Messages/DeviceManagmentMessage.hpp"
+#include "Information_Reporting_Messages/InformationReporingMessage.hpp"
 
 #include <functional>
 #include <future>
@@ -49,7 +50,8 @@ struct Requester {
    * @param message
    * @return std::future<DataFormat>
    */
-  virtual std::future<DataFormatPtr> requestData(ServerRequestPtr /*message*/) {
+  virtual std::future<DataFormatPtr>
+  requestData(DeviceManagementRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestData implementation.");
   }
 
@@ -79,7 +81,7 @@ struct Requester {
    * @return std::future<TargetContentVector>
    */
   virtual std::future<TargetContentVector>
-  requestMultiTargetData(ServerRequestPtr /*message*/) {
+  requestMultiTargetData(DeviceManagementRequestPtr /*message*/) {
     throw std::runtime_error(
         "Called base requestMultiTargetData implementation.");
   }
@@ -95,7 +97,8 @@ struct Requester {
    * @param message
    * @return std::future<bool>
    */
-  virtual std::future<bool> requestAction(ServerRequestPtr /*message*/) {
+  virtual std::future<bool>
+  requestAction(DeviceManagementRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestAction implementation.");
   }
 
@@ -115,7 +118,7 @@ struct Requester {
    */
   virtual size_t
   requestObservation(std::function<void(DataFormatPtr)> /* notify_cb */,
-                     ServerRequestPtr /*message*/) {
+                     InformationReportingRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestObservation implementation.");
   }
 
@@ -134,7 +137,7 @@ struct Requester {
    * device
    */
   virtual void cancelObservation(size_t /* observer_id */,
-                                 ServerRequestPtr /*message*/) {
+                                 InformationReportingRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestObservation implementation.");
   }
 

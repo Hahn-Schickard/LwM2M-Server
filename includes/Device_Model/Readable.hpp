@@ -8,13 +8,14 @@
 namespace LwM2M {
 
 template <typename T> class Readable : public Resource<T>, public Observable {
-  std::future<T> asyncDataRequest(ServerRequestPtr message) {
-    return std::async(std::launch::async,
-                      [](RequesterPtr requester, ServerRequestPtr msg) -> T {
-                        auto result = requester->requestData(msg);
-                        return result.get()->get<T>();
-                      },
-                      requester_, message);
+  std::future<T> asyncDataRequest(DeviceManagementRequestPtr message) {
+    return std::async(
+        std::launch::async,
+        [](RequesterPtr requester, DeviceManagementRequestPtr msg) -> T {
+          auto result = requester->requestData(msg);
+          return result.get()->get<T>();
+        },
+        requester_, message);
   }
 
 public:

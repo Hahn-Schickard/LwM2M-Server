@@ -18,16 +18,18 @@ struct CoAP_Binding : public BindingInterface,
 
   // Requester interface implementation
   std::future<DataFormatPtr>
-  requestData(ServerRequestPtr message) override final;
+  requestData(DeviceManagementRequestPtr message) override final;
   std::future<TargetContentVector>
-  requestMultiTargetData(ServerRequestPtr message) override final;
-  std::future<bool> requestAction(ServerRequestPtr message) override final;
+  requestMultiTargetData(DeviceManagementRequestPtr message) override final;
+  std::future<bool>
+  requestAction(DeviceManagementRequestPtr message) override final;
   std::future<ClientResponsePtr>
   request(ServerRequestPtr message) override final;
-  size_t requestObservation(std::function<void(DataFormatPtr)> notify_cb,
-                            ServerRequestPtr message) override final;
+  size_t
+  requestObservation(std::function<void(DataFormatPtr)> notify_cb,
+                     InformationReportingRequestPtr message) override final;
   void cancelObservation(size_t observer_id,
-                         ServerRequestPtr message) override final;
+                         InformationReportingRequestPtr message) override final;
   void cancelRequest(ServerRequestPtr message) override final;
 
   void start();
