@@ -1,6 +1,8 @@
 #include "Registrator.hpp"
 #include "Requester.hpp"
 
+#include "../MockExceptionHandler.hpp"
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -9,7 +11,7 @@
 using namespace LwM2M;
 using namespace std;
 
-struct MockRegistrator : public Registrator {
+struct MockRegistrator : public Registrator, public ExceptionHandlerInterface {
 
   MockRegistrator(DeviceRegistryPtr registry) : Registrator(registry) {}
 
@@ -18,6 +20,7 @@ struct MockRegistrator : public Registrator {
   MOCK_METHOD(std::future<TargetContentVector>, requestMultiTargetData,
               (ServerRequestPtr message), (override));
   MOCK_METHOD(std::future<bool>, requestAction, (ServerRequestPtr), (override));
+  MOCK_METHOD(void, handleDeviceException, (std::exception_ptr), (override));
 };
 
 using MockRequesterPtr = std::shared_ptr<MockRegistrator>;
@@ -33,8 +36,12 @@ protected:
   void SetUp() override {
     registry_ = make_shared<DeviceRegistry>("model/passingModel1.xml");
     registrator_ = make_shared<MockRegistrator>(registry_);
+    function<void(exception_ptr)> callback =
+        bind(&ExceptionHandlerInterface::handleDeviceException,
+             dynamic_pointer_cast<ExceptionHandlerInterface>(registrator_),
+             std::placeholders::_1);
     initial_device_ = make_shared<Device>(
-        registrator_, make_shared<Endpoint>("0.0.0.0", 10),
+        callback, registrator_, make_shared<Endpoint>("0.0.0.0", 10),
         ObjectDescriptorsMap(), "123456", 10, "initial_device");
     registry_->registerDevice(initial_device_);
   }

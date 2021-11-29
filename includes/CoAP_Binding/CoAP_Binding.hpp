@@ -3,7 +3,6 @@
 
 #include "Binding.hpp"
 #include "CoAP/Socket.hpp"
-// #include "CoAP/Config.hpp"
 #include "Logger.hpp"
 #include "Registrator.hpp"
 
@@ -25,6 +24,10 @@ struct CoAP_Binding : public BindingInterface,
   std::future<bool> requestAction(ServerRequestPtr message) override final;
   std::future<ClientResponsePtr>
   request(ServerRequestPtr message) override final;
+  size_t requestObservation(std::function<void(DataFormatPtr)> notify_cb,
+                            ServerRequestPtr message) override final;
+  void cancelObservation(size_t observer_id,
+                         ServerRequestPtr message) override final;
   void cancelRequest(ServerRequestPtr message) override final;
 
   void start();
@@ -43,6 +46,8 @@ private:
 
   std::shared_ptr<HaSLL::Logger> logger_;
   std::unordered_map<std::size_t, CoAP::MessagePtr> dispatched_;
+  std::unordered_map<std::size_t, std::function<void(DataFormatPtr)>>
+      observed_elements_;
 };
 } // namespace LwM2M
 

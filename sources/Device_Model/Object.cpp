@@ -36,8 +36,8 @@ assignResourceDescriptors(ElementIDs requrired,
   return result;
 }
 
-Object::Object(RequesterPtr requester, EndpointPtr endpoint,
-               RequiredObjectInstances instances,
+Object::Object(Observable::ExceptionHandler handler, RequesterPtr requester,
+               EndpointPtr endpoint, RequiredObjectInstances instances,
                ObjectDescriptorPtr descriptor)
     : requester_(requester), endpoint_(endpoint), descriptor_(descriptor) {
   for (auto instance : instances) {
@@ -52,7 +52,7 @@ Object::Object(RequesterPtr requester, EndpointPtr endpoint,
     instances_.emplace(
         instance.getObjectInstanceID(),
         make_shared<ObjectInstance>(
-            requester_, endpoint,
+            handler, requester_, endpoint,
             ElementID(instance.getObjectID(), instance.getObjectInstanceID()),
             available_descriptors));
   }

@@ -1,19 +1,18 @@
 #ifndef __LWM2M_WRITABLE_RESOURCE_HPP
 #define __LWM2M_WRITABLE_RESOURCE_HPP
 
+#include "CallableEntity.hpp"
 #include "Resource.hpp"
 #include "Write.hpp"
 
 namespace LwM2M {
 
 template <typename T>
-class Writable : public Resource<T>, protected ResourceMetaInfo {
+class Writable : public Resource<T>, protected CallableEntity {
 public:
-  Writable(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
-           ResourceDescriptorPtr descriptor)
-      : Resource<T>(), ResourceMetaInfo(requester, endpoint, id, descriptor) {}
-
-  ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
+  Writable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
+           EndpointPtr endpoint, ElementID id)
+      : Resource<T>(descriptor), CallableEntity(requester, endpoint, id) {}
 
   std::future<bool> write(DataVariant data) override {
     auto payload = std::make_shared<DataFormat>(data);

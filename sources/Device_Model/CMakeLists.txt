@@ -19,6 +19,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PUBLIC
                               Messages
+                              Event_Model::Event_Model
 )
 
 target_include_directories(${THIS} INTERFACE

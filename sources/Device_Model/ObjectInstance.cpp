@@ -10,21 +10,24 @@ using namespace std;
 namespace LwM2M {
 
 template <typename T>
-shared_ptr<Resource<T>> makeResourcePtr(RequesterPtr requester,
+shared_ptr<Resource<T>> makeResourcePtr(Observable::ExceptionHandler handler,
+                                        RequesterPtr requester,
                                         EndpointPtr endpoint, ElementID id,
                                         ResourceDescriptorPtr descriptor) {
   switch (descriptor->operations_) {
   case OperationsType::READ: {
-    return make_shared<Readable<T>>(requester, endpoint, id, descriptor);
+    return make_shared<Readable<T>>(descriptor, handler, requester, endpoint,
+                                    id);
   }
   case OperationsType::WRITE: {
-    return make_shared<Writable<T>>(requester, endpoint, id, descriptor);
+    return make_shared<Writable<T>>(descriptor, requester, endpoint, id);
   }
   case OperationsType::READ_AND_WRITE: {
-    return make_shared<ReadAndWritable<T>>(requester, endpoint, id, descriptor);
+    return make_shared<ReadAndWritable<T>>(descriptor, handler, requester,
+                                           endpoint, id);
   }
   case OperationsType::EXECUTE: {
-    return make_shared<Executable<T>>(requester, endpoint, id, descriptor);
+    return make_shared<Executable<T>>(descriptor, requester, endpoint, id);
   }
   case OperationsType::NO_OPERATION:
   default: { return make_shared<Resource<T>>(); }
@@ -32,7 +35,8 @@ shared_ptr<Resource<T>> makeResourcePtr(RequesterPtr requester,
 }
 
 ObjectInstance::ObjectInstance(
-    RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+    Observable::ExceptionHandler handler, RequesterPtr requester,
+    EndpointPtr endpoint, ElementID id,
     unordered_map<uint32_t, ResourceDescriptorPtr> resource_descriptors)
     : requester_(requester), endpoint_(endpoint), id_(id) {
   for (auto resource_pair : resource_descriptors) {
@@ -40,7 +44,7 @@ ObjectInstance::ObjectInstance(
     case DataType::FLOAT: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<double>(requester_, endpoint,
+          makeResourcePtr<double>(handler, requester_, endpoint,
                                   ElementID(id_.getObjectID(),
                                             id.getObjectInstanceID(),
                                             resource_pair.second->id_),
@@ -50,7 +54,7 @@ ObjectInstance::ObjectInstance(
     case DataType::SIGNED_INTEGER: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<int64_t>(requester_, endpoint,
+          makeResourcePtr<int64_t>(handler, requester_, endpoint,
                                    ElementID(id_.getObjectID(),
                                              id.getObjectInstanceID(),
                                              resource_pair.second->id_),
@@ -60,7 +64,7 @@ ObjectInstance::ObjectInstance(
     case DataType::OBJECT_LINK: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<ObjectLink>(requester_, endpoint,
+          makeResourcePtr<ObjectLink>(handler, requester_, endpoint,
                                       ElementID(id_.getObjectID(),
                                                 id.getObjectInstanceID(),
                                                 resource_pair.second->id_),
@@ -70,7 +74,7 @@ ObjectInstance::ObjectInstance(
     case DataType::OPAQUE: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<vector<uint8_t>>(requester_, endpoint,
+          makeResourcePtr<vector<uint8_t>>(handler, requester_, endpoint,
                                            ElementID(id_.getObjectID(),
                                                      id.getObjectInstanceID(),
                                                      resource_pair.second->id_),
@@ -80,7 +84,7 @@ ObjectInstance::ObjectInstance(
     case DataType::STRING: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<string>(requester_, endpoint,
+          makeResourcePtr<string>(handler, requester_, endpoint,
                                   ElementID(id_.getObjectID(),
                                             id.getObjectInstanceID(),
                                             resource_pair.second->id_),
@@ -90,7 +94,7 @@ ObjectInstance::ObjectInstance(
     case DataType::TIME: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<TimeStamp>(requester_, endpoint,
+          makeResourcePtr<TimeStamp>(handler, requester_, endpoint,
                                      ElementID(id_.getObjectID(),
                                                id.getObjectInstanceID(),
                                                resource_pair.second->id_),
@@ -100,7 +104,7 @@ ObjectInstance::ObjectInstance(
     case DataType::UNSIGNED_INTEGER: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<uint64_t>(requester_, endpoint,
+          makeResourcePtr<uint64_t>(handler, requester_, endpoint,
                                     ElementID(id_.getObjectID(),
                                               id.getObjectInstanceID(),
                                               resource_pair.second->id_),
@@ -112,7 +116,7 @@ ObjectInstance::ObjectInstance(
     default: {
       resources_.emplace(
           resource_pair.first,
-          makeResourcePtr<bool>(requester_, endpoint,
+          makeResourcePtr<bool>(handler, requester_, endpoint,
                                 ElementID(id_.getObjectID(),
                                           id.getObjectInstanceID(),
                                           resource_pair.second->id_),

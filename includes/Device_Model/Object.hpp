@@ -47,8 +47,9 @@ class Object {
   ObjectDescriptorPtr descriptor_;
 
 public:
-  Object(RequesterPtr requester, EndpointPtr endpoint,
-         RequiredObjectInstances instances, ObjectDescriptorPtr descriptor);
+  Object(Observable::ExceptionHandler handler, RequesterPtr requester,
+         EndpointPtr endpoint, RequiredObjectInstances instances,
+         ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();
   ObjectInstances getInstances();

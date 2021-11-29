@@ -39,6 +39,7 @@ struct ObjectDoesNotExist : public std::runtime_error {
 };
 
 class Device {
+  Observable::ExceptionHandler exception_handler_;
   RequesterPtr requester_;
   EndpointPtr endpoint_;
   ObjectsMap object_instances_;
@@ -53,9 +54,10 @@ class Device {
 
 public:
   Device() = default;
-  Device(RequesterPtr requester, EndpointPtr endpoint,
-         ObjectDescriptorsMap object_descriptors_map, std::string device_id,
-         size_t life_time, std::string name = std::string(),
+  Device(Observable::ExceptionHandler handler, RequesterPtr requester,
+         EndpointPtr endpoint, ObjectDescriptorsMap object_descriptors_map,
+         std::string device_id, size_t life_time,
+         std::string name = std::string(),
          LwM2M_Version version = LwM2M_Version::V1_0,
          BindingType binding = BindingType::UDP, bool queue_mode = false);
 

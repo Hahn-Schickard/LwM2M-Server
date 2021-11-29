@@ -1,13 +1,13 @@
 #ifndef __LWM2M_READABLE_RESOURCE_HPP
 #define __LWM2M_READABLE_RESOURCE_HPP
 
+#include "Observable.hpp"
 #include "Read.hpp"
 #include "Resource.hpp"
 
 namespace LwM2M {
 
-template <typename T>
-class Readable : public Resource<T>, protected ResourceMetaInfo {
+template <typename T> class Readable : public Resource<T>, public Observable {
   std::future<T> asyncDataRequest(ServerRequestPtr message) {
     return std::async(std::launch::async,
                       [](RequesterPtr requester, ServerRequestPtr msg) -> T {
@@ -18,11 +18,10 @@ class Readable : public Resource<T>, protected ResourceMetaInfo {
   }
 
 public:
-  Readable(RequesterPtr requester, EndpointPtr endpoint, ElementID id,
-           ResourceDescriptorPtr descriptor)
-      : Resource<T>(), ResourceMetaInfo(requester, endpoint, id, descriptor) {}
-
-  ResourceDescriptorPtr getDescriptor() override { return descriptor_; }
+  Readable(ResourceDescriptorPtr descriptor,
+           Observable::ExceptionHandler handler, RequesterPtr requester,
+           EndpointPtr endpoint, ElementID id)
+      : Resource<T>(descriptor), Observable(handler, requester, endpoint, id) {}
 
   std::future<T> read() override {
     auto message = std::make_shared<ReadRequest>(endpoint_, id_);

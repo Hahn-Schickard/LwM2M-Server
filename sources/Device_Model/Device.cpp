@@ -5,13 +5,14 @@ using namespace std;
 
 namespace LwM2M {
 
-Device::Device(RequesterPtr requester, EndpointPtr endpoint,
+Device::Device(Observable::ExceptionHandler handler, RequesterPtr requester,
+               EndpointPtr endpoint,
                ObjectDescriptorsMap object_descriptors_map, string device_id,
                size_t life_time, string name, LwM2M_Version version,
                BindingType binding, bool queue_mode)
-    : requester_(requester), endpoint_(endpoint), device_id_(device_id),
-      life_time_(life_time), name_(name), version_(version), binding_(binding),
-      queue_mode_(queue_mode) {
+    : exception_handler_(handler), requester_(requester), endpoint_(endpoint),
+      device_id_(device_id), life_time_(life_time), name_(name),
+      version_(version), binding_(binding), queue_mode_(queue_mode) {
   makeObjects(object_descriptors_map);
   if (!endpoint_) {
     throw invalid_argument("Endpoint can not be a nullptr!");
@@ -33,8 +34,8 @@ void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
       }
     }
 
-    auto object = make_shared<Object>(requester_, endpoint_, object_instances,
-                                      descriptor);
+    auto object = make_shared<Object>(exception_handler_, requester_, endpoint_,
+                                      object_instances, descriptor);
 
     object_instances_.emplace(object_descriptor_pair.first.getObjectID(),
                               move(object));

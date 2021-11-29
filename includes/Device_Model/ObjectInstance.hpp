@@ -4,6 +4,7 @@
 #include "DataFormat.hpp"
 #include "ElementID.hpp"
 #include "Endpoint.hpp"
+#include "Observable.hpp"
 #include "Requester.hpp"
 #include "Resource.hpp"
 
@@ -33,7 +34,8 @@ class ObjectInstance {
 
 public:
   ObjectInstance(
-      RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+      Observable::ExceptionHandler handler, RequesterPtr requester,
+      EndpointPtr endpoint, ElementID id,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
   ElementID getId();
