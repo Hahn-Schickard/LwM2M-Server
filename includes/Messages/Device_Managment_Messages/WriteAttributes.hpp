@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGEMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGEMENT_WRITE_ATTRIBUTE_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 #include <vector>
 
@@ -12,7 +12,7 @@ namespace LwM2M {
  * Instances/Resources/Resource Instances in a single operation
  *
  */
-struct WriteAttributesRequest : ServerRequest {
+struct WriteAttributesRequest : DeviceManagementRequest {
   WriteAttributesRequest(EndpointPtr endpoint);
   WriteAttributesRequest(EndpointPtr endpoint,
                          std::vector<TargetAttribute> content);

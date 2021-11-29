@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGEMENT_DISCOVER_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGEMENT_DISCOVER_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 namespace LwM2M {
 /**
@@ -10,7 +10,7 @@ namespace LwM2M {
  * given Object Instance.
  *
  */
-struct DiscoverRequest : ServerRequest {
+struct DiscoverRequest : DeviceManagementRequest {
   DiscoverRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
   std::string name() override final;

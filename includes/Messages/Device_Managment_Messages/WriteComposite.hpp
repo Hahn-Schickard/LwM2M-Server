@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGEMENT_WRITE_COMPOSITE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGEMENT_WRITE_COMPOSITE_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 namespace LwM2M {
 /**
@@ -12,7 +12,7 @@ namespace LwM2M {
  * application/senml+cbor [RFC8428] Sensor Measurement Lists data format
  *
  */
-struct WriteCompositeRequest : public ServerRequest {
+struct WriteCompositeRequest : public DeviceManagementRequest {
   WriteCompositeRequest(
       EndpointPtr endpoint,
       std::vector<TargetContent> content = std::vector<TargetContent>());

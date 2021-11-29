@@ -15,14 +15,12 @@ makeTargetAtributesVector(ElementIDs targets, NotifyAttributePtr attribute) {
 }
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint)
-    : ServerRequest(endpoint, MessageType::WRITE_ATTRIBUTES,
-                    InterfaceType::DEVICE_MANAGEMENT) {}
+    : DeviceManagementRequest(endpoint, MessageType::WRITE_ATTRIBUTES) {}
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
                                                vector<TargetAttribute> content)
-    : ServerRequest(endpoint, MessageType::WRITE_ATTRIBUTES,
-                    InterfaceType::DEVICE_MANAGEMENT,
-                    make_shared<Payload>(content)) {}
+    : DeviceManagementRequest(endpoint, MessageType::WRITE_ATTRIBUTES,
+                              make_shared<Payload>(content)) {}
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint,
                                                ElementIDs targets,

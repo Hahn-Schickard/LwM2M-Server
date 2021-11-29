@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGEMENT_READ_COMPOSITE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGEMENT_READ_COMPOSITE_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 #include <vector>
 
@@ -12,7 +12,7 @@ namespace LwM2M {
  * Objects/Object Instances in a single request
  *
  */
-struct ReadCompositeRequest : ServerRequest {
+struct ReadCompositeRequest : DeviceManagementRequest {
   /**
    * @brief Construct a new Read Composite Request object
    *

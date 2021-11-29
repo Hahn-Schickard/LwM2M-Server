@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_MANAGEMENT_EXECUTE_MESSAGE_HPP
 #define __LWM2M_DEVICE_MANAGEMENT_EXECUTE_MESSAGE_HPP
 
-#include "Message.hpp"
+#include "DeviceManagmentMessage.hpp"
 
 #include <vector>
 
@@ -15,7 +15,7 @@ namespace LwM2M {
  * Measurement Lists data formats
  *
  */
-struct ExecuteRequest : ServerRequest {
+struct ExecuteRequest : DeviceManagementRequest {
   ExecuteRequest(EndpointPtr endpoint, ElementID target = ElementID(0));
   ExecuteRequest(EndpointPtr endpoint, ElementID target, std::string arguments);
 
