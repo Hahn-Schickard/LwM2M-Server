@@ -9,11 +9,6 @@
 #include <stdexcept>
 
 namespace LwM2M {
-struct RegistrationInterfaceError : public std::domain_error {
-  ServerResponsePtr response_;
-  RegistrationInterfaceError(ServerResponsePtr response);
-};
-
 RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message);
 
 UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message);

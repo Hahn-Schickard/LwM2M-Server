@@ -3,6 +3,8 @@
 
 #include "Binding.hpp"
 #include "CoAP/Socket.hpp"
+#include "CoAP_Decoder.hpp"
+#include "CoAP_Encoder.hpp"
 #include "Logger.hpp"
 #include "Registrator.hpp"
 
@@ -36,7 +38,6 @@ struct CoAP_Binding : public BindingInterface,
   void stop();
 
 private:
-  ClientResponsePtr makeClientResponse(CoAP::MessagePtr message);
   void handleNotification(CoAP::MessagePtr message);
   ServerResponsePtr handleRegistrationRequest(CoAP::MessagePtr message);
   ServerResponsePtr handleRequest(CoAP::MessagePtr message);
@@ -44,8 +45,12 @@ private:
   // Socket interface implementation
   void handleReceived(CoAP::MessagePtr message) override final;
 
+  // only encodes the request if it was NOT dispatched before, otherwise returns
+  // the dispatched encoded request
   CoAP::MessagePtr encodeRequest(ServerRequestPtr request);
 
+  std::unique_ptr<CoAP_Encoder> encoder_;
+  std::unique_ptr<CoAP_Decoder> decoder_;
   std::shared_ptr<HaSLL::Logger> logger_;
   std::unordered_map<std::size_t, CoAP::MessagePtr> dispatched_;
   std::unordered_map<std::size_t, std::function<void(PayloadDataPtr)>>

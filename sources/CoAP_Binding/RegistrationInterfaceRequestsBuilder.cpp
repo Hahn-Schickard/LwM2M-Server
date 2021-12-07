@@ -12,14 +12,6 @@ using namespace CoAP;
 
 namespace LwM2M {
 
-RegistrationInterfaceError::RegistrationInterfaceError(
-    ServerResponsePtr response)
-    : domain_error("Request " + response->endpoint_->endpoint_address_ + ":" +
-                   to_string(response->endpoint_->endpoint_port_) +
-                   " is missing one of mandatory parameters. Sending " +
-                   response->name()),
-      response_(response) {}
-
 optional<BindingType> getBindingType(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
