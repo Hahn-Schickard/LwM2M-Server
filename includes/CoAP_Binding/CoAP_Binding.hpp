@@ -26,7 +26,7 @@ struct CoAP_Binding : public BindingInterface,
   std::future<ClientResponsePtr>
   request(ServerRequestPtr message) override final;
   size_t
-  requestObservation(std::function<void(DataFormatPtr)> notify_cb,
+  requestObservation(std::function<void(PayloadDataPtr)> notify_cb,
                      InformationReportingRequestPtr message) override final;
   void cancelObservation(size_t observer_id,
                          InformationReportingRequestPtr message) override final;
@@ -48,7 +48,7 @@ private:
 
   std::shared_ptr<HaSLL::Logger> logger_;
   std::unordered_map<std::size_t, CoAP::MessagePtr> dispatched_;
-  std::unordered_map<std::size_t, std::function<void(DataFormatPtr)>>
+  std::unordered_map<std::size_t, std::function<void(PayloadDataPtr)>>
       observed_elements_;
 };
 } // namespace LwM2M

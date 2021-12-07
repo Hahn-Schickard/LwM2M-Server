@@ -23,7 +23,7 @@ struct MockRegistrator : public Registrator, public ExceptionHandlerInterface {
   MOCK_METHOD(std::future<bool>, requestAction, (DeviceManagementRequestPtr),
               (override));
   MOCK_METHOD(size_t, requestObservation,
-              (std::function<void(DataFormatPtr)>,
+              (std::function<void(PayloadDataPtr)>,
                InformationReportingRequestPtr),
               (override));
   MOCK_METHOD(void, cancelObservation, (size_t, InformationReportingRequestPtr),

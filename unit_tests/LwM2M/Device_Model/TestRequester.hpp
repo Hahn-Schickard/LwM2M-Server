@@ -17,7 +17,7 @@ class TestRequester : public Requester {
   std::optional<MultiDataPromise> multi_data_promise_;
   std::optional<ActionPromise> action_promise_;
 
-  std::unordered_map<std::size_t, std::function<void(DataFormatPtr)>>
+  std::unordered_map<std::size_t, std::function<void(PayloadDataPtr)>>
       observed_elements_;
 
 public:
@@ -88,7 +88,7 @@ public:
   }
 
   size_t requestObservation(
-      std::function<void(DataFormatPtr)> notify_cb,
+      std::function<void(PayloadDataPtr)> notify_cb,
       InformationReportingRequestPtr /*message*/) override final {
     auto id = observed_elements_.size();
     observed_elements_.emplace(id, notify_cb);
@@ -149,7 +149,7 @@ public:
     return success;
   }
 
-  bool notify(size_t observer_id, DataFormatPtr value) {
+  bool notify(size_t observer_id, PayloadDataPtr value) {
     bool success = false;
     auto callback = observed_elements_.find(observer_id);
     if (callback != observed_elements_.end()) {

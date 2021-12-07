@@ -147,6 +147,7 @@ using TargetContentVector = std::vector<TargetContent>;
 using PayloadData =
     std::variant<DataFormatPtr, TargetContent, TargetContentVector, ElementID,
                  ElementIDs, std::vector<TargetAttribute>>;
+using PayloadDataPtr = std::shared_ptr<PayloadData>;
 
 size_t size_of(const TargetAttribute &value);
 size_t size_of(const TargetContent &value);

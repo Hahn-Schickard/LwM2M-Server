@@ -8,8 +8,7 @@
 #include "Information_Reporting_Messages/Observe.hpp"
 
 namespace LwM2M {
-
-class Observable : public Event_Model::EventSource<DataFormat>,
+class Observable : public Event_Model::EventSource<PayloadData>,
                    protected CallableEntity {
   size_t observer_id_ = 0;
 
@@ -30,7 +29,7 @@ public:
 
   Observable(ExceptionHandler handler, RequesterPtr requester,
              EndpointPtr endpoint, ElementID id)
-      : Event_Model::EventSource<DataFormat>(handler),
+      : Event_Model::EventSource<PayloadData>(handler),
         CallableEntity(requester, endpoint, id) {}
 
   ~Observable() {
@@ -45,7 +44,7 @@ public:
     }
   }
 
-  virtual size_t attach(Event_Model::HandleEventCallback<DataFormat>
+  virtual size_t attach(Event_Model::HandleEventCallback<PayloadData>
                             &&listener_callback) override final {
     if (!hasListeners()) {
       requestObserver();

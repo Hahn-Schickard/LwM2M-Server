@@ -117,7 +117,7 @@ struct Requester {
    * @return size_t - observer notification callback identifier, can not be 0
    */
   virtual size_t
-  requestObservation(std::function<void(DataFormatPtr)> /* notify_cb */,
+  requestObservation(std::function<void(PayloadDataPtr)> /* notify_cb */,
                      InformationReportingRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestObservation implementation.");
   }

@@ -714,14 +714,28 @@ future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr message) {
 }
 
 size_t
-CoAP_Binding::requestObservation(std::function<void(DataFormatPtr)> notify_cb,
-                                 InformationReportingRequestPtr message) {
-  if (message) {
-    if (message->interface_ == InterfaceType::INFORMATION_REPORTING) {
-    // auto request = encodeObserveRequest(message);
-  } else {
-      throw invalid_argument("requestObservation ServerRequestPtr must be a "
-                             "type of Information Reporting message");
+CoAP_Binding::requestObservation(std::function<void(PayloadDataPtr)> notify_cb,
+                                 InformationReportingRequestPtr request) {
+  if (request) {
+    auto message = encoder_->encode(request);
+    auto message_id = message->getTokenHash();
+    auto observer = observed_elements_.find(message_id);
+    if (observer == observed_elements_.end()) {
+      auto response_future = CoAP::Socket::request(message);
+      auto coap_response = response_future.get();
+      auto response = decoder_->decode<ClientResponse>(coap_response);
+      if (static_cast<uint8_t>(response->response_code_) < ERROR_CODES_VALUE) {
+        observed_elements_.emplace(message_id, notify_cb);
+        // @TODO: dispatch observation result, this is a bit of a problem,
+        // because message_id must be first returned, before we can call the
+        // notify_cb in a safe manner (maiking sure, that callback exists when
+        // it is called)
+        return message_id;
+      } else {
+        throw ResponseReturnedAnErrorCode(response, request);
+      }
+    } else {
+      return observer->first;
     }
   } else {
     throw invalid_argument(
@@ -772,9 +786,25 @@ void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
                  "Dispatching it to the Observer",
                  message->getAddressIP(), message->getAddressPort(),
                  message->getTokenAsHexString());
-    // conver coap payload to lwm2m data format
-    auto data = DataFormatPtr();
-    observer->second(data);
+    auto notification = decoder_->decode<ClientResponse>(message);
+    if (auto payload = notification->payload_) {
+      if (payload->hasData()) {
+        observer->second(make_shared<PayloadData>(payload->data_));
+      } else {
+        logger_->log(SeverityLevel::WARNNING,
+                     "Received an observe notification without data assigned "
+                     "to it's payload from {}:{} "
+                     "with token {}.",
+                     message->getAddressIP(), message->getAddressPort(),
+                     message->getTokenAsHexString());
+      }
+    } else {
+      logger_->log(SeverityLevel::WARNNING,
+                   "Received an observe notification without payload from "
+                   "{}:{} with token {}.",
+                   message->getAddressIP(), message->getAddressPort(),
+                   message->getTokenAsHexString());
+    }
   } else {
     logger_->log(
         SeverityLevel::WARNNING,
