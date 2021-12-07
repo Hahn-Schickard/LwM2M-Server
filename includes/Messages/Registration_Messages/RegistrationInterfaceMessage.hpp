@@ -5,6 +5,16 @@
 
 namespace LwM2M {
 
+struct RegistrationInterfaceError : public std::domain_error {
+  ServerResponsePtr response_;
+  RegistrationInterfaceError(ServerResponsePtr response)
+      : domain_error("Request " + response->endpoint_->endpoint_address_ + ":" +
+                     std::to_string(response->endpoint_->endpoint_port_) +
+                     " is missing one of mandatory parameters. Sending " +
+                     response->name()),
+        response_(response) {}
+};
+
 /**
  * @brief Generalizes all of the LwM2M Registration Interface Responses.
  *
