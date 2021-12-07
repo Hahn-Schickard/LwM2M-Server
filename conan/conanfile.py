@@ -15,7 +15,7 @@ class PackageConan(ConanFile):
         "Variant_Visitor/0.1.0@hahn-schickard/stable",
         "Event_Model/0.3.2@hahn-schickard/stable",
         "nlohmann_json/3.7.3",
-        "pugixml/1.10@bincrafters/stable"
+        "pugixml/1.11"
     ]
     settings = "cppstd", "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
