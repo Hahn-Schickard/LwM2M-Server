@@ -1,4 +1,8 @@
 #include "DataFormat.hpp"
+#include "HSCUL/ByteArray.hpp"
+#include "HSCUL/FloatingPoint.hpp"
+#include "HSCUL/Integer.hpp"
+#include "HSCUL/String.hpp"
 #include "Variant_Visitor.hpp"
 
 #include <algorithm>
@@ -7,6 +11,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace HSCUL;
 
 namespace LwM2M {
 
@@ -89,70 +94,30 @@ string TimeStamp::toString() {
 
 time_t TimeStamp::getValue() const { return value_; }
 
-vector<uint8_t> vectorize(uint64_t value, size_t size = sizeof(uint64_t)) {
-  vector<uint8_t> result;
-  result.reserve(size);
-  for (size_t i = 0; i < size; i++) {
-    result.push_back(value & 0xFF);
-    value = (value >> 8);
-  }
-  return result;
-}
-
-vector<uint8_t> vectorize(double value) {
-  uint8_t *bytes = (uint8_t *)&value;
-  vector<uint8_t> result;
-  result.reserve(sizeof(bytes));
-  for (size_t i = 0; i < sizeof(bytes); i++) {
-    result.push_back(bytes[i]);
-  }
-  return result;
-}
-
-vector<uint8_t> vectorize(string value) {
-  return vector<uint8_t>(value.begin(), value.end());
-}
-
-vector<uint8_t> vectorize(ObjectLink value) {
-  vector<uint8_t> result =
-      vectorize(value.object_id_, sizeof(value.object_id_));
-  auto tmp = vectorize(value.instance_id_, sizeof(value.instance_id_));
-  result.insert(result.end(), tmp.begin(), tmp.end());
-  return result;
-}
-
 vector<uint8_t> toBytes(DataVariant data) {
   vector<uint8_t> result;
   match(data, [&](bool value) { result.push_back(value); },
         [&](int64_t value) {
-          // possible loss of signess here, but uint64_t (2^64 - 1) should have
-          // more space than an int64_t (±(2^63 - 1)), thus int64_t should never
-          // be able to use signess bit as a number
-          result = vectorize((uint64_t)value);
+          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
         },
-        [&](uint64_t value) { result = vectorize(value); },
+        [&](uint64_t value) {
+          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
+        },
+        [&](double value) {
+          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
+        },
+        [&](string value) {
+          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
+        },
         [&](TimeStamp value) {
           uint64_t converted = value.getValue();
-          result = vectorize(converted);
+          result = HSCUL::toBytes(converted, ByteOrder::NetworkByteOrder);
         },
-        [&](double value) { result = vectorize(value); },
-        [&](string value) { result = vectorize(value); },
-        [&](ObjectLink value) { result = vectorize(value); },
+        [&](ObjectLink value) {
+          result =
+              HSCUL::toBytes(value.object_id_, ByteOrder::NetworkByteOrder);
+        },
         [&](vector<uint8_t> value) { result = value; });
-  return result;
-}
-
-uint64_t toInt(vector<uint8_t> bytes, bool little_endian = false) {
-  uint64_t result = 0;
-  if (little_endian) {
-    for (int i = bytes.size(); i >= 0; i--) {
-      result = (result << 8) + bytes[i];
-    }
-  } else {
-    for (size_t i = 0; i < bytes.size(); i++) {
-      result = (result << 8) + bytes[i];
-    }
-  }
   return result;
 }
 
@@ -172,7 +137,7 @@ template <> bool DataFormat::get<bool>() const {
 
 template <> int64_t DataFormat::get<int64_t>() const {
   if (data_.size() <= sizeof(uint64_t)) {
-    return (int64_t)toInt(data_);
+    return HSCUL::toSignedInteger(data_, ByteOrder::NetworkByteOrder);
   } else {
     throw logic_error("Could not convert to int64_t");
   }
@@ -180,7 +145,7 @@ template <> int64_t DataFormat::get<int64_t>() const {
 
 template <> uint64_t DataFormat::get<uint64_t>() const {
   if (data_.size() <= sizeof(uint64_t)) {
-    return toInt(data_);
+    return HSCUL::toUnsignedInteger(data_, ByteOrder::NetworkByteOrder);
   } else {
     throw logic_error("Could not convert to uint64_t");
   }
@@ -188,7 +153,8 @@ template <> uint64_t DataFormat::get<uint64_t>() const {
 
 template <> TimeStamp DataFormat::get<TimeStamp>() const {
   if (data_.size() <= sizeof(uint64_t)) {
-    return TimeStamp(toInt(data_));
+    auto posix_time = get<uint64_t>();
+    return TimeStamp(posix_time);
   } else {
     throw logic_error("Could not convert to uint64_t");
   }
@@ -196,9 +162,7 @@ template <> TimeStamp DataFormat::get<TimeStamp>() const {
 
 template <> double DataFormat::get<double>() const {
   if (data_.size() <= sizeof(double)) {
-    double result;
-    copy(data_.begin(), data_.end(), reinterpret_cast<char *>(&result));
-    return result;
+    return HSCUL::toDouble(data_, ByteOrder::NetworkByteOrder);
   } else {
     throw logic_error("Could not convert to double");
   }
@@ -214,8 +178,10 @@ template <> ObjectLink DataFormat::get<ObjectLink>() const {
                                    data_.begin() + data_.size() / 2);
     vector<uint8_t> instance_id_half(data_.begin() + data_.size() / 2,
                                      data_.end());
-    uint16_t object_id = toInt(object_id_half);
-    uint16_t instance_id = toInt(instance_id_half);
+    uint16_t object_id =
+        HSCUL::toUnsignedInteger(object_id_half, ByteOrder::NetworkByteOrder);
+    uint16_t instance_id =
+        HSCUL::toUnsignedInteger(instance_id_half, ByteOrder::NetworkByteOrder);
     return ObjectLink(object_id, instance_id);
   } else {
     throw logic_error("Could not convert to ObjectLink");
