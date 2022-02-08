@@ -14,6 +14,7 @@ class PackageConan(ConanFile):
         "CoAPS4Cpp/0.3.1@hahn-schickard/stable",
         "Variant_Visitor/0.1.0@hahn-schickard/stable",
         "Event_Model/0.3.2@hahn-schickard/stable",
+        "HSCUL/0.1.0@hahn-schickard/stable",
         "nlohmann_json/3.7.3",
         "pugixml/1.11"
     ]
