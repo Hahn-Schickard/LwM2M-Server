@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Device_Model)
+set(THIS ${PROJECT_NAME}_Device_Model)
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/Device_Model
@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              Messages
+                              ${PROJECT_NAME}_Messages
                               Event_Model::Event_Model
 )
 

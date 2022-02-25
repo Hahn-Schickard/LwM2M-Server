@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Runner)
+set(THIS ${PROJECT_NAME}_Runner)
 
 file(GLOB sources_list "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
@@ -12,7 +12,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PRIVATE
                               Variant_Visitor::Variant_Visitor
-                              Server
+                              ${PROJECT_NAME}
                               HaSLL::HaSLL
                               Threads::Threads
 )

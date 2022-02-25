@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Binding_Interface)
+set(THIS ${PROJECT_NAME}_Binding_Interface)
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/Binding_Interface
@@ -18,7 +18,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC 
-                              Device_Registry
+                              ${PROJECT_NAME}_Device_Registry
 )
 
 target_include_directories(${THIS} INTERFACE

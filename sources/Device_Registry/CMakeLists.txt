@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Device_Registry)
+set(THIS ${PROJECT_NAME}_Device_Registry)
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/Device_Registry
@@ -18,11 +18,11 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC 
-                              Device_Model
+                              ${PROJECT_NAME}_Device_Model
                               Event_Model::Event_Model
                               HaSLL::HaSLL
                               PRIVATE
-                              XML_Parser
+                              ${PROJECT_NAME}_XML_Parser
 )
 
 target_include_directories(${THIS} INTERFACE

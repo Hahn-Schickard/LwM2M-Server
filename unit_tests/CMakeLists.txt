@@ -25,11 +25,11 @@ target_sources(${THIS} PRIVATE
 target_link_libraries(${THIS} PUBLIC
                               GTest::GTest
                               Variant_Visitor::Variant_Visitor
-                              Messages
-                              Device_Model
-                              XML_Parser
-                              Device_Registry
-                              Binding_Interface
+                              ${PROJECT_NAME}_Messages
+                              ${PROJECT_NAME}_Device_Model
+                              ${PROJECT_NAME}_XML_Parser
+                              ${PROJECT_NAME}_Device_Registry
+                              ${PROJECT_NAME}_Binding_Interface
 )
 
 add_test(

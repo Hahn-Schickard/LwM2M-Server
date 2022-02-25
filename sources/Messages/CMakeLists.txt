@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Messages)
+set(THIS ${PROJECT_NAME}_Messages)
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/Messages

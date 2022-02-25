@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Server)
+set(THIS ${PROJECT_NAME})
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/Server
@@ -20,7 +20,7 @@ target_sources(${THIS} PRIVATE
 get_property(BindingsList GLOBAL PROPERTY Bindings)
 
 target_link_libraries(${THIS} PUBLIC 
-                              Binding_Interface
+                              ${PROJECT_NAME}_Binding_Interface
                               HaSLL::HaSLL
                               ${BindingsList}
                               PRIVATE

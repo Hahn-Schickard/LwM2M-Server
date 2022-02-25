@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS CoAP_Binding)
+set(THIS ${PROJECT_NAME}_CoAP_Binding)
 
 ADD_NEW_BINDING(${THIS})
 
@@ -20,7 +20,7 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC 
-                              Binding_Interface
+                              ${PROJECT_NAME}_Binding_Interface
                               CoAPS4Cpp::CoAPS4Cpp
                               HaSLL::HaSLL
 )
