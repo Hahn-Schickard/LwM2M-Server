@@ -346,6 +346,8 @@ DeregisterResponsePtr Registrator::handleRquest(DeregisterRequestPtr request) {
       registry_->deregisterDevice(request->location_);
       return request->makeResponse(ResponseCode::DELETED);
     } catch (DeviceNotFound &ex) {
+      logger_->log(SeverityLevel::ERROR, "Failed to deregister device. {}",
+                   ex.what());
       return request->makeResponse(ResponseCode::NOT_FOUND);
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,

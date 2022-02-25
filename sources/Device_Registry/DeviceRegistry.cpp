@@ -96,6 +96,9 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
 }
 
 void DeviceRegistry::deregisterDevice(string identifier) {
+  logger_->log(SeverityLevel::TRACE,
+               "Looking for Device with id {} within the registry.",
+               identifier);
   auto it = device_registry_.find(identifier);
   if (it != device_registry_.end()) {
     device_registry_.erase(it);
