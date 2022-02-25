@@ -20,6 +20,7 @@ add_library(${THIS})
 
 target_link_libraries(${THIS} PRIVATE 
                               Variant_Visitor::Variant_Visitor
+                              HSCUL::HSCUL
 )
 
 target_sources(${THIS} PRIVATE 

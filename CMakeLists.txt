@@ -26,6 +26,7 @@ list(APPEND DEPENDENCIES_LIST
             CoAPS4Cpp
             Variant_Visitor
             Event_Model
+            HSCUL
             pugixml
             nlohmann_json
             Threads
