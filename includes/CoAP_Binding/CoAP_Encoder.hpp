@@ -2,10 +2,9 @@
 #define __LWM2M_COAP_ENCODER_HPP
 
 #include "CoAP/Message.hpp"
-#include "Device_Managment_Messages/DeviceManagmentMessage.hpp"
-#include "Information_Reporting_Messages/InformationReporingMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
+#include "InformationReporingMessage.hpp"
 #include "Logger.hpp"
-#include "Message.hpp"
 
 namespace LwM2M {
 struct CoAP_Encoder {

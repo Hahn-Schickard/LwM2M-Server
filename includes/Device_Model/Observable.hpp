@@ -4,8 +4,8 @@
 #include "Event_Model/EventSource.hpp"
 
 #include "CallableEntity.hpp"
-#include "Information_Reporting_Messages/CancelObservation.hpp"
-#include "Information_Reporting_Messages/Observe.hpp"
+#include "CancelObservation.hpp"
+#include "Observe.hpp"
 
 namespace LwM2M {
 class Observable : public Event_Model::EventSource<PayloadData>,

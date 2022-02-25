@@ -1,8 +1,8 @@
 #ifndef __LWM2M_REQUESTER_INTERFACE_HPP
 #define __LWM2M_REQUESTER_INTERFACE_HPP
 
-#include "Device_Managment_Messages/DeviceManagmentMessage.hpp"
-#include "Information_Reporting_Messages/InformationReporingMessage.hpp"
+#include "DeviceManagmentMessage.hpp"
+#include "InformationReporingMessage.hpp"
 
 #include <functional>
 #include <future>

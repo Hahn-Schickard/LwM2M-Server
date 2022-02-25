@@ -2,11 +2,11 @@
 #define __LWM2M_COAP_DECODER_HPP
 
 #include "CoAP/Message.hpp"
+#include "Deregister.hpp"
 #include "Logger.hpp"
 #include "Message.hpp"
-#include "Registration_Messages/Deregister.hpp"
-#include "Registration_Messages/Register.hpp"
-#include "Registration_Messages/Update.hpp"
+#include "Register.hpp"
+#include "Update.hpp"
 
 namespace LwM2M {
 struct CoAP_Decoder {
