@@ -162,12 +162,12 @@ CoAP::MessagePtr CoAP_Encoder::encode(CoAP::MessagePtr request,
       }
       return message;
     } catch (exception &ex) {
-      string error_msg =
-          "Caught an unhandled exception while encoding " + response->name() +
-          " for request " + request->getTokenAsHexString() + " form " +
-          request->getAddressIP() + ":" + to_string(request->getAddressPort()) +
-          " Exception: " + ex.what();
-      throw runtime_error(error_msg);
+      logger_->log(SeverityLevel::ERROR,
+                   "Caught an unhandled exception while encoding {} for CoAP "
+                   "request {} from {}:{}. Exception: {}",
+                   response->name(), request->getTokenAsHexString(),
+                   request->getAddressIP(),
+                   to_string(request->getAddressPort()), ex.what());
     }
   } else {
     return CoAP::MessagePtr();
