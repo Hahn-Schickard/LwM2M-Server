@@ -169,9 +169,15 @@ CoAP::MessagePtr CoAP_Encoder::encode(CoAP::MessagePtr request,
                    request->getAddressIP(),
                    to_string(request->getAddressPort()), ex.what());
     }
-  } else {
-    return CoAP::MessagePtr();
   }
+  // handle empty response or exception throw
+  auto header = make_shared<CoAP::Header>(
+      CoAP::MessageType::ACKNOWLEDGMENT,
+      static_cast<TokenSize>(request->getToken().size()),
+      CoAP::CodeType::BAD_REQUEST, request->getHeader()->getMessageID());
+  auto message = make_shared<CoAP::Message>(
+      request->getAddressIP(), request->getAddressPort(), move(header));
+  return message;
 }
 
 CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
