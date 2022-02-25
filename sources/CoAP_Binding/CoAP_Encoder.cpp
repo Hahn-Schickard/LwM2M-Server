@@ -101,7 +101,7 @@ CoAP_Encoder::~CoAP_Encoder() {
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(DeviceManagementRequestPtr message) {
-  // @TODO: decide if this is needed at aöö
+  // @TODO: decide if this is needed at all
   return encode(static_pointer_cast<ServerRequest>(message));
 }
 
@@ -200,46 +200,76 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
                                         LwM2M::PayloadPtr payload) {
   Options options;
 
-  options = makeOptions(payload);
-
   switch (type) {
+  case LwM2M::MessageType::REGISTER: {
+    [[fallthrough]];
+  }
+  case LwM2M::MessageType::UPDATE: {
+    if (payload) {
+      if (holds_alternative<DataFormatPtr>(payload->data_)) {
+        auto data = std::get<DataFormatPtr>(payload->data_);
+        if (data) {
+          options += build(OptionNumber::LOCATION_PATH, "rd");
+          auto location = data->get<string>();
+          options += build(OptionNumber::LOCATION_PATH, location);
+        } else {
+          throw logic_error("LOCATION_PATH option value can not be an empty");
+        }
+      } else {
+        throw logic_error(
+            "LOCATION_PATH option value must be of DataFormatPtr type");
+      }
+    } else {
+      string error_msg = toString(type) + " response must have a payload";
+      throw logic_error(error_msg);
+    }
+    break;
+  }
   case LwM2M::MessageType::READ: {
+    options = makeOptions(payload);
     auto acceptable_format_index = ContentFormatEncodings::LwM2M_TLV::index;
     options += build(OptionNumber::ACCEPT, acceptable_format_index);
     break;
   }
   case LwM2M::MessageType::READ_COMPOSITE: {
+    options = makeOptions(payload);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::WRITE: {
+    options = makeOptions(payload);
     auto content_format_index = ContentFormatEncodings::LwM2M_TLV::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::WRITE_COMPOSITE: {
+    options = makeOptions(payload);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::EXECUTE: {
     // check if there is some arguments first!
+    options = makeOptions(payload);
     auto content_format_index = ContentFormatEncodings::PlainText::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::CREATE: {
+    options = makeOptions(payload);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::DISCOVER: {
+    options = makeOptions(payload);
     auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
     options += build(OptionNumber::ACCEPT, content_format_index);
     break;
   }
   case LwM2M::MessageType::OBSERVE_COMPOSITE: {
+    options = makeOptions(payload);
     auto content_format_index = ContentFormatEncodings::LwM2M_JSON::index;
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
@@ -255,14 +285,14 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   case LwM2M::MessageType::CANCEL_OBSERVATION:
     [[fallthrough]];
   case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE: {
+    options = makeOptions(payload);
     options += build(OptionNumber::OBSERVE, to_string(false));
     break;
   }
   default: { break; }
   }
-
   return options;
-}
+} // namespace LwM2M
 
 CoAP::Options CoAP_Encoder::makeOptions(LwM2M::PayloadPtr payload) {
   Options options;
