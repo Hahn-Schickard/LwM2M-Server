@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS ${PROJECT_NAME}_Messages)
+set(THIS Messages)
+set(MODULE_NAME ${PROJECT_NAME}_${THIS})
 
 list(APPEND THIS_INCLUDES_DIRS
             ${INCLUDES_DIR}/Messages
@@ -16,45 +17,46 @@ file(GLOB registration_message_sources "${CMAKE_CURRENT_LIST_DIR}/Registration_M
 
 INCLUDE_DIRS_AND_FILES("${THIS_INCLUDES_DIRS}" THIS_INCLUDES)
 
-add_library(${THIS})                
+add_library(${MODULE_NAME})                
 
-target_link_libraries(${THIS} PRIVATE 
-                              Variant_Visitor::Variant_Visitor
-                              HSCUL::HSCUL
+target_link_libraries(${MODULE_NAME} PRIVATE 
+                                     Variant_Visitor::Variant_Visitor
+                                     HSCUL::HSCUL
 )
 
-target_sources(${THIS} PRIVATE 
-                       ${THIS_INCLUDES}
-                       ${message_sources}
-                       ${device_managment_message_sources}
-                       ${information_reporting_message_sources}
-                       ${registration_message_sources}
+target_sources(${MODULE_NAME} PRIVATE 
+                              ${THIS_INCLUDES}
+                              ${message_sources}
+                              ${device_managment_message_sources}
+                              ${information_reporting_message_sources}
+                              ${registration_message_sources}
 )
 
-target_include_directories(${THIS} INTERFACE
+target_include_directories(${MODULE_NAME} INTERFACE
                            $<BUILD_INTERFACE:${INCLUDES_DIR}/Messages>
                            $<BUILD_INTERFACE:${INCLUDES_DIR}/Messages/Device_Managment_Messages>
                            $<BUILD_INTERFACE:${INCLUDES_DIR}/Messages/Information_Reporting_Messages>
                            $<BUILD_INTERFACE:${INCLUDES_DIR}/Messages/Registration_Messages>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/LwM2M>
+                           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 
-target_compile_features(${THIS} PUBLIC cxx_std_17)
+target_compile_features(${MODULE_NAME} PUBLIC cxx_std_17)
 
-if(BUILD_SHARED_LIBS)
-    set_property(TARGET ${THIS} PROPERTY POSITION_INDEPENDENT_CODE ON)
-endif()
+# if(BUILD_SHARED_LIBS)
+#     set_property(TARGET ${MODULE_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
+# endif()
 
-PRINT_TARGET_PROPERTIES(${THIS})
+PRINT_TARGET_PROPERTIES(${MODULE_NAME})
 
 install(
-    TARGETS ${THIS}
+    TARGETS ${MODULE_NAME}
     EXPORT ${PROJECT_NAME}Targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 install(
     FILES ${THIS_INCLUDES}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/LwM2M
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
 )
