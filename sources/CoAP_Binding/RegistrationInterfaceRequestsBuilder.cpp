@@ -1,6 +1,7 @@
 #include "RegistrationInterfaceRequestsBuilder.hpp"
-#include "CoAP/CoRE_Link.hpp"
-#include "CoAP/SupportedContentFormats.hpp"
+
+#include "CoAPS4Cpp/CoRE_Link.hpp"
+#include "CoAPS4Cpp/SupportedContentFormats.hpp"
 
 #include <optional>
 #include <sstream>

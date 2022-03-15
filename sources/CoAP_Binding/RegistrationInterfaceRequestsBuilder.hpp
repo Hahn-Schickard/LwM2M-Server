@@ -1,7 +1,7 @@
 #ifndef __LWM2M_COAP_BINDING_REGISTRATION_REQUESTS_BUILDER_HPP
 #define __LWM2M_COAP_BINDING_REGISTRATION_REQUESTS_BUILDER_HPP
 
-#include "CoAP/Message.hpp"
+#include "CoAPS4Cpp/Message.hpp"
 #include "Deregister.hpp"
 #include "Register.hpp"
 #include "Update.hpp"

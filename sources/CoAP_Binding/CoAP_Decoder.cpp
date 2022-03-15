@@ -4,10 +4,10 @@
 #include "RegistrationInterfaceRequestsBuilder.hpp"
 #include "Utility.hpp"
 
-#include "CoAP/CoRE_Link.hpp"
-#include "CoAP/OctetStream.hpp"
-#include "CoAP/OptionBuilder.hpp"
-#include "CoAP/PlainText.hpp"
+#include "CoAPS4Cpp/CoRE_Link.hpp"
+#include "CoAPS4Cpp/OctetStream.hpp"
+#include "CoAPS4Cpp/OptionBuilder.hpp"
+#include "CoAPS4Cpp/PlainText.hpp"
 #include "TLV.hpp"
 
 using namespace std;
@@ -179,7 +179,7 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
       SeverityLevel::TRACE,
       "Creating a Client Response from {}:{} CoAP response with Token {}",
       message->getAddressIP(), message->getAddressPort(),
-      message->getTokenAsHexString());
+      message->getToken()->hexify());
   try {
     auto code = toResponseCode(message->getHeader()->getCodeType());
     logger_->log(
@@ -187,21 +187,21 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
         "Assigning {} Response Code to Client Response from {}:{} CoAP "
         "response with Token {}",
         toString(code), message->getAddressIP(), message->getAddressPort(),
-        message->getTokenAsHexString());
+        message->getToken()->hexify());
     if (auto payload = message->getPayload()) {
       logger_->log(
           SeverityLevel::TRACE,
           "Assigning payload of {} bytes to Client Response from {}:{} CoAP "
           "response with Token {}",
           payload->getBytes().size(), message->getAddressIP(),
-          message->getAddressPort(), message->getTokenAsHexString());
+          message->getAddressPort(), message->getToken()->hexify());
       LwM2M::PayloadPtr content;
       auto options = message->getOptions();
       logger_->log(SeverityLevel::TRACE,
                    "Looking for CONTENT_FORMAT Option in {}:{} CoAP "
                    "response with Token {} Payload.",
                    message->getAddressIP(), message->getAddressPort(),
-                   message->getTokenAsHexString());
+                   message->getToken()->hexify());
       auto it = options.find(OptionNumber::CONTENT_FORMAT);
       if (it != options.end()) {
         logger_->log(SeverityLevel::TRACE,
@@ -209,7 +209,7 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
                      "response with Token {} Payload. Casting it as "
                      "CoAP::ContentFormat Class",
                      message->getAddressIP(), message->getAddressPort(),
-                     message->getTokenAsHexString());
+                     message->getToken()->hexify());
         if (auto content_format_option = it->second) {
           auto content_format =
               dynamic_pointer_cast<CoAP::ContentFormat>(content_format_option);
@@ -226,7 +226,7 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
               "response with Token {}",
               toString(content->media_type_), content->size(),
               message->getAddressIP(), message->getAddressPort(),
-              message->getTokenAsHexString());
+              message->getToken()->hexify());
         } else {
           logger_->log(SeverityLevel::WARNNING,
                        "Payload of {} bytes could not be converted into a "
@@ -235,7 +235,7 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
                        "response with Token {}",
                        payload->getBytes().size(), message->getAddressIP(),
                        message->getAddressPort(),
-                       message->getTokenAsHexString());
+                       message->getToken()->hexify());
         }
         return make_shared<ClientResponse>(endpoint, code, content);
       }
@@ -245,7 +245,7 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
     logger_->log(SeverityLevel::CRITICAL,
                  "Caught an unhandled exception, while building a "
                  "ClientResponse from message {} from {}:{}. Exception: {}",
-                 message->getTokenAsHexString(), message->getAddressIP(),
+                 message->getToken()->hexify(), message->getAddressIP(),
                  message->getAddressPort(), ex.what());
     return make_shared<ClientResponse>(endpoint, ResponseCode::BAD_REQUEST);
   }

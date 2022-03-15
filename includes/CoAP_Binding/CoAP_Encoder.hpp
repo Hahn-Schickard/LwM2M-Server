@@ -1,7 +1,7 @@
 #ifndef __LWM2M_COAP_ENCODER_HPP
 #define __LWM2M_COAP_ENCODER_HPP
 
-#include "CoAP/Message.hpp"
+#include "CoAPS4Cpp/Message.hpp"
 #include "DeviceManagmentMessage.hpp"
 #include "InformationReporingMessage.hpp"
 #include "Logger.hpp"

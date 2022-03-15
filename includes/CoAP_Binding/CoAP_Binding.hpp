@@ -2,7 +2,7 @@
 #define __LWM2M_COAP_BINDING_HPP
 
 #include "Binding.hpp"
-#include "CoAP/Socket.hpp"
+#include "CoAPS4Cpp/Socket.hpp"
 #include "CoAP_Decoder.hpp"
 #include "CoAP_Encoder.hpp"
 #include "Logger.hpp"

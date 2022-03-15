@@ -1,8 +1,10 @@
 #include "CoAP_Encoder.hpp"
-#include "CoAP/OptionBuilder.hpp"
-#include "CoAP/PlainText.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "LoggerRepository.hpp"
+
+#include "CoAPS4Cpp/OptionBuilder.hpp"
+#include "CoAPS4Cpp/PlainText.hpp"
+#include "CoAPS4Cpp/MessageBuilder.hpp"
 
 using namespace std;
 using namespace CoAP;
@@ -43,11 +45,6 @@ CodeType toCodeType(LwM2M::MessageType type) {
 CoAP::CodeType toCodeType(ResponseCode code) {
   // Sometimes, you just have to live dangerously.
   return static_cast<CoAP::CodeType>(code);
-}
-
-HeaderPtr makeConfirmableHeader(CodeType code) {
-  return make_shared<Header>(CoAP::MessageType::CONFIRMABLE,
-                             CoAP::TokenSize::_8, code);
 }
 
 CoAP::Options makeURI_PATH(ElementID target) {
@@ -111,26 +108,14 @@ CoAP::MessagePtr CoAP_Encoder::encode(InformationReportingRequestPtr message) {
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
-  auto header = makeConfirmableHeader(toCodeType(request->message_type_));
-
-  auto message = make_shared<CoAP::Message>(
-      request->endpoint_->endpoint_address_, request->endpoint_->endpoint_port_,
-      move(header));
-
-  message->generateToken();
-
-  auto options = makeOptions(request->message_type_, request->payload_);
-
-  if (!options.empty()) {
-    *message += options;
-  }
-
+  auto mesage_builder = make_unique<MessageBuilder>(request->endpoint_->endpoint_address_, request->endpoint_->endpoint_port_);
+  mesage_builder->addHeader(CoAP::MessageType::CONFIRMABLE, toCodeType(request->message_type_));
+  mesage_builder->addOptions(makeOptions(request->message_type_, request->payload_));
   auto payload = encode(request->message_type_, request->payload_);
   if (payload) {
-    *message += payload;
+    mesage_builder->addPayload(payload);
   }
-
-  return message;
+  return mesage_builder->getResult();
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(CoAP::MessagePtr request,

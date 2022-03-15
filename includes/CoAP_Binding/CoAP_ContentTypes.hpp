@@ -1,8 +1,8 @@
 #ifndef __LWM2M_COAP_CONTENT_FORMAT_TYPES_HPP
 #define __LWM2M_COAP_CONTENT_FORMAT_TYPES_HPP
 
-#include "CoAP/ContentFormatType.hpp"
-#include "CoAP/SupportedContentFormats.hpp"
+#include "CoAPS4Cpp/ContentFormatType.hpp"
+#include "CoAPS4Cpp/SupportedContentFormats.hpp"
 #include "TLV.hpp"
 
 namespace CoAP {

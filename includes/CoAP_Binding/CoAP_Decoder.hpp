@@ -1,7 +1,7 @@
 #ifndef __LWM2M_COAP_DECODER_HPP
 #define __LWM2M_COAP_DECODER_HPP
 
-#include "CoAP/Message.hpp"
+#include "CoAPS4Cpp/Message.hpp"
 #include "Deregister.hpp"
 #include "Logger.hpp"
 #include "Message.hpp"

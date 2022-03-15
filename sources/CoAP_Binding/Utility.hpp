@@ -1,7 +1,7 @@
 #ifndef __LWM2M_COAP_BINDING_UTILITY_HPP
 #define __LWM2M_COAP_BINDING_UTILITY_HPP
 
-#include "CoAP/Message.hpp"
+#include "CoAPS4Cpp/Message.hpp"
 
 #include <limits>
 #include <string>
