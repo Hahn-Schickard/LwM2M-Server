@@ -142,8 +142,8 @@ inline size_t toUnsignedInteger(std::string integer, IntegerBase base,
 }
 
 inline size_t generateHash(CoAP::MessagePtr message) {
-  return message->getHeader()->getMessageID() << message->getToken().size() |
-         message->getTokenHash();
+  return message->getHeader()->getMessageID() << message->getToken()->size() |
+         message->getToken()->hash();
 }
 } // namespace LwM2M
 
