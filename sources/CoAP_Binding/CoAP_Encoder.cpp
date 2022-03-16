@@ -2,9 +2,9 @@
 #include "CoAP_ContentTypes.hpp"
 #include "LoggerRepository.hpp"
 
+#include "CoAPS4Cpp/MessageBuilder.hpp"
 #include "CoAPS4Cpp/OptionBuilder.hpp"
 #include "CoAPS4Cpp/PlainText.hpp"
-#include "CoAPS4Cpp/MessageBuilder.hpp"
 
 using namespace std;
 using namespace CoAP;
@@ -108,9 +108,13 @@ CoAP::MessagePtr CoAP_Encoder::encode(InformationReportingRequestPtr message) {
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
-  auto mesage_builder = make_unique<MessageBuilder>(request->endpoint_->endpoint_address_, request->endpoint_->endpoint_port_);
-  mesage_builder->addHeader(CoAP::MessageType::CONFIRMABLE, toCodeType(request->message_type_));
-  mesage_builder->addOptions(makeOptions(request->message_type_, request->payload_));
+  auto mesage_builder =
+      make_unique<MessageBuilder>(request->endpoint_->endpoint_address_,
+                                  request->endpoint_->endpoint_port_);
+  mesage_builder->addHeader(CoAP::MessageType::CONFIRMABLE,
+                            toCodeType(request->message_type_));
+  mesage_builder->addOptions(
+      makeOptions(request->message_type_, request->payload_));
   auto payload = encode(request->message_type_, request->payload_);
   if (payload) {
     mesage_builder->addPayload(payload);
@@ -120,49 +124,35 @@ CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
 
 CoAP::MessagePtr CoAP_Encoder::encode(CoAP::MessagePtr request,
                                       ServerResponsePtr response) {
+  auto mesage_builder = make_unique<MessageBuilder>(request->getAddressIP(),
+                                                    request->getAddressPort());
+  mesage_builder->addToken(request->getToken());
   if (response) {
     try {
-      auto header = make_shared<CoAP::Header>(
-          CoAP::MessageType::ACKNOWLEDGMENT,
-          static_cast<TokenSize>(request->getToken().size()),
-          toCodeType(response->response_code_),
-          request->getHeader()->getMessageID());
-      auto message = make_shared<CoAP::Message>(
-          request->getAddressIP(), request->getAddressPort(), move(header));
-
-      if (!request->getToken().empty()) {
-        *message += request->getToken();
-      }
-
-      auto options = makeOptions(response->message_type_, response->payload_);
-      if (!options.empty()) {
-        *message += options;
-      }
-
+      mesage_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
+                                toCodeType(response->response_code_),
+                                request->getHeader()->getMessageID());
+      mesage_builder->addOptions(
+          makeOptions(response->message_type_, response->payload_));
       if (response->payload_) {
-        auto payload = encode(response->message_type_, response->payload_);
-        if (payload) {
-          *message += payload;
-        }
+        mesage_builder->addPayload(
+            encode(response->message_type_, response->payload_));
       }
-      return message;
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
                    "Caught an unhandled exception while encoding {} for CoAP "
                    "request {} from {}:{}. Exception: {}",
-                   response->name(), request->getTokenAsHexString(),
+                   response->name(), request->getToken()->hexify(),
                    request->getAddressIP(),
                    to_string(request->getAddressPort()), ex.what());
     }
+  } else {
+    // handle empty response or exception throw
+    mesage_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
+                              CoAP::CodeType::BAD_REQUEST,
+                              request->getHeader()->getMessageID());
   }
-  // handle empty response or exception throw
-  auto header = make_shared<CoAP::Header>(
-      CoAP::MessageType::ACKNOWLEDGMENT,
-      static_cast<TokenSize>(request->getToken().size()),
-      CoAP::CodeType::BAD_REQUEST, request->getHeader()->getMessageID());
-  auto message = make_shared<CoAP::Message>(
-      request->getAddressIP(), request->getAddressPort(), move(header));
-  return message;
+  return mesage_builder->getResult();
 }
 
 CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
