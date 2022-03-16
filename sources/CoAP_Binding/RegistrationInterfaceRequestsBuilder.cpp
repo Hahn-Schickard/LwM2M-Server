@@ -16,9 +16,9 @@ namespace LwM2M {
 optional<BindingType> getBindingType(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
-    auto option = it->second;
-    if (option->getAsString().substr(0, 2) == "b=") {
-      auto binding_type = toupper(option->getValue().at(2));
+    auto option_value = it->second->getValueAsString();
+    if (option_value.substr(0, 2) == "b=") {
+      auto binding_type = toupper(option_value.at(2));
       switch (binding_type) {
       case 'U': {
         return BindingType::UDP;
@@ -42,9 +42,9 @@ optional<LwM2M_Version> getLwM2M_Version(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
-    string lwm2M_version_tag = option->getAsString().substr(0, 6);
+    auto lwm2M_version_tag = option->getValueAsString().substr(0, 6);
     if (lwm2M_version_tag == "lwm2m=") {
-      string version_string = option->getAsString().substr(6, 7);
+      auto version_string = option->getValueAsString().substr(6, 7);
       if (version_string == "1.0") {
         return LwM2M_Version::V1_0;
       }
@@ -61,9 +61,9 @@ optional<size_t> getLifetime(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
-    string lifetime_tag = option->getAsString().substr(0, 3);
+    auto lifetime_tag = option->getValueAsString().substr(0, 3);
     if (lifetime_tag == "lt=") {
-      return atoll(option->getAsString().substr(4).c_str());
+      return atoll(option->getValueAsString().substr(4).c_str());
     }
   }
   return {};
@@ -73,9 +73,9 @@ optional<string> getEndpointName(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
-    string endpoint_tag = option->getAsString().substr(0, 3);
+    auto endpoint_tag = option->getValueAsString().substr(0, 3);
     if (endpoint_tag == "ep=") {
-      return option->getAsString().substr(3);
+      return option->getValueAsString().substr(3);
     }
   }
   return {};
@@ -85,7 +85,7 @@ optional<bool> getQueueMode(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
-    string queue_tag = option->getAsString().substr(0, 1);
+    auto queue_tag = option->getValueAsString().substr(0, 1);
     if (queue_tag == "Q") {
       return true;
     }
@@ -97,9 +97,9 @@ optional<string> getSMS(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
-    string sms_tag = option->getAsString().substr(0, 4);
+    auto sms_tag = option->getValueAsString().substr(0, 4);
     if (sms_tag == "sms=") {
-      return option->getAsString().substr(4);
+      return option->getValueAsString().substr(4);
     }
   }
   return {};
@@ -215,11 +215,11 @@ optional<string> getLocation(Options options) {
   auto uri_paths = options.equal_range(OptionNumber::URI_PATH);
   for (auto it = uri_paths.first; it != uri_paths.second; it++) {
     auto option = it->second;
-    if (option->getAsString() == "rd") {
+    if (option->getValueAsString() == "rd") {
       auto location_uri = it;
       location_uri++;
       if (location_uri != uri_paths.second) {
-        return location_uri->second->getAsString();
+        return location_uri->second->getValueAsString();
       }
     }
   }
