@@ -106,9 +106,7 @@ vector<uint8_t> toBytes(DataVariant data) {
         [&](double value) {
           result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
         },
-        [&](string value) {
-          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
-        },
+        [&](string value) { result = HSCUL::toBytes(value); },
         [&](TimeStamp value) {
           uint64_t converted = value.getValue();
           result = HSCUL::toBytes(converted, ByteOrder::NetworkByteOrder);
