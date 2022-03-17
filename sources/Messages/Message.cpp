@@ -1,10 +1,9 @@
 #include "Message.hpp"
-
-#define INTERFACE_MASK 0xF0
-
 using namespace std;
 
 namespace LwM2M {
+
+static constexpr uint8_t INTERFACE_MASK = 0xF0;
 
 UnsupportedOperation::UnsupportedOperation(string const &message)
     : logic_error(message) {}
