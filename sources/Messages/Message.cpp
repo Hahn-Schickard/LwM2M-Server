@@ -53,6 +53,12 @@ string toString(MessageType type) {
   case MessageType::WRITE_ATTRIBUTES: {
     return "Write Attributes";
   }
+  case MessageType::DISCOVER: {
+    return "Discover";
+  }
+  case MessageType::READ_COMPOSITE: {
+    return "Read Composite";
+  }
   case MessageType::WRITE_COMPOSITE: {
     return "Write Composite";
   }
@@ -145,6 +151,24 @@ string toString(ResponseCode type) {
   }
   case ResponseCode::UNSUPPORTED_CONTENT_FORMAT: {
     return "Unsupported Content Format";
+  }
+  case ResponseCode::INTERNAL_SERVER_ERROR: {
+    return "Internal Server Error";
+  }
+  case ResponseCode::NOT_IMPLEMENTED: {
+    return "Not Implemented";
+  }
+  case ResponseCode::BAD_GATEWAY: {
+    return "Bad Gateway";
+  }
+  case ResponseCode::SERVICE_UNAVAILABLE: {
+    return "Service Unavailable";
+  }
+  case ResponseCode::GATEWAY_TIMEOUT: {
+    return "Gateway Timeout";
+  }
+  case ResponseCode::PROXYING_NOT_SUPPORTED: {
+    return "Proxying Not Supported";
   }
   case ResponseCode::UNHANDLED:
   default: { return "Unhandled Return Code"; }
