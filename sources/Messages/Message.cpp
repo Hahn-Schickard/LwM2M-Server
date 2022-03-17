@@ -178,11 +178,8 @@ string toString(ResponseCode type) {
 UnsupportedResponseCode::UnsupportedResponseCode(string const &message)
     : logic_error(message) {}
 
-UnsupportedResponseCode::UnsupportedResponseCode(
-    string message_type, ResponseCode unsupported_response_code,
-    unordered_set<ResponseCode> supported_response_codes)
-    : logic_error(string()) {
-
+string makeErrorMsg(string message_type, ResponseCode unsupported_response_code,
+                    unordered_set<ResponseCode> supported_response_codes) {
   string error_msg = string(message_type);
   error_msg += " does not support the use of " +
                toString(unsupported_response_code) +
@@ -190,8 +187,14 @@ UnsupportedResponseCode::UnsupportedResponseCode(
   for (auto supported_response_code : supported_response_codes) {
     error_msg += toString(supported_response_code) + "\n";
   }
-  *this = UnsupportedResponseCode(error_msg);
+  return error_msg;
 }
+
+UnsupportedResponseCode::UnsupportedResponseCode(
+    string message_type, ResponseCode unsupported_response_code,
+    unordered_set<ResponseCode> supported_response_codes)
+    : UnsupportedResponseCode(makeErrorMsg(
+          message_type, unsupported_response_code, supported_response_codes)) {}
 
 Message::Message(EndpointPtr endpoint, MessageType message_type,
                  InterfaceType interface, PayloadPtr payload, bool incoming,
