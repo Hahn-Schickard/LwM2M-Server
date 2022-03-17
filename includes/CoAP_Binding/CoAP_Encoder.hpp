@@ -17,14 +17,12 @@ struct CoAP_Encoder {
   CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr response);
 
 private:
-  // encoding means taking one type, in this instance LwM2M::PayloadPtr  and
-  // converting it into another, here it is CoAP::PayloadPtr
-  CoAP::PayloadPtr encode(LwM2M::MessageType type, LwM2M::PayloadPtr payload);
-
-  // makeing an option means that we take some information, like the message
-  // type and the actual payload type and create new information from it
-  CoAP::Options makeOptions(LwM2M::MessageType type, LwM2M::PayloadPtr payload);
-  CoAP::Options makeOptions(LwM2M::PayloadPtr payload);
+  CoAP::PayloadPtr encode(LwM2M::MessageType type, LwM2M::PayloadPtr payload,
+                          std::string message_identifier);
+  CoAP::Options makeOptions(LwM2M::MessageType type, LwM2M::PayloadPtr payload,
+                            std::string message_identifier);
+  CoAP::Options makeOptions(LwM2M::PayloadPtr payload,
+                            std::string message_identifier);
 
   std::shared_ptr<HaSLL::Logger> logger_;
 };

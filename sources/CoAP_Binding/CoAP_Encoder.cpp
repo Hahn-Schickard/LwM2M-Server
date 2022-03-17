@@ -111,11 +111,13 @@ CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
   auto mesage_builder =
       make_unique<MessageBuilder>(request->endpoint_->endpoint_address_,
                                   request->endpoint_->endpoint_port_);
+  auto token = mesage_builder->addToken();
   mesage_builder->addHeader(CoAP::MessageType::CONFIRMABLE,
                             toCodeType(request->message_type_));
   mesage_builder->addOptions(
-      makeOptions(request->message_type_, request->payload_));
-  auto payload = encode(request->message_type_, request->payload_);
+      makeOptions(request->message_type_, request->payload_, token->hexify()));
+  auto payload =
+      encode(request->message_type_, request->payload_, token->hexify());
   if (payload) {
     mesage_builder->addPayload(payload);
   }
@@ -126,17 +128,18 @@ CoAP::MessagePtr CoAP_Encoder::encode(CoAP::MessagePtr request,
                                       ServerResponsePtr response) {
   auto mesage_builder = make_unique<MessageBuilder>(request->getAddressIP(),
                                                     request->getAddressPort());
-  mesage_builder->addToken(request->getToken());
+  auto token = request->getToken();
+  mesage_builder->addToken(token);
   if (response) {
     try {
       mesage_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
                                 toCodeType(response->response_code_),
                                 request->getHeader()->getMessageID());
-      mesage_builder->addOptions(
-          makeOptions(response->message_type_, response->payload_));
-      if (response->payload_) {
-        mesage_builder->addPayload(
-            encode(response->message_type_, response->payload_));
+      mesage_builder->addOptions(makeOptions(
+          response->message_type_, response->payload_, token->hexify()));
+      if (auto payload = encode(response->message_type_, response->payload_,
+                                token->hexify())) {
+        mesage_builder->addPayload(payload);
       }
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
@@ -156,23 +159,54 @@ CoAP::MessagePtr CoAP_Encoder::encode(CoAP::MessagePtr request,
 }
 
 CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
-                                      LwM2M::PayloadPtr payload) {
+                                      LwM2M::PayloadPtr payload,
+                                      string message_identifier) {
   switch (type) {
   case LwM2M::MessageType::WRITE: {
+    logger_->log(SeverityLevel::TRACE,
+                 "Encoding message {} payload as a LwM2M TLV",
+                 message_identifier);
     return encodeAs_TLV(payload);
   }
   case LwM2M::MessageType::WRITE_COMPOSITE: {
+    logger_->log(SeverityLevel::TRACE,
+                 "Encoding message {} payload as a LwM2M CBOR",
+                 message_identifier);
     return encodeAs_LwM2M_CBOR(payload);
   }
   case LwM2M::MessageType::EXECUTE: {
+    logger_->log(SeverityLevel::TRACE,
+                 "Encoding message {} payload as PlainText",
+                 message_identifier);
     return encodeAs_PlainText(payload);
   }
-  default: { return CoAP::PayloadPtr(); }
+  case LwM2M::MessageType::REGISTER: {
+    [[fallthrough]];
+  }
+  case LwM2M::MessageType::UPDATE: {
+    [[fallthrough]];
+  }
+  case LwM2M::MessageType::DEREGISTER: {
+    [[fallthrough]];
+  }
+  case LwM2M::MessageType::DISCOVER: {
+    logger_->log(SeverityLevel::TRACE,
+                 "{} Message {} does not have a CoAP payload to encode.",
+                 toString(type), message_identifier);
+    return CoAP::PayloadPtr();
+  }
+  default: {
+    logger_->log(SeverityLevel::WARNNING,
+                 "Did not encode message {} payload for {}", message_identifier,
+                 toString(type));
+    return CoAP::PayloadPtr();
+  }
   }
 }
 
 CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
-                                        LwM2M::PayloadPtr payload) {
+                                        LwM2M::PayloadPtr payload,
+                                        string message_identifier) {
   Options options;
 
   switch (type) {
@@ -201,50 +235,50 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     break;
   }
   case LwM2M::MessageType::READ: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto acceptable_format_index = ContentFormatEncodings::LwM2M_TLV::index;
     options += build(OptionNumber::ACCEPT, acceptable_format_index);
     break;
   }
   case LwM2M::MessageType::READ_COMPOSITE: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::WRITE: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_TLV::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::WRITE_COMPOSITE: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::EXECUTE: {
     // check if there is some arguments first!
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::PlainText::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::CREATE: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     options += build(OptionNumber::CONTENT_FORMAT, content_format_index);
     break;
   }
   case LwM2M::MessageType::DISCOVER: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
     options += build(OptionNumber::ACCEPT, content_format_index);
     break;
   }
   case LwM2M::MessageType::OBSERVE_COMPOSITE: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_JSON::index;
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
@@ -260,7 +294,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   case LwM2M::MessageType::CANCEL_OBSERVATION:
     [[fallthrough]];
   case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE: {
-    options = makeOptions(payload);
+    options = makeOptions(payload, message_identifier);
     options += build(OptionNumber::OBSERVE, to_string(false));
     break;
   }
@@ -269,7 +303,8 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   return options;
 } // namespace LwM2M
 
-CoAP::Options CoAP_Encoder::makeOptions(LwM2M::PayloadPtr payload) {
+CoAP::Options CoAP_Encoder::makeOptions(LwM2M::PayloadPtr payload,
+                                        string message_identifier) {
   Options options;
 
   if (payload) {
