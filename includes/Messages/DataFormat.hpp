@@ -145,9 +145,10 @@ using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;
 using TargetAttribute = std::pair<ElementID, NotifyAttributePtr>;
 using TargetContent = std::pair<ElementID, DataFormatPtr>;
 using TargetContentVector = std::vector<TargetContent>;
+using TargetAttributes = std::vector<TargetAttribute>;
 using PayloadData =
     std::variant<DataFormatPtr, TargetContent, TargetContentVector, ElementID,
-                 ElementIDs, std::vector<TargetAttribute>>;
+                 ElementIDs, TargetAttributes>;
 using PayloadDataPtr = std::shared_ptr<PayloadData>;
 
 size_t size_of(const TargetAttribute &value);
