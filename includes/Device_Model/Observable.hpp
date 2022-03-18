@@ -37,9 +37,8 @@ public:
       try {
         cancelObserver();
       } catch (...) {
-        // @TODO: expose EventSource exception handler to implementers
-        // auto exception_ptr = std::current_exception();
-        // this->handler(exception_ptr);
+        auto exception_ptr = std::current_exception();
+        this->handler_(exception_ptr);
       }
     }
   }
