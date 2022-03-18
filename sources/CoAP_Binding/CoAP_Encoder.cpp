@@ -104,7 +104,7 @@ CoAP::MessagePtr CoAP_Encoder::encode(DeviceManagementRequestPtr message) {
 
 CoAP::MessagePtr CoAP_Encoder::encode(InformationReportingRequestPtr message) {
   // @TODO: implement information reporting request encoding
-  return CoAP::MessagePtr();
+  return encode(static_pointer_cast<ServerRequest>(message));
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
