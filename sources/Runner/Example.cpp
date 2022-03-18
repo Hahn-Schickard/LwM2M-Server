@@ -1,6 +1,7 @@
 #include "Example.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "Observable.hpp"
+#include "Readable.hpp"
 #include "Variant_Visitor.hpp"
 
 #include <chrono>
@@ -285,6 +286,11 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     asyncRead(device, ElementID(6, 0, 5)); // try to read Timestamp
     asyncRead(device,
               ElementID(3303, 0, 5700)); // try to read temperature value
+
+    auto battery_level =
+        device->getObject(ElementID(3, 0))->getResource(ElementID(3, 0, 9));
+    auto observable = dynamic_pointer_cast<Readable<uint64_t>>(
+        get<ResourcePtr<uint64_t>>(battery_level));
 
     break;
   }
