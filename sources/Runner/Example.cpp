@@ -1,5 +1,7 @@
 #include "Example.hpp"
 #include "CoAP_ContentTypes.hpp"
+#include "Observable.hpp"
+#include "Variant_Visitor.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -174,6 +176,95 @@ void asyncRead(DevicePtr device, ElementID id) {
       device, id)
       .detach();
 }
+
+struct Observer : public ObserverInterface {
+  Observer(ObservablePtr element)
+      : ObserverInterface(element), oberser_id_(element->getID().toString()) {}
+
+  void handleEvent(PayloadDataPtr payload) override {
+    if (payload) {
+      match(*payload,
+            [&](DataFormatPtr data) {
+              handeData(data);
+              cout << endl;
+            },
+            [&](TargetContent data) {
+              handeTargetContent(data);
+              cout << endl;
+            },
+            [&](TargetContentVector data) {
+              handleTargetContentVector(data);
+              cout << endl;
+            },
+            [&](ElementID id) {
+              handleElementID(id);
+              cout << endl;
+            },
+            [&](ElementIDs ids) {
+              handleElementIDs(ids);
+              cout << endl;
+            },
+            [&](TargetAttributes attributes) {
+              handleTargetAttributes(attributes);
+              cout << endl;
+            });
+    } else {
+      string error = " received a notification with an empty data payload";
+    }
+  }
+
+private:
+  void handeData(DataFormatPtr data) {}
+
+  void handeTargetContent(TargetContent data) {
+    cout << data.first.toString() << " ";
+    handeData(data.second);
+  }
+
+  void handleTargetContentVector(TargetContentVector vector) {
+    cout << "{";
+    for (auto target_data = vector.begin(); target_data != vector.end();
+         ++target_data) {
+      handeTargetContent(*target_data);
+      if (next(target_data) != vector.end()) {
+        cout << ",";
+      }
+    }
+    cout << "}";
+  }
+
+  void handleElementID(ElementID id) { cout << id.toString(); }
+
+  void handleElementIDs(ElementIDs ids) {
+    cout << "{";
+    for (auto id = ids.begin(); id != ids.end(); ++id) {
+      handleElementID(*id);
+      if (next(id) != ids.end()) {
+        cout << ",";
+      }
+    }
+    cout << "}";
+  }
+
+  void handleTargetAttribute(TargetAttribute attribute) {
+    handleElementID(attribute.first);
+    cout << " " << attribute.second->toString();
+  }
+
+  void handleTargetAttributes(TargetAttributes attributes) {
+    cout << "{";
+    for (auto attribute = attributes.begin(); attribute != attributes.end();
+         ++attribute) {
+      handleTargetAttribute(*attribute);
+      if (next(attribute) != attributes.end()) {
+        cout << ",";
+      }
+    }
+    cout << "}";
+  }
+
+  string oberser_id_;
+};
 
 RegistrationListener::RegistrationListener(EventSourcePtr registration)
     : EventListenerInterface(registration) {}
