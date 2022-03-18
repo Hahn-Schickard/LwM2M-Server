@@ -60,5 +60,8 @@ public:
     }
   }
 };
+
+using ObservablePtr = std::shared_ptr<Observable>;
+using ObserverInterface = Event_Model::EventListenerInterface<PayloadData>;
 } // namespace LwM2M
 #endif //__LWM2M_OBSERVABLE_HPP
