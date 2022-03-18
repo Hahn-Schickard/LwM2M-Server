@@ -8,7 +8,7 @@
 namespace LwM2M {
 
 template <typename T>
-class Writable : public Resource<T>, protected CallableEntity {
+class Writable : public Resource<T>, public CallableEntity {
 public:
   Writable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
            EndpointPtr endpoint, ElementID id)

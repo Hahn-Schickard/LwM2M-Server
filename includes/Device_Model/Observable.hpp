@@ -9,7 +9,7 @@
 
 namespace LwM2M {
 class Observable : public Event_Model::EventSource<PayloadData>,
-                   protected CallableEntity {
+                   public CallableEntity {
   size_t observer_id_ = 0;
 
   void requestObserver() {

@@ -7,7 +7,7 @@
 
 namespace LwM2M {
 template <typename T>
-class Executable : public Resource<T>, protected CallableEntity {
+class Executable : public Resource<T>, public CallableEntity {
 public:
   Executable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
              EndpointPtr endpoint, ElementID id)
