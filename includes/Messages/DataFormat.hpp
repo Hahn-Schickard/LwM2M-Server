@@ -138,6 +138,7 @@ struct NotifyAttribute {
       std::optional<uint16_t> maximum_evaluation_period = std::nullopt);
 
   size_t size();
+  std::string toString();
 };
 
 using NotifyAttributePtr = std::shared_ptr<NotifyAttribute>;

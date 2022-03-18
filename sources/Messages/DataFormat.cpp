@@ -235,6 +235,34 @@ size_t NotifyAttribute::size() {
   return result;
 }
 
+string NotifyAttribute::toString() {
+  string result;
+
+  if (minimum_period_.has_value()) {
+    result += "pmin=" + to_string(minimum_period_.value());
+  }
+  if (maximum_period_.has_value()) {
+    result += "pmax=" + to_string(maximum_period_.value());
+  }
+  if (greater_than_.has_value()) {
+    result += "gt=" + to_string(greater_than_.value());
+  }
+  if (less_than_.has_value()) {
+    result += "lt=" + to_string(less_than_.value());
+  }
+  if (step_.has_value()) {
+    result += "st=" + to_string(step_.value());
+  }
+  if (minimum_evaluation_period_.has_value()) {
+    result += "epmin=" + to_string(minimum_evaluation_period_.value());
+  }
+  if (maximum_evaluation_period_.has_value()) {
+    result += "epmax=" + to_string(maximum_evaluation_period_.value());
+  }
+
+  return result;
+}
+
 Payload::Payload(DataFormatPtr data) : Payload(PayloadData(data)) {}
 
 Payload::Payload(TargetContent data) : Payload(PayloadData(data)) {}
