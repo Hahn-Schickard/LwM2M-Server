@@ -216,6 +216,12 @@ ElementIDs Registrator::discoverAvailableDescriptors(
             "Discarding it from available descriptors.",
             (*it)->endpoint_->toString(), (*it)->target_.toString(), ex.what());
       }
+    } catch (ResponseReturnedAnErrorCode &ex) {
+      logger_->log(
+          SeverityLevel::WARNNING,
+          "Failed to handle {} to {}, response returned an error code: {}. "
+          "Discarding it from available descriptors.",
+          (*it)->name(), (*it)->endpoint_->toString(), ex.what());
     } catch (exception &ex) {
       logger_->log(SeverityLevel::ERROR,
                    "Failed to handle {} to {}, due to an exception: {}. "
