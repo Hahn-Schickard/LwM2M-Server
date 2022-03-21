@@ -175,8 +175,7 @@ future<void> asyncRead(DevicePtr device, ElementID id) {
                << ". Exception is: " << ex.what() << endl;
         }
       },
-      device, id)
-      .detach();
+      device, id);
 }
 
 RegistrationListener::RegistrationListener(EventSourcePtr registration)
@@ -215,13 +214,30 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     cout << string(getTerminalWidth(), '=') << endl;
     cout << "Finished reading resources" << endl;
 
-    auto battery_level =
-        device->getObject(ElementID(3, 0))->getResource(ElementID(3, 0, 9));
-    auto observable = dynamic_pointer_cast<Readable<uint64_t>>(
-        get<ResourcePtr<uint64_t>>(battery_level));
+    try {
+      auto device_obj = device->getObject(ElementID(3, 0));
+      auto battery_level_variant = device_obj->getResource(ElementID(3, 0, 9));
+      if (auto battery_level =
+              std::get<ResourcePtr<int64_t>>(battery_level_variant)) {
+        auto observable = dynamic_pointer_cast<Observable>(battery_level);
 
-    auto observer = make_shared<Observer>(observable);
-    observers_.emplace(device->getDeviceId(), observer);
+        cout << "Registering a new observer for "
+             << observable->getID().toString() << endl;
+        auto observer = make_shared<Observer>(observable);
+        observers_.emplace(device->getDeviceId(), observer);
+      } else {
+        cout << "Could not get Resource " << ElementID(3, 0, 9).toString()
+             << " from device " << device->getDeviceId() << endl;
+      }
+    } catch (ObjectInstanceDoesNotExist &ex) {
+      cout << "Could not register battery level observer for device "
+           << device->getDeviceId() << ex.what() << endl;
+    } catch (exception &ex) {
+      cout << "Cought unhandeled exception while trying to register a new "
+              "observer for device "
+           << device->getDeviceId() << endl
+           << "Exception: " << ex.what() << endl;
+    }
     break;
   }
   case RegistryEventType::UPDATED: {
