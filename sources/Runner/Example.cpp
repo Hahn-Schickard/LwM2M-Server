@@ -144,8 +144,9 @@ string stringifyResourceValue(ResourceVariant variant) {
   return string("Resource " + name + " value is: " + response);
 }
 
-void asyncRead(DevicePtr device, ElementID id) {
-  thread(
+future<void> asyncRead(DevicePtr device, ElementID id) {
+  return async(
+      std::launch::async,
       [](DevicePtr device, ElementID element_id) {
         try {
           auto object = device->getObject(element_id);
@@ -187,16 +188,32 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     auto device = event->device_;
     cout << "New device has been registered: ";
     printDevice(device);
-    asyncRead(device, ElementID(3, 0, 4)); // try to read a not readable
-    asyncRead(device, ElementID(3, 0, 8)); // try to read optional resource
-    asyncRead(device,
-              ElementID(3, 0, 11)); // try to read multiple instance resource
-    asyncRead(device, ElementID(3, 0, 16));
-    asyncRead(device, ElementID(6, 0, 0)); // try to read Latitude as float
-    asyncRead(device, ElementID(6, 0, 1)); // try to read Longitude as float
-    asyncRead(device, ElementID(6, 0, 5)); // try to read Timestamp
-    asyncRead(device,
-              ElementID(3303, 0, 5700)); // try to read temperature value
+
+    vector<future<void>> threads;
+    threads.push_back(
+        asyncRead(device, ElementID(3, 0, 4))); // try to read a not readable
+    threads.push_back(
+        asyncRead(device, ElementID(3, 0, 8))); // try to read optional resource
+    threads.push_back(asyncRead(
+        device, ElementID(3, 0, 11))); // try to read multiple instance resource
+    threads.push_back(asyncRead(device, ElementID(3, 0, 16)));
+    threads.push_back(
+        asyncRead(device, ElementID(6, 0, 0))); // try to read Latitude as float
+    threads.push_back(asyncRead(
+        device, ElementID(6, 0, 1))); // try to read Longitude as float
+    threads.push_back(
+        asyncRead(device, ElementID(6, 0, 5))); // try to read Timestamp
+    threads.push_back(asyncRead(
+        device, ElementID(3303, 0, 5700))); // try to read temperature value
+
+    for (auto thread = threads.begin(); thread != threads.end(); ++thread) {
+      auto status = thread->wait_for(1s);
+      if (status == future_status::ready) {
+        thread = threads.erase(thread);
+      }
+    }
+    cout << string(getTerminalWidth(), '=') << endl;
+    cout << "Finished reading resources" << endl;
 
     auto battery_level =
         device->getObject(ElementID(3, 0))->getResource(ElementID(3, 0, 9));
