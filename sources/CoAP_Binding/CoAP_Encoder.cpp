@@ -278,24 +278,31 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     break;
   }
   case LwM2M::MessageType::OBSERVE_COMPOSITE: {
-    options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_JSON::index;
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, to_string(content_format_index));
     options.emplace(OptionNumber::CONTENT_FORMAT, move(content_format));
     auto acceptable_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     options += build(OptionNumber::ACCEPT, acceptable_format_index);
-    [[fallthrough]];
-  }
-  case LwM2M::MessageType::OBSERVE: {
-    options += build(OptionNumber::OBSERVE, to_string(true));
+    options += build(OptionNumber::OBSERVE, 0);
+    // @TODO: URI paths for resources to be observed MUST be provided in request
+    // payload
     break;
   }
-  case LwM2M::MessageType::CANCEL_OBSERVATION:
-    [[fallthrough]];
+  case LwM2M::MessageType::OBSERVE: {
+    options = makeOptions(payload, message_identifier);
+    options += build(OptionNumber::OBSERVE, 0);
+    break;
+  }
+  case LwM2M::MessageType::CANCEL_OBSERVATION: {
+    options += build(OptionNumber::OBSERVE, 1);
+    // @TODO: URI paths for resources to be observed MUST be provided in request
+    // payload
+    break;
+  }
   case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE: {
     options = makeOptions(payload, message_identifier);
-    options += build(OptionNumber::OBSERVE, to_string(false));
+    options += build(OptionNumber::OBSERVE, 1);
     break;
   }
   default: { break; }
