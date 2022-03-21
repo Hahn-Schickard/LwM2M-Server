@@ -3,18 +3,22 @@
 
 #include "DeviceRegistry.hpp"
 #include "Event_Model/EventListenerInterface.hpp"
+#include "Observer.hpp"
 #include "RegistryEvent.hpp"
-#include "Variant_Visitor.hpp"
+
+#include <map>
 
 namespace LwM2M_Example {
 using namespace LwM2M;
 
-class RegistrationListener
+struct RegistrationListener
     : public Event_Model::EventListenerInterface<RegistryEvent> {
-public:
   RegistrationListener(EventSourcePtr registration);
 
   void handleEvent(RegistryEventPtr event) override;
+
+private:
+  std::multimap<std::string, ObserverPtr> observers_;
 };
 
 }; // namespace LwM2M_Example

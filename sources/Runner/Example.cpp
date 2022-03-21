@@ -203,6 +203,8 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     auto observable = dynamic_pointer_cast<Readable<uint64_t>>(
         get<ResourcePtr<uint64_t>>(battery_level));
 
+    auto observer = make_shared<Observer>(observable);
+    observers_.emplace(device->getDeviceId(), observer);
     break;
   }
   case RegistryEventType::UPDATED: {
@@ -213,6 +215,12 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
   case RegistryEventType::DEREGISTERED: {
     cout << "Device with id: " << event->identifier_
          << " has been deregistered!" << endl;
+    auto range = observers_.equal_range(event->identifier_);
+    for (auto it = range.first; it != range.second; ++it) {
+      cout << "Erasing element observer: " << it->second->getId() << endl;
+      it->second.reset();
+      observers_.erase(it);
+    }
     break;
   }
   default: {
