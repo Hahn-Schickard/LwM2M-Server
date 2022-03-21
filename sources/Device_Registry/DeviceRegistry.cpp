@@ -37,6 +37,10 @@ void DeviceRegistry::logListenerException(std::exception_ptr eptr) {
                  "One of the listeners threw an exception, while handing an "
                  "event notification. Exception: {}",
                  ex.what());
+  } catch (...) {
+    logger_->log(SeverityLevel::CRITICAL,
+                 "Cought an unkown unhandeled exception.");
+    // @TODO: decide if this should rethrow to OS and crash the socket
   }
 }
 
