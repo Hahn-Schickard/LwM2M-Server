@@ -9,6 +9,7 @@ using namespace LwM2M;
 struct Observer : public ObserverInterface {
   Observer(ObservablePtr observable);
 
+private:
   void handleEvent(PayloadDataPtr payload) override;
 };
 
