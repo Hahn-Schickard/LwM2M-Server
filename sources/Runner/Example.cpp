@@ -224,6 +224,8 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
         cout << "Registering a new observer for "
              << observable->getID().toString() << endl;
         auto observer = make_shared<Observer>(observable);
+        cout << "Observer for element " << observer->getId()
+             << " built. Saving it in the map of observers." << endl;
         observers_.emplace(device->getDeviceId(), observer);
       } else {
         cout << "Could not get Resource " << ElementID(3, 0, 9).toString()
