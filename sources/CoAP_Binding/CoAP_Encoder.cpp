@@ -189,6 +189,9 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
   case LwM2M::MessageType::DEREGISTER: {
     [[fallthrough]];
   }
+  case LwM2M::MessageType::OBSERVE: {
+    [[fallthrough]];
+  }
   case LwM2M::MessageType::DISCOVER: {
     logger_->log(SeverityLevel::TRACE,
                  "{} Message {} does not have a CoAP payload to encode.",
