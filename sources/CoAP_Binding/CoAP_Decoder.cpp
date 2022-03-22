@@ -213,6 +213,12 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
         if (auto content_format_option = it->second) {
           auto content_format =
               dynamic_pointer_cast<CoAP::ContentFormat>(content_format_option);
+          logger_->log(SeverityLevel::TRACE,
+                       "Trying to decode CoAP response from {}:{} with Token "
+                       "{} Payload as {} ",
+                       message->getAddressIP(), message->getAddressPort(),
+                       message->getToken()->hexify(),
+                       content_format->getValueAsString());
           content = decode(content_format, payload);
         } else {
           throw runtime_error(
