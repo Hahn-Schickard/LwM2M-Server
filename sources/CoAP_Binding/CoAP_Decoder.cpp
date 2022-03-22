@@ -21,7 +21,7 @@ ResponseCode toResponseCode(CoAP::CodeType code) {
 }
 LwM2M::PayloadPtr toPayload(PlainText content) {
   return make_shared<LwM2M::Payload>(
-      make_shared<DataFormat>(content.toString()));
+      make_shared<DataFormat>(content.toString()), MediaType::PLAIN_TEXT);
 }
 
 ElementID toElementID(vector<string> targets) {
@@ -71,7 +71,7 @@ LwM2M::PayloadPtr toPayload(CoRE_Links content) {
     result.emplace_back(toElementID(target));
   }
   if (!result.empty()) {
-    return make_shared<LwM2M::Payload>(result);
+    return make_shared<LwM2M::Payload>(result, MediaType::CORE_LINK);
   } else {
     return LwM2M::PayloadPtr();
   }
@@ -82,7 +82,7 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
   if (values.size() == 1) {
     if (values[0]->getIdentifierType() == Identifier_Type::Resource_Value) {
       auto data = make_shared<DataFormat>(values[0]->getValue());
-      return make_shared<LwM2M::Payload>(data);
+      return make_shared<LwM2M::Payload>(data, MediaType::TLV);
     } else if (values[0]->getIdentifierType() ==
                Identifier_Type::Object_Instance) {
       LwM2M::TargetContentVector targets_and_values;
@@ -113,7 +113,7 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
           }
         }
       }
-      return make_shared<LwM2M::Payload>(targets_and_values);
+      return make_shared<LwM2M::Payload>(targets_and_values, MediaType::TLV);
     }
   }
   return LwM2M::PayloadPtr();
@@ -121,7 +121,7 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
 
 LwM2M::PayloadPtr toPayload(OctetStream content) {
   return make_shared<LwM2M::Payload>(
-      make_shared<DataFormat>(content.getValue()));
+      make_shared<DataFormat>(content.getValue()), MediaType::OPAQUE);
 }
 
 CoAP_Decoder::CoAP_Decoder()
