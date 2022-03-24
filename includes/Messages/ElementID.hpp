@@ -87,6 +87,11 @@ private:
 };
 
 bool operator==(const ElementID &lhs, const ElementID &rhs);
+bool operator!=(const ElementID &lhs, const ElementID &rhs);
+bool operator<(const ElementID &lhs, const ElementID &rhs);
+bool operator>(const ElementID &lhs, const ElementID &rhs);
+bool operator<=(const ElementID &lhs, const ElementID &rhs);
+bool operator>=(const ElementID &lhs, const ElementID &rhs);
 
 using ElementIDs = std::vector<ElementID>;
 } // namespace LwM2M

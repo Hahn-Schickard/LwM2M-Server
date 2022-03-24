@@ -103,6 +103,24 @@ bool operator==(const ElementID &lhs, const ElementID &rhs) {
   return (lhs.hash() == rhs.hash());
 }
 
+bool operator!=(const ElementID &lhs, const ElementID &rhs) {
+  return !(lhs == rhs);
+}
+
+bool operator<(const ElementID &lhs, const ElementID &rhs) {
+  return (lhs.hash() < rhs.hash());
+}
+
+bool operator>(const ElementID &lhs, const ElementID &rhs) { return rhs < lhs; }
+
+bool operator<=(const ElementID &lhs, const ElementID &rhs) {
+  return !(lhs > rhs);
+}
+
+bool operator>=(const ElementID &lhs, const ElementID &rhs) {
+  return !(lhs < rhs);
+}
+
 } // namespace LwM2M
 
 namespace std {
