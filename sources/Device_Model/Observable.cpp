@@ -40,7 +40,7 @@ size_t Observable::attach(
     requestObserver();
   }
 
-  return this->attach(move(listener_callback));
+  return EventSource::attach(move(listener_callback));
 }
 
 void Observable::detach(size_t callback_id) {
