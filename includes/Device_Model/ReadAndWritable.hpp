@@ -23,7 +23,8 @@ public:
   ReadAndWritable(ResourceDescriptorPtr descriptor,
                   Observable::ExceptionHandler handler, RequesterPtr requester,
                   EndpointPtr endpoint, ElementID id)
-      : Resource<T>(descriptor), Observable(handler, requester, endpoint, id) {}
+      : Resource<T>(descriptor),
+        Observable(handler, requester, endpoint, id, descriptor->data_type_) {}
 
   std::future<T> read() override {
     auto message = std::make_shared<ReadRequest>(endpoint_, id_);

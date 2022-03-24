@@ -20,17 +20,20 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
   using ExceptionHandler = std::function<void(std::exception_ptr)>;
   using ObservedDataTypes = std::map<ElementID, DataType>;
 
+  Observable(ExceptionHandler handler, RequesterPtr requester,
+             EndpointPtr endpoint, ElementID id, ObservedDataTypes data_types);
+  Observable(ExceptionHandler handler, RequesterPtr requester,
+             EndpointPtr endpoint, ElementID id, DataType data_type);
+
+  ~Observable();
+
+  ObservedDataTypes getObservedDataTypes();
+  DataType getDataType(ElementID id);
+
+private:
   void requestObserver();
 
   void cancelObserver();
-
-public:
-  using ExceptionHandler = std::function<void(std::exception_ptr)>;
-
-  Observable(ExceptionHandler handler, RequesterPtr requester,
-             EndpointPtr endpoint, ElementID id);
-
-  ~Observable();
 
   size_t attach(
       Event_Model::HandleEventCallback<PayloadData> &&listener_callback) final;
