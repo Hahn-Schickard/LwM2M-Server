@@ -6,6 +6,8 @@
 
 #include "CallableEntity.hpp"
 
+#include <map>
+
 namespace LwM2M {
 struct ElementNotObserved : public std::runtime_error {
   ElementNotObserved(ElementID id)
@@ -15,7 +17,8 @@ struct ElementNotObserved : public std::runtime_error {
 
 struct Observable : public Event_Model::EventSource<PayloadData>,
                     public CallableEntity {
-  size_t observer_id_ = 0;
+  using ExceptionHandler = std::function<void(std::exception_ptr)>;
+  using ObservedDataTypes = std::map<ElementID, DataType>;
 
   void requestObserver();
 
@@ -33,6 +36,9 @@ public:
       Event_Model::HandleEventCallback<PayloadData> &&listener_callback) final;
 
   void detach(size_t callback_id) final;
+
+  size_t observer_id_ = 0;
+  ObservedDataTypes data_types_;
 };
 
 using ObservablePtr = std::shared_ptr<Observable>;
