@@ -14,6 +14,7 @@ target_link_libraries(${THIS} PRIVATE
                               Variant_Visitor::Variant_Visitor
                               ${PROJECT_NAME}_Server
                               HaSLL::HaSLL
+                              HSCUL::HSCUL
                               Threads::Threads
 )
 
