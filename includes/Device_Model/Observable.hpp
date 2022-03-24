@@ -7,8 +7,14 @@
 #include "CallableEntity.hpp"
 
 namespace LwM2M {
-class Observable : public Event_Model::EventSource<PayloadData>,
-                   public CallableEntity {
+struct ElementNotObserved : public std::runtime_error {
+  ElementNotObserved(ElementID id)
+      : runtime_error("Element " + id.toString() +
+                      " is not in the list of compoisite observed elements.") {}
+};
+
+struct Observable : public Event_Model::EventSource<PayloadData>,
+                    public CallableEntity {
   size_t observer_id_ = 0;
 
   void requestObserver();
