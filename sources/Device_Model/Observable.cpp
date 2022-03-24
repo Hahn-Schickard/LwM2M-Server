@@ -73,4 +73,19 @@ void Observable::detach(size_t callback_id) {
     cancelObserver();
   }
 }
+
+ObserverInterface::ObserverInterface(ObservablePtr source)
+    : EventListenerInterface(source), oberser_id_(source->getID().toString()),
+      data_types_(source->getObservedDataTypes()) {}
+
+std::string ObserverInterface::getId() { return oberser_id_; }
+
+Observable::ObservedDataTypes ObserverInterface::getObservedDataTypes() {
+  return data_types_;
+}
+
+DataType ObserverInterface::getDataType(ElementID id) {
+  return getDataTypeFromMap(data_types_, id);
+}
+
 } // namespace LwM2M

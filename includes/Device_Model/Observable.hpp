@@ -48,14 +48,15 @@ using ObservablePtr = std::shared_ptr<Observable>;
 
 struct ObserverInterface
     : Event_Model::EventListenerInterface<LwM2M::PayloadData> {
-  ObserverInterface(ObservablePtr source)
-      : EventListenerInterface(source),
-        oberser_id_(source->getID().toString()) {}
+  ObserverInterface(ObservablePtr source);
 
-  std::string getId() { return oberser_id_; }
+  Observable::ObservedDataTypes getObservedDataTypes();
+  DataType getDataType(ElementID id);
+  std::string getId();
 
-protected:
+private:
   std::string oberser_id_;
+  Observable::ObservedDataTypes data_types_;
 };
 
 using ObserverInterfacePtr = std::shared_ptr<ObserverInterface>;
