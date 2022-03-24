@@ -2,6 +2,7 @@
 #define __LWM2M_OBJECT_LINK_DATA_TYPE_HPP
 
 #include <cstdint>
+#include <string>
 
 namespace LwM2M {
 /**
@@ -14,6 +15,8 @@ struct ObjectLink {
 
   ObjectLink();
   ObjectLink(uint16_t object_id, uint16_t instance_id);
+
+  std::string toString();
 
   friend bool operator==(const ObjectLink &lhs, const ObjectLink &rhs);
 };
