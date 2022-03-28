@@ -242,6 +242,9 @@ void Registrator::handleDeviceException(std::string device_id,
   } catch (const std::exception &exp) {
     logger_->log(SeverityLevel::ERROR, "Device {} threw an exception: {}",
                  device_id, exp.what());
+  } catch (...) {
+    logger_->log(SeverityLevel::CRITICAL,
+                 "Device {} threw an unhandeled exception", device_id);
   }
 }
 
