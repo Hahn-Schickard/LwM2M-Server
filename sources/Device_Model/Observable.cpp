@@ -67,7 +67,7 @@ size_t Observable::attach(
 }
 
 void Observable::detach(size_t callback_id) {
-  this->detach(callback_id);
+  EventSource::detach(callback_id);
 
   if (!hasListeners()) {
     cancelObserver();
