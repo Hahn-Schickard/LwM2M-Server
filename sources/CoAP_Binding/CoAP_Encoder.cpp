@@ -231,9 +231,6 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         throw logic_error(
             "LOCATION_PATH option value must be of DataFormatPtr type");
       }
-    } else {
-      string error_msg = toString(type) + " response must have a payload";
-      throw logic_error(error_msg);
     }
     break;
   }
