@@ -95,7 +95,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if to_bool(args.runnable):
-        print('Running target {}{}'.format(args.target, args.arguments))
+        print('Running target {}{}'.format(
+            args.target, ' '.join(args.arguments)))
         run_process(args.target, args.arguments)
     print('Generating code coverage report based on build directory at {}'.format(
         args.build_directory))

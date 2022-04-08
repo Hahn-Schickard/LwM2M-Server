@@ -26,26 +26,25 @@ def count_errors(error_msg: str, error_beggining_marker: str, error_end_marker: 
         return 0
 
 
-def save_output(output: str, filename: str):
-    if os.path.isfile(filename):
-        os.remove(filename)
-    with open(filename, "w") as file:
-        file.write(output)
+def read_log(logfile: str):
+    with open(logfile, "r") as file:
+        return file.read()
 
 
-def run_memory_analysis(analyzer: str, settings: List[str], error_beggining_marker: str, error_end_marker: str, target: str, arguments: list):
+def run_memory_analysis(analyzer: str, settings: List[str], error_beggining_marker: str, error_end_marker: str, target: str, arguments: list, output_file=""):
     file_exists(target)
     settings.append(target)
     if arguments:
         settings.extend(arguments)
-    print("Runing memory analysis with {} {}".format(analyzer, settings))
+    print("Runing memory analysis with {} {}".format(
+        analyzer, ' '.join(settings)))
     print('On target {} with args {}'.format(target, arguments))
-    output = run_process(
+    run_process(
         analyzer, settings, throw_on_failure=False)
-    print(output.stderr)
-    save_output(output.stderr, analyzer+"-results.log")
+    result = read_log(output_file)
+    print(result)
     error_count = count_errors(
-        output.stderr, error_beggining_marker, error_end_marker)
+        result, error_beggining_marker, error_end_marker)
     if error_count > 0:
         error_msg = '{} found {} errors'.format(analyzer, error_count)
         raise RuntimeError(error_msg)
@@ -59,8 +58,8 @@ if __name__ == "__main__":
                         help="add an argument to the list of arguments, that are used by the target binary")
     args = parser.parse_args()
     try:
-        run_memory_analysis("valgrind", ["--leak-check=full", "--show-leak-kinds=all", "--track-origins=yes", "--verbose"],
-                            "ERROR SUMMARY: ", "errors", args.target, args.arguments)
+        run_memory_analysis("valgrind", ["--leak-check=full", "--show-leak-kinds=all", "--trace-children=yes", "--track-origins=yes", "--verbose", "--log-file=valgrind.log"],
+                            "ERROR SUMMARY: ", "errors", args.target, args.arguments, output_file="valgrind.log")
     except Exception as exception:
         exception_type = "{} exception occurred while trying to run memory analysis.".format(
             type(exception).__name__)
