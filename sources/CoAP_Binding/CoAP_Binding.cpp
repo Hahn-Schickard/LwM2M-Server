@@ -155,7 +155,7 @@ future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr request) {
             request->endpoint_->toString());
         auto response = decoder_->decode<ClientResponse>(coap_response);
         dispatched_.erase(std::hash<Message>{}(*request));
-        return move(response);
+        return response;
       },
       request);
 }
@@ -309,7 +309,7 @@ ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
                message->getAddressIP(), message->getAddressPort());
   auto response = handleRegistrationRequest(message);
   if (response) {
-    return move(response);
+    return response;
   }
   return ServerResponsePtr();
 }

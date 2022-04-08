@@ -27,7 +27,7 @@ public:
       DataPromise data_promise;
       auto result = data_promise.get_future();
       data_promise_ = std::move(data_promise);
-      return std::move(result);
+      return result;
     } else {
       throw std::runtime_error(
           "Could not despatch requestData call. TestRequester "
@@ -42,7 +42,7 @@ public:
       MultiDataPromise multi_data_promise;
       auto result = multi_data_promise.get_future();
       multi_data_promise_ = std::move(multi_data_promise);
-      return std::move(result);
+      return result;
     } else {
       throw std::runtime_error(
           "Could not despatch requestMultiTargetData call. TestRequester "
@@ -57,7 +57,7 @@ public:
       ActionPromise action_promise;
       auto result = action_promise.get_future();
       action_promise_ = std::move(action_promise);
-      return std::move(result);
+      return result;
     } else {
       throw std::runtime_error(
           "Could not despatch requestAction call. TestRequester "

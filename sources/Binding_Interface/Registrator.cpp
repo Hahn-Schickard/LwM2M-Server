@@ -51,7 +51,7 @@ vector<DiscoverRequestPtr> makeDiscoverRequests(
     auto discover = make_shared<DiscoverRequest>(endpoint, object_instance);
     discover_requests.emplace_back(move(discover));
   }
-  return move(discover_requests);
+  return discover_requests;
 }
 
 ReadRequestPtr makeReadRequest(DiscoverRequestPtr discover) {
