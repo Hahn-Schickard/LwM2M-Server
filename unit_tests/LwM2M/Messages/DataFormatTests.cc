@@ -8,6 +8,9 @@ using namespace LwM2M;
 struct DataFormatTestExpectations {
   const DataVariant data_;
   const DataType data_type_;
+
+  DataFormatTestExpectations(DataVariant data, DataType type)
+      : data_(data), data_type_(type) {}
 };
 
 using DataFormatTestExpectationsPtr = shared_ptr<DataFormatTestExpectations>;
@@ -105,27 +108,22 @@ makeTestParameter(const DataFormatTestExpectations &valid_expectations) {
 INSTANTIATE_TEST_SUITE_P(
     DataFormatTests, DataFormatTest,
     testing::Values(
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant(), .data_type_ = DataType::NONE}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant(string("Hello")),
-            .data_type_ = DataType::STRING}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant((int64_t)-10),
-            .data_type_ = DataType::SIGNED_INTEGER}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant((uint64_t)20),
-            .data_type_ = DataType::UNSIGNED_INTEGER}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant((double)30.2), .data_type_ = DataType::FLOAT}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant((bool)true), .data_type_ = DataType::BOOLEAN}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}),
-            .data_type_ = DataType::OPAQUE}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant((uint64_t)2), .data_type_ = DataType::TIME}),
-        makeTestParameter(DataFormatTestExpectations{
-            .data_ = DataVariant(ObjectLink(0, 0)),
-            .data_type_ = DataType::OBJECT_LINK})),
+        makeTestParameter(DataFormatTestExpectations(DataVariant(),
+                                                     DataType::NONE)),
+        makeTestParameter(DataFormatTestExpectations(
+            DataVariant(string("Hello")), DataType::STRING)),
+        makeTestParameter(DataFormatTestExpectations(DataVariant((int64_t)-10),
+                                                     DataType::SIGNED_INTEGER)),
+        makeTestParameter(DataFormatTestExpectations(
+            DataVariant((uint64_t)20), DataType::UNSIGNED_INTEGER)),
+        makeTestParameter(DataFormatTestExpectations(DataVariant((double)30.2),
+                                                     DataType::FLOAT)),
+        makeTestParameter(DataFormatTestExpectations(DataVariant((bool)true),
+                                                     DataType::BOOLEAN)),
+        makeTestParameter(DataFormatTestExpectations(
+            DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}), DataType::OPAQUE)),
+        makeTestParameter(DataFormatTestExpectations(DataVariant((uint64_t)2),
+                                                     DataType::TIME)),
+        makeTestParameter(DataFormatTestExpectations(
+            DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK))),
     GenerateTestName());
