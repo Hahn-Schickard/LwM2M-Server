@@ -1,4 +1,4 @@
-## [0.4.0] - NOT RELEASED
+## [0.4.0] - 2022.04.08
 ### Added
  - `DeviceMetaInfo` class to store device information from Registration Interface
  - `makeDevice()` method to `Registrator` class
@@ -40,9 +40,11 @@
  - `TestRequester::requestObservation()` method
  - `TestRequester::cancelObservation()` method 
  - `TestRequester::notify()` method 
+ - `Observable` class
+ - `ObserverInterface` facade
 
 ### Changed
- - CoAPS4Cpp to v0.3.1
+ - CoAPS4Cpp to v0.4.0
  - `handleRequest(RegisterRequest)` method to assign register location before DevicePtr is built
  - `RegisterRequest` to use `DeviceMetaInfo` class
  - `UpdateRequest` to use `DeviceMetaInfo` class
