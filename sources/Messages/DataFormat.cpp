@@ -114,6 +114,9 @@ vector<uint8_t> toBytes(DataVariant data) {
         [&](ObjectLink value) {
           result =
               HSCUL::toBytes(value.object_id_, ByteOrder::NetworkByteOrder);
+          auto expansion =
+              HSCUL::toBytes(value.instance_id_, ByteOrder::NetworkByteOrder);
+          result.insert(result.end(), expansion.begin(), expansion.end());
         },
         [&](vector<uint8_t> value) { result = value; });
   return result;
@@ -171,7 +174,8 @@ template <> string DataFormat::get<string>() const {
 }
 
 template <> ObjectLink DataFormat::get<ObjectLink>() const {
-  if (data_.size() == sizeof(uint16_t) + sizeof(uint16_t)) {
+  if (data_.size() >= 2 &&
+      data_.size() <= sizeof(uint16_t) + sizeof(uint16_t)) {
     vector<uint8_t> object_id_half(data_.begin(),
                                    data_.begin() + data_.size() / 2);
     vector<uint8_t> instance_id_half(data_.begin() + data_.size() / 2,
