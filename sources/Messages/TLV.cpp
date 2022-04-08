@@ -1,5 +1,8 @@
 #include "TLV.hpp"
 
+#include <stdexcept>
+#include <string>
+
 using namespace std;
 
 namespace LwM2M {
