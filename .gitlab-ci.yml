@@ -1,9 +1,13 @@
 include: "ci-variables.yml"
 
+variables:
+  ARTIFACT_COMPRESSION_LEVEL: "slow"
+
 stages:
   - build
   - test
   - analyze
+  - check
   - document
   - package
   - deploy
@@ -31,32 +35,33 @@ stages:
   artifacts:
     paths:
       - build/
+      - ${CI_PROJECT_DIR}/.conan
     expire_in: 1 days
 
 build:debian-buster:
   extends: .build
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
 
 build:debian-bullseye:
   extends: .build
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:latest
 
 build:ubuntu-18.04:
   extends: .build
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:latest
 
 build:ubuntu-20.04:
   extends: .build
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:latest
 
 build:fedora-32:
   extends: .build
-  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
 
 build:fedora-34:
   extends: .build
   image: 
-    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:2.0.0
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:latest
     entrypoint: ["/bin/sh", "-c"]
 
 .run_tests:
@@ -76,33 +81,33 @@ build:fedora-34:
 
 run_tests:debian-buster:
   extends: .run_tests
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
   needs: ["build:debian-buster"]
 
 run_tests:debian-bullseye:
   extends: .run_tests
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:latest
   needs: ["build:debian-bullseye"]
 
 run_tests:ubuntu-18.04:
   extends: .run_tests
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:latest
   needs: ["build:ubuntu-18.04"]
 
 run_tests:ubuntu-20.04:
   extends: .run_tests
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:latest
   needs: ["build:ubuntu-20.04"]
 
 run_tests:fedora-32:
   extends: .run_tests
-  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
   needs: ["build:fedora-32"]
 
 run_tests:fedora-34:
   extends: .run_tests
   image: 
-    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:2.0.0
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:latest
     entrypoint: ["/bin/sh", "-c"]
   needs: ["build:fedora-34"]
 
@@ -116,7 +121,7 @@ run_tests:fedora-34:
   artifacts:
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Debug_Valgrind_Results"
     paths:
-      - valgrind-results.log
+      - valgrind.log
     expire_in: 1 days
   rules:
     - if: '$RUN_VALGRIND == "true"'
@@ -124,41 +129,43 @@ run_tests:fedora-34:
 
 analyze_memory_usage:debian-buster:
   extends: .analyze_memory_usage
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
   needs: ["build:debian-buster"]
 
 analyze_memory_usage:debian-bullseye:
   extends: .analyze_memory_usage
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:latest
   needs: ["build:debian-bullseye"]
 
 analyze_memory_usage:ubuntu-18.04:
   extends: .analyze_memory_usage
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:latest
   needs: ["build:ubuntu-18.04"]
 
 analyze_memory_usage:ubuntu-20.04:
   extends: .analyze_memory_usage
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:latest
   needs: ["build:ubuntu-20.04"]
 
 analyze_memory_usage:fedora-32:
   extends: .analyze_memory_usage
-  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:2.0.0
+  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:latest
   needs: ["build:fedora-32"]
 
 analyze_memory_usage:fedora-34:
   extends: .analyze_memory_usage
   image: 
-    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:2.0.0
+    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:latest
     entrypoint: ["/bin/sh", "-c"]
   needs: ["build:fedora-34"]
 
-.check_code_coverage:
+check_code_coverage:
   extends: .setup
-  stage: analyze
+  stage: check
   tags:
     - conan
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
+  needs: ["build:debian-buster", "run_tests:debian-buster"]
   script:
     - python3 utility/checkCodeCoverage.py build ${RUN_VALGRIND} ${VALGRIND_TARGET} ${VALGRIND_TARGET_ARGS}
   artifacts:
@@ -167,45 +174,14 @@ analyze_memory_usage:fedora-34:
       - code_coverage_report/
     expire_in: 1 days
 
-check_code_coverage:debian-buster:
-  extends: .check_code_coverage
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster:2.0.0
-  needs: ["build:debian-buster", "run_tests:debian-buster"]
-
-check_code_coverage:debian-bullseye:
-  extends: .check_code_coverage
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye:2.0.0
-  needs: ["build:debian-bullseye", "run_tests:debian-bullseye"]
-
-check_code_coverage:ubuntu-18.04:
-  extends: .check_code_coverage
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-18.04:2.0.0
-  needs: ["build:ubuntu-18.04", "run_tests:ubuntu-18.04"]
-
-check_code_coverage:ubuntu-20.04:
-  extends: .check_code_coverage
-  image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:2.0.0
-  needs: ["build:ubuntu-20.04", "run_tests:ubuntu-20.04"]
-
-check_code_coverage:fedora-32:
-  extends: .check_code_coverage
-  image: ${DOCKER_REGISTRY}/hs-conan-fedora-32:2.0.0
-  needs: ["build:fedora-32", "run_tests:fedora-32"]
-
-check_code_coverage:fedora-34:
-  extends: .check_code_coverage
-  image: 
-    name: ${DOCKER_REGISTRY}/hs-conan-fedora-34:2.0.0
-    entrypoint: ["/bin/sh", "-c"]
-  needs: ["build:fedora-34", "run_tests:fedora-34"]
-
 check_code_formatting:
   extends: .setup
-  stage: analyze
+  stage: check
   tags:
     - conan
   script:
     - python3 utility/run-clang-format.py --dirs includes/ sources/ unit_tests/ --verbose --recursive
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
   artifacts:
     when: on_failure
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Linter_Fixes"
@@ -213,7 +189,7 @@ check_code_formatting:
       - clang-format-fixes/
     expire_in: 1 days
   allow_failure: true
-  needs: ["build:debian-buster", "run_tests:debian-buster"]
+  needs: ["build:debian-buster"]
 
 generate_autodoc:
   stage: document
@@ -256,7 +232,7 @@ package:stable:
 
 pages:
   stage: deploy
-  needs: ["build:debian-buster", "run_tests:debian-buster", "check_code_coverage:debian-buster", "generate_autodoc"]
+  needs: ["build:debian-buster", "run_tests:debian-buster", "check_code_coverage", "generate_autodoc"]
   tags:
     - conan
   script:
