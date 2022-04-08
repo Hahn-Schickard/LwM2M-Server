@@ -184,10 +184,12 @@ protected:
       auto result = resource->read();
       auto expected = expected_->result_;
 
-      async(std::launch::async,
-            RespondWithDelay<DataFormat>(expected_->requester_,
-                                         response_delay_ms, expected));
+      auto finished =
+          async(std::launch::async,
+                RespondWithDelay<DataFormat>(expected_->requester_,
+                                             response_delay_ms, expected));
       EXPECT_EQ(result.get(), expected.get<T>());
+      finished.get();
     } catch (exception &ex) {
       FAIL() << "Caught exception: " << ex.what() << endl;
     }
@@ -197,10 +199,11 @@ protected:
     try {
       auto result = resource->write(expected_->result_.data_);
 
-      async(std::launch::async,
-            RespondWithDelay<bool>(expected_->requester_, response_delay_ms,
-                                   true));
+      auto finished = async(std::launch::async,
+                            RespondWithDelay<bool>(expected_->requester_,
+                                                   response_delay_ms, true));
       EXPECT_TRUE(result.get());
+      finished.get();
     } catch (exception &ex) {
       FAIL() << "Caught exception: " << ex.what() << endl;
     }
@@ -210,10 +213,11 @@ protected:
     try {
       auto result = resource->execute();
 
-      async(std::launch::async,
-            RespondWithDelay<bool>(expected_->requester_, response_delay_ms,
-                                   true));
+      auto finished = async(std::launch::async,
+                            RespondWithDelay<bool>(expected_->requester_,
+                                                   response_delay_ms, true));
       EXPECT_TRUE(result.get());
+      finished.get();
     } catch (exception &ex) {
       FAIL() << "Caught exception: " << ex.what() << endl;
     }
