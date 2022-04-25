@@ -179,6 +179,19 @@ protected:
                          expected_->descriptor_);
   }
 
+  void TearDown() override {
+    expected_.reset();
+    match(
+        tested_, [&](ResourcePtr<bool> resource) { resource.reset(); },
+        [&](ResourcePtr<int64_t> resource) { resource.reset(); },
+        [&](ResourcePtr<uint64_t> resource) { resource.reset(); },
+        [&](ResourcePtr<double> resource) { resource.reset(); },
+        [&](ResourcePtr<string> resource) { resource.reset(); },
+        [&](ResourcePtr<ObjectLink> resource) { resource.reset(); },
+        [&](ResourcePtr<vector<uint8_t>> resource) { resource.reset(); });
+    exception_handler_.reset();
+  }
+
   template <typename T> void readResource(ResourcePtr<T> resource) {
     try {
       auto result = resource->read();
@@ -188,6 +201,12 @@ protected:
           async(std::launch::async,
                 RespondWithDelay<DataFormat>(expected_->requester_,
                                              response_delay_ms, expected));
+      if (finished.wait_for(1s) != future_status::ready) {
+        FAIL() << "Async Read of resource " << resource->getDescriptor()->id_
+               << ":" << resource->getDescriptor()->name_ << " has timed-out"
+               << endl;
+        std::terminate();
+      }
       EXPECT_EQ(result.get(), expected.get<T>());
       finished.get();
     } catch (exception &ex) {
@@ -202,6 +221,12 @@ protected:
       auto finished = async(std::launch::async,
                             RespondWithDelay<bool>(expected_->requester_,
                                                    response_delay_ms, true));
+      if (finished.wait_for(1s) != future_status::ready) {
+        FAIL() << "Async Write of resource " << resource->getDescriptor()->id_
+               << ":" << resource->getDescriptor()->name_ << " has timed-out"
+               << endl;
+        std::terminate();
+      }
       EXPECT_TRUE(result.get());
       finished.get();
     } catch (exception &ex) {
@@ -216,6 +241,12 @@ protected:
       auto finished = async(std::launch::async,
                             RespondWithDelay<bool>(expected_->requester_,
                                                    response_delay_ms, true));
+      if (finished.wait_for(1s) != future_status::ready) {
+        FAIL() << "Async Execute of resource " << resource->getDescriptor()->id_
+               << ":" << resource->getDescriptor()->name_ << " has timed-out"
+               << endl;
+        std::terminate();
+      }
       EXPECT_TRUE(result.get());
       finished.get();
     } catch (exception &ex) {
