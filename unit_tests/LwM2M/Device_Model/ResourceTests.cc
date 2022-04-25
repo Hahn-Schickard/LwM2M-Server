@@ -192,77 +192,38 @@ protected:
     exception_handler_.reset();
   }
 
-  template <typename T> void readResource(ResourcePtr<T> resource) {
-    try {
-      auto result = resource->read();
-      auto expected = expected_->result_;
-
-      auto finished =
-          async(std::launch::async,
-                RespondWithDelay<DataFormat>(expected_->requester_,
-                                             response_delay_ms, expected));
-      if (finished.wait_for(1s) != future_status::ready) {
-        FAIL() << "Async Read of resource " << resource->getDescriptor()->id_
-               << ":" << resource->getDescriptor()->name_ << " has timed-out"
-               << endl;
-        std::terminate();
-      }
-      EXPECT_EQ(result.get(), expected.get<T>());
-      finished.get();
-    } catch (exception &ex) {
-      FAIL() << "Caught exception: " << ex.what() << endl;
-    }
-  }
-
-  template <typename T> void writeResource(ResourcePtr<T> resource) {
-    try {
-      auto result = resource->write(expected_->result_.data_);
-
-      auto finished = async(std::launch::async,
-                            RespondWithDelay<bool>(expected_->requester_,
-                                                   response_delay_ms, true));
-      if (finished.wait_for(1s) != future_status::ready) {
-        FAIL() << "Async Write of resource " << resource->getDescriptor()->id_
-               << ":" << resource->getDescriptor()->name_ << " has timed-out"
-               << endl;
-        std::terminate();
-      }
-      EXPECT_TRUE(result.get());
-      finished.get();
-    } catch (exception &ex) {
-      FAIL() << "Caught exception: " << ex.what() << endl;
-    }
-  }
-
-  template <typename T> void executeResource(ResourcePtr<T> resource) {
-    try {
-      auto result = resource->execute();
-
-      auto finished = async(std::launch::async,
-                            RespondWithDelay<bool>(expected_->requester_,
-                                                   response_delay_ms, true));
-      if (finished.wait_for(1s) != future_status::ready) {
-        FAIL() << "Async Execute of resource " << resource->getDescriptor()->id_
-               << ":" << resource->getDescriptor()->name_ << " has timed-out"
-               << endl;
-        std::terminate();
-      }
-      EXPECT_TRUE(result.get());
-      finished.get();
-    } catch (exception &ex) {
-      FAIL() << "Caught exception: " << ex.what() << endl;
-    }
-  }
-
   ResourceVariant tested_;
   ResourceExpectationsPtr expected_;
   MockExceptionHandlerPtr exception_handler_ =
       std::make_shared<MockExceptionHandler>();
-  int response_delay_ms = 1;
+  int response_delay_ms_ = 1;
 };
 
 TEST_P(ResourceTest, isValidResourceVariant) {
   ASSERT_FALSE(tested_.valueless_by_exception());
+}
+
+template <typename T>
+void readResource(ResourcePtr<T> resource, ResourceExpectationsPtr expected,
+                  int response_delay_ms) {
+  try {
+    auto result = resource->read();
+    auto expected_result = expected->result_;
+    auto finished =
+        async(std::launch::async,
+              RespondWithDelay<DataFormat>(expected->requester_,
+                                           response_delay_ms, expected_result));
+    if (finished.wait_for(1s) != future_status::ready) {
+      FAIL() << "Async Read of resource " << resource->getDescriptor()->id_
+             << ":" << resource->getDescriptor()->name_ << " has timed-out"
+             << endl;
+      std::terminate();
+    }
+    EXPECT_EQ(result.get(), expected_result.get<T>());
+    finished.get();
+  } catch (exception &ex) {
+    FAIL() << "Caught exception: " << ex.what() << endl;
+  }
 }
 
 TEST_P(ResourceTest, canReadValue) {
@@ -270,18 +231,27 @@ TEST_P(ResourceTest, canReadValue) {
       expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
     match(
         tested_,
-        [&](ResourcePtr<bool> resource) { readResource<bool>(resource); },
-        [&](ResourcePtr<int64_t> resource) { readResource<int64_t>(resource); },
-        [&](ResourcePtr<uint64_t> resource) {
-          readResource<uint64_t>(resource);
+        [&](ResourcePtr<bool> resource) {
+          readResource<bool>(resource, expected_, response_delay_ms_);
         },
-        [&](ResourcePtr<double> resource) { readResource<double>(resource); },
-        [&](ResourcePtr<string> resource) { readResource<string>(resource); },
+        [&](ResourcePtr<int64_t> resource) {
+          readResource<int64_t>(resource, expected_, response_delay_ms_);
+        },
+        [&](ResourcePtr<uint64_t> resource) {
+          readResource<uint64_t>(resource, expected_, response_delay_ms_);
+        },
+        [&](ResourcePtr<double> resource) {
+          readResource<double>(resource, expected_, response_delay_ms_);
+        },
+        [&](ResourcePtr<string> resource) {
+          readResource<string>(resource, expected_, response_delay_ms_);
+        },
         [&](ResourcePtr<ObjectLink> resource) {
-          readResource<ObjectLink>(resource);
+          readResource<ObjectLink>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<vector<uint8_t>> resource) {
-          readResource<vector<uint8_t>>(resource);
+          readResource<vector<uint8_t>>(resource, expected_,
+                                        response_delay_ms_);
         });
   } else {
     match(
@@ -307,6 +277,28 @@ TEST_P(ResourceTest, canReadValue) {
         [&](ResourcePtr<vector<uint8_t>> resource) {
           EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
         });
+  }
+}
+
+template <typename T>
+void writeResource(ResourcePtr<T> resource, ResourceExpectationsPtr expected,
+                   int response_delay_ms) {
+  try {
+    auto result = resource->write(expected->result_.data_);
+
+    auto finished = async(
+        std::launch::async,
+        RespondWithDelay<bool>(expected->requester_, response_delay_ms, true));
+    if (finished.wait_for(1s) != future_status::ready) {
+      FAIL() << "Async Write of resource " << resource->getDescriptor()->id_
+             << ":" << resource->getDescriptor()->name_ << " has timed-out"
+             << endl;
+      std::terminate();
+    }
+    EXPECT_TRUE(result.get());
+    finished.get();
+  } catch (exception &ex) {
+    FAIL() << "Caught exception: " << ex.what() << endl;
   }
 }
 
@@ -315,20 +307,27 @@ TEST_P(ResourceTest, canWriteValue) {
       expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
     match(
         tested_,
-        [&](ResourcePtr<bool> resource) { writeResource<bool>(resource); },
+        [&](ResourcePtr<bool> resource) {
+          writeResource<bool>(resource, expected_, response_delay_ms_);
+        },
         [&](ResourcePtr<int64_t> resource) {
-          writeResource<int64_t>(resource);
+          writeResource<int64_t>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<uint64_t> resource) {
-          writeResource<uint64_t>(resource);
+          writeResource<uint64_t>(resource, expected_, response_delay_ms_);
         },
-        [&](ResourcePtr<double> resource) { writeResource<double>(resource); },
-        [&](ResourcePtr<string> resource) { writeResource<string>(resource); },
+        [&](ResourcePtr<double> resource) {
+          writeResource<double>(resource, expected_, response_delay_ms_);
+        },
+        [&](ResourcePtr<string> resource) {
+          writeResource<string>(resource, expected_, response_delay_ms_);
+        },
         [&](ResourcePtr<ObjectLink> resource) {
-          writeResource<ObjectLink>(resource);
+          writeResource<ObjectLink>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<vector<uint8_t>> resource) {
-          writeResource<vector<uint8_t>>(resource);
+          writeResource<vector<uint8_t>>(resource, expected_,
+                                         response_delay_ms_);
         });
   } else {
     match(
@@ -357,28 +356,53 @@ TEST_P(ResourceTest, canWriteValue) {
   }
 }
 
+template <typename T>
+void executeResource(ResourcePtr<T> resource, ResourceExpectationsPtr expected,
+                     int response_delay_ms) {
+  try {
+    auto result = resource->execute();
+
+    auto finished = async(
+        std::launch::async,
+        RespondWithDelay<bool>(expected->requester_, response_delay_ms, true));
+    if (finished.wait_for(1s) != future_status::ready) {
+      FAIL() << "Async Execute of resource " << resource->getDescriptor()->id_
+             << ":" << resource->getDescriptor()->name_ << " has timed-out"
+             << endl;
+      std::terminate();
+    }
+    EXPECT_TRUE(result.get());
+    finished.get();
+  } catch (exception &ex) {
+    FAIL() << "Caught exception: " << ex.what() << endl;
+  }
+}
+
 TEST_P(ResourceTest, canExecuteAction) {
   if (expected_->descriptor_->operations_ == OperationsType::EXECUTE) {
     match(
         tested_,
-        [&](ResourcePtr<bool> resource) { executeResource<bool>(resource); },
+        [&](ResourcePtr<bool> resource) {
+          executeResource<bool>(resource, expected_, response_delay_ms_);
+        },
         [&](ResourcePtr<int64_t> resource) {
-          executeResource<int64_t>(resource);
+          executeResource<int64_t>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<uint64_t> resource) {
-          executeResource<uint64_t>(resource);
+          executeResource<uint64_t>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<double> resource) {
-          executeResource<double>(resource);
+          executeResource<double>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<string> resource) {
-          executeResource<string>(resource);
+          executeResource<string>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<ObjectLink> resource) {
-          executeResource<ObjectLink>(resource);
+          executeResource<ObjectLink>(resource, expected_, response_delay_ms_);
         },
         [&](ResourcePtr<vector<uint8_t>> resource) {
-          executeResource<vector<uint8_t>>(resource);
+          executeResource<vector<uint8_t>>(resource, expected_,
+                                           response_delay_ms_);
         });
   } else {
     match(
