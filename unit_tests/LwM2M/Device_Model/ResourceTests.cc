@@ -284,28 +284,29 @@ TEST_P(ResourceTest, canReadValue) {
           readResource<vector<uint8_t>>(resource);
         });
   } else {
-    match(tested_,
-          [&](ResourcePtr<bool> resource) {
-            EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<int64_t> resource) {
-            EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<uint64_t> resource) {
-            EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<double> resource) {
-            EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<string> resource) {
-            EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<ObjectLink> resource) {
-            EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<vector<uint8_t>> resource) {
-            EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
-          });
+    match(
+        tested_,
+        [&](ResourcePtr<bool> resource) {
+          EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<int64_t> resource) {
+          EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<uint64_t> resource) {
+          EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<double> resource) {
+          EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<string> resource) {
+          EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<ObjectLink> resource) {
+          EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<vector<uint8_t>> resource) {
+          EXPECT_THROW({ resource->read(); }, UnsupportedMethod);
+        });
   }
 }
 
@@ -358,49 +359,51 @@ TEST_P(ResourceTest, canWriteValue) {
 
 TEST_P(ResourceTest, canExecuteAction) {
   if (expected_->descriptor_->operations_ == OperationsType::EXECUTE) {
-    match(tested_,
-          [&](ResourcePtr<bool> resource) { executeResource<bool>(resource); },
-          [&](ResourcePtr<int64_t> resource) {
-            executeResource<int64_t>(resource);
-          },
-          [&](ResourcePtr<uint64_t> resource) {
-            executeResource<uint64_t>(resource);
-          },
-          [&](ResourcePtr<double> resource) {
-            executeResource<double>(resource);
-          },
-          [&](ResourcePtr<string> resource) {
-            executeResource<string>(resource);
-          },
-          [&](ResourcePtr<ObjectLink> resource) {
-            executeResource<ObjectLink>(resource);
-          },
-          [&](ResourcePtr<vector<uint8_t>> resource) {
-            executeResource<vector<uint8_t>>(resource);
-          });
+    match(
+        tested_,
+        [&](ResourcePtr<bool> resource) { executeResource<bool>(resource); },
+        [&](ResourcePtr<int64_t> resource) {
+          executeResource<int64_t>(resource);
+        },
+        [&](ResourcePtr<uint64_t> resource) {
+          executeResource<uint64_t>(resource);
+        },
+        [&](ResourcePtr<double> resource) {
+          executeResource<double>(resource);
+        },
+        [&](ResourcePtr<string> resource) {
+          executeResource<string>(resource);
+        },
+        [&](ResourcePtr<ObjectLink> resource) {
+          executeResource<ObjectLink>(resource);
+        },
+        [&](ResourcePtr<vector<uint8_t>> resource) {
+          executeResource<vector<uint8_t>>(resource);
+        });
   } else {
-    match(tested_,
-          [&](ResourcePtr<bool> resource) {
-            EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<int64_t> resource) {
-            EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<uint64_t> resource) {
-            EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<double> resource) {
-            EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<string> resource) {
-            EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<ObjectLink> resource) {
-            EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
-          },
-          [&](ResourcePtr<vector<uint8_t>> resource) {
-            EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
-          });
+    match(
+        tested_,
+        [&](ResourcePtr<bool> resource) {
+          EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<int64_t> resource) {
+          EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<uint64_t> resource) {
+          EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<double> resource) {
+          EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<string> resource) {
+          EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<ObjectLink> resource) {
+          EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
+        },
+        [&](ResourcePtr<vector<uint8_t>> resource) {
+          EXPECT_THROW({ resource->execute(); }, UnsupportedMethod);
+        });
   }
 }
 
