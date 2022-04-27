@@ -12,7 +12,7 @@ target_sources(${THIS} PRIVATE
 
 target_link_libraries(${THIS} PRIVATE
                               Variant_Visitor::Variant_Visitor
-                              ${PROJECT_NAME}_Server
+                              ${PROJECT_NAME}_Core
                               HaSLL::HaSLL
                               HSCUL::HSCUL
                               Threads::Threads

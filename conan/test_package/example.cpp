@@ -1,5 +1,5 @@
 #include "LoggerRepository.hpp"
-#include "LwM2M/Server.hpp"
+#include "LwM2M_Server/Server.hpp"
 
 #include <iomanip>
 #include <iostream>

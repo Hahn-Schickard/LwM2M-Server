@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6) 
 
-set(THIS Server)
+set(THIS Core)
 set(MODULE_NAME ${PROJECT_NAME}_${THIS})
 
 list(APPEND THIS_INCLUDES_DIRS

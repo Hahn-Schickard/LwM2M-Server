@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
 #@+ ======================== User PROJECT NAME configuration ============================
-set(THIS LwM2M)
+set(THIS LwM2M_Server)
 #@- =========================== END OF USER CONFIGURATION ===============================
 
 project(${THIS} CXX)
