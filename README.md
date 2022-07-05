@@ -4,10 +4,80 @@
 <img src="docs/code_documentation/vendor-logo.png" alt="" width="200"/>
 
 # C++17 Lightweight Machine to Machine (LwM2M) Server Implementation
-## Brief description
 
-This is a module for C++17 based LwM2M Server implementation. It uses [ASIO](https://think-async.com/Asio/) to manage the network communications, [HaSLL](https://git.hahn-schickard.de/software-sollutions/application-engineering/internal/hasll) as the main logging interface, [PugiXML](https://pugixml.org/) as the XML parser library and provides all of the required dependency management through [Conan Dependency Management System](https://conan.io/). 
+## Description
+This is a module for C++17 based LwM2M Server implementation. It uses [ASIO](https://think-async.com/Asio/) to manage the network communications, [HaSLL](https://git.hahn-schickard.de/software-sollutions/application-engineering/internal/hasll) as the main logging interface, [PugiXML](https://pugixml.org/) as the XML parser library and provides all of the required dependency management through [Conan Dependency Management System](https://conan.io/).
 
-## Required dependencies
-* [Python 3.7](https://www.python.org/downloads/release/python-370/)
-* [conan](https://docs.conan.io/en/latest/installation.html)
+## Documentation
+
+If you want to have the latest documentation with your changes locally, you can generate it with [Doxygen](https://github.com/doxygen/doxygen) from sources by running the following:
+
+```bash
+doxygen utility/Doxyfile
+```
+
+This will generate an html like documentation at `[PROJECT_ROOT]/docs/code_documentation/html`. To use it open the `[PROJECT_ROOT]/docs/code_documentation/html/index.html` file with your browser.
+
+## Dependencies
+### Required
+
+* cmake - build system generator
+* python3 - used by utilities
+* conan - dependency handler, see [SSO Wiki](https://ssowiki.hsg.privat/en/Softwareentwicklung/Cpp/Conan_Package_Manager) for installation
+
+### Optional
+
+* clang-format - to use formatting tools
+* clang-tidy - to use static code analysis
+* doxygen - to generate documentation from code
+
+### Conan packages
+ * [gtest/1.11.0](https://conan.io/center/gtest?version=1.11.0)
+
+## Visual Studio Code Support
+
+### Recommended Plugins:
+* [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)  - provides linking to *inellisense*  and code debuggers
+* [C++ Intellisense](https://marketplace.visualstudio.com/items?itemName=austin.code-gnu-global) - provides code highlighting and quick navigation
+* [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) - provides CMake highlighting, configuring, building
+* [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) - provides code formatting
+* [Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) - provides test runner integration
+* [C++ TestMate](https://marketplace.visualstudio.com/items?itemName=matepek.vscode-catch2-test-adapter) - provides google-test framework adapter for Test Explorer UI
+
+## Building the project
+
+To build the project [CMake](https://cmake.org/) project makefile generation as well as integrated testing and linting tools.
+
+We recommend to create a directory for project makefiles and binaries:
+
+```bash
+mkdir build && cd build
+```
+
+Once in this new **build** directory, generate the project makefiles:
+
+```bash
+cmake ..
+```
+
+Once makefiles have been generated, build the project either in **Debug** configuration:
+
+```bash
+cmake --build . --target all --config Debug --
+```
+
+or **Release** configuration:
+
+```bash
+cmake --build . --target all --config Release --
+```
+
+Once the project is built, it is also possible to use the integrated tests runner to run the provided tests:
+
+```bash
+ctest --verbose
+```
+
+## Project utility tools
+
+This project comes with integrated utility scripts written in python3 to check code coverage with **gcov** and **lcov**, check for memory leaks with **valgrind** and generate documentation with **Doxygen**

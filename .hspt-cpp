@@ -1,0 +1,12 @@
+{
+    "project_template": "cpp",
+    "project_template_version": "Release_v0.0.0",
+    "project_name_long": "C++17 Lightweight Machine to Machine (LwM2M) Server Implementation",
+    "project_name_short": "LwM2M_Server",
+    "project_description": "This is a module for C++17 based LwM2M Server implementation. It uses [ASIO](https://think-async.com/Asio/) to manage the network communications, [HaSLL](https://git.hahn-schickard.de/software-sollutions/application-engineering/internal/hasll) as the main logging interface, [PugiXML](https://pugixml.org/) as the XML parser library and provides all of the required dependency management through [Conan Dependency Management System](https://conan.io/).",
+    "license": "Apache v2",
+    "ci_configuration": "multi-system",
+    "gitignore": true,
+    "contribution_guide": true,
+    "code_formatting": true
+}
