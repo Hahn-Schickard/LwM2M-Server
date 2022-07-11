@@ -95,15 +95,15 @@ analyze_memory_usage:fedora-34:
     entrypoint: ["/bin/sh", "-c"]
   needs: ["build:fedora-34"]
 
-check_code_coverage:debian-buster:
+check_code_coverage:debian-bullseye:
   extends: .check_code_coverage
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
-  needs: ["build:debian-buster", "run_tests:debian-buster"]
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:latest
+  needs: ["build:debian-bullseye", "run_tests:debian-bullseye"]
 
 check_code_formatting:debian-buster:
   extends: .check_code_formatting
-  image: ${DOCKER_REGISTRY}/hs-conan-debian-buster-slim:latest
-  needs: ["build:debian-buster"]
+  image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:latest
+  needs: ["build:debian-bullseye"]
 
 generate_autodoc:debian-buster:
   extends: .generate_autodoc
