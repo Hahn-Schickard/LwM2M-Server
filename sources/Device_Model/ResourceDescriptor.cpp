@@ -20,11 +20,13 @@ string toString(OperationsType operation) {
     return "Execute";
   }
   case OperationsType::NO_OPERATION:
-  default: { return "No Operation"; }
+  default: {
+    return "No Operation";
+  }
   }
 }
 
-ResourceDescriptor::ResourceDescriptor(const ResourceDescriptor &instance)
+ResourceDescriptor::ResourceDescriptor(const ResourceDescriptor& instance)
     : id_(instance.id_), name_(instance.name_),
       operations_(instance.operations_),
       multiple_instances_(instance.multiple_instances_),
@@ -32,7 +34,7 @@ ResourceDescriptor::ResourceDescriptor(const ResourceDescriptor &instance)
       range_enumeration_(instance.range_enumeration_), units_(instance.units_),
       description_(instance.description_) {}
 
-ResourceDescriptor::ResourceDescriptor(ResourceDescriptor &&instance)
+ResourceDescriptor::ResourceDescriptor(ResourceDescriptor&& instance)
     : id_(instance.id_), name_(move(instance.name_)),
       operations_(instance.operations_),
       multiple_instances_(instance.multiple_instances_),
@@ -47,21 +49,17 @@ ResourceDescriptor::ResourceDescriptor()
       range_enumeration_(nullopt), units_(string()), description_(string()) {}
 
 ResourceDescriptor::ResourceDescriptor(uint32_t id, string name,
-                                       OperationsType operations,
-                                       bool multiple_instances, bool mandatory,
-                                       DataType data_type, string units,
-                                       string description)
+    OperationsType operations, bool multiple_instances, bool mandatory,
+    DataType data_type, string units, string description)
     : id_(id), name_(name), operations_(operations),
       multiple_instances_(multiple_instances), mandatory_(mandatory),
       data_type_(data_type), range_enumeration_(nullopt), units_(units),
       description_(description) {}
 
 ResourceDescriptor::ResourceDescriptor(uint32_t id, string name,
-                                       OperationsType operations,
-                                       bool multiple_instances, bool mandatory,
-                                       DataType data_type,
-                                       RangeEnumeration range_enumeration,
-                                       string units, string description)
+    OperationsType operations, bool multiple_instances, bool mandatory,
+    DataType data_type, RangeEnumeration range_enumeration, string units,
+    string description)
     : id_(id), name_(name), operations_(operations),
       multiple_instances_(multiple_instances), mandatory_(mandatory),
       data_type_(data_type), range_enumeration_(move(range_enumeration)),

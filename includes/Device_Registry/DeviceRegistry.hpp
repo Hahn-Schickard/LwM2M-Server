@@ -15,7 +15,7 @@
 namespace LwM2M {
 
 struct DeviceNotFound : public std::runtime_error {
-  DeviceNotFound(std::string const &identifier);
+  DeviceNotFound(std::string const& identifier);
 };
 
 using SupportedObjectDescriptorsMap =
@@ -33,7 +33,7 @@ class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
   void logListenerException(std::exception_ptr ex);
 
 public:
-  DeviceRegistry(const std::string &configuration_path);
+  DeviceRegistry(const std::string& configuration_path);
   ~DeviceRegistry();
 
   SupportedObjectDescriptorsMapPtr getSupportedDescriptors();

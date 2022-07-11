@@ -15,7 +15,7 @@ struct RegistryEvent {
   const DevicePtr device_;
 
   RegistryEvent(RegistryEventType type, std::string identifier,
-                DevicePtr device = DevicePtr())
+      DevicePtr device = DevicePtr())
       : type_(type), identifier_(identifier), device_(device) {}
 };
 

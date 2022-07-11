@@ -20,14 +20,14 @@ namespace LwM2M {
  *
  */
 enum class MediaType : uint16_t {
-  PLAIN_TEXT = 0,   /*!< text/plain */
-  CORE_LINK = 40,   /*!< application//link-format */
-  OPAQUE = 42,      /*!< application/octet-stream */
-  CBOR = 60,        /*!< application/cbor */
+  PLAIN_TEXT = 0, /*!< text/plain */
+  CORE_LINK = 40, /*!< application//link-format */
+  OPAQUE = 42, /*!< application/octet-stream */
+  CBOR = 60, /*!< application/cbor */
   SENML_JSON = 110, /*!< application/senml+json */
   SENML_CBOR = 112, /*!< application/senml+cbor */
-  TLV = 11542,      /*!< application/vnd.oma.lwm2m+tlv */
-  JSON = 11543,     /*!< application/vnd.oma.lwm2m+json */
+  TLV = 11542, /*!< application/vnd.oma.lwm2m+tlv */
+  JSON = 11543, /*!< application/vnd.oma.lwm2m+json */
   NOT_SPECIFIED
 };
 
@@ -40,17 +40,17 @@ std::string toString(MediaType type);
  *
  */
 enum class DataType : uint8_t {
-  NONE,   /*!< No specific data type is applicable to this resource (Only for
-             Executable or Malformated Resources) */
+  NONE, /*!< No specific data type is applicable to this resource (Only for
+           Executable or Malformated Resources) */
   STRING, /*!< UTF-8 String */
-  SIGNED_INTEGER,   /*!< 64 bit signed integer value, represented as int64_t */
+  SIGNED_INTEGER, /*!< 64 bit signed integer value, represented as int64_t */
   UNSIGNED_INTEGER, /*!< 64 bit unsigned integer value*/
-  FLOAT,   /*!< 64 bit floating point value represented as double precision
-              floating point (double) */
+  FLOAT, /*!< 64 bit floating point value represented as double precision
+            floating point (double) */
   BOOLEAN, /*!< 8 bit unsigned integer value containing 0 for FALSE or 1 for
               TRUE */
-  OPAQUE,  /*!< A sequence of binary octets represented as a vector of uint8_t
-              values */
+  OPAQUE, /*!< A sequence of binary octets represented as a vector of uint8_t
+             values */
   TIME, /*!< A signed integer containing Unix time represented as uint64_t value
          */
   OBJECT_LINK, /*!< Refers to an Instance of a given Object, represented as
@@ -77,7 +77,7 @@ private:
 };
 
 using DataVariant = std::variant<bool, int64_t, uint64_t, TimeStamp, double,
-                                 std::string, ObjectLink, std::vector<uint8_t>>;
+    std::string, ObjectLink, std::vector<uint8_t>>;
 
 /**
  * @brief DataFormat - LwM2M data type container
@@ -104,7 +104,7 @@ struct DataFormat {
 
   size_t size() const;
 
-  friend bool operator==(const DataFormat &lhs, const DataFormat &rhs);
+  friend bool operator==(const DataFormat& lhs, const DataFormat& rhs);
 };
 
 template <> void DataFormat::get<void>() const;
@@ -128,8 +128,7 @@ struct NotifyAttribute {
   const std::optional<uint16_t> minimum_evaluation_period_;
   const std::optional<uint16_t> maximum_evaluation_period_;
 
-  NotifyAttribute(
-      std::optional<uint16_t> minimum_period = std::nullopt,
+  NotifyAttribute(std::optional<uint16_t> minimum_period = std::nullopt,
       std::optional<uint16_t> maximum_period = std::nullopt,
       std::optional<double> greater_than = std::nullopt,
       std::optional<double> less_than = std::nullopt,
@@ -146,15 +145,14 @@ using TargetAttribute = std::pair<ElementID, NotifyAttributePtr>;
 using TargetContent = std::pair<ElementID, DataFormatPtr>;
 using TargetContentVector = std::vector<TargetContent>;
 using TargetAttributes = std::vector<TargetAttribute>;
-using PayloadData =
-    std::variant<DataFormatPtr, TargetContent, TargetContentVector, ElementID,
-                 ElementIDs, TargetAttributes>;
+using PayloadData = std::variant<DataFormatPtr, TargetContent,
+    TargetContentVector, ElementID, ElementIDs, TargetAttributes>;
 using PayloadDataPtr = std::shared_ptr<PayloadData>;
 
-size_t size_of(const TargetAttribute &value);
-size_t size_of(const TargetContent &value);
-size_t size_of(const TargetContentVector &value);
-size_t size_of(const PayloadData &data);
+size_t size_of(const TargetAttribute& value);
+size_t size_of(const TargetContent& value);
+size_t size_of(const TargetContentVector& value);
+size_t size_of(const PayloadData& data);
 
 struct Payload {
   const PayloadData data_;
@@ -178,27 +176,27 @@ using PayloadPtr = std::shared_ptr<Payload>;
 
 namespace std {
 template <> struct hash<LwM2M::DataFormat> {
-  size_t operator()(const LwM2M::DataFormat &data) const;
+  size_t operator()(const LwM2M::DataFormat& data) const;
 };
 
 template <> struct hash<LwM2M::TargetContent> {
-  size_t operator()(const LwM2M::TargetContent &data) const;
+  size_t operator()(const LwM2M::TargetContent& data) const;
 };
 
 template <> struct hash<LwM2M::NotifyAttribute> {
-  size_t operator()(const LwM2M::NotifyAttribute &data) const;
+  size_t operator()(const LwM2M::NotifyAttribute& data) const;
 };
 
 template <> struct hash<LwM2M::TargetAttribute> {
-  size_t operator()(const LwM2M::TargetAttribute &data) const;
+  size_t operator()(const LwM2M::TargetAttribute& data) const;
 };
 
 template <> struct hash<LwM2M::PayloadData> {
-  size_t operator()(const LwM2M::PayloadData &data) const;
+  size_t operator()(const LwM2M::PayloadData& data) const;
 };
 
 template <> struct hash<LwM2M::Payload> {
-  size_t operator()(const LwM2M::Payload &payload) const;
+  size_t operator()(const LwM2M::Payload& payload) const;
 };
 } // namespace std
 

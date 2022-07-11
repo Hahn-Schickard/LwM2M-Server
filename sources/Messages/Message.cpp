@@ -5,7 +5,7 @@ namespace LwM2M {
 
 static constexpr uint8_t INTERFACE_MASK = 0xF0;
 
-UnsupportedOperation::UnsupportedOperation(string const &message)
+UnsupportedOperation::UnsupportedOperation(string const& message)
     : logic_error(message) {}
 
 string toString(InterfaceType type) {
@@ -19,7 +19,9 @@ string toString(InterfaceType type) {
   case InterfaceType::INFORMATION_REPORTING: {
     return "Information Reporting Interface";
   }
-  default: { return "Unrecognized Interface"; }
+  default: {
+    return "Unrecognized Interface";
+  }
   }
 }
 
@@ -79,7 +81,9 @@ string toString(MessageType type) {
   case MessageType::SEND: {
     return "Send";
   }
-  default: { return "Unhandled"; };
+  default: {
+    return "Unhandled";
+  };
   }
 }
 
@@ -97,7 +101,9 @@ InterfaceType getInterfaceType(MessageType message_type) {
   case 0x40: {
     return InterfaceType::BOOTSTRAP;
   }
-  default: { return InterfaceType::NOT_RECOGNIZED; }
+  default: {
+    return InterfaceType::NOT_RECOGNIZED;
+  }
   }
 }
 
@@ -170,34 +176,36 @@ string toString(ResponseCode type) {
     return "Proxying Not Supported";
   }
   case ResponseCode::UNHANDLED:
-  default: { return "Unhandled Return Code"; }
+  default: {
+    return "Unhandled Return Code";
+  }
   }
 }
 
-UnsupportedResponseCode::UnsupportedResponseCode(string const &message)
+UnsupportedResponseCode::UnsupportedResponseCode(string const& message)
     : logic_error(message) {}
 
 string makeErrorMsg(string message_type, ResponseCode unsupported_response_code,
-                    unordered_set<ResponseCode> supported_response_codes) {
+    unordered_set<ResponseCode> supported_response_codes) {
   string error_msg = string(message_type);
   error_msg += " does not support the use of " +
-               toString(unsupported_response_code) +
-               " response code! It only supports: ";
+      toString(unsupported_response_code) +
+      " response code! It only supports: ";
   for (auto supported_response_code : supported_response_codes) {
     error_msg += toString(supported_response_code) + "\n";
   }
   return error_msg;
 }
 
-UnsupportedResponseCode::UnsupportedResponseCode(
-    string message_type, ResponseCode unsupported_response_code,
+UnsupportedResponseCode::UnsupportedResponseCode(string message_type,
+    ResponseCode unsupported_response_code,
     unordered_set<ResponseCode> supported_response_codes)
     : UnsupportedResponseCode(makeErrorMsg(
           message_type, unsupported_response_code, supported_response_codes)) {}
 
 Message::Message(EndpointPtr endpoint, MessageType message_type,
-                 InterfaceType interface, PayloadPtr payload, bool incoming,
-                 bool response, bool notification)
+    InterfaceType interface, PayloadPtr payload, bool incoming, bool response,
+    bool notification)
     : endpoint_(endpoint), message_type_(message_type), interface_(interface),
       payload_(payload), response_(response), incoming_(incoming),
       notification_(notification) {
@@ -212,9 +220,9 @@ string Message::name() {
 }
 
 Response::Response(EndpointPtr endpoint, MessageType message_type,
-                   InterfaceType interface, bool incoming,
-                   unordered_set<ResponseCode> supported_responses,
-                   ResponseCode response_code, PayloadPtr payload)
+    InterfaceType interface, bool incoming,
+    unordered_set<ResponseCode> supported_responses, ResponseCode response_code,
+    PayloadPtr payload)
     : Message(endpoint, message_type, interface, payload, incoming, true),
       supported_responses_(supported_responses), response_code_(response_code) {
 }
@@ -226,36 +234,33 @@ void Response::checkResponseCode(ResponseCode response_code) {
 }
 
 ClientRequest::ClientRequest(EndpointPtr endpoint, MessageType message_type,
-                             InterfaceType interface, PayloadPtr payload)
+    InterfaceType interface, PayloadPtr payload)
     : Message(endpoint, message_type, interface, payload, true) {}
 
-ClientResponse::ClientResponse(EndpointPtr endpoint, ResponseCode response_code,
-                               PayloadPtr payload)
+ClientResponse::ClientResponse(
+    EndpointPtr endpoint, ResponseCode response_code, PayloadPtr payload)
     : Response(endpoint, MessageType::NOT_RECOGNIZED,
-               InterfaceType::NOT_RECOGNIZED, true,
-               unordered_set<ResponseCode>(), response_code, payload) {}
+          InterfaceType::NOT_RECOGNIZED, true, unordered_set<ResponseCode>(),
+          response_code, payload) {}
 
 ClientNotification::ClientNotification(EndpointPtr endpoint,
-                                       MessageType message_type,
-                                       InterfaceType interface,
-                                       PayloadPtr payload)
+    MessageType message_type, InterfaceType interface, PayloadPtr payload)
     : Message(endpoint, message_type, interface, payload, true, false, true) {}
 
 ServerRequest::ServerRequest(EndpointPtr endpoint, MessageType message_type,
-                             InterfaceType interface, PayloadPtr payload)
+    InterfaceType interface, PayloadPtr payload)
     : Message(endpoint, message_type, interface, payload, false) {}
 
 ServerResponse::ServerResponse(EndpointPtr endpoint, MessageType message_type,
-                               InterfaceType interface,
-                               unordered_set<ResponseCode> supported_responses,
-                               ResponseCode response_code, PayloadPtr payload)
+    InterfaceType interface, unordered_set<ResponseCode> supported_responses,
+    ResponseCode response_code, PayloadPtr payload)
     : Response(endpoint, message_type, interface, false, supported_responses,
-               response_code, payload) {}
+          response_code, payload) {}
 
 } // namespace LwM2M
 
-size_t std::hash<LwM2M::Message>::
-operator()(const LwM2M::Message &message) const {
+size_t std::hash<LwM2M::Message>::operator()(
+    const LwM2M::Message& message) const {
   auto endoint_string = message.endpoint_->toString();
   size_t result = hash<string>{}(endoint_string);
   result <<= endoint_string.length();

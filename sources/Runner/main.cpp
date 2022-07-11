@@ -11,7 +11,7 @@ using namespace HaSLL;
 using namespace LwM2M_Example;
 using namespace std;
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char* argv[]) {
   try {
     LoggerRepository::initialise("config/loggerConfig.json");
     auto logger =
@@ -31,13 +31,13 @@ int main(int argc, const char *argv[]) {
         for (;;) {
         }
       }
-    } catch (exception &e) {
+    } catch (exception& e) {
       logger->log(SeverityLevel::ERROR, "Received an exception: {}", e.what());
       cerr << e.what();
     }
 
     server->stop();
-  } catch (const exception &ex) {
+  } catch (const exception& ex) {
     cerr << ex.what();
     exit(EXIT_FAILURE);
   }

@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 struct ObjectIDHasher {
-  std::size_t operator()(const LwM2M::ElementID &id) const {
+  std::size_t operator()(const LwM2M::ElementID& id) const {
     using std::hash;
     using std::size_t;
 
@@ -20,8 +20,8 @@ struct ObjectIDHasher {
 };
 
 struct ObjectIDComparator {
-  bool operator()(const LwM2M::ElementID &lhs,
-                  const LwM2M::ElementID &rhs) const {
+  bool operator()(
+      const LwM2M::ElementID& lhs, const LwM2M::ElementID& rhs) const {
     return (lhs.getObjectID() == rhs.getObjectID());
   }
 };
@@ -29,9 +29,8 @@ struct ObjectIDComparator {
 namespace LwM2M {
 
 using ObjectsMap = std::unordered_map<uint16_t, ObjectPtr>;
-using ObjectDescriptorsMap =
-    std::unordered_multimap<ElementID, ObjectDescriptorPtr, ObjectIDHasher,
-                            ObjectIDComparator>;
+using ObjectDescriptorsMap = std::unordered_multimap<ElementID,
+    ObjectDescriptorPtr, ObjectIDHasher, ObjectIDComparator>;
 
 struct ObjectDoesNotExist : public std::runtime_error {
   ObjectDoesNotExist(ElementID id)
@@ -55,11 +54,10 @@ class Device {
 public:
   Device() = default;
   Device(Observable::ExceptionHandler handler, RequesterPtr requester,
-         EndpointPtr endpoint, ObjectDescriptorsMap object_descriptors_map,
-         std::string device_id, size_t life_time,
-         std::string name = std::string(),
-         LwM2M_Version version = LwM2M_Version::V1_0,
-         BindingType binding = BindingType::UDP, bool queue_mode = false);
+      EndpointPtr endpoint, ObjectDescriptorsMap object_descriptors_map,
+      std::string device_id, size_t life_time, std::string name = std::string(),
+      LwM2M_Version version = LwM2M_Version::V1_0,
+      BindingType binding = BindingType::UDP, bool queue_mode = false);
 
   std::string getDeviceId();
   std::string getName();

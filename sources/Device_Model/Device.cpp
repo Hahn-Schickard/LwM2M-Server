@@ -6,10 +6,9 @@ using namespace std;
 namespace LwM2M {
 
 Device::Device(Observable::ExceptionHandler handler, RequesterPtr requester,
-               EndpointPtr endpoint,
-               ObjectDescriptorsMap object_descriptors_map, string device_id,
-               size_t life_time, string name, LwM2M_Version version,
-               BindingType binding, bool queue_mode)
+    EndpointPtr endpoint, ObjectDescriptorsMap object_descriptors_map,
+    string device_id, size_t life_time, string name, LwM2M_Version version,
+    BindingType binding, bool queue_mode)
     : exception_handler_(handler), requester_(requester), endpoint_(endpoint),
       device_id_(device_id), life_time_(life_time), name_(name),
       version_(version), binding_(binding), queue_mode_(queue_mode) {
@@ -29,16 +28,16 @@ void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
     for (auto instance = range.first; instance != range.second; ++instance) {
       try {
         object_instances.emplace(instance->first);
-      } catch (bad_optional_access &ex) {
+      } catch (bad_optional_access& ex) {
         // silently ignore element ids without an object instance
       }
     }
 
     auto object = make_shared<Object>(exception_handler_, requester_, endpoint_,
-                                      object_instances, descriptor);
+        object_instances, descriptor);
 
-    object_instances_.emplace(object_descriptor_pair.first.getObjectID(),
-                              move(object));
+    object_instances_.emplace(
+        object_descriptor_pair.first.getObjectID(), move(object));
   }
 }
 

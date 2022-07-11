@@ -62,8 +62,8 @@ void handleData(DataFormatPtr data, DataType data_type) {
   }
 }
 
-void handleTargetContent(TargetContent data,
-                         Observable::ObservedDataTypes observed_data_typese) {
+void handleTargetContent(
+    TargetContent data, Observable::ObservedDataTypes observed_data_typese) {
   cout << data.first.toString() << " ";
   auto data_type = observed_data_typese.find(data.first);
   if (data_type != observed_data_typese.end()) {
@@ -73,8 +73,7 @@ void handleTargetContent(TargetContent data,
   }
 }
 
-void handleTargetContentVector(
-    TargetContentVector vector,
+void handleTargetContentVector(TargetContentVector vector,
     Observable::ObservedDataTypes observed_data_types) {
   cout << "{";
   for (auto target_data = vector.begin(); target_data != vector.end();
@@ -120,31 +119,32 @@ void handleTargetAttributes(TargetAttributes attributes) {
 void Observer::handleEvent(PayloadDataPtr payload) {
   if (payload) {
     cout << "Received: ";
-    match(*payload,
-          [&](DataFormatPtr data) {
-            handleData(data, getObservedDataTypes().begin()->second);
-            cout << endl;
-          },
-          [&](TargetContent data) {
-            handleTargetContent(data, getObservedDataTypes());
-            cout << endl;
-          },
-          [&](TargetContentVector data) {
-            handleTargetContentVector(data, getObservedDataTypes());
-            cout << endl;
-          },
-          [&](ElementID id) {
-            handleElementID(id);
-            cout << endl;
-          },
-          [&](ElementIDs ids) {
-            handleElementIDs(ids);
-            cout << endl;
-          },
-          [&](TargetAttributes attributes) {
-            handleTargetAttributes(attributes);
-            cout << endl;
-          });
+    match(
+        *payload,
+        [&](DataFormatPtr data) {
+          handleData(data, getObservedDataTypes().begin()->second);
+          cout << endl;
+        },
+        [&](TargetContent data) {
+          handleTargetContent(data, getObservedDataTypes());
+          cout << endl;
+        },
+        [&](TargetContentVector data) {
+          handleTargetContentVector(data, getObservedDataTypes());
+          cout << endl;
+        },
+        [&](ElementID id) {
+          handleElementID(id);
+          cout << endl;
+        },
+        [&](ElementIDs ids) {
+          handleElementIDs(ids);
+          cout << endl;
+        },
+        [&](TargetAttributes attributes) {
+          handleTargetAttributes(attributes);
+          cout << endl;
+        });
   } else {
     string error = " received a notification with an empty data payload";
   }

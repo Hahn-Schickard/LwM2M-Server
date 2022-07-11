@@ -45,16 +45,15 @@ struct ResourceDescriptor {
   const std::string description_;
 
   ResourceDescriptor();
-  ResourceDescriptor(const ResourceDescriptor &instance);
-  ResourceDescriptor(ResourceDescriptor &&instance);
+  ResourceDescriptor(const ResourceDescriptor& instance);
+  ResourceDescriptor(ResourceDescriptor&& instance);
   ResourceDescriptor(uint32_t id, std::string name, OperationsType operations,
-                     bool multiple_instances, bool mandatory,
-                     DataType data_type, std::string units,
-                     std::string description);
+      bool multiple_instances, bool mandatory, DataType data_type,
+      std::string units, std::string description);
   ResourceDescriptor(uint32_t id, std::string name, OperationsType operations,
-                     bool multiple_instances, bool mandatory,
-                     DataType data_type, RangeEnumeration range_enumeration,
-                     std::string units, std::string description);
+      bool multiple_instances, bool mandatory, DataType data_type,
+      RangeEnumeration range_enumeration, std::string units,
+      std::string description);
 };
 
 using ResourceDescriptorPtr = std::shared_ptr<ResourceDescriptor>;

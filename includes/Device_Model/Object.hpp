@@ -12,7 +12,7 @@
 #include <unordered_set>
 
 struct ObjectInstanceIDHasher {
-  std::size_t operator()(const LwM2M::ElementID &id) const {
+  std::size_t operator()(const LwM2M::ElementID& id) const {
     using std::hash;
     using std::size_t;
 
@@ -21,17 +21,16 @@ struct ObjectInstanceIDHasher {
 };
 
 struct ObjectInstanceComparator {
-  bool operator()(const LwM2M::ElementID &lhs,
-                  const LwM2M::ElementID &rhs) const {
+  bool operator()(
+      const LwM2M::ElementID& lhs, const LwM2M::ElementID& rhs) const {
     return (lhs.getObjectInstanceID() == rhs.getObjectInstanceID());
   }
 };
 
 namespace LwM2M {
 
-using RequiredObjectInstances =
-    std::unordered_multiset<ElementID, ObjectInstanceIDHasher,
-                            ObjectInstanceComparator>;
+using RequiredObjectInstances = std::unordered_multiset<ElementID,
+    ObjectInstanceIDHasher, ObjectInstanceComparator>;
 
 using ObjectInstances = std::unordered_map<uint16_t, ObjectInstacePtr>;
 
@@ -48,8 +47,8 @@ class Object {
 
 public:
   Object(Observable::ExceptionHandler handler, RequesterPtr requester,
-         EndpointPtr endpoint, RequiredObjectInstances instances,
-         ObjectDescriptorPtr descriptor);
+      EndpointPtr endpoint, RequiredObjectInstances instances,
+      ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();
   ObjectInstances getInstances();

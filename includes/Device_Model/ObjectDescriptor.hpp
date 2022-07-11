@@ -21,10 +21,9 @@ struct ObjectDescriptor {
   const std::unordered_map<uint32_t, ResourceDescriptorPtr> resources_;
 
   ObjectDescriptor();
-  ObjectDescriptor(const ObjectDescriptor &instance);
-  ObjectDescriptor(ObjectDescriptor &&instance);
-  ObjectDescriptor(
-      std::string name, std::string description, uint32_t id,
+  ObjectDescriptor(const ObjectDescriptor& instance);
+  ObjectDescriptor(ObjectDescriptor&& instance);
+  ObjectDescriptor(std::string name, std::string description, uint32_t id,
       bool multiple_instances, bool mandatory, std::string urn,
       std::unordered_map<uint32_t, ResourceDescriptorPtr> resources);
 

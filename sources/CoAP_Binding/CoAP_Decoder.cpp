@@ -84,7 +84,7 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
       auto data = make_shared<DataFormat>(values[0]->getValue());
       return make_shared<LwM2M::Payload>(data, MediaType::TLV);
     } else if (values[0]->getIdentifierType() ==
-               Identifier_Type::Object_Instance) {
+        Identifier_Type::Object_Instance) {
       LwM2M::TargetContentVector targets_and_values;
       auto bytes = values[0]->getBytes();
       auto tlv_subpack = TLV_Pack(bytes);
@@ -93,12 +93,12 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
         if (sub_value->getIdentifierType() == Identifier_Type::Resource_Value) {
           // Object id is in the request, so there is no way to get it from
           // response
-          auto target = ElementID(0, values[0]->getIdentifier(),
-                                  sub_value->getIdentifier());
+          auto target = ElementID(
+              0, values[0]->getIdentifier(), sub_value->getIdentifier());
           auto value = make_shared<DataFormat>(sub_value->getValue());
           targets_and_values.emplace_back(target, value);
         } else if (sub_value->getIdentifierType() ==
-                   Identifier_Type::Multiple_Resources) {
+            Identifier_Type::Multiple_Resources) {
           auto subpack_bytes = sub_value->getBytes();
           auto sub_sub_subpack = TLV_Pack(subpack_bytes);
           auto sub_sub_values = tlv_subpack.getPackAsVector();
@@ -106,8 +106,7 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
             // Same as before, Object ID is a mystery, without checkin the
             // original request
             auto target = ElementID(0, values[0]->getIdentifier(),
-                                    sub_value->getIdentifier(),
-                                    sub_sub_value->getIdentifier());
+                sub_value->getIdentifier(), sub_sub_value->getIdentifier());
             auto value = make_shared<DataFormat>(sub_sub_value->getValue());
             targets_and_values.emplace_back(target, value);
           }
@@ -131,8 +130,8 @@ CoAP_Decoder::~CoAP_Decoder() {
   LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
-LwM2M::PayloadPtr CoAP_Decoder::decode(CoAP::ContentFormatPtr content_format,
-                                       CoAP::PayloadPtr payload) {
+LwM2M::PayloadPtr CoAP_Decoder::decode(
+    CoAP::ContentFormatPtr content_format, CoAP::PayloadPtr payload) {
   if (content_format) {
     switch (content_format->getIndex()) {
     case ContentFormatEncodings::PlainText::index: {
@@ -160,8 +159,8 @@ LwM2M::PayloadPtr CoAP_Decoder::decode(CoAP::ContentFormatPtr content_format,
       return toPayload(octets);
     }
     default: {
-      throw runtime_error("Unhandled Content Format with index :" +
-                          content_format->getIndex());
+      throw runtime_error(
+          "Unhandled Content Format with index :" + content_format->getIndex());
     }
     }
   } else {
@@ -171,26 +170,23 @@ LwM2M::PayloadPtr CoAP_Decoder::decode(CoAP::ContentFormatPtr content_format,
 }
 
 template <>
-ClientResponsePtr
-CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
+ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
+    CoAP::MessagePtr message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
-  logger_->log(
-      SeverityLevel::TRACE,
+  logger_->log(SeverityLevel::TRACE,
       "Creating a Client Response from {}:{} CoAP response with Token {}",
       message->getAddressIP(), message->getAddressPort(),
       message->getToken()->hexify());
   try {
     auto code = toResponseCode(message->getHeader()->getCodeType());
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assigning {} Response Code to Client Response from {}:{} CoAP "
         "response with Token {}",
         toString(code), message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
     if (auto payload = message->getPayload()) {
-      logger_->log(
-          SeverityLevel::TRACE,
+      logger_->log(SeverityLevel::TRACE,
           "Assigning payload of {} bytes to Client Response from {}:{} CoAP "
           "response with Token {}",
           payload->getBytes().size(), message->getAddressIP(),
@@ -198,35 +194,34 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
       LwM2M::PayloadPtr content;
       auto options = message->getOptions();
       logger_->log(SeverityLevel::TRACE,
-                   "Looking for CONTENT_FORMAT Option in {}:{} CoAP "
-                   "response with Token {} Payload.",
-                   message->getAddressIP(), message->getAddressPort(),
-                   message->getToken()->hexify());
+          "Looking for CONTENT_FORMAT Option in {}:{} CoAP "
+          "response with Token {} Payload.",
+          message->getAddressIP(), message->getAddressPort(),
+          message->getToken()->hexify());
       auto it = options.find(OptionNumber::CONTENT_FORMAT);
       if (it != options.end()) {
         logger_->log(SeverityLevel::TRACE,
-                     "CONTENT_FORMAT Option found in {}:{} CoAP "
-                     "response with Token {} Payload. Casting it as "
-                     "CoAP::ContentFormat Class",
-                     message->getAddressIP(), message->getAddressPort(),
-                     message->getToken()->hexify());
+            "CONTENT_FORMAT Option found in {}:{} CoAP "
+            "response with Token {} Payload. Casting it as "
+            "CoAP::ContentFormat Class",
+            message->getAddressIP(), message->getAddressPort(),
+            message->getToken()->hexify());
         if (auto content_format_option = it->second) {
           auto content_format =
               dynamic_pointer_cast<CoAP::ContentFormat>(content_format_option);
           logger_->log(SeverityLevel::TRACE,
-                       "Trying to decode CoAP response from {}:{} with Token "
-                       "{} Payload as {} ",
-                       message->getAddressIP(), message->getAddressPort(),
-                       message->getToken()->hexify(),
-                       content_format->getValueAsString());
+              "Trying to decode CoAP response from {}:{} with Token "
+              "{} Payload as {} ",
+              message->getAddressIP(), message->getAddressPort(),
+              message->getToken()->hexify(),
+              content_format->getValueAsString());
           content = decode(content_format, payload);
         } else {
           throw runtime_error(
               "Content Format option value can not be a nullptr.");
         }
         if (content) {
-          logger_->log(
-              SeverityLevel::TRACE,
+          logger_->log(SeverityLevel::TRACE,
               "Payload {} of {} bytes assigned as content for Client Response "
               "from {}:{} CoAP "
               "response with Token {}",
@@ -235,31 +230,30 @@ CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message) {
               message->getToken()->hexify());
         } else {
           logger_->log(SeverityLevel::WARNNING,
-                       "Payload of {} bytes could not be converted into a "
-                       "Content Type for Client Response "
-                       "from {}:{} CoAP "
-                       "response with Token {}",
-                       payload->getBytes().size(), message->getAddressIP(),
-                       message->getAddressPort(),
-                       message->getToken()->hexify());
+              "Payload of {} bytes could not be converted into a "
+              "Content Type for Client Response "
+              "from {}:{} CoAP "
+              "response with Token {}",
+              payload->getBytes().size(), message->getAddressIP(),
+              message->getAddressPort(), message->getToken()->hexify());
         }
         return make_shared<ClientResponse>(endpoint, code, content);
       }
     }
     return make_shared<ClientResponse>(endpoint, code);
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     logger_->log(SeverityLevel::CRITICAL,
-                 "Caught an unhandled exception, while building a "
-                 "ClientResponse from message {} from {}:{}. Exception: {}",
-                 message->getToken()->hexify(), message->getAddressIP(),
-                 message->getAddressPort(), ex.what());
+        "Caught an unhandled exception, while building a "
+        "ClientResponse from message {} from {}:{}. Exception: {}",
+        message->getToken()->hexify(), message->getAddressIP(),
+        message->getAddressPort(), ex.what());
     return make_shared<ClientResponse>(endpoint, ResponseCode::BAD_REQUEST);
   }
 }
 
 template <>
-RegisterRequestPtr
-CoAP_Decoder::decode<RegisterRequest>(CoAP::MessagePtr message) {
+RegisterRequestPtr CoAP_Decoder::decode<RegisterRequest>(
+    CoAP::MessagePtr message) {
   return buildRegisterRequest(message);
 }
 
@@ -269,8 +263,8 @@ UpdateRequestPtr CoAP_Decoder::decode<UpdateRequest>(CoAP::MessagePtr message) {
 }
 
 template <>
-DeregisterRequestPtr
-CoAP_Decoder::decode<DeregisterRequest>(CoAP::MessagePtr message) {
+DeregisterRequestPtr CoAP_Decoder::decode<DeregisterRequest>(
+    CoAP::MessagePtr message) {
   return buildDeregisterRequest(message);
 }
 } // namespace LwM2M

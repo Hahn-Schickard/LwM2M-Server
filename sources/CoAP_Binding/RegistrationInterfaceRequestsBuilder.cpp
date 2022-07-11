@@ -105,7 +105,7 @@ optional<string> getSMS(Options options) {
   return {};
 }
 
-vector<string> split(const string &s, char delimiter) {
+vector<string> split(const string& s, char delimiter) {
   vector<string> tokens;
   string token;
   istringstream tokenStream(s);
@@ -115,8 +115,8 @@ vector<string> split(const string &s, char delimiter) {
   return tokens;
 }
 
-pair<unsigned int, optional<unsigned int>>
-makeObjectInstancePair(CoRE_Link link) {
+pair<unsigned int, optional<unsigned int>> makeObjectInstancePair(
+    CoRE_Link link) {
   vector<string> uri_targets = split(link.getTarget(), '/');
   // ignore empty root element
   if (uri_targets.begin()->empty()) {
@@ -136,28 +136,28 @@ makeObjectInstancePair(CoRE_Link link) {
   }
 }
 
-void addToMap(unordered_map<unsigned int, vector<unsigned int>> &map,
-              pair<unsigned int, optional<unsigned int>> instance) {
+void addToMap(unordered_map<unsigned int, vector<unsigned int>>& map,
+    pair<unsigned int, optional<unsigned int>> instance) {
   // Ignore object without an instance for now
   if (instance.second.has_value()) {
     auto it = map.find(instance.first);
     if (it != map.end()) {
       it->second.push_back(instance.second.value());
     } else {
-      map.emplace(instance.first,
-                  vector<unsigned int>{instance.second.value()});
+      map.emplace(
+          instance.first, vector<unsigned int>{instance.second.value()});
     }
   }
 }
 
-unordered_map<unsigned int, vector<unsigned int>>
-getObjectList(CoAP::PayloadPtr payload) {
+unordered_map<unsigned int, vector<unsigned int>> getObjectList(
+    CoAP::PayloadPtr payload) {
   unordered_map<unsigned int, vector<unsigned int>> result;
   if (payload) {
     CoRE_Links core_links;
     try {
       core_links = decode<CoRE_Links>(payload);
-    } catch (CoAP::WrongContentFormatTypeDecoder &ex) {
+    } catch (CoAP::WrongContentFormatTypeDecoder& ex) {
       auto content_format = ex.format_type_;
       uint16_t octect_stream_index =
           CoAP::ContentFormatEncodings::Octet_Stream::index;
@@ -168,8 +168,8 @@ getObjectList(CoAP::PayloadPtr payload) {
         core_links = CoRE_Links(string(buffer.begin(), buffer.end()));
       } else {
         string error_msg = to_string(content_format->getIndex()) +
-                           " is not a supported CoAP Content Format type for "
-                           "registration interface!";
+            " is not a supported CoAP Content Format type for "
+            "registration interface!";
         throw runtime_error(error_msg);
       }
     }
@@ -198,14 +198,14 @@ RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message) {
       auto queue_mode_ = getQueueMode(message->getOptions());
       auto sms_number_ = getSMS(message->getOptions());
 
-      return make_shared<RegisterRequest>(
-          endpoint, life_time_, object_instances_map_, endpoint_name_, version_,
-          binding_, queue_mode_, sms_number_);
-    } catch (bad_optional_access &ex) {
+      return make_shared<RegisterRequest>(endpoint, life_time_,
+          object_instances_map_, endpoint_name_, version_, binding_,
+          queue_mode_, sms_number_);
+    } catch (bad_optional_access& ex) {
       throw RegistrationInterfaceError(
           make_shared<RegisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
     }
-  } catch (bad_optional_access &ex) {
+  } catch (bad_optional_access& ex) {
     throw RegistrationInterfaceError(make_shared<RegisterResponse>(
         endpoint, ResponseCode::PRECOGNITION_FAILED));
   }
@@ -236,8 +236,8 @@ UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message) {
     auto binding = getBindingType(message->getOptions());
     auto sms_number = getSMS(message->getOptions());
     return make_shared<UpdateRequest>(endpoint, location, object_instances_map,
-                                      life_time, binding, sms_number);
-  } catch (bad_optional_access &ex) {
+        life_time, binding, sms_number);
+  } catch (bad_optional_access& ex) {
     throw RegistrationInterfaceError(
         make_shared<UpdateResponse>(endpoint, ResponseCode::BAD_REQUEST));
   }
@@ -249,7 +249,7 @@ DeregisterRequestPtr buildDeregisterRequest(CoAP::MessagePtr message) {
   try {
     auto location = getLocation(message->getOptions()).value();
     return make_shared<DeregisterRequest>(endpoint, location);
-  } catch (bad_optional_access &ex) {
+  } catch (bad_optional_access& ex) {
     throw RegistrationInterfaceError(
         make_shared<DeregisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
   }

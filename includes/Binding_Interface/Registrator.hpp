@@ -21,19 +21,18 @@ class Registrator : public Requester,
   std::shared_ptr<HaSLL::Logger> logger_;
 
   void makeDevice(std::string device_id, EndpointPtr device_address,
-                  DeviceMetaInfo device_info);
+      DeviceMetaInfo device_info);
 
-  ObjectDescriptorsMap
-  assignAvailableDescriptors(ElementIDs requested_instances);
+  ObjectDescriptorsMap assignAvailableDescriptors(
+      ElementIDs requested_instances);
 
-  ElementIDs discoverAvailableDescriptors(
-      EndpointPtr endpoint,
+  ElementIDs discoverAvailableDescriptors(EndpointPtr endpoint,
       const DeviceMetaInfo::ObjectInstancesMap object_instances);
 
   ElementIDs discover(ServerRequestPtr request);
 
-  void handleDeviceException(std::string device_id,
-                             std::exception_ptr exception_ptr);
+  void handleDeviceException(
+      std::string device_id, std::exception_ptr exception_ptr);
 
 public:
   Registrator(DeviceRegistryPtr registry);

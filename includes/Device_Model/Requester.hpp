@@ -13,19 +13,18 @@ namespace LwM2M {
 struct ResponseReturnedAnErrorCode : public std::runtime_error {
   ResponseCode response_code_;
 
-  ResponseReturnedAnErrorCode(ClientResponsePtr response,
-                              ServerRequestPtr request)
+  ResponseReturnedAnErrorCode(
+      ClientResponsePtr response, ServerRequestPtr request)
       : runtime_error(response->name() + " returned " +
-                      toString(response->response_code_) + " for " +
-                      request->name()),
+            toString(response->response_code_) + " for " + request->name()),
         response_code_(response->response_code_) {}
 };
 
 struct ResponseReturnedAnEmptyPayload : public std::runtime_error {
-  ResponseReturnedAnEmptyPayload(ClientResponsePtr response,
-                                 ServerRequestPtr request)
+  ResponseReturnedAnEmptyPayload(
+      ClientResponsePtr response, ServerRequestPtr request)
       : runtime_error(response->name() + " has no payload " + " for " +
-                      request->name()) {}
+            request->name()) {}
 };
 
 /**
@@ -50,8 +49,8 @@ struct Requester {
    * @param message
    * @return std::future<DataFormat>
    */
-  virtual std::future<DataFormatPtr>
-  requestData(DeviceManagementRequestPtr /*message*/) {
+  virtual std::future<DataFormatPtr> requestData(
+      DeviceManagementRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestData implementation.");
   }
 
@@ -80,8 +79,8 @@ struct Requester {
    * @param message
    * @return std::future<TargetContentVector>
    */
-  virtual std::future<TargetContentVector>
-  requestMultiTargetData(DeviceManagementRequestPtr /*message*/) {
+  virtual std::future<TargetContentVector> requestMultiTargetData(
+      DeviceManagementRequestPtr /*message*/) {
     throw std::runtime_error(
         "Called base requestMultiTargetData implementation.");
   }
@@ -97,8 +96,8 @@ struct Requester {
    * @param message
    * @return std::future<bool>
    */
-  virtual std::future<bool>
-  requestAction(DeviceManagementRequestPtr /*message*/) {
+  virtual std::future<bool> requestAction(
+      DeviceManagementRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestAction implementation.");
   }
 
@@ -116,9 +115,9 @@ struct Requester {
    * @param message - appropriate observation request for the appropriate device
    * @return size_t - observer notification callback identifier, can not be 0
    */
-  virtual size_t
-  requestObservation(std::function<void(PayloadDataPtr)> /* notify_cb */,
-                     InformationReportingRequestPtr /*message*/) {
+  virtual size_t requestObservation(
+      std::function<void(PayloadDataPtr)> /* notify_cb */,
+      InformationReportingRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestObservation implementation.");
   }
 
@@ -136,8 +135,8 @@ struct Requester {
    * @param message - appropriate cancel observation request for the appropriate
    * device
    */
-  virtual void cancelObservation(size_t /* observer_id */,
-                                 InformationReportingRequestPtr /*message*/) {
+  virtual void cancelObservation(
+      size_t /* observer_id */, InformationReportingRequestPtr /*message*/) {
     throw std::runtime_error("Called base requestObservation implementation.");
   }
 

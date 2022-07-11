@@ -11,7 +11,7 @@ template <typename T>
 class Writable : public Resource<T>, public CallableEntity {
 public:
   Writable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
-           EndpointPtr endpoint, ElementID id)
+      EndpointPtr endpoint, ElementID id)
       : Resource<T>(descriptor), CallableEntity(requester, endpoint, id) {}
 
   std::future<bool> write(DataVariant data) override {

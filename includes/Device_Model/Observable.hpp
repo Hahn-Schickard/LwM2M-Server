@@ -12,7 +12,7 @@ namespace LwM2M {
 struct ElementNotObserved : public std::runtime_error {
   ElementNotObserved(ElementID id)
       : runtime_error("Element " + id.toString() +
-                      " is not in the list of compoisite observed elements.") {}
+            " is not in the list of compoisite observed elements.") {}
 };
 
 struct Observable : public Event_Model::EventSource<PayloadData>,
@@ -21,9 +21,9 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
   using ObservedDataTypes = std::map<ElementID, DataType>;
 
   Observable(ExceptionHandler handler, RequesterPtr requester,
-             EndpointPtr endpoint, ElementID id, ObservedDataTypes data_types);
+      EndpointPtr endpoint, ElementID id, ObservedDataTypes data_types);
   Observable(ExceptionHandler handler, RequesterPtr requester,
-             EndpointPtr endpoint, ElementID id, DataType data_type);
+      EndpointPtr endpoint, ElementID id, DataType data_type);
 
   ~Observable();
 
@@ -36,7 +36,7 @@ private:
   void cancelObserver();
 
   size_t attach(
-      Event_Model::HandleEventCallback<PayloadData> &&listener_callback) final;
+      Event_Model::HandleEventCallback<PayloadData>&& listener_callback) final;
 
   void detach(size_t callback_id) final;
 

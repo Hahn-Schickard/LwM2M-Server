@@ -11,7 +11,9 @@ string toString(LwM2M_Version version) {
   case LwM2M_Version::V1_1: {
     return "1.1.";
   }
-  default: { return "Unrecognized"; }
+  default: {
+    return "Unrecognized";
+  }
   }
 }
 
@@ -29,7 +31,9 @@ string toString(BindingType binding) {
   case BindingType::NON_IP: {
     return "Non IP";
   }
-  default: { return "Malformated"; }
+  default: {
+    return "Malformated";
+  }
   }
 }
 } // namespace LwM2M

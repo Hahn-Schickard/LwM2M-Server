@@ -36,7 +36,7 @@ struct TLV_Header {
   TLV_Header();
   TLV_Header(uint8_t byte);
   TLV_Header(Identifier_Type identifier, bool is_identifier_short_long,
-             Length_Type length_type, uint8_t value_length);
+      Length_Type length_type, uint8_t value_length);
 
   uint8_t toByte();
 };
@@ -51,7 +51,7 @@ class TLV {
 
 public:
   TLV() = default;
-  TLV(std::vector<uint8_t> &bytestream);
+  TLV(std::vector<uint8_t>& bytestream);
   TLV(std::shared_ptr<TLV_Header> header, uint16_t identifier, uint32_t length,
       std::vector<uint8_t> value);
 

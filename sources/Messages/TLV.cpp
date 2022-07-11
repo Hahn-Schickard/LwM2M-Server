@@ -68,8 +68,8 @@ TLV_Header::TLV_Header(uint8_t byte)
       value_length_(getSmallLengthValue(byte)) {}
 
 TLV_Header::TLV_Header(Identifier_Type identifier,
-                       bool is_identifier_short_long, Length_Type length_type,
-                       uint8_t value_length)
+    bool is_identifier_short_long, Length_Type length_type,
+    uint8_t value_length)
     : identifier_(identifier),
       is_identifier_short_long_(is_identifier_short_long),
       length_type_(length_type), value_length_(value_length) {}
@@ -83,7 +83,7 @@ uint8_t TLV_Header::toByte() {
   return result;
 }
 
-TLV::TLV(vector<uint8_t> &bytestream) {
+TLV::TLV(vector<uint8_t>& bytestream) {
   auto it = bytestream.begin();
   header_ = make_shared<TLV_Header>(*it);
   ++it;
@@ -126,15 +126,14 @@ TLV::TLV(vector<uint8_t> &bytestream) {
   } else {
     string error_msg = "TLV Value length exceeded bytesream size. TLV Header "
                        "specyfies that the value is " +
-                       to_string(length_) +
-                       " bytes long, but bytesream only contains " +
-                       to_string(distance(it, bytestream.end())) + " bytes.";
+        to_string(length_) + " bytes long, but bytesream only contains " +
+        to_string(distance(it, bytestream.end())) + " bytes.";
     throw length_error(error_msg);
   }
 }
 
 TLV::TLV(shared_ptr<TLV_Header> header, uint16_t identifier, uint32_t length,
-         vector<uint8_t> value)
+    vector<uint8_t> value)
     : header_(header), identifier_(identifier), length_(length), value_(value) {
 }
 
@@ -201,8 +200,8 @@ shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
   if (it != values_.end()) {
     return it->second;
   } else {
-    throw runtime_error("TLV has no value for identifier:" +
-                        to_string(identifier));
+    throw runtime_error(
+        "TLV has no value for identifier:" + to_string(identifier));
   }
 }
 
