@@ -9,12 +9,61 @@ import os
 import difflib
 import re
 from typing import List
-from utilities import run_process
-from utilities import is_installed
 import json
+import subprocess
 
 if sys.version_info < (3, 6):
     raise RuntimeError("This package requires Python 3.6 or later")
+
+VERBOSE = False
+
+
+class PIPE_Value:
+    def __init__(self, stdout: str, stderr: str):
+        self.stdout = stdout
+        self.stderr = stderr
+
+
+def run_process(executable: str, arguments: List[str] = [], encoding='utf-8', throw_on_failure=True, live_print=True, live_print_errors=False):
+    command = [executable]
+    if arguments:
+        command.extend(arguments)
+    try:
+        process = subprocess.Popen(command, stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE, encoding=encoding, universal_newlines=True)
+        stdout = str()
+        stderr = str()
+        if live_print:
+            while True:
+                line = process.stdout.readline()
+                e_line = str()
+                if live_print_errors:
+                    e_line = process.stderr.readline()
+                if process.poll() is not None:
+                    break
+                if line:
+                    stdout += line
+                    print(line.strip())
+                if e_line:
+                    stderr += e_line
+                    print(e_line.strip())
+
+        else:
+            process.wait()
+            stdout = ''.join(process.stdout.readlines())
+        stderr = ''.join(process.stderr.readlines())
+        if throw_on_failure:
+            if stderr:
+                error_msg = 'Running command ' + \
+                    ' '.join(command) + ' returned an error: ' + stderr
+                raise OSError(process.returncode, ''.join(error_msg))
+            else:
+                return PIPE_Value(stdout, str())
+        else:
+            return PIPE_Value(stdout, stderr)
+    except subprocess.CalledProcessError as exception:
+        raise RuntimeError('An exception occurred while running command: ' +
+                           ' '.join(command) + ' Exception is: ' + exception.output)
 
 
 def print_verbose(message: str):
@@ -70,8 +119,7 @@ def get_ignored(ignored: str):
 def filter_ignored(files: List[str], file_types: str, ignored: str, pattern: str):
     ignored_files = get_ignored(ignored)
     file_types = file_types.split(',')
-
-    for file in files:
+    for file in list(files):
         if list(filter(file.endswith, file_types)) == []:
             print_verbose(
                 'Ignorring file {} since it`s type is not supported'.format(file))
@@ -83,7 +131,6 @@ def filter_ignored(files: List[str], file_types: str, ignored: str, pattern: str
             print_verbose(
                 'Ignorring file {}, due to it matching RegEx {}'.format(file, pattern))
             files.remove(file)
-
     return files
 
 
@@ -94,7 +141,7 @@ def format_file(executable: str, file: str, formatter_args: List[str] = []):
     args.append(file)
     print_verbose('Running {} {}'.format(executable, ' '.join(args)))
     process = run_process(
-        executable, args, throw_on_failure=False, live_print=VERBOSE)
+        executable, args, throw_on_failure=False)
     if process.stderr:
         raise RuntimeError('Running {} {} returned an unhandled error: {}'.format(
             executable, ' '.join(args), process.stderr))
@@ -192,20 +239,19 @@ def do_formatting(clang_format_exe: str, save_as: str, directories: List[str], r
 
     if len(fixed_files) == 0:
         print('No files were formatted')
-        return None
-
-    return_message = str(len(fixed_files))
-    if not save_as == 'in_place':
-        return_message += (' file needs ' if len(fixed_files)
-                           == 1 else ' files need ')
-        return_message += 'to be formatted. Formatting suggestions can be found at ' + \
-            os.path.join(os.getcwd(), 'clang-format-fixes') + os.sep
-        return return_message
     else:
-        return_message += (' file ' if len(fixed_files)
-                           == 1 else ' files  ')
-        return_message += 'have been formatted'
-        print(return_message)
+        return_message = str(len(fixed_files))
+        if not save_as == 'in_place':
+            return_message += (' file needs ' if len(fixed_files)
+                               == 1 else ' files need ')
+            return_message += 'to be formatted. Formatting suggestions can be found at ' + \
+                os.path.join(os.getcwd(), 'clang-format-fixes') + os.sep
+            return return_message
+        else:
+            return_message += (' file ' if len(fixed_files)
+                               == 1 else ' files  ')
+            return_message += 'have been formatted'
+            print(return_message)
 
 
 def fix_files(fixes_dir: str):
@@ -234,7 +280,7 @@ def fix_files(fixes_dir: str):
             fixes_dir, fixes_manifest_json))
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '--clang-format-exe',
@@ -282,11 +328,16 @@ if __name__ == '__main__':
         default='',
         help='exclude files with names that match a given RegEx pattern')
     args = parser.parse_args()
+    global VERBOSE
     VERBOSE = args.verbose
+
     print_verbose(args)
-    is_installed(args.clang_format_exe)
     if not args.fix:
-        sys.exit(do_formatting(
-            args.clang_format_exe, args.save_as, args.dirs, args.recursive, args.file_types, args.ignore, args.ignore_pattern))
+        return do_formatting(
+            args.clang_format_exe, args.save_as, args.dirs, args.recursive, args.file_types, args.ignore, args.ignore_pattern)
     else:
         fix_files(args.fix)
+
+
+if __name__ == '__main__':
+    sys.exit(main())
