@@ -32,7 +32,7 @@ size_t getTerminalWidth() {
 #endif // Windows/Linux
 }
 
-void printResource(ResourceVariant variant, string prefix) {
+void printResource(ResourcePtr variant, string prefix) {
   match(variant, [&prefix](auto resource) {
     cout << prefix << "_"
          << "Resource: " << resource->getDescriptor()->id_ << ": "
@@ -89,59 +89,41 @@ void printDevice(DevicePtr device) {
   cout << string(getTerminalWidth(), '=') << endl;
 }
 
-string stringifyResourceValue(ResourceVariant variant) {
-  string name;
-  string response;
+string stringifyDataVariant(DataVariant variant) {
   match(
-      variant,
-      [&](ResourcePtr<bool> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        bool value = resource_future.get();
-        response = value ? "True" : "False";
-      },
-      [&](ResourcePtr<int64_t> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        int64_t value = resource_future.get();
-        response = to_string(value);
-      },
-      [&](ResourcePtr<double> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        double value = resource_future.get();
-        response = to_string(value);
-      },
-      [&](ResourcePtr<string> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        response = resource_future.get();
-      },
-      [&](ResourcePtr<uint64_t> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        uint64_t value = resource_future.get();
-        response = to_string(value);
-      },
-      [&](ResourcePtr<TimeStamp> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        auto value = resource_future.get();
-        response = value.toString();
-      },
-      [&](ResourcePtr<ObjectLink> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        ObjectLink value = resource_future.get();
-        response = "Object link:" + to_string(value.object_id_) + ":" +
+      variant, [&](bool value) { return value ? "True" : "False"; },
+      [&](int64_t value) { return to_string(value); },
+      [&](double value) { return to_string(value); },
+      [&](string value) { return value; },
+      [&](uint64_t value) { return to_string(value); },
+      [&](TimeStamp value) { return value.toString(); },
+      [&](ObjectLink value) {
+        return "Object link:" + to_string(value.object_id_) + ":" +
             to_string(value.instance_id_);
       },
-      [&](ResourcePtr<vector<uint8_t>> resource) {
-        name = resource->getDescriptor()->name_;
-        auto resource_future = resource->read();
-        vector<uint8_t> value = resource_future.get();
-        response = string(value.begin(), value.end());
+      [&](vector<uint8_t> value) {
+        return string(value.begin(), value.end());
       });
+}
+
+string stringifyResourceValue(ResourcePtr resource) {
+  string response;
+  match(
+      resource->getInstance(),
+      [&](ReadablePtr readable) {
+        auto resource_future = readable->read();
+        response = stringifyDataVariant(resource_future.get());
+      },
+      [&](ReadAndWritablePtr readable) {
+        auto resource_future = readable->read();
+        response = stringifyDataVariant(resource_future.get());
+      },
+      [&](...) {
+        auto descriptor = resource->getDescriptor();
+        auto error_msg = "Resource " + descriptor->name_ + " is not readable";
+        throw runtime_error(error_msg);
+      });
+  auto name = resource->getDescriptor()->name_;
   return string("Resource " + name + " value is: " + response);
 }
 
@@ -162,10 +144,6 @@ future<void> asyncRead(DevicePtr device, ElementID id) {
                << " failed! Received an error "
                   "code: "
                << toString(ex.response_code_) << endl;
-        } catch (UnsupportedMethod& ex) {
-          cout << "Called an unsupported method for device "
-               << device->getName() << " element " << element_id.toString()
-               << ". Exception is: " << ex.what() << endl;
         } catch (runtime_error& ex) {
           cout << "Encountered a runtime error while processing device "
                << device->getName() << " element " << element_id.toString()
@@ -217,9 +195,10 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
 
     try {
       auto device_obj = device->getObject(ElementID(3, 0));
-      auto battery_level_variant = device_obj->getResource(ElementID(3, 0, 9));
+      auto battery_level_resource = device_obj->getResource(ElementID(3, 0, 9));
+      // @TODO: simplify the observation mechanism here
       if (auto battery_level =
-              std::get<ResourcePtr<int64_t>>(battery_level_variant)) {
+              std::get<ReadablePtr>(battery_level_resource->getInstance())) {
         auto observable = dynamic_pointer_cast<Observable>(battery_level);
 
         cout << "Registering a new observer for "

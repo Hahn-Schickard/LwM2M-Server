@@ -14,11 +14,7 @@
 #include <vector>
 
 namespace LwM2M {
-using ResourceVariant =
-    std::variant<ResourcePtr<bool>, ResourcePtr<int64_t>, ResourcePtr<double>,
-        ResourcePtr<std::string>, ResourcePtr<uint64_t>, ResourcePtr<TimeStamp>,
-        ResourcePtr<ObjectLink>, ResourcePtr<std::vector<uint8_t>>>;
-using Resources = std::unordered_map<uint32_t, ResourceVariant>;
+using Resources = std::unordered_map<uint32_t, ResourcePtr>;
 
 struct ResourceDoesNotExist : public std::runtime_error {
   ResourceDoesNotExist(ElementID id)
@@ -38,7 +34,7 @@ public:
           resource_descriptors);
   ElementID getId();
 
-  ResourceVariant getResource(ElementID id);
+  ResourcePtr getResource(ElementID id);
   Resources getResources();
 };
 

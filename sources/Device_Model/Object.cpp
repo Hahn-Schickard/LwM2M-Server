@@ -55,7 +55,7 @@ Object::Object(Observable::ExceptionHandler handler, RequesterPtr requester,
   }
 }
 
-ResourceVariant Object::getResource(ElementID id) {
+ResourcePtr Object::getResource(ElementID id) {
   auto it = instances_.find(id.getObjectInstanceID());
   if (it != instances_.end()) {
     auto object_instance = it->second;
