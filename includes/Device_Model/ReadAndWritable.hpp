@@ -21,8 +21,8 @@ class ReadAndWritable : public Resource<T>, public Observable {
 
 public:
   ReadAndWritable(ResourceDescriptorPtr descriptor,
-                  Observable::ExceptionHandler handler, RequesterPtr requester,
-                  EndpointPtr endpoint, ElementID id)
+      Observable::ExceptionHandler handler, RequesterPtr requester,
+      EndpointPtr endpoint, ElementID id)
       : Resource<T>(descriptor),
         Observable(handler, requester, endpoint, id, descriptor->data_type_) {}
 

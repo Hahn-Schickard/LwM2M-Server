@@ -8,8 +8,8 @@ RangeEnumeration::RangeEnumeration() {}
 RangeEnumeration::RangeEnumeration(vector<string> available_values)
     : available_string_values_(available_values) {}
 
-RangeEnumeration::RangeEnumeration(long int minimum_value,
-                                   long int maximum_value)
+RangeEnumeration::RangeEnumeration(
+    long int minimum_value, long int maximum_value)
     : interger_range_(IntegerRange(minimum_value, maximum_value)) {}
 
 RangeEnumeration::RangeEnumeration(double minimum_value, double maximum_value)

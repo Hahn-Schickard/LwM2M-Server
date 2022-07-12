@@ -8,9 +8,8 @@ namespace LwM2M {
 
 using ResourceDescriptorMap = unordered_map<uint32_t, ResourceDescriptorPtr>;
 
-ResourceDescriptorMap
-assignResourceDescriptors(ElementIDs requrired,
-                          ResourceDescriptorMap supported) {
+ResourceDescriptorMap assignResourceDescriptors(
+    ElementIDs requrired, ResourceDescriptorMap supported) {
   ResourceDescriptorMap result;
   // Assign mandatory resources first
   for (auto resource : supported) {
@@ -29,7 +28,7 @@ assignResourceDescriptors(ElementIDs requrired,
           result.emplace(*it);
         }
       }
-    } catch (bad_optional_access &ex) {
+    } catch (bad_optional_access& ex) {
       // silently ignore element ids without any resources
     }
   }
@@ -37,8 +36,8 @@ assignResourceDescriptors(ElementIDs requrired,
 }
 
 Object::Object(Observable::ExceptionHandler handler, RequesterPtr requester,
-               EndpointPtr endpoint, RequiredObjectInstances instances,
-               ObjectDescriptorPtr descriptor)
+    EndpointPtr endpoint, RequiredObjectInstances instances,
+    ObjectDescriptorPtr descriptor)
     : requester_(requester), endpoint_(endpoint), descriptor_(descriptor) {
   for (auto instance : instances) {
     ElementIDs resources;
@@ -49,10 +48,8 @@ Object::Object(Observable::ExceptionHandler handler, RequesterPtr requester,
 
     auto available_descriptors =
         assignResourceDescriptors(resources, descriptor_->resources_);
-    instances_.emplace(
-        instance.getObjectInstanceID(),
-        make_shared<ObjectInstance>(
-            handler, requester_, endpoint,
+    instances_.emplace(instance.getObjectInstanceID(),
+        make_shared<ObjectInstance>(handler, requester_, endpoint,
             ElementID(instance.getObjectID(), instance.getObjectInstanceID()),
             available_descriptors));
   }

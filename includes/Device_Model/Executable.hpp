@@ -10,7 +10,7 @@ template <typename T>
 class Executable : public Resource<T>, public CallableEntity {
 public:
   Executable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
-             EndpointPtr endpoint, ElementID id)
+      EndpointPtr endpoint, ElementID id)
       : Resource<T>(descriptor), CallableEntity(requester, endpoint, id) {}
 
   std::future<bool> execute(std::string arguments) override {

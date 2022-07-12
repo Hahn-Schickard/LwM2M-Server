@@ -13,7 +13,7 @@ struct ElementID {
   ElementID(uint16_t object, uint16_t object_instance);
   ElementID(uint16_t object, uint16_t object_instance, uint16_t resource);
   ElementID(uint16_t object, uint16_t object_instance, uint16_t resource,
-            uint16_t resource_instance);
+      uint16_t resource_instance);
 
   uint16_t getObjectID() const;
   /**
@@ -86,19 +86,19 @@ private:
   std::optional<uint16_t> resource_instance_ = std::nullopt;
 };
 
-bool operator==(const ElementID &lhs, const ElementID &rhs);
-bool operator!=(const ElementID &lhs, const ElementID &rhs);
-bool operator<(const ElementID &lhs, const ElementID &rhs);
-bool operator>(const ElementID &lhs, const ElementID &rhs);
-bool operator<=(const ElementID &lhs, const ElementID &rhs);
-bool operator>=(const ElementID &lhs, const ElementID &rhs);
+bool operator==(const ElementID& lhs, const ElementID& rhs);
+bool operator!=(const ElementID& lhs, const ElementID& rhs);
+bool operator<(const ElementID& lhs, const ElementID& rhs);
+bool operator>(const ElementID& lhs, const ElementID& rhs);
+bool operator<=(const ElementID& lhs, const ElementID& rhs);
+bool operator>=(const ElementID& lhs, const ElementID& rhs);
 
 using ElementIDs = std::vector<ElementID>;
 } // namespace LwM2M
 
 namespace std {
 template <> struct hash<LwM2M::ElementID> {
-  std::size_t operator()(const LwM2M::ElementID &id) const;
+  std::size_t operator()(const LwM2M::ElementID& id) const;
 };
 } // namespace std
 

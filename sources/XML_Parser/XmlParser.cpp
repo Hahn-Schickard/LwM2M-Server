@@ -32,7 +32,7 @@ uint32_t getChildValue<uint32_t>(xml_node parent, string child_name) {
         string(parent.child(child_name.c_str()).child_value()));
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
-                       " has no child named: " + child_name;
+        " has no child named: " + child_name;
     throw runtime_error(move(error_msg));
   }
 }
@@ -40,11 +40,11 @@ uint32_t getChildValue<uint32_t>(xml_node parent, string child_name) {
 template <> double getChildValue<double>(xml_node parent, string child_name) {
   if (parent.child(child_name.c_str())) {
     return string(parent.child(child_name.c_str()).child_value()) == "true"
-               ? true
-               : false;
+        ? true
+        : false;
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
-                       " has no child named: " + child_name;
+        " has no child named: " + child_name;
     throw runtime_error(move(error_msg));
   }
 }
@@ -54,7 +54,7 @@ template <> string getChildValue<string>(xml_node parent, string child_name) {
     return string(parent.child(child_name.c_str()).child_value());
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
-                       " has no child named: " + child_name;
+        " has no child named: " + child_name;
     throw runtime_error(move(error_msg));
   }
 }
@@ -64,7 +64,7 @@ template <> bool getChildValue<bool>(xml_node parent, string child_name) {
     return stod(string(parent.child(child_name.c_str()).child_value()));
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
-                       " has no child named: " + child_name;
+        " has no child named: " + child_name;
     throw runtime_error(move(error_msg));
   }
 }
@@ -149,17 +149,16 @@ ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
         getChildValue<string>(resource_node, "Description");
 
     if (resource_range_enum.has_value()) {
-      return make_shared<ResourceDescriptor>(
-          resource_id, resource_name, resource_operations,
-          resource_multiple_instances, resource_mandatory, resource_data_type,
-          resource_range_enum.value(), resource_units, resource_description);
+      return make_shared<ResourceDescriptor>(resource_id, resource_name,
+          resource_operations, resource_multiple_instances, resource_mandatory,
+          resource_data_type, resource_range_enum.value(), resource_units,
+          resource_description);
     } else {
-      return make_shared<ResourceDescriptor>(
-          resource_id, resource_name, resource_operations,
-          resource_multiple_instances, resource_mandatory, resource_data_type,
-          resource_units, resource_description);
+      return make_shared<ResourceDescriptor>(resource_id, resource_name,
+          resource_operations, resource_multiple_instances, resource_mandatory,
+          resource_data_type, resource_units, resource_description);
     }
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     string error_msg =
         "Failed to deserialize resource node: " + string(resource_node.name()) +
         " due to error: " + ex.what();
@@ -185,10 +184,10 @@ ObjectDescriptorPtr deserializeObject(xml_node object_node) {
       auto resource = deserializeResource(resource_node);
       resources.emplace(resource->id_, move(resource));
     }
-    return make_shared<ObjectDescriptor>(
-        object_name, object_description, object_id, object_multiple_instances,
-        object_mandatory, object_urn, resources);
-  } catch (exception &ex) {
+    return make_shared<ObjectDescriptor>(object_name, object_description,
+        object_id, object_multiple_instances, object_mandatory, object_urn,
+        resources);
+  } catch (exception& ex) {
     string error_msg =
         "Failed to deserialize object node: " + string(object_node.name()) +
         " due to error: " + ex.what();
@@ -196,28 +195,28 @@ ObjectDescriptorPtr deserializeObject(xml_node object_node) {
   }
 }
 
-unordered_map<uint32_t, shared_ptr<ObjectDescriptor>>
-deserializeModel(const string &filepath) {
+unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> deserializeModel(
+    const string& filepath) {
   unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> objects;
   xml_document objects_document;
   filesystem::path root_path = filesystem::path(filepath).remove_filename();
   if (objects_document.load_file(filepath.c_str())) {
     xml_node object_descriptor_path = objects_document.child("IPSOModel");
     for (xml_node object_file_path :
-         object_descriptor_path.children("IPSOPath")) {
+        object_descriptor_path.children("IPSOPath")) {
       filesystem::path object_descriptor_file_path = root_path;
       object_descriptor_file_path +=
           object_file_path.attribute("File").as_string();
       xml_document object_descriptor;
       if (object_descriptor.load_file(object_descriptor_file_path.c_str())) {
         for (auto object :
-             object_descriptor.child("LWM2M").children("Object")) {
+            object_descriptor.child("LWM2M").children("Object")) {
           auto ObjectDescriptor = deserializeObject(object);
           objects.emplace(ObjectDescriptor->id_, ObjectDescriptor);
         }
       } else {
         string error_msg = "Could not open object descriptor file: " +
-                           string(object_descriptor_file_path);
+            string(object_descriptor_file_path);
         throw runtime_error(move(error_msg));
       }
     }

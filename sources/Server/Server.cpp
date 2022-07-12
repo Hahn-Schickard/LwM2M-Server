@@ -23,7 +23,9 @@ Server::Server(const string filepath)
       bindings_.emplace_back(move(coap_binding));
       break;
     }
-    default: { break; }
+    default: {
+      break;
+    }
     }
   }
 }
@@ -37,8 +39,8 @@ void Server::start() {
   for (auto binding : bindings_) {
     binding->start();
   }
-  logger_->log(SeverityLevel::TRACE,
-               "All registered bindings have been started.");
+  logger_->log(
+      SeverityLevel::TRACE, "All registered bindings have been started.");
 }
 
 void Server::stop() {
@@ -46,8 +48,8 @@ void Server::stop() {
   for (auto binding : bindings_) {
     binding->stop();
   }
-  logger_->log(SeverityLevel::TRACE,
-               "All registered bindings have been stopped.");
+  logger_->log(
+      SeverityLevel::TRACE, "All registered bindings have been stopped.");
 }
 
 EventSourcePtr Server::getEventSource() { return registry_; }

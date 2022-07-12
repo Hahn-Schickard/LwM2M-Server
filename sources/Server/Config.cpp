@@ -9,18 +9,18 @@ using json = nlohmann::json;
 
 namespace nlohmann {
 NLOHMANN_JSON_SERIALIZE_ENUM(LwM2M::ServerBindingType,
-                             {{LwM2M::ServerBindingType::CoAP, "CoAP"},
-                              {LwM2M::ServerBindingType::UNKOWN, "Unknown"}})
+    {{LwM2M::ServerBindingType::CoAP, "CoAP"},
+        {LwM2M::ServerBindingType::UNKOWN, "Unknown"}})
 
-void from_json(const json &j, LwM2M::Bindings &bindings) {
-  for (auto const &elem : j) {
+void from_json(const json& j, LwM2M::Bindings& bindings) {
+  for (auto const& elem : j) {
     auto type = elem.at("type").get<LwM2M::ServerBindingType>();
     auto location = elem.at("location").get<string>();
     bindings.emplace(type, location);
   }
 }
 
-void from_json(const json &j, LwM2M::Configuration &config) {
+void from_json(const json& j, LwM2M::Configuration& config) {
   config.model_descriptors_ = j.at("model_descriptors").get<string>();
   config.bindings_ = j.at("bindings").get<LwM2M::Bindings>();
 }
@@ -33,7 +33,9 @@ string toString(ServerBindingType type) {
   case ServerBindingType::CoAP: {
     return "CoAP";
   }
-  default: { return "Unknown"; }
+  default: {
+    return "Unknown";
+  }
   }
 }
 

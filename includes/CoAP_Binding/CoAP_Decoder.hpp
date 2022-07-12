@@ -20,23 +20,23 @@ struct CoAP_Decoder {
   }
 
 private:
-  LwM2M::PayloadPtr decode(CoAP::ContentFormatPtr content_format,
-                           CoAP::PayloadPtr payload);
+  LwM2M::PayloadPtr decode(
+      CoAP::ContentFormatPtr content_format, CoAP::PayloadPtr payload);
 
   std::shared_ptr<HaSLL::Logger> logger_;
 };
 
 template <>
-ClientResponsePtr
-CoAP_Decoder::decode<ClientResponse>(CoAP::MessagePtr message);
+ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
+    CoAP::MessagePtr message);
 template <>
-RegisterRequestPtr
-CoAP_Decoder::decode<RegisterRequest>(CoAP::MessagePtr message);
+RegisterRequestPtr CoAP_Decoder::decode<RegisterRequest>(
+    CoAP::MessagePtr message);
 template <>
 UpdateRequestPtr CoAP_Decoder::decode<UpdateRequest>(CoAP::MessagePtr message);
 template <>
-DeregisterRequestPtr
-CoAP_Decoder::decode<DeregisterRequest>(CoAP::MessagePtr message);
+DeregisterRequestPtr CoAP_Decoder::decode<DeregisterRequest>(
+    CoAP::MessagePtr message);
 } // namespace LwM2M
 
 #endif //__LWM2M_COAP_DECODER_HPP

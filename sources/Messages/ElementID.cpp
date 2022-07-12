@@ -9,12 +9,12 @@ ElementID::ElementID(uint16_t object) : object_(object) {}
 ElementID::ElementID(uint16_t object, uint16_t object_instance)
     : object_(object), object_instance_(object_instance) {}
 
-ElementID::ElementID(uint16_t object, uint16_t object_instance,
-                     uint16_t resource)
+ElementID::ElementID(
+    uint16_t object, uint16_t object_instance, uint16_t resource)
     : object_(object), object_instance_(object_instance), resource_(resource) {}
 
 ElementID::ElementID(uint16_t object, uint16_t object_instance,
-                     uint16_t resource, uint16_t resource_instance)
+    uint16_t resource, uint16_t resource_instance)
     : object_(object), object_instance_(object_instance), resource_(resource),
       resource_instance_(resource_instance) {}
 
@@ -99,33 +99,33 @@ size_t ElementID::size() const {
   return result;
 }
 
-bool operator==(const ElementID &lhs, const ElementID &rhs) {
+bool operator==(const ElementID& lhs, const ElementID& rhs) {
   return (lhs.hash() == rhs.hash());
 }
 
-bool operator!=(const ElementID &lhs, const ElementID &rhs) {
+bool operator!=(const ElementID& lhs, const ElementID& rhs) {
   return !(lhs == rhs);
 }
 
-bool operator<(const ElementID &lhs, const ElementID &rhs) {
+bool operator<(const ElementID& lhs, const ElementID& rhs) {
   return (lhs.hash() < rhs.hash());
 }
 
-bool operator>(const ElementID &lhs, const ElementID &rhs) { return rhs < lhs; }
+bool operator>(const ElementID& lhs, const ElementID& rhs) { return rhs < lhs; }
 
-bool operator<=(const ElementID &lhs, const ElementID &rhs) {
+bool operator<=(const ElementID& lhs, const ElementID& rhs) {
   return !(lhs > rhs);
 }
 
-bool operator>=(const ElementID &lhs, const ElementID &rhs) {
+bool operator>=(const ElementID& lhs, const ElementID& rhs) {
   return !(lhs < rhs);
 }
 
 } // namespace LwM2M
 
 namespace std {
-std::size_t hash<LwM2M::ElementID>::
-operator()(const LwM2M::ElementID &id) const {
+std::size_t hash<LwM2M::ElementID>::operator()(
+    const LwM2M::ElementID& id) const {
   return id.hash();
 }
 } // namespace std

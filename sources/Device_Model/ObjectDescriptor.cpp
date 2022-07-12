@@ -8,21 +8,20 @@ ObjectDescriptor::ObjectDescriptor()
       multiple_instances_(false), mandatory_(false), urn_(string()),
       resources_() {}
 
-ObjectDescriptor::ObjectDescriptor(const ObjectDescriptor &instance)
+ObjectDescriptor::ObjectDescriptor(const ObjectDescriptor& instance)
     : name_(instance.name_), description_(instance.description_),
       id_(instance.id_), multiple_instances_(instance.multiple_instances_),
       mandatory_(instance.mandatory_), urn_(instance.urn_),
       resources_(instance.resources_) {}
 
-ObjectDescriptor::ObjectDescriptor(ObjectDescriptor &&instance)
+ObjectDescriptor::ObjectDescriptor(ObjectDescriptor&& instance)
     : name_(move(instance.name_)), description_(move(instance.description_)),
       id_(instance.id_), multiple_instances_(instance.multiple_instances_),
       mandatory_(instance.mandatory_), urn_(move(instance.urn_)),
       resources_(move(instance.resources_)) {}
 
-ObjectDescriptor::ObjectDescriptor(
-    string name, string description, uint32_t id, bool multiple_instances,
-    bool mandatory, string urn,
+ObjectDescriptor::ObjectDescriptor(string name, string description, uint32_t id,
+    bool multiple_instances, bool mandatory, string urn,
     unordered_map<uint32_t, shared_ptr<ResourceDescriptor>> resources)
     : name_(move(name)), description_(move(description)), id_(id),
       multiple_instances_(multiple_instances), mandatory_(mandatory),

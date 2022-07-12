@@ -38,7 +38,9 @@ CodeType toCodeType(LwM2M::MessageType type) {
   case LwM2M::MessageType::DELETE: {
     return CodeType::DELETE;
   }
-  default: { throw logic_error("Message is not a valid ServerRequest."); }
+  default: {
+    throw logic_error("Message is not a valid ServerRequest.");
+  }
   }
 }
 
@@ -111,10 +113,10 @@ CoAP::MessagePtr CoAP_Encoder::encode(InformationReportingRequestPtr message) {
 CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
   auto mesage_builder =
       make_unique<MessageBuilder>(request->endpoint_->endpoint_address_,
-                                  request->endpoint_->endpoint_port_);
+          request->endpoint_->endpoint_port_);
   auto token = mesage_builder->addToken();
-  mesage_builder->addHeader(CoAP::MessageType::CONFIRMABLE,
-                            toCodeType(request->message_type_));
+  mesage_builder->addHeader(
+      CoAP::MessageType::CONFIRMABLE, toCodeType(request->message_type_));
   mesage_builder->addOptions(
       makeOptions(request->message_type_, request->payload_, token->hexify()));
   auto payload =
@@ -125,60 +127,58 @@ CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
   return mesage_builder->getResult();
 }
 
-CoAP::MessagePtr CoAP_Encoder::encode(CoAP::MessagePtr request,
-                                      ServerResponsePtr response) {
-  auto mesage_builder = make_unique<MessageBuilder>(request->getAddressIP(),
-                                                    request->getAddressPort());
+CoAP::MessagePtr CoAP_Encoder::encode(
+    CoAP::MessagePtr request, ServerResponsePtr response) {
+  auto mesage_builder = make_unique<MessageBuilder>(
+      request->getAddressIP(), request->getAddressPort());
   auto token = request->getToken();
   mesage_builder->addToken(token);
   if (response) {
     try {
       mesage_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
-                                toCodeType(response->response_code_),
-                                request->getHeader()->getMessageID());
+          toCodeType(response->response_code_),
+          request->getHeader()->getMessageID());
       mesage_builder->addOptions(makeOptions(
           response->message_type_, response->payload_, token->hexify()));
-      if (auto payload = encode(response->message_type_, response->payload_,
-                                token->hexify())) {
+      if (auto payload = encode(
+              response->message_type_, response->payload_, token->hexify())) {
         mesage_builder->addPayload(payload);
       }
-    } catch (exception &ex) {
+    } catch (exception& ex) {
       logger_->log(SeverityLevel::ERROR,
-                   "Caught an unhandled exception while encoding {} for CoAP "
-                   "request {} from {}:{}. Exception: {}",
-                   response->name(), request->getToken()->hexify(),
-                   request->getAddressIP(),
-                   to_string(request->getAddressPort()), ex.what());
+          "Caught an unhandled exception while encoding {} for CoAP "
+          "request {} from {}:{}. Exception: {}",
+          response->name(), request->getToken()->hexify(),
+          request->getAddressIP(), to_string(request->getAddressPort()),
+          ex.what());
     }
   } else {
     // handle empty response or exception throw
     mesage_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
-                              CoAP::CodeType::BAD_REQUEST,
-                              request->getHeader()->getMessageID());
+        CoAP::CodeType::BAD_REQUEST, request->getHeader()->getMessageID());
   }
   return mesage_builder->getResult();
 }
 
 CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
-                                      LwM2M::PayloadPtr payload,
-                                      string message_identifier) {
+    LwM2M::PayloadPtr payload, string message_identifier) {
   switch (type) {
   case LwM2M::MessageType::WRITE: {
     logger_->log(SeverityLevel::TRACE,
-                 "Encoding {} message {} payload as a LwM2M TLV",
-                 toString(type), message_identifier);
+        "Encoding {} message {} payload as a LwM2M TLV", toString(type),
+        message_identifier);
     return encodeAs_TLV(payload);
   }
   case LwM2M::MessageType::WRITE_COMPOSITE: {
     logger_->log(SeverityLevel::TRACE,
-                 "Encoding {} message {} payload as a LwM2M CBOR",
-                 toString(type), message_identifier);
+        "Encoding {} message {} payload as a LwM2M CBOR", toString(type),
+        message_identifier);
     return encodeAs_LwM2M_CBOR(payload);
   }
   case LwM2M::MessageType::EXECUTE: {
     logger_->log(SeverityLevel::TRACE,
-                 "Encoding {} message {} payload as PlainText", toString(type),
-                 message_identifier);
+        "Encoding {} message {} payload as PlainText", toString(type),
+        message_identifier);
     return encodeAs_PlainText(payload);
   }
   case LwM2M::MessageType::OBSERVE_COMPOSITE: {
@@ -186,8 +186,8 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
   }
   case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE: {
     logger_->log(SeverityLevel::TRACE,
-                 "Encoding {} message {} payload as a LwM2M CBOR",
-                 toString(type), message_identifier);
+        "Encoding {} message {} payload as a LwM2M CBOR", toString(type),
+        message_identifier);
     return encodeAs_LwM2M_CBOR(payload);
   }
   case LwM2M::MessageType::REGISTER: {
@@ -204,22 +204,21 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
   }
   case LwM2M::MessageType::DISCOVER: {
     logger_->log(SeverityLevel::TRACE,
-                 "{} Message {} does not have a CoAP payload to encode.",
-                 toString(type), message_identifier);
+        "{} Message {} does not have a CoAP payload to encode.", toString(type),
+        message_identifier);
     return CoAP::PayloadPtr();
   }
   default: {
     logger_->log(SeverityLevel::WARNNING,
-                 "Did not encode message {} payload for {}", message_identifier,
-                 toString(type));
+        "Did not encode message {} payload for {}", message_identifier,
+        toString(type));
     return CoAP::PayloadPtr();
   }
   }
 }
 
 CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
-                                        LwM2M::PayloadPtr payload,
-                                        string message_identifier) {
+    LwM2M::PayloadPtr payload, string message_identifier) {
   Options options;
 
   switch (type) {
@@ -234,9 +233,9 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
           options += build(OptionNumber::LOCATION_PATH, "rd");
           auto location = data->get<string>();
           logger_->log(SeverityLevel::TRACE,
-                       "Assiging Location Path CoAP::Option value as rd/{} for "
-                       "{} message {}",
-                       toString(type), location, message_identifier);
+              "Assiging Location Path CoAP::Option value as rd/{} for "
+              "{} message {}",
+              toString(type), location, message_identifier);
           options += build(OptionNumber::LOCATION_PATH, location);
         } else {
           throw logic_error("LOCATION_PATH option value can not be an empty");
@@ -254,9 +253,8 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto accept = build(OptionNumber::ACCEPT, acceptable_format_index);
     options += accept;
     logger_->log(SeverityLevel::TRACE,
-                 "Assiging Accept CoAP::Option value as {} for {} message {}",
-                 toString(type), accept->getValueAsString(),
-                 message_identifier);
+        "Assiging Accept CoAP::Option value as {} for {} message {}",
+        toString(type), accept->getValueAsString(), message_identifier);
     break;
   }
   case LwM2M::MessageType::READ_COMPOSITE: {
@@ -265,8 +263,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
     options += content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
@@ -277,8 +274,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
     options += content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
@@ -289,8 +285,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
     options += content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
@@ -302,8 +297,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
     options += content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
@@ -314,8 +308,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
     options += content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
@@ -326,8 +319,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
     options += content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
@@ -337,8 +329,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto json_content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
     options += json_content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), json_content_format->getValueAsString(),
         message_identifier);
@@ -346,15 +337,14 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     auto cbor_content_format =
         build(OptionNumber::CONTENT_FORMAT, acceptable_format_index);
     options += cbor_content_format;
-    logger_->log(
-        SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), cbor_content_format->getValueAsString(),
         message_identifier);
     options += build(OptionNumber::OBSERVE, 0);
     logger_->log(SeverityLevel::TRACE,
-                 "Assiging Observe CoAP::Option value as 0 for {} message {}",
-                 toString(type), message_identifier);
+        "Assiging Observe CoAP::Option value as 0 for {} message {}",
+        toString(type), message_identifier);
     // @Attention URI paths for resources to be observed MUST be provided in
     // request payload via CoAP::PayloadPtr
     // CoAP_Encoder::encode(LwM2M::MessageType,LwM2M::PayloadPtr,string) method
@@ -364,23 +354,23 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     options = makeOptions(payload, message_identifier);
     options += build(OptionNumber::OBSERVE, 0);
     logger_->log(SeverityLevel::TRACE,
-                 "Assiging Observe CoAP::Option value as 0 for {} message {}",
-                 toString(type), message_identifier);
+        "Assiging Observe CoAP::Option value as 0 for {} message {}",
+        toString(type), message_identifier);
     break;
   }
   case LwM2M::MessageType::CANCEL_OBSERVATION: {
     options += build(OptionNumber::OBSERVE, 1);
     logger_->log(SeverityLevel::TRACE,
-                 "Assiging Observe CoAP::Option value as 1 for {} message {}",
-                 toString(type), message_identifier);
+        "Assiging Observe CoAP::Option value as 1 for {} message {}",
+        toString(type), message_identifier);
     break;
   }
   case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE: {
     options = makeOptions(payload, message_identifier);
     options += build(OptionNumber::OBSERVE, 1);
     logger_->log(SeverityLevel::TRACE,
-                 "Assiging Observe CoAP::Option value as 1 for {} message {}",
-                 toString(type), message_identifier);
+        "Assiging Observe CoAP::Option value as 1 for {} message {}",
+        toString(type), message_identifier);
     // @Attention URI paths for resources to be observed MUST be provided in
     // request payload via CoAP::PayloadPtr
     // CoAP_Encoder::encode(LwM2M::MessageType,LwM2M::PayloadPtr,string) method
@@ -388,88 +378,86 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   }
   default: {
     logger_->log(SeverityLevel::TRACE,
-                 "Could not create any options for {} message {}",
-                 toString(type), message_identifier);
+        "Could not create any options for {} message {}", toString(type),
+        message_identifier);
     break;
   }
   }
   return options;
 } // namespace LwM2M
 
-CoAP::Options CoAP_Encoder::makeOptions(LwM2M::PayloadPtr payload,
-                                        string message_identifier) {
+CoAP::Options CoAP_Encoder::makeOptions(
+    LwM2M::PayloadPtr payload, string message_identifier) {
   Options options;
 
   if (payload) {
     logger_->log(SeverityLevel::TRACE,
-                 "Begining CoAP::Options pack creation for message {}",
-                 message_identifier);
+        "Begining CoAP::Options pack creation for message {}",
+        message_identifier);
     auto data = payload->data_;
     if (holds_alternative<TargetContent>(data)) {
       auto target_content = get<TargetContent>(data);
       logger_->log(SeverityLevel::TRACE,
-                   "Creating URI Path CoAP::Option for message {} from a "
-                   "LwM2M::TargetContent pair",
-                   message_identifier);
+          "Creating URI Path CoAP::Option for message {} from a "
+          "LwM2M::TargetContent pair",
+          message_identifier);
       options = makeURI_PATH(target_content.first);
       logger_->log(SeverityLevel::TRACE,
-                   "Created URI Path CoAP::Option for message {}",
-                   message_identifier);
+          "Created URI Path CoAP::Option for message {}", message_identifier);
     } else if (holds_alternative<TargetContentVector>(data)) {
       auto target_contents = get<TargetContentVector>(data);
       logger_->log(SeverityLevel::TRACE,
-                   "Creating URI Path CoAP::Options for message {} from a "
-                   "LwM2M::TargetContentVector",
-                   message_identifier);
+          "Creating URI Path CoAP::Options for message {} from a "
+          "LwM2M::TargetContentVector",
+          message_identifier);
       for (auto target_content : target_contents) {
         auto uri_path = makeURI_PATH(target_content.first);
         options.insert(uri_path.begin(), uri_path.end());
       }
       logger_->log(SeverityLevel::TRACE,
-                   "Created {} URI Path CoAP::Options for message {}",
-                   options.size(), message_identifier);
+          "Created {} URI Path CoAP::Options for message {}", options.size(),
+          message_identifier);
     } else if (holds_alternative<ElementID>(data)) {
       auto target = get<ElementID>(data);
       logger_->log(SeverityLevel::TRACE,
-                   "Creating URI Path CoAP::Option for message {} from a "
-                   "LwM2M::ElementID struct",
-                   message_identifier);
+          "Creating URI Path CoAP::Option for message {} from a "
+          "LwM2M::ElementID struct",
+          message_identifier);
       options = makeURI_PATH(target);
       logger_->log(SeverityLevel::TRACE,
-                   "Created URI Path CoAP::Option for message {}",
-                   message_identifier);
+          "Created URI Path CoAP::Option for message {}", message_identifier);
     } else if (holds_alternative<ElementIDs>(data)) {
       auto targets = get<ElementIDs>(data);
       logger_->log(SeverityLevel::TRACE,
-                   "Creating URI Path CoAP::Options for message {} from a "
-                   "LwM2M::ElementIDs vector",
-                   message_identifier);
+          "Creating URI Path CoAP::Options for message {} from a "
+          "LwM2M::ElementIDs vector",
+          message_identifier);
       for (auto target : targets) {
         auto uri_path = makeURI_PATH(target);
         options.insert(uri_path.begin(), uri_path.end());
       }
       logger_->log(SeverityLevel::TRACE,
-                   "Created {} URI Path CoAP::Options for message {}",
-                   options.size(), message_identifier);
+          "Created {} URI Path CoAP::Options for message {}", options.size(),
+          message_identifier);
     } else if (holds_alternative<vector<TargetAttribute>>(data)) {
       auto target_attributes = get<vector<TargetAttribute>>(data);
       logger_->log(SeverityLevel::TRACE,
-                   "Creating URI Path CoAP::Options for message {} from a "
-                   "LwM2M::TargetAttributes vector",
-                   message_identifier);
+          "Creating URI Path CoAP::Options for message {} from a "
+          "LwM2M::TargetAttributes vector",
+          message_identifier);
       for (auto target_attribute : target_attributes) {
         auto uri_path = makeURI_PATH(target_attribute.first);
         options.insert(uri_path.begin(), uri_path.end());
       }
       logger_->log(SeverityLevel::TRACE,
-                   "Created {} URI Path CoAP::Options for message {}",
-                   options.size(), message_identifier);
+          "Created {} URI Path CoAP::Options for message {}", options.size(),
+          message_identifier);
     }
   } else {
     logger_->log(SeverityLevel::TRACE,
-                 "Could not create CoAP::Options Pack. No payload was found "
-                 "for message {}",
-                 message_identifier);
+        "Could not create CoAP::Options Pack. No payload was found "
+        "for message {}",
+        message_identifier);
   }
 
   return options;

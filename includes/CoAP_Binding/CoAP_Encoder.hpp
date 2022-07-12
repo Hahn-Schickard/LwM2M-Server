@@ -18,11 +18,11 @@ struct CoAP_Encoder {
 
 private:
   CoAP::PayloadPtr encode(LwM2M::MessageType type, LwM2M::PayloadPtr payload,
-                          std::string message_identifier);
+      std::string message_identifier);
   CoAP::Options makeOptions(LwM2M::MessageType type, LwM2M::PayloadPtr payload,
-                            std::string message_identifier);
-  CoAP::Options makeOptions(LwM2M::PayloadPtr payload,
-                            std::string message_identifier);
+      std::string message_identifier);
+  CoAP::Options makeOptions(
+      LwM2M::PayloadPtr payload, std::string message_identifier);
 
   std::shared_ptr<HaSLL::Logger> logger_;
 };

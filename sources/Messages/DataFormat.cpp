@@ -42,7 +42,9 @@ string toString(MediaType type) {
     return "LwM2M JSON";
   }
   case MediaType::NOT_SPECIFIED:
-  default: { return "Not specified"; }
+  default: {
+    return "Not specified";
+  }
   }
 }
 
@@ -76,7 +78,9 @@ string toString(DataType type) {
     return "Core Link";
   }
   case DataType::NONE:
-  default: { return "None"; }
+  default: {
+    return "None";
+  }
   }
 }
 
@@ -96,29 +100,29 @@ time_t TimeStamp::getValue() const { return value_; }
 
 vector<uint8_t> toBytes(DataVariant data) {
   vector<uint8_t> result;
-  match(data, [&](bool value) { result.push_back(value); },
-        [&](int64_t value) {
-          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
-        },
-        [&](uint64_t value) {
-          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
-        },
-        [&](double value) {
-          result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
-        },
-        [&](string value) { result = HSCUL::toBytes(value); },
-        [&](TimeStamp value) {
-          uint64_t converted = value.getValue();
-          result = HSCUL::toBytes(converted, ByteOrder::NetworkByteOrder);
-        },
-        [&](ObjectLink value) {
-          result =
-              HSCUL::toBytes(value.object_id_, ByteOrder::NetworkByteOrder);
-          auto expansion =
-              HSCUL::toBytes(value.instance_id_, ByteOrder::NetworkByteOrder);
-          result.insert(result.end(), expansion.begin(), expansion.end());
-        },
-        [&](vector<uint8_t> value) { result = value; });
+  match(
+      data, [&](bool value) { result.push_back(value); },
+      [&](int64_t value) {
+        result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
+      },
+      [&](uint64_t value) {
+        result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
+      },
+      [&](double value) {
+        result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
+      },
+      [&](string value) { result = HSCUL::toBytes(value); },
+      [&](TimeStamp value) {
+        uint64_t converted = value.getValue();
+        result = HSCUL::toBytes(converted, ByteOrder::NetworkByteOrder);
+      },
+      [&](ObjectLink value) {
+        result = HSCUL::toBytes(value.object_id_, ByteOrder::NetworkByteOrder);
+        auto expansion =
+            HSCUL::toBytes(value.instance_id_, ByteOrder::NetworkByteOrder);
+        result.insert(result.end(), expansion.begin(), expansion.end());
+      },
+      [&](vector<uint8_t> value) { result = value; });
   return result;
 }
 
@@ -176,10 +180,10 @@ template <> string DataFormat::get<string>() const {
 template <> ObjectLink DataFormat::get<ObjectLink>() const {
   if (data_.size() >= 2 &&
       data_.size() <= sizeof(uint16_t) + sizeof(uint16_t)) {
-    vector<uint8_t> object_id_half(data_.begin(),
-                                   data_.begin() + data_.size() / 2);
-    vector<uint8_t> instance_id_half(data_.begin() + data_.size() / 2,
-                                     data_.end());
+    vector<uint8_t> object_id_half(
+        data_.begin(), data_.begin() + data_.size() / 2);
+    vector<uint8_t> instance_id_half(
+        data_.begin() + data_.size() / 2, data_.end());
     uint16_t object_id =
         HSCUL::toUnsignedInteger(object_id_half, ByteOrder::NetworkByteOrder);
     uint16_t instance_id =
@@ -196,12 +200,11 @@ template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() const {
 
 size_t DataFormat::size() const { return data_.size(); }
 
-bool operator==(const DataFormat &lhs, const DataFormat &rhs) {
+bool operator==(const DataFormat& lhs, const DataFormat& rhs) {
   return lhs.data_ == rhs.data_ ? true : false;
 }
 
-NotifyAttribute::NotifyAttribute(
-    std::optional<uint16_t> minimum_period,
+NotifyAttribute::NotifyAttribute(std::optional<uint16_t> minimum_period,
     std::optional<uint16_t> maximum_period, std::optional<double> greater_than,
     std::optional<double> less_than, std::optional<double> step,
     std::optional<uint16_t> minimum_evaluation_period,
@@ -282,15 +285,15 @@ Payload::Payload(vector<TargetAttribute> data) : Payload(PayloadData(data)) {}
 Payload::Payload(PayloadData data, MediaType format)
     : data_(data), media_type_(format) {}
 
-size_t size_of(const TargetContent &value) {
+size_t size_of(const TargetContent& value) {
   return value.first.size() + value.second->size();
 }
 
-size_t size_of(const TargetAttribute &value) {
+size_t size_of(const TargetAttribute& value) {
   return value.first.size() + value.second->size();
 }
 
-size_t size_of(const TargetContentVector &value) {
+size_t size_of(const TargetContentVector& value) {
   size_t result = 0;
   for (auto target_content : value) {
     result += size_of(target_content);
@@ -298,27 +301,28 @@ size_t size_of(const TargetContentVector &value) {
   return result;
 }
 
-size_t size_of(const PayloadData &data) {
+size_t size_of(const PayloadData& data) {
   size_t result = 0;
-  match(data,
-        [&](DataFormatPtr value) {
-          if (value) {
-            result = value->size();
-          }
-        },
-        [&](TargetContent value) { result = size_of(value); },
-        [&](TargetContentVector value) { result = size_of(value); },
-        [&](ElementID value) { result = value.size(); },
-        [&](ElementIDs value) {
-          for (auto elment_id : value) {
-            result += elment_id.size();
-          }
-        },
-        [&](vector<TargetAttribute> value) {
-          for (auto target_attribute : value) {
-            result += size_of(target_attribute);
-          }
-        });
+  match(
+      data,
+      [&](DataFormatPtr value) {
+        if (value) {
+          result = value->size();
+        }
+      },
+      [&](TargetContent value) { result = size_of(value); },
+      [&](TargetContentVector value) { result = size_of(value); },
+      [&](ElementID value) { result = value.size(); },
+      [&](ElementIDs value) {
+        for (auto elment_id : value) {
+          result += elment_id.size();
+        }
+      },
+      [&](vector<TargetAttribute> value) {
+        for (auto target_attribute : value) {
+          result += size_of(target_attribute);
+        }
+      });
   return result;
 }
 
@@ -341,22 +345,23 @@ string Payload::dataType() {
 
 bool Payload::hasData() {
   bool result;
-  match(data_, [&](DataFormatPtr value) { result = value ? true : false; },
-        [&](TargetContent value) {
-          result = (value.first.size() != 0 ? true : false) &&
-                   (value.second ? true : false);
-        },
-        [&](TargetContentVector value) { result = !(value.empty()); },
-        [&](ElementID value) { result = value.size() != 0 ? true : false; },
-        [&](ElementIDs value) { result = !(value.empty()); },
-        [&](vector<TargetAttribute> value) { result = !(value.empty()); });
+  match(
+      data_, [&](DataFormatPtr value) { result = value ? true : false; },
+      [&](TargetContent value) {
+        result = (value.first.size() != 0 ? true : false) &&
+            (value.second ? true : false);
+      },
+      [&](TargetContentVector value) { result = !(value.empty()); },
+      [&](ElementID value) { result = value.size() != 0 ? true : false; },
+      [&](ElementIDs value) { result = !(value.empty()); },
+      [&](vector<TargetAttribute> value) { result = !(value.empty()); });
 
   return result;
 }
 } // namespace LwM2M
 
-size_t std::hash<LwM2M::DataFormat>::
-operator()(const LwM2M::DataFormat &data) const {
+size_t std::hash<LwM2M::DataFormat>::operator()(
+    const LwM2M::DataFormat& data) const {
   size_t hash_value = 0;
   for (auto byte : data.get<std::vector<uint8_t>>()) {
     hash_value |= byte << 8;
@@ -364,8 +369,8 @@ operator()(const LwM2M::DataFormat &data) const {
   return hash_value;
 }
 
-size_t std::hash<LwM2M::TargetContent>::
-operator()(const LwM2M::TargetContent &data) const {
+size_t std::hash<LwM2M::TargetContent>::operator()(
+    const LwM2M::TargetContent& data) const {
   size_t hash_value = 0;
   hash_value |= hash<LwM2M::ElementID>{}(data.first);
   hash_value <<= data.first.size();
@@ -373,44 +378,44 @@ operator()(const LwM2M::TargetContent &data) const {
   return hash_value;
 }
 
-size_t std::hash<LwM2M::NotifyAttribute>::
-operator()(const LwM2M::NotifyAttribute &data) const {
+size_t std::hash<LwM2M::NotifyAttribute>::operator()(
+    const LwM2M::NotifyAttribute& data) const {
   size_t hash_value = 0;
 
   if (data.minimum_period_) {
     hash_value |= data.minimum_period_.value()
-                  << sizeof(data.minimum_period_.value());
+        << sizeof(data.minimum_period_.value());
   }
   if (data.maximum_period_) {
     hash_value |= data.maximum_period_.value()
-                  << sizeof(data.maximum_period_.value());
+        << sizeof(data.maximum_period_.value());
   }
   if (data.greater_than_) {
     hash_value |= hash<double>{}(data.greater_than_.value())
-                  << sizeof(data.greater_than_.value());
+        << sizeof(data.greater_than_.value());
   }
   if (data.less_than_) {
     hash_value |= hash<double>{}(data.less_than_.value())
-                  << sizeof(data.less_than_.value());
+        << sizeof(data.less_than_.value());
   }
   if (data.step_) {
     hash_value |= hash<double>{}(data.step_.value())
-                  << sizeof(data.step_.value());
+        << sizeof(data.step_.value());
   }
   if (data.minimum_evaluation_period_) {
     hash_value |= data.minimum_evaluation_period_.value()
-                  << sizeof(data.minimum_evaluation_period_.value());
+        << sizeof(data.minimum_evaluation_period_.value());
   }
   if (data.maximum_evaluation_period_) {
     hash_value |= data.maximum_evaluation_period_.value()
-                  << sizeof(data.maximum_evaluation_period_.value());
+        << sizeof(data.maximum_evaluation_period_.value());
   }
 
   return hash_value;
 }
 
-size_t std::hash<LwM2M::TargetAttribute>::
-operator()(const LwM2M::TargetAttribute &data) const {
+size_t std::hash<LwM2M::TargetAttribute>::operator()(
+    const LwM2M::TargetAttribute& data) const {
   size_t hash_value = 0;
   hash_value |= hash<LwM2M::ElementID>{}(data.first);
   hash_value <<= data.first.size();
@@ -418,42 +423,42 @@ operator()(const LwM2M::TargetAttribute &data) const {
   return hash_value;
 }
 
-size_t std::hash<LwM2M::PayloadData>::
-operator()(const LwM2M::PayloadData &data) const {
+size_t std::hash<LwM2M::PayloadData>::operator()(
+    const LwM2M::PayloadData& data) const {
   size_t hash_value = 0;
-  match(data,
-        [&](LwM2M::DataFormatPtr value) {
-          hash_value = hash<LwM2M::DataFormat>{}(*value);
-        },
-        [&](LwM2M::TargetContent value) {
-          hash_value = hash<LwM2M::TargetContent>{}(value);
-        },
-        [&](LwM2M::TargetContentVector value) {
-          for (auto target_value : value) {
-            hash_value |= hash<LwM2M::TargetContent>{}(target_value)
-                          << size_of(target_value);
-          }
-        },
-        [&](LwM2M::ElementID value) {
-          hash_value = hash<LwM2M::ElementID>{}(value);
-        },
-        [&](LwM2M::ElementIDs value) {
-          for (auto elment_id : value) {
-            hash_value |= hash<LwM2M::ElementID>{}(elment_id)
-                          << elment_id.size();
-          }
-        },
-        [&](vector<LwM2M::TargetAttribute> value) {
-          for (auto target_attribute : value) {
-            hash_value |= hash<LwM2M::TargetAttribute>{}(target_attribute)
-                          << size_of(target_attribute);
-          }
-        });
+  match(
+      data,
+      [&](LwM2M::DataFormatPtr value) {
+        hash_value = hash<LwM2M::DataFormat>{}(*value);
+      },
+      [&](LwM2M::TargetContent value) {
+        hash_value = hash<LwM2M::TargetContent>{}(value);
+      },
+      [&](LwM2M::TargetContentVector value) {
+        for (auto target_value : value) {
+          hash_value |= hash<LwM2M::TargetContent>{}(target_value)
+              << size_of(target_value);
+        }
+      },
+      [&](LwM2M::ElementID value) {
+        hash_value = hash<LwM2M::ElementID>{}(value);
+      },
+      [&](LwM2M::ElementIDs value) {
+        for (auto elment_id : value) {
+          hash_value |= hash<LwM2M::ElementID>{}(elment_id) << elment_id.size();
+        }
+      },
+      [&](vector<LwM2M::TargetAttribute> value) {
+        for (auto target_attribute : value) {
+          hash_value |= hash<LwM2M::TargetAttribute>{}(target_attribute)
+              << size_of(target_attribute);
+        }
+      });
   return hash_value;
 }
 
-size_t std::hash<LwM2M::Payload>::
-operator()(const LwM2M::Payload &payload) const {
+size_t std::hash<LwM2M::Payload>::operator()(
+    const LwM2M::Payload& payload) const {
   auto result = hash<LwM2M::PayloadData>{}(payload.data_);
   result <<= LwM2M::size_of(payload.data_);
   result |= static_cast<size_t>(payload.media_type_);

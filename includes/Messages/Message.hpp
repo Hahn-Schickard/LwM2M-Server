@@ -13,7 +13,7 @@
 namespace LwM2M {
 
 struct UnsupportedOperation : public std::logic_error {
-  UnsupportedOperation(std::string const &message);
+  UnsupportedOperation(std::string const& message);
 };
 
 enum struct InterfaceType : uint8_t {
@@ -84,9 +84,9 @@ enum struct ResponseCode : uint8_t {
 std::string toString(ResponseCode type);
 
 struct UnsupportedResponseCode : public std::logic_error {
-  UnsupportedResponseCode(std::string const &message);
-  UnsupportedResponseCode(
-      std::string message_type, ResponseCode unsupported_response_code,
+  UnsupportedResponseCode(std::string const& message);
+  UnsupportedResponseCode(std::string message_type,
+      ResponseCode unsupported_response_code,
       std::unordered_set<ResponseCode> supported_response_codes);
 };
 
@@ -120,8 +120,8 @@ protected:
    * @param notification bool
    */
   Message(EndpointPtr endpoint, MessageType message_type,
-          InterfaceType interface, PayloadPtr payload, bool incoming,
-          bool response = false, bool notification = false);
+      InterfaceType interface, PayloadPtr payload, bool incoming,
+      bool response = false, bool notification = false);
 
   virtual ~Message() = default;
 };
@@ -148,9 +148,9 @@ protected:
    * @param payload LwM2M::PayloadPtr
    */
   Response(EndpointPtr endpoint, MessageType message_type,
-           InterfaceType interface, bool incoming,
-           std::unordered_set<ResponseCode> supported_responses,
-           ResponseCode response_code, PayloadPtr payload);
+      InterfaceType interface, bool incoming,
+      std::unordered_set<ResponseCode> supported_responses,
+      ResponseCode response_code, PayloadPtr payload);
 
   /**
    * @brief Checks if a given response code is supported
@@ -169,15 +169,15 @@ using ResponsePtr = std::shared_ptr<Response>;
 struct ClientRequest : Message {
 protected:
   ClientRequest(EndpointPtr endpoint, MessageType message_type,
-                InterfaceType interface, PayloadPtr payload = PayloadPtr());
+      InterfaceType interface, PayloadPtr payload = PayloadPtr());
 };
 
 using ClientRequestPtr = std::shared_ptr<ClientRequest>;
 
 struct ClientResponse : Response {
   ClientResponse(EndpointPtr endpoint,
-                 ResponseCode response_code = ResponseCode::BAD_REQUEST,
-                 PayloadPtr payload = PayloadPtr());
+      ResponseCode response_code = ResponseCode::BAD_REQUEST,
+      PayloadPtr payload = PayloadPtr());
 };
 
 using ClientResponsePtr = std::shared_ptr<ClientResponse>;
@@ -185,8 +185,7 @@ using ClientResponsePtr = std::shared_ptr<ClientResponse>;
 struct ClientNotification : Message {
 protected:
   ClientNotification(EndpointPtr endpoint, MessageType message_type,
-                     InterfaceType interface,
-                     PayloadPtr payload = PayloadPtr());
+      InterfaceType interface, PayloadPtr payload = PayloadPtr());
 };
 
 using ClientNotificationPtr = std::shared_ptr<ClientNotification>;
@@ -194,7 +193,7 @@ using ClientNotificationPtr = std::shared_ptr<ClientNotification>;
 struct ServerRequest : Message {
 protected:
   ServerRequest(EndpointPtr endpoint, MessageType message_type,
-                InterfaceType interface, PayloadPtr payload = PayloadPtr());
+      InterfaceType interface, PayloadPtr payload = PayloadPtr());
 };
 
 using ServerRequestPtr = std::shared_ptr<ServerRequest>;
@@ -202,9 +201,9 @@ using ServerRequestPtr = std::shared_ptr<ServerRequest>;
 struct ServerResponse : Response {
 protected:
   ServerResponse(EndpointPtr endpoint, MessageType message_type,
-                 InterfaceType interface,
-                 std::unordered_set<ResponseCode> supported_responses,
-                 ResponseCode response_code, PayloadPtr payload = PayloadPtr());
+      InterfaceType interface,
+      std::unordered_set<ResponseCode> supported_responses,
+      ResponseCode response_code, PayloadPtr payload = PayloadPtr());
 };
 
 using ServerResponsePtr = std::shared_ptr<ServerResponse>;
@@ -212,7 +211,7 @@ using ServerResponsePtr = std::shared_ptr<ServerResponse>;
 
 namespace std {
 template <> struct hash<LwM2M::Message> {
-  size_t operator()(const LwM2M::Message &message) const;
+  size_t operator()(const LwM2M::Message& message) const;
 };
 } // namespace std
 #endif //__LWM2M_MESSAGE_HPP

@@ -9,11 +9,11 @@
 namespace LwM2M {
 
 struct UnsupportedMethod : public std::runtime_error {
-  UnsupportedMethod(std::string const &message) : std::runtime_error(message) {}
+  UnsupportedMethod(std::string const& message) : std::runtime_error(message) {}
 };
 
 struct UnsupportedParameter : public std::runtime_error {
-  UnsupportedParameter(std::string const &message)
+  UnsupportedParameter(std::string const& message)
       : std::runtime_error(message) {}
 };
 

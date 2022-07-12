@@ -5,8 +5,8 @@
 
 namespace LwM2M {
 
-DataType getDataTypeFromMap(Observable::ObservedDataTypes data_types,
-                            ElementID id) {
+DataType getDataTypeFromMap(
+    Observable::ObservedDataTypes data_types, ElementID id) {
   auto data_type = data_types.find(id);
   if (data_type != data_types.end()) {
     return data_type->second;
@@ -16,15 +16,15 @@ DataType getDataTypeFromMap(Observable::ObservedDataTypes data_types,
 }
 
 Observable::Observable(Observable::ExceptionHandler handler,
-                       RequesterPtr requester, EndpointPtr endpoint,
-                       ElementID id, ObservedDataTypes data_types)
+    RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+    ObservedDataTypes data_types)
     : Event_Model::EventSource<PayloadData>(handler),
       CallableEntity(requester, endpoint, id), data_types_(data_types) {}
 
 Observable::Observable(ExceptionHandler handler, RequesterPtr requester,
-                       EndpointPtr endpoint, ElementID id, DataType data_type)
+    EndpointPtr endpoint, ElementID id, DataType data_type)
     : Observable(handler, requester, endpoint, id,
-                 ObservedDataTypes{{id, data_type}}) {}
+          ObservedDataTypes{{id, data_type}}) {}
 
 Observable::~Observable() {
   if (hasListeners()) {
@@ -58,7 +58,7 @@ void Observable::cancelObserver() {
 }
 
 size_t Observable::attach(
-    Event_Model::HandleEventCallback<PayloadData> &&listener_callback) {
+    Event_Model::HandleEventCallback<PayloadData>&& listener_callback) {
   if (!hasListeners()) {
     requestObserver();
   }

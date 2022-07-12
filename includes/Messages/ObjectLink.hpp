@@ -18,7 +18,7 @@ struct ObjectLink {
 
   std::string toString();
 
-  friend bool operator==(const ObjectLink &lhs, const ObjectLink &rhs);
+  friend bool operator==(const ObjectLink& lhs, const ObjectLink& rhs);
 };
 } // namespace LwM2M
 
