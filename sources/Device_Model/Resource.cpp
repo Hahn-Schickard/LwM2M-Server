@@ -1,0 +1,65 @@
+#include "Resource.hpp"
+
+#include <future>
+using namespace std;
+
+namespace LwM2M {
+
+ResourceVariant makeVariant(Observable::ExceptionHandler handler,
+    RequesterPtr requester, EndpointPtr endpoint,
+    ResourceDescriptorPtr descriptor, ElementID id) {
+  switch (descriptor->operations_) {
+  case OperationsType::READ: {
+    return make_shared<Readable>(descriptor, handler, requester, endpoint, id);
+  }
+  case OperationsType::WRITE: {
+    return make_shared<Writable>(descriptor, requester, endpoint, id);
+  }
+  case OperationsType::READ_AND_WRITE: {
+    return make_shared<ReadAndWritable>(
+        descriptor, handler, requester, endpoint, id);
+  }
+  case OperationsType::EXECUTE: {
+    return make_shared<Executable>(descriptor, requester, endpoint, id);
+  }
+  case OperationsType::NO_OPERATION:
+  default: {
+    return make_shared<Valueless>();
+  }
+  }
+}
+
+Resource::Resource(Observable::ExceptionHandler handler, RequesterPtr requester,
+    EndpointPtr endpoint, ResourceDescriptorPtr descriptor, ElementID id,
+    std::optional<uint16_t> instance_id)
+    : descriptor_(descriptor), id_(id) {
+  auto element_id = id;
+  if (instance_id.has_value()) {
+    element_id = ElementID(id, instance_id.value());
+  }
+  auto variant =
+      makeVariant(handler, requester, endpoint, descriptor, element_id);
+  instances_.emplace(element_id, variant);
+}
+
+ResourceDescriptorPtr Resource::getDescriptor() { return descriptor_; }
+
+ResourceVariant Resource::getInstance(bool ignore_multiple_instances) {
+  if (instances_.size() > 1 && ignore_multiple_instances == false) {
+    throw ResourceInstanceCouldNotBeResolved(id_);
+  } else {
+    return instances_.begin()->second;
+  }
+}
+
+ResourceVariant Resource::getInstance(ElementID id) {
+  auto it = instances_.find(id);
+  if (it != instances_.end()) {
+    return it->second;
+  } else {
+    throw ResourceInstanceDoesNotExist(id);
+  }
+}
+
+ResourceInstances Resource::getInstances() { return instances_; }
+} // namespace LwM2M
