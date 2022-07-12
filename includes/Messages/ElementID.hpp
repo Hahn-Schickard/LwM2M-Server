@@ -14,6 +14,14 @@ struct ElementID {
   ElementID(uint16_t object, uint16_t object_instance, uint16_t resource);
   ElementID(uint16_t object, uint16_t object_instance, uint16_t resource,
       uint16_t resource_instance);
+  /**
+   * @brief Creates a subelement ID by using a parent ID values as it's base.
+   *
+   * @example ElementID(ElementID(2),0) will create Element with string ID 2/0
+   *
+   * @throws std::invalid_argument when all Element IDs are already assigned
+   */
+  ElementID(const ElementID& id, uint16_t sub_id);
 
   uint16_t getObjectID() const;
   /**
@@ -45,7 +53,7 @@ struct ElementID {
    * @return true
    * @return false
    */
-  bool hastResourceID() const;
+  bool hasResourceID() const;
   /**
    * @brief Get the Resource Instance ID
    *

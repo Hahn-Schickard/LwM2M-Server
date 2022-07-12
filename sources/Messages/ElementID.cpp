@@ -1,5 +1,7 @@
 #include "ElementID.hpp"
 
+#include <stdexcept>
+
 using namespace std;
 
 namespace LwM2M {
@@ -18,6 +20,27 @@ ElementID::ElementID(uint16_t object, uint16_t object_instance,
     : object_(object), object_instance_(object_instance), resource_(resource),
       resource_instance_(resource_instance) {}
 
+ElementID::ElementID(const ElementID& id, uint16_t sub_id)
+    : ElementID(id.getObjectID()) {
+  if (id.hasObjectInstanceID()) {
+    object_instance_ = id.getObjectInstanceID();
+    if (id.hasResourceID()) {
+      resource_ = id.getResourceID();
+      if (id.hasResourceInstanceID()) {
+        auto error_msg = "ID " + to_string(sub_id) +
+            " could not be assigned. All ElementID values already assigned";
+        throw invalid_argument(error_msg);
+      } else {
+        resource_instance_ = sub_id;
+      }
+    } else {
+      resource_ = sub_id;
+    }
+  } else {
+    object_instance_ = sub_id;
+  }
+}
+
 uint16_t ElementID::getObjectID() const { return object_; }
 
 uint16_t ElementID::getObjectInstanceID() const {
@@ -30,7 +53,7 @@ bool ElementID::hasObjectInstanceID() const {
 
 uint16_t ElementID::getResourceID() const { return resource_.value(); }
 
-bool ElementID::hastResourceID() const { return resource_.has_value(); }
+bool ElementID::hasResourceID() const { return resource_.has_value(); }
 
 uint16_t ElementID::getResourceInstanceID() const {
   return resource_instance_.value();
