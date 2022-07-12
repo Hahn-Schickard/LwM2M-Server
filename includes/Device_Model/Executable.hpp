@@ -2,24 +2,17 @@
 #define __LWM2M_EXECUTABLE_RESOURCE_HPP
 
 #include "CallableEntity.hpp"
-#include "Execute.hpp"
-#include "Resource.hpp"
+#include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
-template <typename T>
-class Executable : public Resource<T>, public CallableEntity {
+class Executable : public CallableEntity {
 public:
   Executable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
-      EndpointPtr endpoint, ElementID id)
-      : Resource<T>(descriptor), CallableEntity(requester, endpoint, id) {}
+      EndpointPtr endpoint, ElementID id);
 
-  std::future<bool> execute(std::string arguments) override {
-    auto message = std::make_shared<ExecuteRequest>(endpoint_, id_, arguments);
-
-    return requester_->requestAction(message);
-  }
+  std::future<bool> execute(std::string arguments);
 };
 
-template <typename T> using ExecutablePtr = std::shared_ptr<Executable<T>>;
+using ExecutablePtr = std::shared_ptr<Executable>;
 } // namespace LwM2M
 #endif //__LWM2M_EXECUTABLE_RESOURCE_HPP
