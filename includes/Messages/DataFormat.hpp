@@ -76,8 +76,8 @@ private:
   time_t value_;
 };
 
-using DataVariant = std::variant<bool, int64_t, uint64_t, TimeStamp, double,
-    std::string, ObjectLink, std::vector<uint8_t>>;
+using DataVariant = std::variant<bool, int64_t, uint64_t, double, std::string,
+    TimeStamp, ObjectLink, std::vector<uint8_t>>;
 
 /**
  * @brief DataFormat - LwM2M data type container
