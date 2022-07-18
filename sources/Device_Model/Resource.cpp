@@ -25,7 +25,7 @@ ResourceVariant makeVariant(ResourceDescriptorPtr descriptor,
   }
   case OperationsType::NO_OPERATION:
   default: {
-    return make_shared<Valueless>();
+    return make_shared<Operationless>();
   }
   }
 }

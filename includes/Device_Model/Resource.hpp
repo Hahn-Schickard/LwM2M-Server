@@ -2,9 +2,9 @@
 #define __LWM2M_MODEL_RESOURCE_HPP
 
 #include "Executable.hpp"
+#include "Operationless.hpp"
 #include "ReadAndWritable.hpp"
 #include "Readable.hpp"
-#include "Valueless.hpp"
 #include "Writable.hpp"
 
 namespace LwM2M {
@@ -22,7 +22,7 @@ struct ResourceInstanceCouldNotBeResolved : public std::runtime_error {
 };
 
 using ResourceVariant = std::variant<ReadablePtr, WritablePtr,
-    ReadAndWritablePtr, ExecutablePtr, ValuelessPtr>;
+    ReadAndWritablePtr, ExecutablePtr, OperationlessPtr>;
 using ResourceInstances = std::unordered_map<ElementID, ResourceVariant>;
 
 class Resource {
