@@ -8,8 +8,7 @@ namespace LwM2M {
 
 class Writable : public CallableEntity {
 public:
-  Writable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
-      EndpointPtr endpoint, ElementID id);
+  Writable(RequesterPtr requester, EndpointPtr endpoint, ElementID id);
 
   std::future<bool> write(DataVariant data);
 };

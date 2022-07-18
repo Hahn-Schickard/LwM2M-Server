@@ -5,22 +5,23 @@ using namespace std;
 
 namespace LwM2M {
 
-ResourceVariant makeVariant(Observable::ExceptionHandler handler,
-    RequesterPtr requester, EndpointPtr endpoint,
-    ResourceDescriptorPtr descriptor, ElementID id) {
+ResourceVariant makeVariant(ResourceDescriptorPtr descriptor,
+    Observable::ExceptionHandler handler, RequesterPtr requester,
+    EndpointPtr endpoint, ElementID id) {
   switch (descriptor->operations_) {
   case OperationsType::READ: {
-    return make_shared<Readable>(descriptor, handler, requester, endpoint, id);
+    return make_shared<Readable>(
+        handler, requester, endpoint, id, descriptor->data_type_);
   }
   case OperationsType::WRITE: {
-    return make_shared<Writable>(descriptor, requester, endpoint, id);
+    return make_shared<Writable>(requester, endpoint, id);
   }
   case OperationsType::READ_AND_WRITE: {
     return make_shared<ReadAndWritable>(
-        descriptor, handler, requester, endpoint, id);
+        handler, requester, endpoint, id, descriptor->data_type_);
   }
   case OperationsType::EXECUTE: {
-    return make_shared<Executable>(descriptor, requester, endpoint, id);
+    return make_shared<Executable>(requester, endpoint, id);
   }
   case OperationsType::NO_OPERATION:
   default: {
@@ -38,7 +39,7 @@ Resource::Resource(Observable::ExceptionHandler handler, RequesterPtr requester,
     element_id = ElementID(id, instance_id.value());
   }
   auto variant =
-      makeVariant(handler, requester, endpoint, descriptor, element_id);
+      makeVariant(descriptor, handler, requester, endpoint, element_id);
   instances_.emplace(element_id, variant);
 }
 

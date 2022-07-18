@@ -4,8 +4,7 @@
 using namespace std;
 
 namespace LwM2M {
-Writable::Writable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
-    EndpointPtr endpoint, ElementID id)
+Writable::Writable(RequesterPtr requester, EndpointPtr endpoint, ElementID id)
     : CallableEntity(requester, endpoint, id) {}
 
 future<bool> Writable::write(DataVariant data) {

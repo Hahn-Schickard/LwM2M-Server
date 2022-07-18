@@ -5,8 +5,8 @@ using namespace std;
 
 namespace LwM2M {
 
-Executable::Executable(ResourceDescriptorPtr descriptor, RequesterPtr requester,
-    EndpointPtr endpoint, ElementID id)
+Executable::Executable(
+    RequesterPtr requester, EndpointPtr endpoint, ElementID id)
     : CallableEntity(requester, endpoint, id) {}
 
 future<bool> Executable::execute(string arguments) {

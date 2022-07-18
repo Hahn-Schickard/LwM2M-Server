@@ -10,9 +10,8 @@ class Readable : public Observable {
   std::future<DataVariant> asyncDataRequest(DeviceManagementRequestPtr message);
 
 public:
-  Readable(ResourceDescriptorPtr descriptor,
-      Observable::ExceptionHandler handler, RequesterPtr requester,
-      EndpointPtr endpoint, ElementID id);
+  Readable(Observable::ExceptionHandler handler, RequesterPtr requester,
+      EndpointPtr endpoint, ElementID id, DataType data_type);
 
   std::future<DataVariant> read();
 };
