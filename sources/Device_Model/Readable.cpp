@@ -9,10 +9,10 @@ future<DataVariant> Readable::asyncDataRequest(
     DeviceManagementRequestPtr message) {
   return async(
       launch::async,
-      [](RequesterPtr requester,
+      [&](RequesterPtr requester,
           DeviceManagementRequestPtr msg) -> DataVariant {
         auto result = requester->requestData(msg);
-        return result.get()->get<DataVariant>();
+        return result.get()->get(getDataType(id_));
       },
       requester_, message);
 }

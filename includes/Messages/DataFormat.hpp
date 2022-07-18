@@ -101,6 +101,7 @@ struct DataFormat {
    * @return T - contained data value as type T
    */
   template <typename T> T get() const { throw UnsupportedDataType(); }
+  DataVariant get(const DataType type) const;
 
   size_t size() const;
 
