@@ -32,19 +32,17 @@ size_t getTerminalWidth() {
 #endif // Windows/Linux
 }
 
-void printResource(ResourcePtr variant, string prefix) {
-  match(variant, [&prefix](auto resource) {
-    cout << prefix << "_"
-         << "Resource: " << resource->getDescriptor()->id_ << ": "
-         << resource->getDescriptor()->name_ << endl;
-    prefix += string(1, ' ') + string("|");
-    cout << prefix << "_"
-         << "Resource type: "
-         << toString(resource->getDescriptor()->operations_) << endl;
-    cout << prefix << "_"
-         << "Value type: " << toString(resource->getDescriptor()->data_type_)
-         << endl;
-  });
+void printResource(ResourcePtr resource, string prefix) {
+  cout << prefix << "_"
+       << "Resource: " << resource->getDescriptor()->id_ << ": "
+       << resource->getDescriptor()->name_ << endl;
+  prefix += string(1, ' ') + string("|");
+  cout << prefix << "_"
+       << "Resource type: " << toString(resource->getDescriptor()->operations_)
+       << endl;
+  cout << prefix << "_"
+       << "Value type: " << toString(resource->getDescriptor()->data_type_)
+       << endl;
 };
 
 void printResources(Resources resources, string prefix) {
@@ -90,20 +88,22 @@ void printDevice(DevicePtr device) {
 }
 
 string stringifyDataVariant(DataVariant variant) {
+  string result;
   match(
-      variant, [&](bool value) { return value ? "True" : "False"; },
-      [&](int64_t value) { return to_string(value); },
-      [&](double value) { return to_string(value); },
-      [&](string value) { return value; },
-      [&](uint64_t value) { return to_string(value); },
-      [&](TimeStamp value) { return value.toString(); },
+      variant, [&](bool value) { result = value ? "True" : "False"; },
+      [&](int64_t value) { result = to_string(value); },
+      [&](uint64_t value) { result = to_string(value); },
+      [&](double value) { result = to_string(value); },
+      [&](string value) { result = value; },
+      [&](TimeStamp value) { result = value.toString(); },
       [&](ObjectLink value) {
-        return "Object link:" + to_string(value.object_id_) + ":" +
+        result = "Object link:" + to_string(value.object_id_) + ":" +
             to_string(value.instance_id_);
       },
       [&](vector<uint8_t> value) {
-        return string(value.begin(), value.end());
+        result = string(value.begin(), value.end());
       });
+  return result;
 }
 
 string stringifyResourceValue(ResourcePtr resource) {
@@ -112,11 +112,13 @@ string stringifyResourceValue(ResourcePtr resource) {
       resource->getInstance(),
       [&](ReadablePtr readable) {
         auto resource_future = readable->read();
-        response = stringifyDataVariant(resource_future.get());
+        auto value = resource_future.get();
+        response = stringifyDataVariant(value);
       },
       [&](ReadAndWritablePtr readable) {
         auto resource_future = readable->read();
-        response = stringifyDataVariant(resource_future.get());
+        auto value = resource_future.get();
+        response = stringifyDataVariant(value);
       },
       [&](...) {
         auto descriptor = resource->getDescriptor();
