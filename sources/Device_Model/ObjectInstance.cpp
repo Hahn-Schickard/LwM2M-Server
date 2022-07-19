@@ -35,4 +35,12 @@ ResourcePtr ObjectInstance::getResource(ElementID id) {
 
 Resources ObjectInstance::getResources() { return resources_; }
 
+ResourceInstance ObjectInstance::getResourceInstance(ElementID id) {
+  return getResource(id)->getResourceInstance(id);
+}
+
+ResourceInstances ObjectInstance::getResourceInstances(ElementID id) {
+  return getResource(id)->getResourceInstances();
+}
+
 } // namespace LwM2M

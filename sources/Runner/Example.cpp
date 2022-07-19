@@ -76,7 +76,7 @@ void printObjects(ObjectsMap objects) {
       cout << prefix << "_"
            << "Object " << object.second->getDescriptor()->id_ << ": "
            << object.second->getDescriptor()->name_ << endl;
-      printObjectInstances(object.second->getInstances(), prefix);
+      printObjectInstances(object.second->getObjectInstances(), prefix);
     }
   }
 }
