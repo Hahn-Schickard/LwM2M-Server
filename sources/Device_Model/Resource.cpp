@@ -45,7 +45,7 @@ Resource::Resource(Observable::ExceptionHandler handler, RequesterPtr requester,
 
 ResourceDescriptorPtr Resource::getDescriptor() { return descriptor_; }
 
-ResourceInstance Resource::getInstance(bool ignore_multiple_instances) {
+ResourceInstance Resource::getResourceInstance(bool ignore_multiple_instances) {
   if (instances_.size() > 1 && ignore_multiple_instances == false) {
     throw ResourceInstanceCouldNotBeResolved(id_);
   } else {
@@ -53,7 +53,7 @@ ResourceInstance Resource::getInstance(bool ignore_multiple_instances) {
   }
 }
 
-ResourceInstance Resource::getInstance(ElementID id) {
+ResourceInstance Resource::getResourceInstance(ElementID id) {
   auto it = instances_.find(id);
   if (it != instances_.end()) {
     return it->second;
@@ -62,5 +62,5 @@ ResourceInstance Resource::getInstance(ElementID id) {
   }
 }
 
-ResourceInstances Resource::getInstances() { return instances_; }
+ResourceInstances Resource::getResourceInstances() { return instances_; }
 } // namespace LwM2M

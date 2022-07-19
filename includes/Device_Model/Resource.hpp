@@ -38,9 +38,9 @@ public:
   virtual ~Resource() = default;
 
   ResourceDescriptorPtr getDescriptor();
-  ResourceInstance getInstance(bool ignore_multiple_instances = false);
-  ResourceInstance getInstance(ElementID id);
-  ResourceInstances getInstances();
+  ResourceInstance getResourceInstance(bool ignore_multiple_instances = false);
+  ResourceInstance getResourceInstance(ElementID id);
+  ResourceInstances getResourceInstances();
 };
 
 using ResourcePtr = std::shared_ptr<Resource>;
