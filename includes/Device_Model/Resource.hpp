@@ -21,9 +21,9 @@ struct ResourceInstanceCouldNotBeResolved : public std::runtime_error {
             "multiple instances") {}
 };
 
-using ResourceVariant = std::variant<ReadablePtr, WritablePtr,
+using ResourceInstance = std::variant<ReadablePtr, WritablePtr,
     ReadAndWritablePtr, ExecutablePtr, OperationlessPtr>;
-using ResourceInstances = std::unordered_map<ElementID, ResourceVariant>;
+using ResourceInstances = std::unordered_map<ElementID, ResourceInstance>;
 
 class Resource {
   ResourceDescriptorPtr descriptor_;
@@ -38,8 +38,8 @@ public:
   virtual ~Resource() = default;
 
   ResourceDescriptorPtr getDescriptor();
-  ResourceVariant getInstance(bool ignore_multiple_instances = false);
-  ResourceVariant getInstance(ElementID id);
+  ResourceInstance getInstance(bool ignore_multiple_instances = false);
+  ResourceInstance getInstance(ElementID id);
   ResourceInstances getInstances();
 };
 

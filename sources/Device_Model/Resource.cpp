@@ -5,7 +5,7 @@ using namespace std;
 
 namespace LwM2M {
 
-ResourceVariant makeVariant(ResourceDescriptorPtr descriptor,
+ResourceInstance makeVariant(ResourceDescriptorPtr descriptor,
     Observable::ExceptionHandler handler, RequesterPtr requester,
     EndpointPtr endpoint, ElementID id) {
   switch (descriptor->operations_) {
@@ -45,7 +45,7 @@ Resource::Resource(Observable::ExceptionHandler handler, RequesterPtr requester,
 
 ResourceDescriptorPtr Resource::getDescriptor() { return descriptor_; }
 
-ResourceVariant Resource::getInstance(bool ignore_multiple_instances) {
+ResourceInstance Resource::getInstance(bool ignore_multiple_instances) {
   if (instances_.size() > 1 && ignore_multiple_instances == false) {
     throw ResourceInstanceCouldNotBeResolved(id_);
   } else {
@@ -53,7 +53,7 @@ ResourceVariant Resource::getInstance(bool ignore_multiple_instances) {
   }
 }
 
-ResourceVariant Resource::getInstance(ElementID id) {
+ResourceInstance Resource::getInstance(ElementID id) {
   auto it = instances_.find(id);
   if (it != instances_.end()) {
     return it->second;
