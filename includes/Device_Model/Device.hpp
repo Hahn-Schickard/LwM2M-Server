@@ -63,6 +63,12 @@ public:
   std::string getName();
   ObjectPtr getObject(ElementID id);
   ObjectsMap getObjects();
+  ObjectInstacePtr getObjectInstance(ElementID id);
+  ObjectInstances getObjectInstances(ElementID id);
+  ResourcePtr getResource(ElementID id);
+  Resources getResources(ElementID id);
+  ResourceInstance getResourceInstance(ElementID id);
+  ResourceInstances getResourceInstances(ElementID id);
 
   void updateBinding(BindingType binding);
   void updateLifetime(size_t life_time);
