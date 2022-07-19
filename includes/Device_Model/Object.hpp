@@ -52,8 +52,7 @@ public:
 
   ObjectDescriptorPtr getDescriptor();
   ObjectInstances getInstances();
-
-  ResourceVariant getResource(ElementID id);
+  ResourcePtr getResource(ElementID id);
 };
 
 using ObjectPtr = std::shared_ptr<Object>;

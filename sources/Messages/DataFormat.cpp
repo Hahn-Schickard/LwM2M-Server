@@ -198,6 +198,40 @@ template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() const {
   return data_;
 }
 
+DataVariant DataFormat::get(const DataType type) const {
+  switch (type) {
+  case DataType::BOOLEAN: {
+    return DataVariant(get<bool>());
+  }
+  case DataType::SIGNED_INTEGER: {
+    return DataVariant(get<int64_t>());
+  }
+  case DataType::UNSIGNED_INTEGER: {
+    return DataVariant(get<uint64_t>());
+  }
+  case DataType::FLOAT: {
+    return DataVariant(get<double>());
+  }
+  case DataType::STRING: {
+    return DataVariant(get<string>());
+  }
+  case DataType::TIME: {
+    return DataVariant(get<TimeStamp>());
+  }
+  case DataType::OBJECT_LINK: {
+    return DataVariant(get<ObjectLink>());
+  }
+  case DataType::OPAQUE: {
+    return DataVariant(get<vector<uint8_t>>());
+  }
+  default: {
+    auto error_msg =
+        "Given data type " + toString(type) + " can not be converted";
+    throw invalid_argument(error_msg);
+  }
+  }
+}
+
 size_t DataFormat::size() const { return data_.size(); }
 
 bool operator==(const DataFormat& lhs, const DataFormat& rhs) {

@@ -1,52 +1,49 @@
 #ifndef __LWM2M_MODEL_RESOURCE_HPP
 #define __LWM2M_MODEL_RESOURCE_HPP
 
-#include "CallableEntity.hpp"
-#include "ResourceDescriptor.hpp"
-
-#include <future>
+#include "Executable.hpp"
+#include "Operationless.hpp"
+#include "ReadAndWritable.hpp"
+#include "Readable.hpp"
+#include "Writable.hpp"
 
 namespace LwM2M {
-
-struct UnsupportedMethod : public std::runtime_error {
-  UnsupportedMethod(std::string const& message) : std::runtime_error(message) {}
+struct ResourceInstanceDoesNotExist : public std::runtime_error {
+  ResourceInstanceDoesNotExist(ElementID id)
+      : runtime_error(
+            "Resource instance " + id.toString() + " does not exist") {}
 };
 
-struct UnsupportedParameter : public std::runtime_error {
-  UnsupportedParameter(std::string const& message)
-      : std::runtime_error(message) {}
+struct ResourceInstanceCouldNotBeResolved : public std::runtime_error {
+  ResourceInstanceCouldNotBeResolved(ElementID id)
+      : runtime_error("Resource instance for resource " + id.toString() +
+            " could not be automatically resolved, since resource contains "
+            "multiple instances") {}
 };
 
-template <typename T> class Resource {
+using ResourceInstance = std::variant<ReadablePtr, WritablePtr,
+    ReadAndWritablePtr, ExecutablePtr, OperationlessPtr>;
+using ResourceInstances = std::unordered_map<ElementID, ResourceInstance>;
+
+class Resource {
   ResourceDescriptorPtr descriptor_;
+  ElementID id_;
+  ResourceInstances instances_;
 
 public:
   Resource() = default;
-
-  Resource(ResourceDescriptorPtr descriptor) : descriptor_(descriptor) {}
-
+  Resource(Observable::ExceptionHandler handler, RequesterPtr requester,
+      EndpointPtr endpoint, ResourceDescriptorPtr descriptor, ElementID id,
+      std::optional<uint16_t> instance_id = std::nullopt);
   virtual ~Resource() = default;
 
-  ResourceDescriptorPtr getDescriptor() { return descriptor_; }
-
-  virtual std::future<T> read() {
-    throw UnsupportedMethod("This resource is not Readable!");
-  }
-
-  virtual std::future<bool> write(DataVariant /*value*/) {
-    throw UnsupportedMethod("This resource is not Writable!");
-  }
-
-  virtual std::future<bool> write(T /*value*/) {
-    throw UnsupportedMethod("This resource is not Writable!");
-  }
-
-  virtual std::future<bool> execute(std::string /*arguments*/ = std::string()) {
-    throw UnsupportedMethod("This resource is not Executable!");
-  }
+  ResourceDescriptorPtr getDescriptor();
+  ResourceInstance getInstance(bool ignore_multiple_instances = false);
+  ResourceInstance getInstance(ElementID id);
+  ResourceInstances getInstances();
 };
 
-template <typename T> using ResourcePtr = std::shared_ptr<Resource<T>>;
+using ResourcePtr = std::shared_ptr<Resource>;
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_RESOURCE_HPP
