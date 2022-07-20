@@ -5,6 +5,7 @@
 #include "Event_Model/EventSource.hpp"
 
 #include "CallableEntity.hpp"
+#include "ObservableInterface.hpp"
 
 #include <map>
 
@@ -20,9 +21,9 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
   using ExceptionHandler = std::function<void(std::exception_ptr)>;
   using ObservedDataTypes = std::map<ElementID, DataType>;
 
-  Observable(ExceptionHandler handler, RequesterInterfaceFacadePtr requester,
+  Observable(ExceptionHandler handler, ObservableInterfacePtr requester,
       EndpointPtr endpoint, ElementID id, ObservedDataTypes data_types);
-  Observable(ExceptionHandler handler, RequesterInterfaceFacadePtr requester,
+  Observable(ExceptionHandler handler, ObservableInterfacePtr requester,
       EndpointPtr endpoint, ElementID id, DataType data_type);
 
   ~Observable();
@@ -40,6 +41,7 @@ private:
 
   void detach(size_t callback_id) final;
 
+  ObservableInterfacePtr requester_;
   size_t observer_id_ = 0;
   ObservedDataTypes data_types_;
 };

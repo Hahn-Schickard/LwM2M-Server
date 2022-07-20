@@ -5,6 +5,7 @@
 #include "Operationless.hpp"
 #include "ReadAndWritable.hpp"
 #include "Readable.hpp"
+#include "RequesterInterfaceFacade.hpp"
 #include "Writable.hpp"
 
 namespace LwM2M {

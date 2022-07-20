@@ -2,16 +2,20 @@
 #define __LWM2M_WRITABLE_RESOURCE_HPP
 
 #include "CallableEntity.hpp"
+#include "ExecutableInterface.hpp"
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
 
 class Writable : public CallableEntity {
 public:
-  Writable(RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
-      ElementID id);
+  Writable(
+      ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
 
   std::future<bool> write(DataVariant data);
+
+private:
+  ExecutableInterfacePtr requester_;
 };
 
 using WritablePtr = std::shared_ptr<Writable>;

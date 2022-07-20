@@ -2,15 +2,19 @@
 #define __LWM2M_EXECUTABLE_RESOURCE_HPP
 
 #include "CallableEntity.hpp"
+#include "ExecutableInterface.hpp"
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
 class Executable : public CallableEntity {
 public:
-  Executable(RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
-      ElementID id);
+  Executable(
+      ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
 
   std::future<bool> execute(std::string arguments);
+
+private:
+  ExecutableInterfacePtr requester_;
 };
 
 using ExecutablePtr = std::shared_ptr<Executable>;

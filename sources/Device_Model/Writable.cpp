@@ -5,8 +5,8 @@ using namespace std;
 
 namespace LwM2M {
 Writable::Writable(
-    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id)
-    : CallableEntity(requester, endpoint, id) {}
+    ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id)
+    : CallableEntity(endpoint, id), requester_(requester) {}
 
 future<bool> Writable::write(DataVariant data) {
   auto payload = make_shared<DataFormat>(data);

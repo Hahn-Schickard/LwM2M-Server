@@ -11,14 +11,14 @@ ResourceInstance makeVariant(ResourceDescriptorPtr descriptor,
   switch (descriptor->operations_) {
   case OperationsType::READ: {
     return make_shared<Readable>(
-        handler, requester, endpoint, id, descriptor->data_type_);
+        handler, requester, requester, endpoint, id, descriptor->data_type_);
   }
   case OperationsType::WRITE: {
     return make_shared<Writable>(requester, endpoint, id);
   }
   case OperationsType::READ_AND_WRITE: {
-    return make_shared<ReadAndWritable>(
-        handler, requester, endpoint, id, descriptor->data_type_);
+    return make_shared<ReadAndWritable>(handler, requester, requester,
+        requester, endpoint, id, descriptor->data_type_);
   }
   case OperationsType::EXECUTE: {
     return make_shared<Executable>(requester, endpoint, id);
