@@ -55,17 +55,32 @@ Object::Object(Observable::ExceptionHandler handler, RequesterPtr requester,
   }
 }
 
-ResourcePtr Object::getResource(ElementID id) {
+ObjectDescriptorPtr Object::getDescriptor() { return descriptor_; }
+
+ObjectInstacePtr Object::getObjectInstance(ElementID id) {
   auto it = instances_.find(id.getObjectInstanceID());
   if (it != instances_.end()) {
-    auto object_instance = it->second;
-    return object_instance->getResource(id);
+    return it->second;
   } else {
     throw ObjectInstanceDoesNotExist(id);
   }
 }
 
-ObjectDescriptorPtr Object::getDescriptor() { return descriptor_; }
+ObjectInstances Object::getObjectInstances() { return instances_; }
 
-ObjectInstances Object::getInstances() { return instances_; }
+ResourcePtr Object::getResource(ElementID id) {
+  return getObjectInstance(id)->getResource(id);
+}
+
+Resources Object::getResources(ElementID id) {
+  return getObjectInstance(id)->getResources();
+}
+
+ResourceInstance Object::getResourceInstance(ElementID id) {
+  return getResource(id)->getResourceInstance(id);
+}
+
+ResourceInstances Object::getResourceInstances(ElementID id) {
+  return getResource(id)->getResourceInstances();
+}
 } // namespace LwM2M

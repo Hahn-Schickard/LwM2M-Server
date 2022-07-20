@@ -126,7 +126,7 @@ void processReadable(ReadablePtr readable, ResourceExpectationsPtr expected,
 void readResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   match(
-      resource->getInstance(),
+      resource->getResourceInstance(),
       [&](ReadablePtr value) {
         processReadable(value, expected, response_delay_ms);
       },
@@ -168,7 +168,7 @@ void processWritable(WritablePtr writable, ResourceExpectationsPtr expected,
 void writeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   match(
-      resource->getInstance(),
+      resource->getResourceInstance(),
       [&](WritablePtr value) {
         processWritable(value, expected, response_delay_ms);
       },
@@ -210,7 +210,7 @@ void processExecutable(ExecutablePtr resource, ResourceExpectationsPtr expected,
 void executeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   match(
-      resource->getInstance(),
+      resource->getResourceInstance(),
       [&](ExecutablePtr value) {
         processExecutable(value, expected, response_delay_ms);
       },

@@ -36,6 +36,8 @@ public:
 
   ResourcePtr getResource(ElementID id);
   Resources getResources();
+  ResourceInstance getResourceInstance(ElementID id);
+  ResourceInstances getResourceInstances(ElementID id);
 };
 
 using ObjectInstacePtr = std::shared_ptr<ObjectInstance>;

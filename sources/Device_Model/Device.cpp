@@ -56,6 +56,30 @@ ObjectPtr Device::getObject(ElementID id) {
 
 ObjectsMap Device::getObjects() { return object_instances_; }
 
+ObjectInstacePtr Device::getObjectInstance(ElementID id) {
+  return getObject(id)->getObjectInstance(id);
+}
+
+ObjectInstances Device::getObjectInstances(ElementID id) {
+  return getObject(id)->getObjectInstances();
+}
+
+ResourcePtr Device::getResource(ElementID id) {
+  return getObjectInstance(id)->getResource(id);
+}
+
+Resources Device::getResources(ElementID id) {
+  return getObjectInstance(id)->getResources();
+}
+
+ResourceInstance Device::getResourceInstance(ElementID id) {
+  return getResource(id)->getResourceInstance(id);
+}
+
+ResourceInstances Device::getResourceInstances(ElementID id) {
+  return getResource(id)->getResourceInstances();
+}
+
 void Device::updateBinding(BindingType binding) { binding_ = binding; }
 
 void Device::updateLifetime(size_t life_time) { life_time_ = life_time; }

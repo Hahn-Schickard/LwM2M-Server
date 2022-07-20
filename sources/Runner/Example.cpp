@@ -76,7 +76,7 @@ void printObjects(ObjectsMap objects) {
       cout << prefix << "_"
            << "Object " << object.second->getDescriptor()->id_ << ": "
            << object.second->getDescriptor()->name_ << endl;
-      printObjectInstances(object.second->getInstances(), prefix);
+      printObjectInstances(object.second->getObjectInstances(), prefix);
     }
   }
 }
@@ -109,7 +109,7 @@ string stringifyDataVariant(DataVariant variant) {
 string stringifyResourceValue(ResourcePtr resource) {
   string response;
   match(
-      resource->getInstance(),
+      resource->getResourceInstance(),
       [&](ReadablePtr readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
@@ -199,8 +199,8 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
       auto device_obj = device->getObject(ElementID(3, 0));
       auto battery_level_resource = device_obj->getResource(ElementID(3, 0, 9));
       // @TODO: simplify the observation mechanism here
-      if (auto battery_level =
-              std::get<ReadablePtr>(battery_level_resource->getInstance())) {
+      if (auto battery_level = std::get<ReadablePtr>(
+              battery_level_resource->getResourceInstance())) {
         auto observable = dynamic_pointer_cast<Observable>(battery_level);
 
         cout << "Registering a new observer for "
