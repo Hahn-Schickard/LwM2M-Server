@@ -6,8 +6,8 @@ using namespace std;
 namespace LwM2M {
 
 Executable::Executable(
-    RequesterPtr requester, EndpointPtr endpoint, ElementID id)
-    : CallableEntity(requester, endpoint, id) {}
+    ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id)
+    : CallableEntity(endpoint, id), requester_(requester) {}
 
 future<bool> Executable::execute(string arguments) {
   auto message = make_shared<ExecuteRequest>(endpoint_, id_, arguments);

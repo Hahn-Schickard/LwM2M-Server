@@ -4,7 +4,7 @@
 #include "Endpoint.hpp"
 #include "ObjectDescriptor.hpp"
 #include "ObjectInstance.hpp"
-#include "Requester.hpp"
+#include "RequesterInterfaceFacade.hpp"
 #include "Resource.hpp"
 
 #include <memory>
@@ -40,15 +40,15 @@ struct ObjectInstanceDoesNotExist : public std::runtime_error {
 };
 
 class Object {
-  RequesterPtr requester_;
+  RequesterInterfaceFacadePtr requester_;
   EndpointPtr endpoint_;
   ObjectInstances instances_;
   ObjectDescriptorPtr descriptor_;
 
 public:
-  Object(Observable::ExceptionHandler handler, RequesterPtr requester,
-      EndpointPtr endpoint, RequiredObjectInstances instances,
-      ObjectDescriptorPtr descriptor);
+  Object(Observable::ExceptionHandler handler,
+      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
+      RequiredObjectInstances instances, ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();
   ObjectInstacePtr getObjectInstance(ElementID id);

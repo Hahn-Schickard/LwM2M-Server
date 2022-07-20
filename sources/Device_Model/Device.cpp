@@ -5,10 +5,11 @@ using namespace std;
 
 namespace LwM2M {
 
-Device::Device(Observable::ExceptionHandler handler, RequesterPtr requester,
-    EndpointPtr endpoint, ObjectDescriptorsMap object_descriptors_map,
-    string device_id, size_t life_time, string name, LwM2M_Version version,
-    BindingType binding, bool queue_mode)
+Device::Device(Observable::ExceptionHandler handler,
+    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
+    ObjectDescriptorsMap object_descriptors_map, string device_id,
+    size_t life_time, string name, LwM2M_Version version, BindingType binding,
+    bool queue_mode)
     : exception_handler_(handler), requester_(requester), endpoint_(endpoint),
       device_id_(device_id), life_time_(life_time), name_(name),
       version_(version), binding_(binding), queue_mode_(queue_mode) {

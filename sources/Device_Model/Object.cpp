@@ -35,9 +35,9 @@ ResourceDescriptorMap assignResourceDescriptors(
   return result;
 }
 
-Object::Object(Observable::ExceptionHandler handler, RequesterPtr requester,
-    EndpointPtr endpoint, RequiredObjectInstances instances,
-    ObjectDescriptorPtr descriptor)
+Object::Object(Observable::ExceptionHandler handler,
+    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
+    RequiredObjectInstances instances, ObjectDescriptorPtr descriptor)
     : requester_(requester), endpoint_(endpoint), descriptor_(descriptor) {
   for (auto instance : instances) {
     ElementIDs resources;

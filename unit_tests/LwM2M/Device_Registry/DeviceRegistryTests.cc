@@ -18,7 +18,7 @@ TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithGoodModel) {
     auto registry = make_shared<DeviceRegistry>("model/passingModel2.xml");
     EXPECT_NE(registry, nullptr);
     EXPECT_GT(registry->getSupportedDescriptors()->size(), 0);
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     FAIL() << "Caught an exception while building the Device Registry. "
               "Exception: "
            << ex.what() << endl;
@@ -30,7 +30,7 @@ TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithNonExistantModel) {
     auto registry = make_shared<DeviceRegistry>("model/nonExistantModel.xml");
     EXPECT_NE(registry, nullptr);
     EXPECT_EQ(registry->getSupportedDescriptors()->size(), 0);
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     FAIL() << "Caught an exception while building the Device Registry. "
               "Exception: "
            << ex.what() << endl;
@@ -52,9 +52,9 @@ protected:
     listener_ = make_shared<MockRegistryListener>(registry_);
     exception_handler_ = make_shared<MockExceptionHandler>();
     auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
-                         exception_handler_.get(), std::placeholders::_1);
-    initial_device_ = make_shared<Device>(
-        callback, RequesterPtr(), make_shared<Endpoint>("0.0.0.0", 10),
+        exception_handler_.get(), std::placeholders::_1);
+    initial_device_ = make_shared<Device>(callback,
+        RequesterInterfaceFacadePtr(), make_shared<Endpoint>("0.0.0.0", 10),
         ObjectDescriptorsMap(), "1234", 10, "initial_device");
     registry_->registerDevice(initial_device_);
   }
@@ -74,13 +74,12 @@ MATCHER_P(EventPtrIsEqual, value, "") {
 
 TEST_F(DeviceRegistryTests, canRegisterDevice) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
-                       exception_handler_.get(), std::placeholders::_1);
-  auto device = make_shared<Device>(
-      callback, RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
-      ObjectDescriptorsMap(), "1243135", 10, "test_device");
+      exception_handler_.get(), std::placeholders::_1);
+  auto device = make_shared<Device>(callback, RequesterInterfaceFacadePtr(),
+      make_shared<Endpoint>("1.1.1.1", 10), ObjectDescriptorsMap(), "1243135",
+      10, "test_device");
 
-  EXPECT_CALL(
-      *listener_,
+  EXPECT_CALL(*listener_,
       handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
           RegistryEventType::REGISTERED, device->getDeviceId(), device))))
       .Times(1);
@@ -88,7 +87,7 @@ TEST_F(DeviceRegistryTests, canRegisterDevice) {
   try {
     registry_->registerDevice(device);
     EXPECT_TRUE(registry_->isRegistered(device->getDeviceId()));
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
@@ -99,15 +98,14 @@ TEST_F(DeviceRegistryTests, registerDeviceThrowsInvalidArgument) {
 }
 
 TEST_F(DeviceRegistryTests, canDeregisterDevice) {
-  EXPECT_CALL(
-      *listener_,
+  EXPECT_CALL(*listener_,
       handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
           RegistryEventType::DEREGISTERED, initial_device_->getDeviceId()))))
       .Times(1);
 
   try {
     registry_->deregisterDevice(initial_device_->getDeviceId());
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
@@ -115,31 +113,30 @@ TEST_F(DeviceRegistryTests, canDeregisterDevice) {
 
 TEST_F(DeviceRegistryTests, deregisterDeviceThrowsDeviceNotFound) {
   EXPECT_THROW({ registry_->deregisterDevice("nonExistantDeviceName"); },
-               DeviceNotFound);
+      DeviceNotFound);
 }
 
 TEST_F(DeviceRegistryTests, canReregisterDevice) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
-                       exception_handler_.get(), std::placeholders::_1);
-  auto device = make_shared<Device>(
-      callback, RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
-      ObjectDescriptorsMap(), "12412325", 10, "test_device");
+      exception_handler_.get(), std::placeholders::_1);
+  auto device = make_shared<Device>(callback, RequesterInterfaceFacadePtr(),
+      make_shared<Endpoint>("1.1.1.1", 10), ObjectDescriptorsMap(), "12412325",
+      10, "test_device");
 
-  EXPECT_CALL(
-      *listener_,
+  EXPECT_CALL(*listener_,
       handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
           RegistryEventType::REGISTERED, device->getDeviceId(), device))))
       .Times(2);
   EXPECT_CALL(*listener_,
-              handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
-                  RegistryEventType::DEREGISTERED, device->getDeviceId()))))
+      handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
+          RegistryEventType::DEREGISTERED, device->getDeviceId()))))
       .Times(1);
 
   try {
     registry_->registerDevice(device);
     registry_->registerDevice(device);
     EXPECT_TRUE(registry_->isRegistered(device->getDeviceId()));
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
@@ -149,14 +146,14 @@ TEST_F(DeviceRegistryTests, canUpdateDevice) {
   initial_device_->updateLifetime(2222);
 
   EXPECT_CALL(*listener_,
-              handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
-                  RegistryEventType::UPDATED, initial_device_->getDeviceId(),
-                  initial_device_))))
+      handleEvent(
+          EventPtrIsEqual(make_shared<RegistryEvent>(RegistryEventType::UPDATED,
+              initial_device_->getDeviceId(), initial_device_))))
       .Times(1);
 
   try {
     registry_->updateDevice(initial_device_);
-  } catch (exception &ex) {
+  } catch (exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
@@ -164,10 +161,10 @@ TEST_F(DeviceRegistryTests, canUpdateDevice) {
 
 TEST_F(DeviceRegistryTests, updateDeviceThrowsDeviceNotFound) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
-                       exception_handler_.get(), std::placeholders::_1);
-  auto device = make_shared<Device>(
-      callback, RequesterPtr(), make_shared<Endpoint>("1.1.1.1", 10),
-      ObjectDescriptorsMap(), "1251212214", 10, "test_device");
+      exception_handler_.get(), std::placeholders::_1);
+  auto device = make_shared<Device>(callback, RequesterInterfaceFacadePtr(),
+      make_shared<Endpoint>("1.1.1.1", 10), ObjectDescriptorsMap(),
+      "1251212214", 10, "test_device");
   EXPECT_THROW({ registry_->updateDevice(device); }, DeviceNotFound);
 }
 

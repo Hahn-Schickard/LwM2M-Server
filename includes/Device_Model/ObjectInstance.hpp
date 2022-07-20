@@ -5,7 +5,7 @@
 #include "ElementID.hpp"
 #include "Endpoint.hpp"
 #include "Observable.hpp"
-#include "Requester.hpp"
+#include "RequesterInterfaceFacade.hpp"
 #include "Resource.hpp"
 
 #include <memory>
@@ -22,14 +22,14 @@ struct ResourceDoesNotExist : public std::runtime_error {
 };
 
 class ObjectInstance {
-  RequesterPtr requester_;
+  RequesterInterfaceFacadePtr requester_;
   EndpointPtr endpoint_;
   ElementID id_;
   Resources resources_;
 
 public:
-  ObjectInstance(Observable::ExceptionHandler handler, RequesterPtr requester,
-      EndpointPtr endpoint, ElementID id,
+  ObjectInstance(Observable::ExceptionHandler handler,
+      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
       std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
           resource_descriptors);
   ElementID getId();
