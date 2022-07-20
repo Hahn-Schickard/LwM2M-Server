@@ -7,8 +7,9 @@
 namespace LwM2M {
 class ReadAndWritable : public Readable, public Writable {
 public:
-  ReadAndWritable(Observable::ExceptionHandler handler, RequesterPtr requester,
-      EndpointPtr endpoint, ElementID id, DataType data_type);
+  ReadAndWritable(Observable::ExceptionHandler handler,
+      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
+      DataType data_type);
 };
 
 using ReadAndWritablePtr = std::shared_ptr<ReadAndWritable>;

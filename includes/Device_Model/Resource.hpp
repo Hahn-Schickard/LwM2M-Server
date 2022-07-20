@@ -32,8 +32,9 @@ class Resource {
 
 public:
   Resource() = default;
-  Resource(Observable::ExceptionHandler handler, RequesterPtr requester,
-      EndpointPtr endpoint, ResourceDescriptorPtr descriptor, ElementID id,
+  Resource(Observable::ExceptionHandler handler,
+      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
+      ResourceDescriptorPtr descriptor, ElementID id,
       std::optional<uint16_t> instance_id = std::nullopt);
   virtual ~Resource() = default;
 

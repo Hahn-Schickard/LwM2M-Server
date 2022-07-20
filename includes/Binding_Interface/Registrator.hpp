@@ -5,7 +5,7 @@
 #include "DeviceRegistry.hpp"
 #include "Logger.hpp"
 #include "Register.hpp"
-#include "Requester.hpp"
+#include "RequesterInterfaceFacade.hpp"
 #include "Update.hpp"
 
 #include <memory>
@@ -14,8 +14,9 @@
 
 namespace LwM2M {
 
-class Registrator : public Requester,
-                    public std::enable_shared_from_this<Requester> {
+class Registrator
+    : public RequesterInterfaceFacade,
+      public std::enable_shared_from_this<RequesterInterfaceFacade> {
 
   DeviceRegistryPtr registry_;
   std::shared_ptr<HaSLL::Logger> logger_;

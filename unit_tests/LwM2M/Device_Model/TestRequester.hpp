@@ -1,14 +1,14 @@
 #ifndef __LWM2M_REQUESTER_TEST_IMPLEMENTATION_HPP
 #define __LWM2M_REQUESTER_TEST_IMPLEMENTATION_HPP
 
-#include "Requester.hpp"
+#include "RequesterInterfaceFacade.hpp"
 
 #include <exception>
 #include <optional>
 #include <variant>
 
 namespace LwM2M {
-class TestRequester : public Requester {
+class TestRequester : public RequesterInterfaceFacade {
   using DataPromise = std::promise<DataFormatPtr>;
   using MultiDataPromise = std::promise<TargetContentVector>;
   using ActionPromise = std::promise<bool>;
@@ -21,8 +21,8 @@ class TestRequester : public Requester {
       observed_elements_;
 
 public:
-  std::future<DataFormatPtr>
-  requestData(DeviceManagementRequestPtr /*message*/) override final {
+  std::future<DataFormatPtr> requestData(
+      DeviceManagementRequestPtr /*message*/) override final {
     if (!data_promise_) {
       DataPromise data_promise;
       auto result = data_promise.get_future();
@@ -51,8 +51,8 @@ public:
     }
   }
 
-  std::future<bool>
-  requestAction(DeviceManagementRequestPtr /*message*/) override final {
+  std::future<bool> requestAction(
+      DeviceManagementRequestPtr /*message*/) override final {
     if (!action_promise_) {
       ActionPromise action_promise;
       auto result = action_promise.get_future();
@@ -87,24 +87,22 @@ public:
     }
   }
 
-  size_t requestObservation(
-      std::function<void(PayloadDataPtr)> notify_cb,
+  size_t requestObservation(std::function<void(PayloadDataPtr)> notify_cb,
       InformationReportingRequestPtr /*message*/) override final {
     auto id = observed_elements_.size();
     observed_elements_.emplace(id, notify_cb);
     return id;
   }
 
-  void
-  cancelObservation(size_t observer_id,
-                    InformationReportingRequestPtr /*message*/) override final {
+  void cancelObservation(size_t observer_id,
+      InformationReportingRequestPtr /*message*/) override final {
     auto observer = observed_elements_.find(observer_id);
     if (observer != observed_elements_.end()) {
       observed_elements_.erase(observer);
     }
   }
 
-  bool respond(const DataFormat &result) {
+  bool respond(const DataFormat& result) {
     bool success = false;
     if (data_promise_) {
       try {
@@ -112,7 +110,7 @@ public:
         data_promise_ = std::nullopt;
         data_promise.set_value(std::make_shared<DataFormat>(result));
         success = true;
-      } catch (std::exception &ex) {
+      } catch (std::exception& ex) {
         success = false;
       }
     }
@@ -127,7 +125,7 @@ public:
         multi_data_promise_ = std::nullopt;
         multi_data_promise.set_value(result);
         success = true;
-      } catch (std::exception &ex) {
+      } catch (std::exception& ex) {
         success = false;
       }
     }
@@ -142,7 +140,7 @@ public:
         action_promise_ = std::nullopt;
         action_promise.set_value(enacted);
         success = true;
-      } catch (std::exception &ex) {
+      } catch (std::exception& ex) {
         success = false;
       }
     }
@@ -156,7 +154,7 @@ public:
       try {
         (callback->second)(value);
         success = true;
-      } catch (std::exception &ex) {
+      } catch (std::exception& ex) {
         success = false;
       }
     }

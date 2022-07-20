@@ -20,9 +20,9 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
   using ExceptionHandler = std::function<void(std::exception_ptr)>;
   using ObservedDataTypes = std::map<ElementID, DataType>;
 
-  Observable(ExceptionHandler handler, RequesterPtr requester,
+  Observable(ExceptionHandler handler, RequesterInterfaceFacadePtr requester,
       EndpointPtr endpoint, ElementID id, ObservedDataTypes data_types);
-  Observable(ExceptionHandler handler, RequesterPtr requester,
+  Observable(ExceptionHandler handler, RequesterInterfaceFacadePtr requester,
       EndpointPtr endpoint, ElementID id, DataType data_type);
 
   ~Observable();

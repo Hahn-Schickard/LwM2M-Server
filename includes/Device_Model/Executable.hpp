@@ -7,7 +7,8 @@
 namespace LwM2M {
 class Executable : public CallableEntity {
 public:
-  Executable(RequesterPtr requester, EndpointPtr endpoint, ElementID id);
+  Executable(RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
+      ElementID id);
 
   std::future<bool> execute(std::string arguments);
 };

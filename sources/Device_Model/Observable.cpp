@@ -16,13 +16,14 @@ DataType getDataTypeFromMap(
 }
 
 Observable::Observable(Observable::ExceptionHandler handler,
-    RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
     ObservedDataTypes data_types)
     : Event_Model::EventSource<PayloadData>(handler),
       CallableEntity(requester, endpoint, id), data_types_(data_types) {}
 
-Observable::Observable(ExceptionHandler handler, RequesterPtr requester,
-    EndpointPtr endpoint, ElementID id, DataType data_type)
+Observable::Observable(ExceptionHandler handler,
+    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
+    DataType data_type)
     : Observable(handler, requester, endpoint, id,
           ObservedDataTypes{{id, data_type}}) {}
 

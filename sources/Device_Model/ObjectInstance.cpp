@@ -10,7 +10,7 @@ using namespace std;
 namespace LwM2M {
 
 ObjectInstance::ObjectInstance(Observable::ExceptionHandler handler,
-    RequesterPtr requester, EndpointPtr endpoint, ElementID id,
+    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
     unordered_map<uint32_t, ResourceDescriptorPtr> resource_descriptors)
     : requester_(requester), endpoint_(endpoint), id_(id) {
   for (auto resource_pair : resource_descriptors) {

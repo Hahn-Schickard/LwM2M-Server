@@ -6,7 +6,7 @@ using namespace std;
 namespace LwM2M {
 
 ResourceInstance makeVariant(ResourceDescriptorPtr descriptor,
-    Observable::ExceptionHandler handler, RequesterPtr requester,
+    Observable::ExceptionHandler handler, RequesterInterfaceFacadePtr requester,
     EndpointPtr endpoint, ElementID id) {
   switch (descriptor->operations_) {
   case OperationsType::READ: {
@@ -30,8 +30,9 @@ ResourceInstance makeVariant(ResourceDescriptorPtr descriptor,
   }
 }
 
-Resource::Resource(Observable::ExceptionHandler handler, RequesterPtr requester,
-    EndpointPtr endpoint, ResourceDescriptorPtr descriptor, ElementID id,
+Resource::Resource(Observable::ExceptionHandler handler,
+    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
+    ResourceDescriptorPtr descriptor, ElementID id,
     std::optional<uint16_t> instance_id)
     : descriptor_(descriptor), id_(id) {
   auto element_id = id;

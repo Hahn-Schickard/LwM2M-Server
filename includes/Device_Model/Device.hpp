@@ -5,7 +5,7 @@
 #include "ModelType.hpp"
 #include "Object.hpp"
 #include "ObjectDescriptor.hpp"
-#include "Requester.hpp"
+#include "RequesterInterfaceFacade.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -39,7 +39,7 @@ struct ObjectDoesNotExist : public std::runtime_error {
 
 class Device {
   Observable::ExceptionHandler exception_handler_;
-  RequesterPtr requester_;
+  RequesterInterfaceFacadePtr requester_;
   EndpointPtr endpoint_;
   ObjectsMap object_instances_;
   std::string device_id_;
@@ -53,9 +53,10 @@ class Device {
 
 public:
   Device() = default;
-  Device(Observable::ExceptionHandler handler, RequesterPtr requester,
-      EndpointPtr endpoint, ObjectDescriptorsMap object_descriptors_map,
-      std::string device_id, size_t life_time, std::string name = std::string(),
+  Device(Observable::ExceptionHandler handler,
+      RequesterInterfaceFacadePtr requester_, EndpointPtr endpoint,
+      ObjectDescriptorsMap object_descriptors_map, std::string device_id,
+      size_t life_time, std::string name = std::string(),
       LwM2M_Version version = LwM2M_Version::V1_0,
       BindingType binding = BindingType::UDP, bool queue_mode = false);
 

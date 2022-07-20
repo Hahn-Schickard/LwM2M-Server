@@ -3,12 +3,13 @@
 
 #include "ElementID.hpp"
 #include "Endpoint.hpp"
-#include "Requester.hpp"
+#include "RequesterInterfaceFacade.hpp"
 
 namespace LwM2M {
 
 struct CallableEntity {
-  CallableEntity(RequesterPtr requester, EndpointPtr endpoint, ElementID id)
+  CallableEntity(
+      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id)
       : requester_(requester), endpoint_(endpoint), id_(id) {}
 
   EndpointPtr getEndpoint() { return endpoint_; }
@@ -16,7 +17,7 @@ struct CallableEntity {
   ElementID getID() { return id_; }
 
 protected:
-  RequesterPtr requester_;
+  RequesterInterfaceFacadePtr requester_;
   EndpointPtr endpoint_;
   ElementID id_;
 };

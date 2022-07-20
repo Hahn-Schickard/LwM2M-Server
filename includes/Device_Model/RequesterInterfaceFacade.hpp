@@ -1,5 +1,5 @@
-#ifndef __LWM2M_REQUESTER_INTERFACE_HPP
-#define __LWM2M_REQUESTER_INTERFACE_HPP
+#ifndef __LWM2M_REQUESTER_INTERFACE_FACADE_INTERFACE_HPP
+#define __LWM2M_REQUESTER_INTERFACE_FACADE_INTERFACE_HPP
 
 #include "DeviceManagmentMessage.hpp"
 #include "InformationReporingMessage.hpp"
@@ -31,8 +31,8 @@ struct ResponseReturnedAnEmptyPayload : public std::runtime_error {
  * @brief Implemented by LwM2M::DispatcherInterface
  *
  */
-struct Requester {
-  virtual ~Requester() = default;
+struct RequesterInterfaceFacade {
+  virtual ~RequesterInterfaceFacade() = default;
 
   /**
    * @brief Requests a single instance of LwM2M::DataFormat from the
@@ -154,7 +154,7 @@ struct Requester {
   }
 };
 
-using RequesterPtr = std::shared_ptr<Requester>;
+using RequesterInterfaceFacadePtr = std::shared_ptr<RequesterInterfaceFacade>;
 } // namespace LwM2M
 
-#endif //__LWM2M_REQUESTER_INTERFACE_HPP
+#endif //__LWM2M_REQUESTER_INTERFACE_FACADE_INTERFACE_HPP
