@@ -19,6 +19,7 @@ private:
   ExecutableInterfacePtr requester_;
 };
 
-using ExecutablePtr = NonemptyPointer::NonemptyPtr<Executable>;
+using ExecutableSharedPtr = std::shared_ptr<Executable>;
+using ExecutablePtr = NonemptyPointer::NonemptyPtr<ExecutableSharedPtr>;
 } // namespace LwM2M
 #endif //__LWM2M_EXECUTABLE_RESOURCE_HPP
