@@ -1,6 +1,8 @@
 #ifndef __LWM2M_MODEL_OBJECT_HPP
 #define __LWM2M_MODEL_OBJECT_HPP
 
+#include "Nonempty_Pointer/NonemptyPtr.hpp"
+
 #include "Endpoint.hpp"
 #include "ObjectDescriptor.hpp"
 #include "ObjectInstance.hpp"
@@ -59,7 +61,8 @@ public:
   ResourceInstances getResourceInstances(ElementID id);
 };
 
-using ObjectPtr = std::shared_ptr<Object>;
+using ObjectSharedPtr = std::shared_ptr<Object>;
+using ObjectPtr = NonemptyPointer::NonemptyPtr<ObjectSharedPtr>;
 } // namespace LwM2M
 
 #endif // __LWM2M_MODEL_OBJECT_HPP

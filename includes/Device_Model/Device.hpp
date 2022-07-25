@@ -1,6 +1,8 @@
 #ifndef __LWM2M_DEVICE_HPP
 #define __LWM2M_DEVICE_HPP
 
+#include "Nonempty_Pointer/NonemptyPtr.hpp"
+
 #include "Endpoint.hpp"
 #include "ModelType.hpp"
 #include "Object.hpp"
@@ -76,7 +78,7 @@ public:
   void updateObjectsMap(ObjectDescriptorsMap object_instances);
 };
 
-using DevicePtr = std::shared_ptr<Device>;
+using DevicePtr = NonemptyPointer::NonemptyPtr<Device>;
 }; // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_HPP

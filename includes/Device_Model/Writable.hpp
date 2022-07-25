@@ -1,6 +1,8 @@
 #ifndef __LWM2M_WRITABLE_RESOURCE_HPP
 #define __LWM2M_WRITABLE_RESOURCE_HPP
 
+#include "Nonempty_Pointer/NonemptyPtr.hpp"
+
 #include "CallableEntity.hpp"
 #include "ExecutableInterface.hpp"
 #include "ResourceDescriptor.hpp"
@@ -18,7 +20,8 @@ private:
   ExecutableInterfacePtr requester_;
 };
 
-using WritablePtr = std::shared_ptr<Writable>;
+using WritableSharedPtr = std::shared_ptr<Writable>;
+using WritablePtr = NonemptyPointer::NonemptyPtr<WritableSharedPtr>;
 
 } // namespace LwM2M
 

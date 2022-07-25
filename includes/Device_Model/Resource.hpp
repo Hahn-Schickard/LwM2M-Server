@@ -1,6 +1,8 @@
 #ifndef __LWM2M_MODEL_RESOURCE_HPP
 #define __LWM2M_MODEL_RESOURCE_HPP
 
+#include "Nonempty_Pointer/NonemptyPtr.hpp"
+
 #include "Executable.hpp"
 #include "Operationless.hpp"
 #include "ReadAndWritable.hpp"
@@ -45,7 +47,8 @@ public:
   ResourceInstances getResourceInstances();
 };
 
-using ResourcePtr = std::shared_ptr<Resource>;
+using ResourceSharedPtr = std::shared_ptr<Resource>;
+using ResourcePtr = NonemptyPointer::NonemptyPtr<ResourceSharedPtr>;
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_RESOURCE_HPP

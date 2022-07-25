@@ -1,6 +1,8 @@
 #ifndef __LWM2M_MODEL_OBJECT_INSTANCE_HPP
 #define __LWM2M_MODEL_OBJECT_INSTANCE_HPP
 
+#include "Nonempty_Pointer/NonemptyPtr.hpp"
+
 #include "DataFormat.hpp"
 #include "ElementID.hpp"
 #include "Endpoint.hpp"
@@ -30,8 +32,7 @@ class ObjectInstance {
 public:
   ObjectInstance(Observable::ExceptionHandler handler,
       RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
-      std::unordered_map<uint32_t, std::shared_ptr<ResourceDescriptor>>
-          resource_descriptors);
+      std::unordered_map<uint32_t, ResourceDescriptorPtr> resource_descriptors);
   ElementID getId();
 
   ResourcePtr getResource(ElementID id);
@@ -40,7 +41,8 @@ public:
   ResourceInstances getResourceInstances(ElementID id);
 };
 
-using ObjectInstacePtr = std::shared_ptr<ObjectInstance>;
+using ObjectInstanceSharedPtr = std::shared_ptr<ObjectInstance>;
+using ObjectInstacePtr = NonemptyPointer::NonemptyPtr<ObjectInstanceSharedPtr>;
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_OBJECT_INSTANCE_HPP

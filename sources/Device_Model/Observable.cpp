@@ -77,7 +77,8 @@ void Observable::detach(size_t callback_id) {
 }
 
 ObserverInterface::ObserverInterface(ObservablePtr source)
-    : EventListenerInterface(source), oberser_id_(source->getID().toString()),
+    : EventListenerInterface(source.base()),
+      oberser_id_(source->getID().toString()),
       data_types_(source->getObservedDataTypes()) {}
 
 std::string ObserverInterface::getId() { return oberser_id_; }

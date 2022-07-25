@@ -3,6 +3,7 @@
 
 #include "Event_Model/EventListenerInterface.hpp"
 #include "Event_Model/EventSource.hpp"
+#include "Nonempty_Pointer/NonemptyPtr.hpp"
 
 #include "CallableEntity.hpp"
 #include "ObservableInterface.hpp"
@@ -46,7 +47,8 @@ private:
   ObservedDataTypes data_types_;
 };
 
-using ObservablePtr = std::shared_ptr<Observable>;
+using ObservableSharedPtr = std::shared_ptr<Observable>;
+using ObservablePtr = NonemptyPointer::NonemptyPtr<ObservableSharedPtr>;
 
 struct ObserverInterface
     : Event_Model::EventListenerInterface<LwM2M::PayloadData> {
@@ -61,6 +63,8 @@ private:
   Observable::ObservedDataTypes data_types_;
 };
 
-using ObserverInterfacePtr = std::shared_ptr<ObserverInterface>;
+using ObserverInterfaceSharedPtr = std::shared_ptr<ObserverInterface>;
+using ObserverInterfacePtr =
+    NonemptyPointer::NonemptyPtr<ObserverInterfaceSharedPtr>;
 } // namespace LwM2M
 #endif //__LWM2M_OBSERVABLE_HPP
