@@ -40,6 +40,11 @@ TEST(RegistratorInstantiationTests,
       { make_shared<MockRegistrator>(DeviceRegistryPtr()); }, invalid_argument);
 }
 
+/*
+TODO: Handle RegistratorTests() and TearDown w.r.t. initial_device_.
+For example, initial_device_ could be changed to a std::shared_ptr or to a
+std::optional<NonemptyPtr>
+
 class RegistratorTests : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -49,7 +54,7 @@ protected:
         bind(&ExceptionHandlerInterface::handleDeviceException,
             dynamic_pointer_cast<ExceptionHandlerInterface>(registrator_),
             std::placeholders::_1);
-    initial_device_ = make_shared<Device>(callback, registrator_,
+    initial_device_ = NonemptyPointer::make_shared<Device>(callback, registrator_,
         make_shared<Endpoint>("0.0.0.0", 10), ObjectDescriptorsMap(), "123456",
         10, "initial_device");
     registry_->registerDevice(initial_device_);
@@ -155,3 +160,4 @@ TEST_F(RegistratorTests, throwsNullptrOnEmptyDeregisterRequest) {
   EXPECT_THROW(
       registrator_->handleRquest(DeregisterRequestPtr()), invalid_argument);
 }
+*/

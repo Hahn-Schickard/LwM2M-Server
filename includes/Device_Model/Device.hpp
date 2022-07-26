@@ -78,7 +78,8 @@ public:
   void updateObjectsMap(ObjectDescriptorsMap object_instances);
 };
 
-using DevicePtr = NonemptyPointer::NonemptyPtr<Device>;
+using DeviceSharedPtr = std::shared_ptr<Device>;
+using DevicePtr = NonemptyPointer::NonemptyPtr<DeviceSharedPtr>;
 }; // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_HPP

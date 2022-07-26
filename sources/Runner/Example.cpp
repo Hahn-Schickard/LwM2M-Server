@@ -110,12 +110,12 @@ string stringifyResourceValue(ResourcePtr resource) {
   string response;
   match(
       resource->getResourceInstance(),
-      [&](ReadablePtr readable) {
+      [&](ReadablePtr& readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
         response = stringifyDataVariant(value);
       },
-      [&](ReadAndWritablePtr readable) {
+      [&](ReadAndWritablePtr& readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
         response = stringifyDataVariant(value);
@@ -199,20 +199,18 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
       auto device_obj = device->getObject(ElementID(3, 0));
       auto battery_level_resource = device_obj->getResource(ElementID(3, 0, 9));
       // @TODO: simplify the observation mechanism here
-      if (auto battery_level = std::get<ReadablePtr>(
-              battery_level_resource->getResourceInstance())) {
-        auto observable = dynamic_pointer_cast<Observable>(battery_level);
+      auto battery_level = std::get<ReadablePtr>(
+          battery_level_resource->getResourceInstance());
+/*TODO: replace dynamic_pointer_cast
+      auto observable = dynamic_pointer_cast<Observable>(battery_level);
 
-        cout << "Registering a new observer for "
-             << observable->getID().toString() << endl;
-        auto observer = make_shared<Observer>(observable);
-        cout << "Observer for element " << observer->getId()
-             << " built. Saving it in the map of observers." << endl;
-        observers_.emplace(device->getDeviceId(), observer);
-      } else {
-        cout << "Could not get Resource " << ElementID(3, 0, 9).toString()
-             << " from device " << device->getDeviceId() << endl;
-      }
+      cout << "Registering a new observer for "
+           << observable->getID().toString() << endl;
+      auto observer = make_shared<Observer>(observable);
+      cout << "Observer for element " << observer->getId()
+           << " built. Saving it in the map of observers." << endl;
+      observers_.emplace(device->getDeviceId(), observer);
+*/
     } catch (ObjectInstanceDoesNotExist& ex) {
       cout << "Could not register battery level observer for device "
            << device->getDeviceId() << ex.what() << endl;
