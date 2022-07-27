@@ -40,11 +40,6 @@ TEST(RegistratorInstantiationTests,
       { make_shared<MockRegistrator>(DeviceRegistryPtr()); }, invalid_argument);
 }
 
-/*
-TODO: Handle RegistratorTests() and TearDown w.r.t. initial_device_.
-For example, initial_device_ could be changed to a std::shared_ptr or to a
-std::optional<NonemptyPtr>
-
 class RegistratorTests : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -54,14 +49,14 @@ protected:
         bind(&ExceptionHandlerInterface::handleDeviceException,
             dynamic_pointer_cast<ExceptionHandlerInterface>(registrator_),
             std::placeholders::_1);
-    initial_device_ = NonemptyPointer::make_shared<Device>(callback, registrator_,
-        make_shared<Endpoint>("0.0.0.0", 10), ObjectDescriptorsMap(), "123456",
-        10, "initial_device");
+    initial_device_ = NonemptyPointer::make_shared<Device>(callback,
+        registrator_, make_shared<Endpoint>("0.0.0.0", 10),
+        ObjectDescriptorsMap(), "123456", 10, "initial_device");
     registry_->registerDevice(initial_device_);
   }
   DeviceRegistryPtr registry_;
   RegistratorPtr registrator_;
-  DevicePtr initial_device_;
+  DevicePtr initial_device_ = NonemptyPointer::make_shared<Device>();
 };
 
 TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
@@ -133,7 +128,9 @@ TEST_F(RegistratorTests, returnsDeletedOnDeregisterRequest) {
 
   try {
     auto response = registrator_->handleRquest(request);
-    EXPECT_EQ(response->response_code_, ResponseCode::DELETED);
+    EXPECT_EQ(response->response_code_, ResponseCode::DELETED)
+        << "Expected ResponseCode Deleted, but received ResponseCode "
+        << toString(response->response_code_);
   } catch (exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
@@ -160,4 +157,3 @@ TEST_F(RegistratorTests, throwsNullptrOnEmptyDeregisterRequest) {
   EXPECT_THROW(
       registrator_->handleRquest(DeregisterRequestPtr()), invalid_argument);
 }
-*/
