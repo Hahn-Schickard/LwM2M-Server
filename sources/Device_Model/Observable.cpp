@@ -19,7 +19,7 @@ Observable::Observable(Observable::ExceptionHandler handler,
     ObservableInterfacePtr requester, EndpointPtr endpoint, ElementID id,
     ObservedDataTypes data_types)
     : Event_Model::EventSource<PayloadData>(handler),
-      CallableEntity(endpoint, id), requester_(requester),
+      ElementAddress(endpoint, id), requester_(requester),
       data_types_(data_types) {}
 
 Observable::Observable(ExceptionHandler handler,

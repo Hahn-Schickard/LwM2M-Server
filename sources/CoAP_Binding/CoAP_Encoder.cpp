@@ -316,8 +316,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   case LwM2M::MessageType::DISCOVER: {
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
-    auto content_format =
-        build(OptionNumber::CONTENT_FORMAT, content_format_index);
+    auto content_format = build(OptionNumber::ACCEPT, content_format_index);
     options += content_format;
     logger_->log(SeverityLevel::TRACE,
         "Assiging Content Format CoAP::Option value as {} for {} message {}",

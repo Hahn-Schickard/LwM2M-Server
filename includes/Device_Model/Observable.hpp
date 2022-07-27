@@ -5,7 +5,7 @@
 #include "Event_Model/EventSource.hpp"
 #include "Nonempty_Pointer/NonemptyPtr.hpp"
 
-#include "CallableEntity.hpp"
+#include "ElementAddress.hpp"
 #include "ObservableInterface.hpp"
 
 #include <map>
@@ -18,7 +18,7 @@ struct ElementNotObserved : public std::runtime_error {
 };
 
 struct Observable : public Event_Model::EventSource<PayloadData>,
-                    public CallableEntity {
+                    public ElementAddress {
   using ExceptionHandler = std::function<void(std::exception_ptr)>;
   using ObservedDataTypes = std::map<ElementID, DataType>;
 

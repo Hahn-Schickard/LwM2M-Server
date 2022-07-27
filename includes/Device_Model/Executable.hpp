@@ -3,12 +3,12 @@
 
 #include "Nonempty_Pointer/NonemptyPtr.hpp"
 
-#include "CallableEntity.hpp"
+#include "ElementAddress.hpp"
 #include "ExecutableInterface.hpp"
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
-class Executable : public CallableEntity {
+class Executable : public ElementAddress {
 public:
   Executable(
       ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
