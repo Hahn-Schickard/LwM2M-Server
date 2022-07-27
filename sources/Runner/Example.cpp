@@ -165,7 +165,7 @@ RegistrationListener::RegistrationListener(EventSourcePtr registration)
 void RegistrationListener::handleEvent(RegistryEventPtr event) {
   switch (event->type_) {
   case RegistryEventType::REGISTERED: {
-    auto device = event->device_;
+    auto device = event->device_.value();
     cout << "New device has been registered: ";
     printDevice(device);
 

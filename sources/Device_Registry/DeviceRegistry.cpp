@@ -65,11 +65,10 @@ void DeviceRegistry::registerDevice(DevicePtr new_device) {
       "Device {} with id {} has been registered.", new_device->getName(),
       new_device->getDeviceId());
   auto event = std::make_shared<RegistryEvent>(
-      RegistryEventType::REGISTERED, new_device->getDeviceId(),
-      new_device.base());
+      RegistryEventType::REGISTERED, new_device->getDeviceId(), new_device);
   logger_->log(SeverityLevel::TRACE,
-      "Dispatching registration event for device {}:{}",
-      new_device->getName(), new_device->getDeviceId());
+      "Dispatching registration event for device {}:{}", new_device->getName(),
+      new_device->getDeviceId());
   notify(event);
 }
 
@@ -77,14 +76,13 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
   auto it = device_registry_.find(updated_device->getDeviceId());
   if (it != device_registry_.end()) {
     it->second = updated_device;
-    logger_->log(SeverityLevel::TRACE,
-        "Device {} with id {} has been updated.", updated_device->getName(),
-        updated_device->getDeviceId());
-    auto event = std::make_shared<RegistryEvent>(RegistryEventType::UPDATED,
-        updated_device->getDeviceId(), updated_device.base());
-    logger_->log(SeverityLevel::TRACE,
-        "Dispatching update event for device {}:{}",
+    logger_->log(SeverityLevel::TRACE, "Device {} with id {} has been updated.",
         updated_device->getName(), updated_device->getDeviceId());
+    auto event = std::make_shared<RegistryEvent>(RegistryEventType::UPDATED,
+        updated_device->getDeviceId(), updated_device);
+    logger_->log(SeverityLevel::TRACE,
+        "Dispatching update event for device {}:{}", updated_device->getName(),
+        updated_device->getDeviceId());
     notify(event);
   } else {
     throw DeviceNotFound(updated_device->getDeviceId());
