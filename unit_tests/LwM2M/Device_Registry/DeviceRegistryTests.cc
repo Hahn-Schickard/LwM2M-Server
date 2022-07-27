@@ -45,11 +45,6 @@ struct MockRegistryListener
   MOCK_METHOD(void, handleEvent, (shared_ptr<RegistryEvent>), (override));
 };
 
-/*
-TODO: Handle DeviceRegistryTests() and TearDown w.r.t. initial_device_.
-For example, initial_device_ could be changed to a std::shared_ptr or to a
-std::optional<NonemptyPtr>
-
 class DeviceRegistryTests : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -67,9 +62,8 @@ protected:
   DeviceRegistryPtr registry_;
   shared_ptr<MockRegistryListener> listener_;
   shared_ptr<MockExceptionHandler> exception_handler_;
-  DevicePtr initial_device_;
+  DevicePtr initial_device_ = NonemptyPointer::make_shared<Device>();
 };
-*/
 
 MATCHER_P(EventPtrIsEqual, value, "") {
   if (arg->type_ == value->type_ && arg->identifier_ == value->identifier_)
@@ -78,20 +72,16 @@ MATCHER_P(EventPtrIsEqual, value, "") {
     return false;
 }
 
-/*
-TODO see above
-
 TEST_F(DeviceRegistryTests, canRegisterDevice) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
       exception_handler_.get(), std::placeholders::_1);
-  auto device = make_shared<Device>(callback, RequesterInterfaceFacadePtr(),
-      make_shared<Endpoint>("1.1.1.1", 10), ObjectDescriptorsMap(), "1243135",
-      10, "test_device");
+  auto device = NonemptyPointer::make_shared<Device>(callback,
+      RequesterInterfaceFacadePtr(), make_shared<Endpoint>("1.1.1.1", 10),
+      ObjectDescriptorsMap(), "1243135", 10, "test_device");
 
-  EXPECT_CALL(*listener_,
-      handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
-          RegistryEventType::REGISTERED, device->getDeviceId(), device))))
-      .Times(1);
+  auto event = std::make_shared<RegistryEvent>(
+      RegistryEventType::REGISTERED, device->getDeviceId(), device);
+  EXPECT_CALL(*listener_, handleEvent(EventPtrIsEqual(event))).Times(1);
 
   try {
     registry_->registerDevice(device);
@@ -100,10 +90,6 @@ TEST_F(DeviceRegistryTests, canRegisterDevice) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
-}
-
-TEST_F(DeviceRegistryTests, registerDeviceThrowsInvalidArgument) {
-  EXPECT_THROW({ registry_->registerDevice(DevicePtr()); }, invalid_argument);
 }
 
 TEST_F(DeviceRegistryTests, canDeregisterDevice) {
@@ -128,14 +114,13 @@ TEST_F(DeviceRegistryTests, deregisterDeviceThrowsDeviceNotFound) {
 TEST_F(DeviceRegistryTests, canReregisterDevice) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
       exception_handler_.get(), std::placeholders::_1);
-  auto device = make_shared<Device>(callback, RequesterInterfaceFacadePtr(),
-      make_shared<Endpoint>("1.1.1.1", 10), ObjectDescriptorsMap(), "12412325",
-      10, "test_device");
+  auto device = NonemptyPointer::make_shared<Device>(callback,
+      RequesterInterfaceFacadePtr(), make_shared<Endpoint>("1.1.1.1", 10),
+      ObjectDescriptorsMap(), "12412325", 10, "test_device");
 
-  EXPECT_CALL(*listener_,
-      handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
-          RegistryEventType::REGISTERED, device->getDeviceId(), device))))
-      .Times(2);
+  auto event = std::make_shared<RegistryEvent>(
+      RegistryEventType::REGISTERED, device->getDeviceId(), device);
+  EXPECT_CALL(*listener_, handleEvent(EventPtrIsEqual(event))).Times(2);
   EXPECT_CALL(*listener_,
       handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
           RegistryEventType::DEREGISTERED, device->getDeviceId()))))
@@ -154,11 +139,9 @@ TEST_F(DeviceRegistryTests, canReregisterDevice) {
 TEST_F(DeviceRegistryTests, canUpdateDevice) {
   initial_device_->updateLifetime(2222);
 
-  EXPECT_CALL(*listener_,
-      handleEvent(
-          EventPtrIsEqual(make_shared<RegistryEvent>(RegistryEventType::UPDATED,
-              initial_device_->getDeviceId(), initial_device_))))
-      .Times(1);
+  auto event = std::make_shared<RegistryEvent>(RegistryEventType::UPDATED,
+      initial_device_->getDeviceId(), initial_device_);
+  EXPECT_CALL(*listener_, handleEvent(EventPtrIsEqual(event))).Times(1);
 
   try {
     registry_->updateDevice(initial_device_);
@@ -171,13 +154,8 @@ TEST_F(DeviceRegistryTests, canUpdateDevice) {
 TEST_F(DeviceRegistryTests, updateDeviceThrowsDeviceNotFound) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
       exception_handler_.get(), std::placeholders::_1);
-  auto device = make_shared<Device>(callback, RequesterInterfaceFacadePtr(),
-      make_shared<Endpoint>("1.1.1.1", 10), ObjectDescriptorsMap(),
-      "1251212214", 10, "test_device");
+  auto device = NonemptyPointer::make_shared<Device>(callback,
+      RequesterInterfaceFacadePtr(), make_shared<Endpoint>("1.1.1.1", 10),
+      ObjectDescriptorsMap(), "1251212214", 10, "test_device");
   EXPECT_THROW({ registry_->updateDevice(device); }, DeviceNotFound);
 }
-
-TEST_F(DeviceRegistryTests, updateDeviceThrowsInvalidArgument) {
-  EXPECT_THROW({ registry_->updateDevice(DevicePtr()); }, invalid_argument);
-}
-*/
