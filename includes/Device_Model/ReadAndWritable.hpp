@@ -1,6 +1,8 @@
 #ifndef __LWM2M_READ_AND_WRITABLE_RESOURCE_HPP
 #define __LWM2M_READ_AND_WRITABLE_RESOURCE_HPP
 
+#include "Nonempty_Pointer/NonemptyPtr.hpp"
+
 #include "Readable.hpp"
 #include "Writable.hpp"
 
@@ -14,7 +16,9 @@ public:
       ElementID id, DataType data_type);
 };
 
-using ReadAndWritablePtr = std::shared_ptr<ReadAndWritable>;
+using ReadAndWritableSharedPtr = std::shared_ptr<ReadAndWritable>;
+using ReadAndWritablePtr =
+    NonemptyPointer::NonemptyPtr<ReadAndWritableSharedPtr>;
 } // namespace LwM2M
 
 #endif //__LWM2M_READ_AND_WRITABLE_RESOURCE_HPP

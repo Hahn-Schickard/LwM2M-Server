@@ -10,22 +10,22 @@ ResourceInstance makeVariant(ResourceDescriptorPtr descriptor,
     EndpointPtr endpoint, ElementID id) {
   switch (descriptor->operations_) {
   case OperationsType::READ: {
-    return make_shared<Readable>(
+    return NonemptyPointer::make_shared<Readable>(
         handler, requester, requester, endpoint, id, descriptor->data_type_);
   }
   case OperationsType::WRITE: {
-    return make_shared<Writable>(requester, endpoint, id);
+    return NonemptyPointer::make_shared<Writable>(requester, endpoint, id);
   }
   case OperationsType::READ_AND_WRITE: {
-    return make_shared<ReadAndWritable>(handler, requester, requester,
-        requester, endpoint, id, descriptor->data_type_);
+    return NonemptyPointer::make_shared<ReadAndWritable>(handler, requester,
+        requester, requester, endpoint, id, descriptor->data_type_);
   }
   case OperationsType::EXECUTE: {
-    return make_shared<Executable>(requester, endpoint, id);
+    return NonemptyPointer::make_shared<Executable>(requester, endpoint, id);
   }
   case OperationsType::NO_OPERATION:
   default: {
-    return make_shared<Operationless>();
+    return NonemptyPointer::make_shared<Operationless>();
   }
   }
 }

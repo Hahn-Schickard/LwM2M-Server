@@ -4,6 +4,7 @@
 #include "Device.hpp"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace LwM2M {
@@ -12,10 +13,10 @@ enum class RegistryEventType { REGISTERED, UPDATED, DEREGISTERED };
 struct RegistryEvent {
   const RegistryEventType type_;
   const std::string identifier_;
-  const DevicePtr device_;
+  const std::optional<DevicePtr> device_;
 
   RegistryEvent(RegistryEventType type, std::string identifier,
-      DevicePtr device = DevicePtr())
+      std::optional<DevicePtr> device = std::nullopt)
       : type_(type), identifier_(identifier), device_(device) {}
 };
 

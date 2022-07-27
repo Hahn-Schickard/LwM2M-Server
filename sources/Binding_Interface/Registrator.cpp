@@ -247,8 +247,9 @@ void Registrator::makeDevice(
       device_address, device_info.object_instances_map_);
   auto object_ids = assignAvailableDescriptors(instances);
   RequesterInterfaceFacadePtr requester = shared_from_this();
-  auto device = make_shared<Device>(bind(&Registrator::handleDeviceException,
-                                        this, device_id, placeholders::_1),
+  auto device = NonemptyPointer::make_shared<Device>(
+      bind(&Registrator::handleDeviceException, this, device_id,
+          placeholders::_1),
       requester, device_address, object_ids, device_id,
       device_info.life_time_.value_or(300),
       device_info.endpoint_name_.value_or(string()),

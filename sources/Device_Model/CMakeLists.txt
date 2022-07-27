@@ -21,6 +21,7 @@ target_sources(${MODULE_NAME} PRIVATE
 target_link_libraries(${MODULE_NAME} PUBLIC
                                      ${PROJECT_NAME}_Messages
                                      Event_Model::Event_Model
+                                     Nonempty_Pointer::Nonempty_Pointer
 )
 
 target_include_directories(${MODULE_NAME} INTERFACE

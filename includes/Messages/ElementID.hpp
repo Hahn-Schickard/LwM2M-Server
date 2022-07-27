@@ -9,6 +9,7 @@
 namespace LwM2M {
 
 struct ElementID {
+  ElementID() = default;
   ElementID(uint16_t object);
   ElementID(uint16_t object, uint16_t object_instance);
   ElementID(uint16_t object, uint16_t object_instance, uint16_t resource);
