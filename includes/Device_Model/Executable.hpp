@@ -1,12 +1,12 @@
 #ifndef __LWM2M_EXECUTABLE_RESOURCE_HPP
 #define __LWM2M_EXECUTABLE_RESOURCE_HPP
 
-#include "CallableEntity.hpp"
+#include "ElementAddress.hpp"
 #include "ExecutableInterface.hpp"
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
-class Executable : public CallableEntity {
+class Executable : public ElementAddress {
 public:
   Executable(
       ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
