@@ -17,8 +17,8 @@ ResourceInstance makeVariant(ResourceDescriptorPtr descriptor,
     return NonemptyPointer::make_shared<Writable>(requester, endpoint, id);
   }
   case OperationsType::READ_AND_WRITE: {
-    return NonemptyPointer::make_shared<ReadAndWritable>(handler, requester, requester,
-        requester, endpoint, id, descriptor->data_type_);
+    return NonemptyPointer::make_shared<ReadAndWritable>(handler, requester,
+        requester, requester, endpoint, id, descriptor->data_type_);
   }
   case OperationsType::EXECUTE: {
     return NonemptyPointer::make_shared<Executable>(requester, endpoint, id);
