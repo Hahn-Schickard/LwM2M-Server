@@ -198,19 +198,14 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     try {
       auto device_obj = device->getObject(ElementID(3, 0));
       auto battery_level_resource = device_obj->getResource(ElementID(3, 0, 9));
-      // @TODO: simplify the observation mechanism here
-      auto battery_level = std::get<ReadablePtr>(
-          battery_level_resource->getResourceInstance());
-/*TODO: replace dynamic_pointer_cast
-      auto observable = dynamic_pointer_cast<Observable>(battery_level);
-
+      auto battery_level =
+          std::get<ReadablePtr>(battery_level_resource->getResourceInstance());
       cout << "Registering a new observer for "
-           << observable->getID().toString() << endl;
-      auto observer = make_shared<Observer>(observable);
+           << battery_level->getID().toString() << endl;
+      auto observer = std::make_shared<Observer>(battery_level);
       cout << "Observer for element " << observer->getId()
            << " built. Saving it in the map of observers." << endl;
       observers_.emplace(device->getDeviceId(), observer);
-*/
     } catch (ObjectInstanceDoesNotExist& ex) {
       cout << "Could not register battery level observer for device "
            << device->getDeviceId() << ex.what() << endl;
