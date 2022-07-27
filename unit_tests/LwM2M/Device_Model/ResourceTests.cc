@@ -52,14 +52,8 @@ ResourcePtr makeTested(MockExceptionHandlerPtr exception_handler,
       bind(&ExceptionHandlerInterface::handleDeviceException, exception_handler,
           placeholders::_1);
   return NonemptyPointer::make_shared<Resource>(exception_handler_cb, requester,
-      endpoint,
-      descriptor, ElementID(0, 0, 0));
+      endpoint, descriptor, ElementID(0, 0, 0));
 }
-
-/*
-TODO: Handle ResourceTest() and TearDown w.r.t. tested_.
-For example, tested_ could be changed to a std::shared_ptr or to a
-std::optional<NonemptyPtr>
 
 class ResourceTest : public testing::TestWithParam<ResourceTestParameter> {
 protected:
@@ -72,25 +66,15 @@ protected:
 
   void TearDown() override {
     expected_.reset();
-    tested_.reset();
     exception_handler_.reset();
   }
 
-  ResourcePtr tested_;
+  ResourcePtr tested_ = NonemptyPointer::make_shared<Resource>();
   ResourceExpectationsPtr expected_;
   MockExceptionHandlerPtr exception_handler_ =
       std::make_shared<MockExceptionHandler>();
   int response_delay_ms_ = 1;
 };
-
-TEST_P(ResourceTest, isValidResource) {
-  if (tested_) {
-    SUCCEED();
-  } else {
-    FAIL();
-  }
-}
-*/
 
 void compareVariant(DataVariant tested, DataVariant expected) {
   match(
@@ -132,8 +116,9 @@ void processReadable(ReadablePtr readable, ResourceExpectationsPtr expected,
 
 void readResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
+  auto instance = resource->getResourceInstance();
   match(
-      resource->getResourceInstance(),
+      instance,
       [&](ReadablePtr& value) {
         processReadable(value, expected, response_delay_ms);
       },
@@ -148,19 +133,15 @@ void readResource(ResourcePtr resource, ResourceExpectationsPtr expected,
       });
 }
 
-/*
-TODO see above
-
 TEST_P(ResourceTest, canReadValue) {
   if (expected_->descriptor_->operations_ == OperationsType::READ ||
       expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
-    readResource(tested_, expected_, response_delay_ms_);
+    EXPECT_NO_THROW(readResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW(
         { readResource(tested_, expected_, response_delay_ms_); }, logic_error);
   }
 }
-*/
 
 void processWritable(WritablePtr writable, ResourceExpectationsPtr expected,
     int response_delay_ms) {
@@ -178,8 +159,9 @@ void processWritable(WritablePtr writable, ResourceExpectationsPtr expected,
 
 void writeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
+  auto instance = resource->getResourceInstance();
   match(
-      resource->getResourceInstance(),
+      instance,
       [&](WritablePtr& value) {
         processWritable(value, expected, response_delay_ms);
       },
@@ -194,18 +176,15 @@ void writeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
       });
 }
 
-/*
-TODO see above
 TEST_P(ResourceTest, canWriteValue) {
   if (expected_->descriptor_->operations_ == OperationsType::WRITE ||
       expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
-    writeResource(tested_, expected_, response_delay_ms_);
+    EXPECT_NO_THROW(writeResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW({ writeResource(tested_, expected_, response_delay_ms_); },
         logic_error);
   }
 }
-*/
 
 void processExecutable(ExecutablePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
@@ -223,8 +202,9 @@ void processExecutable(ExecutablePtr resource, ResourceExpectationsPtr expected,
 
 void executeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
+  auto instance = resource->getResourceInstance();
   match(
-      resource->getResourceInstance(),
+      instance,
       [&](ExecutablePtr& value) {
         processExecutable(value, expected, response_delay_ms);
       },
@@ -236,17 +216,14 @@ void executeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
       });
 }
 
-/*
-TODO see above
 TEST_P(ResourceTest, canExecuteAction) {
   if (expected_->descriptor_->operations_ == OperationsType::EXECUTE) {
-    executeResource(tested_, expected_, response_delay_ms_);
+    EXPECT_NO_THROW(executeResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW({ executeResource(tested_, expected_, response_delay_ms_); },
         logic_error);
   }
 }
-*/
 
 struct GenerateTestName {
   string operator()(
@@ -261,9 +238,6 @@ struct GenerateTestName {
     return name;
   }
 };
-
-/*
-TODO see above
 
 INSTANTIATE_TEST_SUITE_P(ResourceTests, ResourceTest,
     testing::Values(make_tuple(make_shared<ResourceDescriptor>(1, "Test",
@@ -395,4 +369,3 @@ INSTANTIATE_TEST_SUITE_P(ResourceTests, ResourceTest,
                 false, true, DataType::TIME, "", ""),
             DataFormat(DataVariant((uint64_t)12850912328012)))),
     GenerateTestName());
-*/
