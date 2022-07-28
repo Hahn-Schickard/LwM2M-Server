@@ -1,14 +1,17 @@
 #ifndef __LWM2M_CANCELABLE_INTERFACE_HPP
 #define __LWM2M_CANCELABLE_INTERFACE_HPP
 
+#include "Threadsafe_Containers/UnorderedMap.hpp"
+
 #include "Message.hpp"
 
+#include <functional>
 #include <future>
+#include <mutex>
 #include <stdexcept>
 
 namespace LwM2M {
 
-struct CancelableInterface {
 template <typename T> struct RequestResult {
   using RequestCleaner = std::function<void(size_t)>;
   using RequestCanceler = std::function<void(size_t)>;
@@ -37,6 +40,7 @@ private:
   RequestCanceler cancelRequest_;
 };
 
+struct CancelableInterface {
   virtual ~CancelableInterface() = default;
 
   /**
@@ -49,6 +53,40 @@ private:
   virtual void cancelRequest(ServerRequestPtr /*message*/) {
     throw std::runtime_error("Called base cancelRequest implementation.");
   }
+
+  template <typename T>
+  RequestResult<T> issueCancelable(
+      ServerRequestPtr request, std::future<T>&& result_future) {
+    auto id = addRequest(request);
+    auto cleanup_cb = std::bind(
+        &CancelableInterface::cleanupHandled, this, std::placeholders::_1);
+    auto cancel_cb = std::bind(
+        &CancelableInterface::cancelIssued, this, std::placeholders::_1);
+
+    return RequestResult<T>(
+        id, std::move(result_future), cleanup_cb, cancel_cb);
+  }
+
+private:
+  size_t addRequest(ServerRequestPtr request) {
+    std::lock_guard<std::mutex> guard(request_mutex_);
+    auto id = requests_.size() + 1;
+    requests_.emplace(id, request);
+    return id;
+  }
+
+  void cleanupHandled(size_t request_id) { requests_.erase(request_id); }
+
+  void cancelIssued(size_t request_id) {
+    auto it = requests_.find(request_id);
+    if (it != requests_.end()) {
+      cancelRequest(it->second);
+      cleanupHandled(request_id);
+    }
+  }
+
+  Threadsafe::UnorderedMap<size_t, ServerRequestPtr> requests_;
+  std::mutex request_mutex_;
 };
 
 using CancelableInterfacePtr = std::shared_ptr<CancelableInterface>;
