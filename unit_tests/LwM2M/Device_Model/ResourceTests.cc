@@ -143,6 +143,34 @@ TEST_P(ResourceTest, canReadValue) {
   }
 }
 
+void cancelReadable(ReadablePtr readable) {
+  auto result = readable->read();
+  result.cancel();
+  EXPECT_THROW(result.get(), runtime_error);
+}
+
+void cancelReadResource(ResourcePtr resource) {
+  auto instance = resource->getResourceInstance();
+  match(
+      instance, [&](ReadablePtr& value) { cancelReadable(value); },
+      [&](ReadAndWritablePtr& value) { cancelReadable(value); },
+      [&](...) {
+        auto error_msg = "Resource " + resource->getDescriptor()->name_ +
+            " ID " + to_string(resource->getDescriptor()->id_) +
+            " is not readable.";
+        throw logic_error(error_msg);
+      });
+}
+
+TEST_P(ResourceTest, canCancelRead) {
+  if (expected_->descriptor_->operations_ == OperationsType::READ ||
+      expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
+    EXPECT_NO_THROW(cancelReadResource(tested_));
+  } else {
+    EXPECT_THROW({ cancelReadResource(tested_); }, logic_error);
+  }
+}
+
 void processWritable(WritablePtr writable, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto result = writable->write(expected->get());
@@ -186,6 +214,34 @@ TEST_P(ResourceTest, canWriteValue) {
   }
 }
 
+void cancelWritable(WritablePtr writable) {
+  auto result = writable->write(true);
+  result.cancel();
+  EXPECT_THROW(result.get(), runtime_error);
+}
+
+void cancelWriteResource(ResourcePtr resource) {
+  auto instance = resource->getResourceInstance();
+  match(
+      instance, [&](WritablePtr& value) { cancelWritable(value); },
+      [&](ReadAndWritablePtr& value) { cancelWritable(value); },
+      [&](...) {
+        auto error_msg = "Resource " + resource->getDescriptor()->name_ +
+            " ID " + to_string(resource->getDescriptor()->id_) +
+            " is not writable.";
+        throw logic_error(error_msg);
+      });
+}
+
+TEST_P(ResourceTest, canCancelWrite) {
+  if (expected_->descriptor_->operations_ == OperationsType::WRITE ||
+      expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
+    EXPECT_NO_THROW(cancelWriteResource(tested_));
+  } else {
+    EXPECT_THROW({ cancelWriteResource(tested_); }, logic_error);
+  }
+}
+
 void processExecutable(ExecutablePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto result = resource->execute("");
@@ -222,6 +278,32 @@ TEST_P(ResourceTest, canExecuteAction) {
   } else {
     EXPECT_THROW({ executeResource(tested_, expected_, response_delay_ms_); },
         logic_error);
+  }
+}
+
+void cancelExecutable(ExecutablePtr excecutable) {
+  auto result = excecutable->execute("");
+  result.cancel();
+  EXPECT_THROW(result.get(), runtime_error);
+}
+
+void cancelExecuteResource(ResourcePtr resource) {
+  auto instance = resource->getResourceInstance();
+  match(
+      instance, [&](ExecutablePtr& value) { cancelExecutable(value); },
+      [&](...) {
+        auto error_msg = "Resource " + resource->getDescriptor()->name_ +
+            " ID " + to_string(resource->getDescriptor()->id_) +
+            " is not executable.";
+        throw logic_error(error_msg);
+      });
+}
+
+TEST_P(ResourceTest, canCancelExecutable) {
+  if (expected_->descriptor_->operations_ == OperationsType::EXECUTE) {
+    EXPECT_NO_THROW(cancelExecuteResource(tested_));
+  } else {
+    EXPECT_THROW({ cancelExecuteResource(tested_); }, logic_error);
   }
 }
 
