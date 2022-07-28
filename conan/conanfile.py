@@ -16,6 +16,7 @@ class PackageConan(ConanFile):
         "Event_Model/0.3.3@hahn-schickard/stable",
         "HSCUL/0.2.0@hahn-schickard/stable",
         "Nonempty_Pointer/0.1.2@hahn-schickard/stable",
+        "Threadsafe_Containers/0.5.0@hahn-schickard/stable",
         "nlohmann_json/3.7.3",
         "pugixml/1.11"
     ]
