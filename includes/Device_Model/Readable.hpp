@@ -9,16 +9,15 @@
 
 namespace LwM2M {
 
-class Readable : public Observable {
-  std::future<DataVariant> asyncDataRequest(DeviceManagementRequestPtr message);
+struct Readable : public Observable {
+  using Result = RequestResult<DataVariant>;
 
-public:
   Readable(Observable::ExceptionHandler handler,
       ObservableInterfacePtr observe_requester,
       ReadableInterfacePtr read_requester, EndpointPtr endpoint, ElementID id,
       DataType data_type);
 
-  std::future<DataVariant> read();
+  Result read();
 
 private:
   ReadableInterfacePtr requester_;
