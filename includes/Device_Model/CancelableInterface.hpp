@@ -1,6 +1,7 @@
 #ifndef __LWM2M_CANCELABLE_INTERFACE_HPP
 #define __LWM2M_CANCELABLE_INTERFACE_HPP
 
+#include "Threadsafe_Containers/SharedPtr.hpp"
 #include "Threadsafe_Containers/UnorderedMap.hpp"
 
 #include "Message.hpp"
@@ -13,35 +14,57 @@
 namespace LwM2M {
 
 template <typename T> struct RequestResult {
-  using RequestCleaner = std::function<void(size_t)>;
-  using RequestCanceler = std::function<void(size_t)>;
+  using Functor = std::function<void(size_t)>;
+  using RequestCleanerPtr = Threadsafe::WeakPtr<Functor>;
+  using RequestCancelerPtr = Threadsafe::WeakPtr<Functor>;
 
   RequestResult(size_t request_id, std::future<T>&& result_future,
-      RequestCleaner cleanupRequest_callback,
-      RequestCanceler cancelRequest_callback)
+      RequestCleanerPtr cleanupRequest_callback,
+      RequestCancelerPtr cancelRequest_callback)
       : id_(request_id), result_(std::move(result_future)),
         cleanupRequest_(cleanupRequest_callback),
         cancelRequest_(cancelRequest_callback) {}
 
   T get() {
     auto result = result_.get();
-    cleanupRequest_(id_);
+    if (auto cleanupRequest = cleanupRequest_.lock()) {
+      (*cleanupRequest)(
+          id_); // if cleaner is not available, all request were already cleaned
+    }
     return result;
   }
 
   std::future<T> asyncGet() { return std::async(std::launch::async, get()); }
 
-  void cancel() { cancelRequest_(id_); }
+  void cancel() {
+    if (auto cancelRequest = cancelRequest_.lock()) {
+      (*cancelRequest)(id_);
+    } else {
+      throw std::runtime_error("RequesterCanceler is not available");
+    }
+  }
 
 private:
   size_t id_;
   std::future<T> result_;
-  RequestCleaner cleanupRequest_;
-  RequestCanceler cancelRequest_;
+  RequestCleanerPtr cleanupRequest_;
+  RequestCancelerPtr cancelRequest_;
 };
 
 struct CancelableInterface {
-  virtual ~CancelableInterface() = default;
+  CancelableInterface()
+      : cleaner_(ThreadsafeFunctor::make(
+            std::bind(&CancelableInterface::cleanupHandled, this,
+                std::placeholders::_1))),
+        canceler_(ThreadsafeFunctor::make(std::bind(
+            &CancelableInterface::cancelIssued, this, std::placeholders::_1))) {
+  }
+
+  virtual ~CancelableInterface() {
+    // @TODO: use blocking destructors for functors to wait until all
+    // RequestResult instances are finished with the functors, see issue #132
+    // for more information
+  }
 
   /**
    * @brief Cancels an issued request. Canceled requests must throw and
@@ -58,13 +81,7 @@ struct CancelableInterface {
   RequestResult<T> issueCancelable(
       ServerRequestPtr request, std::future<T>&& result_future) {
     auto id = addRequest(request);
-    auto cleanup_cb = std::bind(
-        &CancelableInterface::cleanupHandled, this, std::placeholders::_1);
-    auto cancel_cb = std::bind(
-        &CancelableInterface::cancelIssued, this, std::placeholders::_1);
-
-    return RequestResult<T>(
-        id, std::move(result_future), cleanup_cb, cancel_cb);
+    return RequestResult<T>(id, std::move(result_future), cleaner_, canceler_);
   }
 
 private:
@@ -85,6 +102,11 @@ private:
     }
   }
 
+  using Functor = std::function<void(size_t)>;
+  using ThreadsafeFunctor = Threadsafe::SharedPtr<Functor>;
+
+  ThreadsafeFunctor cleaner_;
+  ThreadsafeFunctor canceler_;
   Threadsafe::UnorderedMap<size_t, ServerRequestPtr> requests_;
   std::mutex request_mutex_;
 };
