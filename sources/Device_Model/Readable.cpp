@@ -17,14 +17,13 @@ Readable::Readable(Observable::ExceptionHandler handler,
 Readable::Result Readable::read() {
   auto message = make_shared<ReadRequest>(endpoint_, id_);
 
-  auto future_result = async(
+  auto result_future = requester_->requestData(message);
+  auto resolved_future = async(
       launch::async,
-      [&](ReadableInterfacePtr requester,
-          DeviceManagementRequestPtr msg) -> DataVariant {
-        auto result = requester->requestData(msg);
+      [&](std::future<DataFormatPtr>&& result) -> DataVariant {
         return result.get()->get(getDataType(id_));
       },
-      requester_, message);
-  return requester_->issueCancelable(message, move(future_result));
+      move(result_future));
+  return requester_->issueCancelable(message, move(resolved_future));
 }
 } // namespace LwM2M
