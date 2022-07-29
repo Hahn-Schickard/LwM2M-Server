@@ -34,7 +34,9 @@ template <typename T> struct RequestResult {
     return result;
   }
 
-  std::future<T> asyncGet() { return std::async(std::launch::async, get()); }
+  std::future<T> asyncGet() {
+    return std::async(std::launch::async, &RequestResult::get, this);
+  }
 
   void cancel() {
     if (auto cancelRequest = cancelRequest_.lock()) {
