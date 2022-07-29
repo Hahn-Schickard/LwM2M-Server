@@ -8,12 +8,13 @@
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
-class Executable : public ElementAddress {
-public:
+struct Executable : public ElementAddress {
+  using Result = RequestResult<bool>;
+
   Executable(
       ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
 
-  std::future<bool> execute(std::string arguments);
+  Result execute(std::string arguments);
 
 private:
   ExecutableInterfacePtr requester_;

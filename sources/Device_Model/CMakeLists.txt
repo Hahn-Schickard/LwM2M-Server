@@ -22,6 +22,7 @@ target_link_libraries(${MODULE_NAME} PUBLIC
                                      ${PROJECT_NAME}_Messages
                                      Event_Model::Event_Model
                                      Nonempty_Pointer::Nonempty_Pointer
+                                     Threadsafe_Containers::Threadsafe_Containers
 )
 
 target_include_directories(${MODULE_NAME} INTERFACE

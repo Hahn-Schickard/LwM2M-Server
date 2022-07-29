@@ -9,12 +9,13 @@
 
 namespace LwM2M {
 
-class Writable : public ElementAddress {
-public:
+struct Writable : public ElementAddress {
+  using Result = RequestResult<bool>;
+
   Writable(
       ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
 
-  std::future<bool> write(DataVariant data);
+  Result write(DataVariant data);
 
 private:
   ExecutableInterfacePtr requester_;
