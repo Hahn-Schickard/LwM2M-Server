@@ -9,6 +9,11 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Models the functionality of reading multiple values in a single
+ * request. Used for Object Instance Reading
+ *
+ */
 struct CompositeReadableInterface : public CancelableInterface {
   virtual ~CompositeReadableInterface() = default;
 
