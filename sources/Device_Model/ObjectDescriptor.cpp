@@ -27,11 +27,12 @@ ObjectDescriptor::ObjectDescriptor(string name, string description, uint32_t id,
       multiple_instances_(multiple_instances), mandatory_(mandatory),
       urn_(move(urn)), resources_(move(resources)) {}
 
-shared_ptr<ResourceDescriptor> ObjectDescriptor::getResource(uint32_t id) {
+ResourceDescriptorPtr ObjectDescriptor::getResource(uint32_t id) {
   auto it = resources_.find(id);
-  shared_ptr<ResourceDescriptor> result;
-  if (it != resources_.end())
-    result = it->second;
-  return result;
+  if (it != resources_.end()) {
+    return it->second;
+  } else {
+    throw ResourceDescriptorDoesNotExist(this->id_, id);
+  }
 }
 } // namespace LwM2M
