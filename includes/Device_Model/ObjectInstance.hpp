@@ -42,7 +42,7 @@ public:
 };
 
 using ObjectInstanceSharedPtr = std::shared_ptr<ObjectInstance>;
-using ObjectInstacePtr = NonemptyPointer::NonemptyPtr<ObjectInstanceSharedPtr>;
+using ObjectInstancePtr = NonemptyPointer::NonemptyPtr<ObjectInstanceSharedPtr>;
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_OBJECT_INSTANCE_HPP

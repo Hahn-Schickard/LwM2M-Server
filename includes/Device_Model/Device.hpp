@@ -66,7 +66,7 @@ public:
   std::string getName();
   ObjectPtr getObject(ElementID id);
   ObjectsMap getObjects();
-  ObjectInstacePtr getObjectInstance(ElementID id);
+  ObjectInstancePtr getObjectInstance(ElementID id);
   ObjectInstances getObjectInstances(ElementID id);
   ResourcePtr getResource(ElementID id);
   Resources getResources(ElementID id);

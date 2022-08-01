@@ -57,7 +57,7 @@ ObjectPtr Device::getObject(ElementID id) {
 
 ObjectsMap Device::getObjects() { return object_instances_; }
 
-ObjectInstacePtr Device::getObjectInstance(ElementID id) {
+ObjectInstancePtr Device::getObjectInstance(ElementID id) {
   return getObject(id)->getObjectInstance(id);
 }
 

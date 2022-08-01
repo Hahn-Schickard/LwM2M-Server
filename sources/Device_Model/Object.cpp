@@ -57,7 +57,7 @@ Object::Object(Observable::ExceptionHandler handler,
 
 ObjectDescriptorPtr Object::getDescriptor() { return descriptor_; }
 
-ObjectInstacePtr Object::getObjectInstance(ElementID id) {
+ObjectInstancePtr Object::getObjectInstance(ElementID id) {
   auto it = instances_.find(id.getObjectInstanceID());
   if (it != instances_.end()) {
     return it->second;

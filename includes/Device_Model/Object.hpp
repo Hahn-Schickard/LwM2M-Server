@@ -34,7 +34,7 @@ namespace LwM2M {
 using RequiredObjectInstances = std::unordered_multiset<ElementID,
     ObjectInstanceIDHasher, ObjectInstanceComparator>;
 
-using ObjectInstances = std::unordered_map<uint16_t, ObjectInstacePtr>;
+using ObjectInstances = std::unordered_map<uint16_t, ObjectInstancePtr>;
 
 struct ObjectInstanceDoesNotExist : public std::runtime_error {
   ObjectInstanceDoesNotExist(ElementID id)
@@ -53,7 +53,7 @@ public:
       RequiredObjectInstances instances, ObjectDescriptorPtr descriptor);
 
   ObjectDescriptorPtr getDescriptor();
-  ObjectInstacePtr getObjectInstance(ElementID id);
+  ObjectInstancePtr getObjectInstance(ElementID id);
   ObjectInstances getObjectInstances();
   ResourcePtr getResource(ElementID id);
   Resources getResources(ElementID id);
