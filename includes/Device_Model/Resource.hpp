@@ -106,7 +106,7 @@ public:
    * does not support multiple resource instances, Resource ID will be used
    * instead of a Resource instance ID
    *
-   * @throws ResourceInstanceDoesNotExist if given ElementID could nto be found
+   * @throws ResourceInstanceDoesNotExist if given ElementID could not be found
    * within current ResourceInstances field
    *
    * @return ResourceInstance - @see ResourceInstance on how to obtain stored
