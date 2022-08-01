@@ -6,6 +6,10 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Models a single addressable Device Model element
+ *
+ */
 struct ElementAddress {
   ElementAddress(EndpointPtr endpoint, ElementID id);
 
