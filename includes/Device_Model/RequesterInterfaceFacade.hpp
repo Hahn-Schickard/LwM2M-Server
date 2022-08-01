@@ -29,7 +29,8 @@ struct ResponseReturnedAnEmptyPayload : public std::runtime_error {
 };
 
 /**
- * @brief Implemented by LwM2M::DispatcherInterface
+ * @brief A composition of various Interfaces, that Binding_Interface MUST
+ * implement
  *
  */
 struct RequesterInterfaceFacade : public ReadableInterface,
@@ -51,6 +52,12 @@ struct RequesterInterfaceFacade : public ReadableInterface,
     throw std::runtime_error("Called base request implementation.");
   }
 
+  /**
+   * @brief Override specifications to resolve multiple CancelableInterface
+   * inheritors
+   *
+   * MUST be implemented by the Binding_Interface inheritor
+   */
   virtual void cancelRequest(ServerRequestPtr /*message*/) override {
     throw std::runtime_error("Called base cancelRequest implementation within "
                              "RequesterInterfaceFacade.");
