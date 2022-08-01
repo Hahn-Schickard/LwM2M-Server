@@ -24,26 +24,101 @@ struct ResourceInstanceCouldNotBeResolved : public std::runtime_error {
             "multiple instances") {}
 };
 
+/**
+ * @brief A heterogeneous container of various resource traits.
+ *
+ * To access the stored data from ResourceInstance variant; Use:
+ * 1. std::get<T>(&variant) - @throws std::bad_variant_access on type mismatch
+ * 2. std::get_if<T>(&variant) - @returns False on type mismatch
+ * 3. std::visit([](auto && value){ //use value here}, &variant)
+ * 4. match(
+ *     [](ReadablePtr& value){//use to access ReadablePtr},
+ *     [](WritablePtr& value){//use to access WritablePtr},
+ *     [](ReadAndWritablePtr& value){//use to access ReadAndWritablePtr},
+ *     [](ExecutablePtr& value){//use to access ExecutablePtr},
+ *     [](OperationlessPtr& value){//use to access OperationlessPtr},
+ *     [](auto& value){//use if value type is not important, but the value is},
+ *     [](...){//Fallback case. Similar to default keyword of switch statement},
+ *     &variant) - declared in VariantVisitor project
+ *
+ * @warning It is recommended to parse pointer references, instead of pointer
+ * values to both variant visitor (shown in 3.) and variant matcher (shown
+ * in 4.) to improve performance and avoid compilation issues (Type deduction of
+ * given NonemptyPtr instances can fail to be resolved and lead to compiler
+ * failing with template argument deduction/substitution errors)
+ */
 using ResourceInstance = std::variant<ReadablePtr, WritablePtr,
     ReadAndWritablePtr, ExecutablePtr, OperationlessPtr>;
 using ResourceInstances = std::unordered_map<ElementID, ResourceInstance>;
 
+/**
+ * @brief Models a single data point within the Device Model
+ *
+ */
 class Resource {
   ResourceDescriptorPtr descriptor_;
   ElementID id_;
   ResourceInstances instances_;
 
 public:
+  /**
+   * @brief Default constructor, used for testing purposes only
+   *
+   */
   Resource() = default;
+
   Resource(Observable::ExceptionHandler handler,
       RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
       ResourceDescriptorPtr descriptor, ElementID id,
       std::optional<uint16_t> instance_id = std::nullopt);
+
   virtual ~Resource() = default;
 
+  /**
+   * @brief Returns static information of this resource.
+   * Used to display the resource.
+   *
+   * @return ResourceDescriptorPtr
+   */
   ResourceDescriptorPtr getDescriptor();
+
+  /**
+   * @brief Returns dynamic information of this resource.
+   * Used to set/check current resource state.
+   *
+   * @param ignore_multiple_instances - if set to True, this method returns the
+   * first instance of ResourceInstances field instead of throwing
+   * ResourceInstanceCouldNotBeResolved
+   *
+   * @throws ResourceInstanceCouldNotBeResolved if ignore_multiple_instances was
+   * set to False and current resource has more than 1 ResourceInstance within
+   * ResourceInstances field
+   *
+   * @return ResourceInstance - @see ResourceInstance on how to obtain stored
+   * information
+   */
   ResourceInstance getResourceInstance(bool ignore_multiple_instances = false);
+
+  /**
+   * @brief Looks for a given ResourceInstance based on a given ElementID
+   *
+   * @param id - id of the requested ResourceInstance. If the current resource
+   * does not support multiple resource instances, Resource ID will be used
+   * instead of a Resource instance ID
+   *
+   * @throws ResourceInstanceDoesNotExist if given ElementID could nto be found
+   * within current ResourceInstances field
+   *
+   * @return ResourceInstance - @see ResourceInstance on how to obtain stored
+   * information
+   */
   ResourceInstance getResourceInstance(ElementID id);
+
+  /**
+   * @brief Returns all ResourceInstances linked to this Resource
+   *
+   * @return ResourceInstances
+   */
   ResourceInstances getResourceInstances();
 };
 
