@@ -29,9 +29,10 @@ enum class OperationsType {
 std::string toString(OperationsType operation);
 
 /**
- * @brief ResourceDescriptor - static information, used to cread a
- * representation of a single data point that is modeled by the LwM2M Resource
- * Model
+ * @brief Contains static information of a Resource or its instance.
+ *
+ * Used to cread a representation of a single data point that is modeled by the
+ * LwM2M Resource Model
  *
  */
 struct ResourceDescriptor {
@@ -45,12 +46,60 @@ struct ResourceDescriptor {
   const std::string units_;
   const std::string description_;
 
+  /**
+   * @brief Creates a default resource descriptor. Used for testing only
+   *
+   */
   ResourceDescriptor();
+
+  /**
+   * @brief Copy constructor
+   *
+   * @param instance
+   */
   ResourceDescriptor(const ResourceDescriptor& instance);
+
+  /**
+   * @brief Move constructor
+   *
+   * @param instance
+   */
   ResourceDescriptor(ResourceDescriptor&& instance);
+
+  /**
+   * @brief Creates a Resource descriptor without a range enumeration value
+   *
+   * @param id - resource id
+   * @param name - resource name
+   * @param operations - supported operation type
+   * @param multiple_instances - does this resource support multiple instances
+   * of itself?
+   * @param mandatory  - is the resource required for a valid object instance?
+   * @param data_type - modeled resource data type
+   * @param units - human readable measurement of the modeled data type (i.e. °C
+   * for temperature)
+   * @param description - human readable description of this resource
+   */
   ResourceDescriptor(uint32_t id, std::string name, OperationsType operations,
       bool multiple_instances, bool mandatory, DataType data_type,
       std::string units, std::string description);
+
+  /**
+   * @brief Creates a Resource descriptor with a given range enumeration value
+   * of valid data points
+   *
+   * @param id - resource id
+   * @param name - resource name
+   * @param operations - supported operation type
+   * @param multiple_instances - does the resource support multiple instances?
+   * @param mandatory  - is the resource required for a valid object instance?
+   * @param data_type - modeled resource data type
+   * @param range_enumeration - a valid range of data values (this range can be
+   * modeled as integers, decimal values or string literals)
+   * @param units - human readable measurement of the modeled data type (i.e. °C
+   * for temperature)
+   * @param description - human readable description of this resource
+   */
   ResourceDescriptor(uint32_t id, std::string name, OperationsType operations,
       bool multiple_instances, bool mandatory, DataType data_type,
       RangeEnumeration range_enumeration, std::string units,
