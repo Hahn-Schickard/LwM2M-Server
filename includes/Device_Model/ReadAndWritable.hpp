@@ -7,6 +7,16 @@
 #include "Writable.hpp"
 
 namespace LwM2M {
+/**
+ * @brief Models the functionality of read and writable resource.
+ *
+ * This trait is a composition of Readable and Writable, to learn how to use
+ * each part:
+ *
+ * @see Readable
+ * @see Writable
+ *
+ */
 class ReadAndWritable : public Readable, public Writable {
 public:
   ReadAndWritable(Observable::ExceptionHandler handler,
