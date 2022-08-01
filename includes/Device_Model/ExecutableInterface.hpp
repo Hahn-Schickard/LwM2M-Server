@@ -9,6 +9,13 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Models the functionality for executable requests. Used by Executable
+ * resource traits only
+ *
+ * MUST be implemented be the Binding
+ *
+ */
 struct ExecutableInterface : public CancelableInterface {
   virtual ~ExecutableInterface() = default;
 
