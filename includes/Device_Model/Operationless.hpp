@@ -7,6 +7,11 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Models the functionality of operationless resource (A resource that
+ * only has static information defined in the descriptor)
+ *
+ */
 class Operationless {
 public:
   Operationless() = default;
