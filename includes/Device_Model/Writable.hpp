@@ -9,12 +9,27 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Model a resource with write-only access
+ *
+ */
 struct Writable : public ElementAddress {
+  /**
+   * @brief Write request result, see RequestResult for more information
+   *
+   */
   using Result = RequestResult<bool>;
 
   Writable(
       ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
 
+  /**
+   * @brief creates a write request to the LwM2M Client with a given DataVariant
+   * value
+   *
+   * @param data
+   * @return Result<true> if request was successful
+   */
   Result write(DataVariant data);
 
 private:
