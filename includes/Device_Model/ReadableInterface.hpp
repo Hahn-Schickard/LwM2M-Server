@@ -9,6 +9,13 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Models the functionality for read requests. Used by Readable and
+ * ReadAndWritable resource traits only
+ *
+ * MUST be implemented be the Binding
+ *
+ */
 struct ReadableInterface : public CancelableInterface {
   virtual ~ReadableInterface() = default;
 
