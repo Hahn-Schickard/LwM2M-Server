@@ -10,7 +10,7 @@ RangeEnumeration::RangeEnumeration(vector<string> available_values)
 
 RangeEnumeration::RangeEnumeration(
     long int minimum_value, long int maximum_value)
-    : interger_range_(IntegerRange(minimum_value, maximum_value)) {}
+    : integer_range_(IntegerRange(minimum_value, maximum_value)) {}
 
 RangeEnumeration::RangeEnumeration(double minimum_value, double maximum_value)
     : float_range_(FloatRange(minimum_value, maximum_value)) {}
@@ -27,8 +27,8 @@ bool RangeEnumeration::inRange(string value) {
 }
 
 bool RangeEnumeration::inRange(long int value) {
-  if (interger_range_.has_value()) {
-    if (value > interger_range_->min_ && value < interger_range_->max_) {
+  if (integer_range_.has_value()) {
+    if (value > integer_range_->min_ && value < integer_range_->max_) {
       return true;
     } else {
       return false;

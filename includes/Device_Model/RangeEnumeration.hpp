@@ -26,7 +26,7 @@ class RangeEnumeration {
   };
 
   std::vector<std::string> available_string_values_;
-  std::optional<IntegerRange> interger_range_;
+  std::optional<IntegerRange> integer_range_;
   std::optional<FloatRange> float_range_;
 
 public:
