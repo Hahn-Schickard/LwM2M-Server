@@ -23,6 +23,10 @@ struct ResourceDoesNotExist : public std::runtime_error {
       : runtime_error("Resource " + id.toString() + " does not exist.") {}
 };
 
+/**
+ * @brief Models a single instance of a linked Object
+ *
+ */
 class ObjectInstance {
   RequesterInterfaceFacadePtr requester_;
   EndpointPtr endpoint_;
@@ -33,11 +37,61 @@ public:
   ObjectInstance(Observable::ExceptionHandler handler,
       RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
       std::unordered_map<uint32_t, ResourceDescriptorPtr> resource_descriptors);
+
+  /**
+   * @brief Returns the id of this object instance
+   *
+   * @return ElementID
+   */
   ElementID getId();
 
+  /**
+   * @brief Looks for a given Resource based on a given ElementID
+   *
+   * @throws ResourceDoesNotExist if given ElementID does not address a
+   * contained Resource
+   *
+   * @param id - id of the requested Resource.
+   *
+   * @return ResourcePtr
+   */
   ResourcePtr getResource(ElementID id);
+
+  /**
+   * @brief Returns all Resources linked to the current Object Instance
+   *
+   * @return Resources
+   */
   Resources getResources();
+
+  /**
+   * @brief Looks for a given ResourceInstance based on a given ElementID
+   *
+   * @throws ResourceDoesNotExist if given ElementID does not address a
+   * contained Resource
+   * @throws ResourceInstanceDoesNotExist if given ElementID could not be found
+   * within current ResourceInstances field
+   *
+   * @param id - id of the requested ResourceInstance. If the current resource
+   * does not support multiple resource instances, Resource ID will be used
+   * instead of a Resource instance ID
+   *
+   * @return ResourceInstance - @see ResourceInstance on how to obtain stored
+   * information
+   */
   ResourceInstance getResourceInstance(ElementID id);
+
+  /**
+   * @brief  Returns all ResourceInstances linked to given Resource
+   *
+   * @throws ResourceDoesNotExist if given ElementID does not address a
+   * contained Resource
+   *
+   * @param id - id of a given Resource, from which ResourceInstances should be
+   * obtained
+   *
+   * @return ResourceInstances
+   */
   ResourceInstances getResourceInstances(ElementID id);
 };
 
