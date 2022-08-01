@@ -9,6 +9,13 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Models the functionality for observable requests. Used by Observable
+ * resource traits and object instances
+ *
+ * MUST be implemented be the Binding
+ *
+ */
 struct ObservableInterface : public CancelableInterface {
   virtual ~ObservableInterface() = default;
 
