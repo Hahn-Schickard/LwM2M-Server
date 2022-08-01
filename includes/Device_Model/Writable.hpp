@@ -15,7 +15,9 @@ namespace LwM2M {
  */
 struct Writable : public ElementAddress {
   /**
-   * @brief Write request result, see RequestResult for more information
+   * @brief Write request result
+   *
+   * @see RequestResult for more information
    *
    */
   using Result = RequestResult<bool>;
