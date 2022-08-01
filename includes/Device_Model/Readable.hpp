@@ -9,7 +9,17 @@
 
 namespace LwM2M {
 
+/**
+ * @brief Models the functionality of a readable resource
+ *
+ */
 struct Readable : public Observable {
+  /**
+   * @brief Read request result
+   *
+   * @see RequestResult for more information
+   *
+   */
   using Result = RequestResult<DataVariant>;
 
   Readable(Observable::ExceptionHandler handler,
@@ -17,6 +27,13 @@ struct Readable : public Observable {
       ReadableInterfacePtr read_requester, EndpointPtr endpoint, ElementID id,
       DataType data_type);
 
+  /**
+   * @brief creates a read request to the LwM2M Client, the result of which is
+   * the DataVariant of the modeled DataType
+   *
+   * @return Result<DataVariant> - based on modeled resources DataType enum
+   * value
+   */
   Result read();
 
 private:
