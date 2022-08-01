@@ -110,17 +110,17 @@ string stringifyResourceValue(ResourcePtr resource) {
   string response;
   match(
       resource->getResourceInstance(),
-      [&](ReadablePtr& readable) {
+      [&](ReadablePtr readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
         response = stringifyDataVariant(value);
       },
-      [&](ReadAndWritablePtr& readable) {
+      [&](ReadAndWritablePtr readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
         response = stringifyDataVariant(value);
       },
-      [&](...) {
+      [&](auto /*value*/) {
         auto descriptor = resource->getDescriptor();
         auto error_msg = "Resource " + descriptor->name_ + " is not readable";
         throw runtime_error(error_msg);
