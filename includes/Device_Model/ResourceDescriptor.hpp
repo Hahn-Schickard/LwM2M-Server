@@ -19,18 +19,19 @@ namespace LwM2M {
  *
  */
 enum class OperationsType {
-  NO_OPERATION,
-  READ,
-  WRITE,
-  READ_AND_WRITE,
-  EXECUTE
+  NO_OPERATION, /*!< @see Operationless */
+  READ, /*!< @see Readable */
+  WRITE, /*!< @see Writable */
+  READ_AND_WRITE, /*!< @see ReadAndWritable */
+  EXECUTE /*!< @see Executable */
 };
 
 std::string toString(OperationsType operation);
 
 /**
- * @brief ResourceDescriptor - a representation of a single data point that is
- * modeled by the LwM2M Model
+ * @brief ResourceDescriptor - static information, used to cread a
+ * representation of a single data point that is modeled by the LwM2M Resource
+ * Model
  *
  */
 struct ResourceDescriptor {
