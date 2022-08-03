@@ -23,6 +23,10 @@ using SupportedObjectDescriptorsMap =
 using SupportedObjectDescriptorsMapPtr =
     std::shared_ptr<SupportedObjectDescriptorsMap>;
 
+/**
+ * @brief Contains all of the known registered Clients
+ *
+ */
 class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
   using DeviceRegistryMap = std::unordered_map<std::string, DevicePtr>;
 
