@@ -5,6 +5,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Generalizes all of the LwM2M Information Reporting Interface Requests.
  *
  * @see CancelObservationRequest
@@ -22,9 +27,9 @@ namespace LwM2M {
 struct InformationReportingRequest : ServerRequest {
 protected:
   InformationReportingRequest(EndpointPtr endpoint, MessageType message_type,
-                              PayloadPtr payload = PayloadPtr())
+      PayloadPtr payload = PayloadPtr())
       : ServerRequest(endpoint, message_type,
-                      InterfaceType::INFORMATION_REPORTING, payload) {}
+            InterfaceType::INFORMATION_REPORTING, payload) {}
 };
 
 /**
@@ -41,13 +46,13 @@ protected:
  */
 struct InformationReportingDownlinkResponse : ServerResponse {
 protected:
-  InformationReportingDownlinkResponse(
-      EndpointPtr endpoint, MessageType message_type,
+  InformationReportingDownlinkResponse(EndpointPtr endpoint,
+      MessageType message_type,
       std::unordered_set<ResponseCode> supported_responses,
       ResponseCode response_code, PayloadPtr payload = PayloadPtr())
       : ServerResponse(endpoint, message_type,
-                       InterfaceType::INFORMATION_REPORTING,
-                       supported_responses, response_code, payload) {}
+            InterfaceType::INFORMATION_REPORTING, supported_responses,
+            response_code, payload) {}
 };
 
 /**
@@ -65,10 +70,9 @@ protected:
 struct InformationReportingDownlinkRequest : ClientRequest {
 protected:
   InformationReportingDownlinkRequest(EndpointPtr endpoint,
-                                      MessageType message_type,
-                                      PayloadPtr payload = PayloadPtr())
+      MessageType message_type, PayloadPtr payload = PayloadPtr())
       : ClientRequest(endpoint, message_type,
-                      InterfaceType::INFORMATION_REPORTING, payload) {}
+            InterfaceType::INFORMATION_REPORTING, payload) {}
 };
 
 using InformationReportingRequestPtr =
@@ -77,6 +81,8 @@ using InformationReportingDownlinkResponsePtr =
     std::shared_ptr<InformationReportingDownlinkResponse>;
 using InformationReportingDownlinkRequestPtr =
     std::shared_ptr<InformationReportingDownlinkRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_INFORMATION_REPORTING_INTERFACE_MESSAGE_HPP

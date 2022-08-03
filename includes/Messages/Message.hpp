@@ -11,6 +11,13 @@
 #include <unordered_set>
 
 namespace LwM2M {
+/**
+ * @defgroup Message_Model Message Model
+ * Contains All possible interaction definitions between the Server and the
+ * Client
+ * @addtogroup Message_Model
+ * @{
+ */
 
 struct UnsupportedOperation : public std::logic_error {
   UnsupportedOperation(std::string const& message);
@@ -207,9 +214,14 @@ protected:
 };
 
 using ServerResponsePtr = std::shared_ptr<ServerResponse>;
+
+/** @}*/
 } // namespace LwM2M
 
 namespace std {
+/**
+ * @ingroup  Message_Model
+ */
 template <> struct hash<LwM2M::Message> {
   size_t operator()(const LwM2M::Message& message) const;
 };

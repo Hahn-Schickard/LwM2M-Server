@@ -5,8 +5,13 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Response to LwM2M::SendRequest, indicates if
- * the request was successfull, requires more data or failed
+ * the request was unsuccessful, requires more data or failed
  *
  * Supported response codes:
  * - ResponseCode::CHANGED - Operation was a success.
@@ -17,7 +22,7 @@ namespace LwM2M {
  */
 struct SendResponse : InformationReportingDownlinkResponse {
   SendResponse(EndpointPtr endpoint,
-               ResponseCode response_code = ResponseCode::BAD_REQUEST);
+      ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
   std::string name() override final;
 };
@@ -30,17 +35,17 @@ using SendResponsePtr = std::shared_ptr<SendResponse>;
  */
 struct SendRequest : InformationReportingDownlinkRequest {
   SendRequest(EndpointPtr endpoint,
-              TargetContent content = TargetContent(ElementID(0),
-                                                    DataFormatPtr()));
+      TargetContent content = TargetContent(ElementID(0), DataFormatPtr()));
 
   std::string name() override final;
 
-  SendResponsePtr
-  makeResponse(ResponseCode response_code = ResponseCode::BAD_REQUEST);
+  SendResponsePtr makeResponse(
+      ResponseCode response_code = ResponseCode::BAD_REQUEST);
 };
 
 using SendRequestPtr = std::shared_ptr<SendRequest>;
 
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_INFORMATION_REPORTING_INTERFACE_SEND_MESSAGE_HPP

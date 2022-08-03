@@ -6,6 +6,10 @@
 #include <vector>
 
 namespace LwM2M {
+/**
+ * @addtogroup Message_Model
+ * @{
+ */
 
 /**
  * @brief Used to modify multiple Attributes of Objects/Object
@@ -14,13 +18,17 @@ namespace LwM2M {
  */
 struct WriteAttributesRequest : DeviceManagementRequest {
   WriteAttributesRequest(EndpointPtr endpoint);
-  WriteAttributesRequest(EndpointPtr endpoint,
-                         std::vector<TargetAttribute> content);
-  WriteAttributesRequest(EndpointPtr endpoint, ElementIDs targets,
-                         NotifyAttributePtr attribute);
+  WriteAttributesRequest(
+      EndpointPtr endpoint, std::vector<TargetAttribute> content);
+  WriteAttributesRequest(
+      EndpointPtr endpoint, ElementIDs targets, NotifyAttributePtr attribute);
 
   std::string name() override final;
 };
+
+using WriteAttributesRequestPtr = std::shared_ptr<WriteAttributesRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_MANAGEMENT_WRITE_ATTRIBUTE_MESSAGE_HPP

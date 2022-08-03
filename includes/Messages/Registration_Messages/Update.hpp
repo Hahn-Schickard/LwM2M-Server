@@ -5,10 +5,14 @@
 #include "RegistrationInterfaceMessage.hpp"
 
 namespace LwM2M {
+/**
+ * @addtogroup Message_Model
+ * @{
+ */
 
 /**
  * @brief Response to LwM2M::UpdateRequest, indicates if the request was
- * successfull, or not
+ * successful, or not
  *
  */
 struct UpdateResponse : RegistrationInterfaceResponse {
@@ -51,14 +55,14 @@ struct UpdateRequest : RegistrationInterfaceRequest {
   std::string location_;
   const DeviceMetaInfo device_info_;
 
+  UpdateRequest(
+      EndpointPtr endpoint, std::string location, DeviceMetaInfo device_info);
   UpdateRequest(EndpointPtr endpoint, std::string location,
-                DeviceMetaInfo device_info);
-  UpdateRequest(EndpointPtr endpoint, std::string location,
-                DeviceMetaInfo::ObjectInstancesMap object_instances_map =
-                    DeviceMetaInfo::ObjectInstancesMap(),
-                std::optional<size_t> lifetime = std::nullopt,
-                std::optional<BindingType> binding = std::nullopt,
-                std::optional<std::string> sms_number = std::nullopt);
+      DeviceMetaInfo::ObjectInstancesMap object_instances_map =
+          DeviceMetaInfo::ObjectInstancesMap(),
+      std::optional<size_t> lifetime = std::nullopt,
+      std::optional<BindingType> binding = std::nullopt,
+      std::optional<std::string> sms_number = std::nullopt);
 
   std::string name() override final;
 
@@ -67,6 +71,7 @@ struct UpdateRequest : RegistrationInterfaceRequest {
 
 using UpdateRequestPtr = std::shared_ptr<UpdateRequest>;
 
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_REGISTRATION_INTERFACE_UPDATE_MESSAGE_HPP

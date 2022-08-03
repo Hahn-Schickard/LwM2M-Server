@@ -5,6 +5,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Used to access the value of a Resource, a Resource Instance, an array
  * of Resource Instances, anObject Instance or all the Object Instances of an
  * Object.
@@ -19,6 +24,8 @@ struct ReadRequest : DeviceManagementRequest {
 };
 
 using ReadRequestPtr = std::shared_ptr<ReadRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_MANAGEMENT_READ_MESSAGE_HPP

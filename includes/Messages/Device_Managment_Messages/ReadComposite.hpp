@@ -7,6 +7,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Used to selectively read any combination of Objects,Object
  * Instance(s), Resources, and/or Resource Instances of different or same
  * Objects/Object Instances in a single request
@@ -26,6 +31,8 @@ struct ReadCompositeRequest : DeviceManagementRequest {
 };
 
 using ReadCompositeRequestPtr = std::shared_ptr<ReadCompositeRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_MANAGEMENT_READ_COMPOSITE_MESSAGE_HPP

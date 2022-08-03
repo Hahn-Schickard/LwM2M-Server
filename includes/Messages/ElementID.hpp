@@ -7,6 +7,10 @@
 #include <vector>
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
 
 /**
  * @brief Contains an identification number for a given Device Model element
@@ -251,9 +255,14 @@ bool operator<=(const ElementID& lhs, const ElementID& rhs);
 bool operator>=(const ElementID& lhs, const ElementID& rhs);
 
 using ElementIDs = std::vector<ElementID>;
+
+/** @}*/
 } // namespace LwM2M
 
 namespace std {
+/**
+ * @ingroup  Device_Model
+ */
 /**
  * @brief std::hash specialization for LwM2M::ElementID values
  *

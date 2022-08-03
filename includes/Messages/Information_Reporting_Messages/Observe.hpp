@@ -5,6 +5,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Used to start observing a given element within the client.
  *
  */
@@ -15,6 +20,8 @@ struct ObserveRequest : InformationReportingRequest {
 };
 
 using ObserveRequestPtr = std::shared_ptr<ObserveRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_INFORMATION_REPORTING_INTERFACE_OBSERVE_MESSAGE_HPP

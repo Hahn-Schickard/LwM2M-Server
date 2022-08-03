@@ -4,6 +4,10 @@
 #include "Message.hpp"
 
 namespace LwM2M {
+/**
+ * @addtogroup Message_Model
+ * @{
+ */
 
 /**
  * @brief Generalizes all of the LwM2M Device Management Interface Requests.
@@ -28,12 +32,14 @@ namespace LwM2M {
 struct DeviceManagementRequest : ServerRequest {
 protected:
   DeviceManagementRequest(EndpointPtr endpoint, MessageType message_type,
-                          PayloadPtr payload = PayloadPtr())
+      PayloadPtr payload = PayloadPtr())
       : ServerRequest(endpoint, message_type, InterfaceType::DEVICE_MANAGEMENT,
-                      payload) {}
+            payload) {}
 };
 
 using DeviceManagementRequestPtr = std::shared_ptr<DeviceManagementRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_MANAGEMENT_MESSAGE_HPP

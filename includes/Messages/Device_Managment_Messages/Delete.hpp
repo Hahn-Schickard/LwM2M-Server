@@ -5,6 +5,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Used to delete an Object Instance within the LwM2M Client
  *
  */
@@ -15,6 +20,8 @@ struct DeleteRequest : public DeviceManagementRequest {
 };
 
 using DeleteRequestPtr = std::shared_ptr<DeleteRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_MANAGEMENT_DELETE_MESSAGE_HPP

@@ -6,8 +6,13 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Response to LwM2M::RegisterRequest, indicates if the request was
- * successfull, or not
+ * successful, or not
  *
  */
 struct RegisterResponse : RegistrationInterfaceResponse {
@@ -55,13 +60,13 @@ struct RegisterRequest : RegistrationInterfaceRequest {
 
   RegisterRequest(EndpointPtr endpoint, DeviceMetaInfo device_info);
   RegisterRequest(EndpointPtr endpoint, size_t life_time = 0,
-                  DeviceMetaInfo::ObjectInstancesMap object_instances_map =
-                      DeviceMetaInfo::ObjectInstancesMap(),
-                  std::optional<std::string> endpoint_name = std::nullopt,
-                  LwM2M_Version version = LwM2M_Version::V1_0,
-                  std::optional<BindingType> binding = std::nullopt,
-                  std::optional<bool> queue_mode = std::nullopt,
-                  std::optional<std::string> sms_number = std::nullopt);
+      DeviceMetaInfo::ObjectInstancesMap object_instances_map =
+          DeviceMetaInfo::ObjectInstancesMap(),
+      std::optional<std::string> endpoint_name = std::nullopt,
+      LwM2M_Version version = LwM2M_Version::V1_0,
+      std::optional<BindingType> binding = std::nullopt,
+      std::optional<bool> queue_mode = std::nullopt,
+      std::optional<std::string> sms_number = std::nullopt);
 
   std::string name() override final;
 
@@ -83,6 +88,8 @@ struct RegisterRequest : RegistrationInterfaceRequest {
 };
 
 using RegisterRequestPtr = std::shared_ptr<RegisterRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_REGISTRATION_INTERFACE_REGISTER_MESSAGE_HPP

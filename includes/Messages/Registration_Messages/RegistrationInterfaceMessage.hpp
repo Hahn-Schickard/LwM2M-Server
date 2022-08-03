@@ -4,14 +4,18 @@
 #include "Message.hpp"
 
 namespace LwM2M {
+/**
+ * @addtogroup Message_Model
+ * @{
+ */
 
 struct RegistrationInterfaceError : public std::domain_error {
   ServerResponsePtr response_;
   RegistrationInterfaceError(ServerResponsePtr response)
       : domain_error("Request " + response->endpoint_->endpoint_address_ + ":" +
-                     std::to_string(response->endpoint_->endpoint_port_) +
-                     " is missing one of mandatory parameters. Sending " +
-                     response->name()),
+            std::to_string(response->endpoint_->endpoint_port_) +
+            " is missing one of mandatory parameters. Sending " +
+            response->name()),
         response_(response) {}
 };
 
@@ -31,12 +35,11 @@ struct RegistrationInterfaceError : public std::domain_error {
  */
 struct RegistrationInterfaceResponse : ServerResponse {
 protected:
-  RegistrationInterfaceResponse(
-      EndpointPtr endpoint, MessageType message_type,
+  RegistrationInterfaceResponse(EndpointPtr endpoint, MessageType message_type,
       std::unordered_set<ResponseCode> supported_responses,
       ResponseCode response_code, PayloadPtr payload = PayloadPtr())
       : ServerResponse(endpoint, message_type, InterfaceType::REGISTRATION,
-                       supported_responses, response_code, payload) {}
+            supported_responses, response_code, payload) {}
 };
 
 /**
@@ -56,15 +59,17 @@ protected:
 struct RegistrationInterfaceRequest : ClientRequest {
 protected:
   RegistrationInterfaceRequest(EndpointPtr endpoint, MessageType message_type,
-                               PayloadPtr payload = PayloadPtr())
-      : ClientRequest(endpoint, message_type, InterfaceType::REGISTRATION,
-                      payload) {}
+      PayloadPtr payload = PayloadPtr())
+      : ClientRequest(
+            endpoint, message_type, InterfaceType::REGISTRATION, payload) {}
 };
 
 using RegistrationInterfaceRequestPtr =
     std::shared_ptr<RegistrationInterfaceRequest>;
 using RegistrationInterfaceResponsePtr =
     std::shared_ptr<RegistrationInterfaceResponse>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_REGISTRATION_INTERFACE_MESSAGE_HPP

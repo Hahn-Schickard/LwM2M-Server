@@ -5,6 +5,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Issued by the client to the server, if a valid ObserveRequest or
  * ObserveCompositeRequest was sent out. Contains changed value of observed
  * element.
@@ -18,6 +23,7 @@ struct ValueUpdated : ClientNotification {
 
 using ValueUpdatedPtr = std::shared_ptr<ValueUpdated>;
 
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_INFORMATION_REPORTING_INTERFACE_VALUE_UPDATED_MESSAGE_HPP

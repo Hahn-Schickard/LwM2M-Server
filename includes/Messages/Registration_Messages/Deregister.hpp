@@ -5,8 +5,13 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Message_Model
+ * @{
+ */
+
+/**
  * @brief Response to LwM2M::DeregisterRequest, indicates if the request
- * was successfull, or not
+ * was successful, or not
  *
  */
 struct DeregisterResponse : RegistrationInterfaceResponse {
@@ -56,6 +61,8 @@ struct DeregisterRequest : RegistrationInterfaceRequest {
 };
 
 using DeregisterRequestPtr = std::shared_ptr<DeregisterRequest>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_REGISTRATION_INTERFACE_DEREGISTER_MESSAGE_HPP
