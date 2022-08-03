@@ -16,6 +16,11 @@
 #include <vector>
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
+
 using Resources = std::unordered_map<uint32_t, ResourcePtr>;
 
 struct ResourceDoesNotExist : public std::runtime_error {
@@ -97,6 +102,8 @@ public:
 
 using ObjectInstanceSharedPtr = std::shared_ptr<ObjectInstance>;
 using ObjectInstancePtr = NonemptyPointer::NonemptyPtr<ObjectInstanceSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_OBJECT_INSTANCE_HPP

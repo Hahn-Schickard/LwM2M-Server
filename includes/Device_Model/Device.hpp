@@ -29,6 +29,13 @@ struct ObjectIDComparator {
 };
 
 namespace LwM2M {
+/**
+ * @defgroup Device_Model Device Model
+ * Contains All of the modeling elements for the LwM2M Resource Model
+ * implementation
+ * @addtogroup Device_Model
+ * @{
+ */
 
 using ObjectsMap = std::unordered_map<uint16_t, ObjectPtr>;
 using ObjectDescriptorsMap = std::unordered_multimap<ElementID,
@@ -222,6 +229,8 @@ public:
 
 using DeviceSharedPtr = std::shared_ptr<Device>;
 using DevicePtr = NonemptyPointer::NonemptyPtr<DeviceSharedPtr>;
+
+/** @}*/
 }; // namespace LwM2M
 
 #endif //__LWM2M_DEVICE_HPP

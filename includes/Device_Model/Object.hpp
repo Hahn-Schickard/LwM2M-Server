@@ -30,6 +30,10 @@ struct ObjectInstanceComparator {
 };
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
 
 using RequiredObjectInstances = std::unordered_multiset<ElementID,
     ObjectInstanceIDHasher, ObjectInstanceComparator>;
@@ -148,6 +152,8 @@ public:
 
 using ObjectSharedPtr = std::shared_ptr<Object>;
 using ObjectPtr = NonemptyPointer::NonemptyPtr<ObjectSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif // __LWM2M_MODEL_OBJECT_HPP

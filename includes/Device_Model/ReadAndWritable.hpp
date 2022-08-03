@@ -8,6 +8,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Device_Model
+ * @{
+ */
+
+/**
  * @brief Models the functionality of read and writable resource.
  *
  * This trait is a composition of Readable and Writable, to learn how to use
@@ -29,6 +34,8 @@ public:
 using ReadAndWritableSharedPtr = std::shared_ptr<ReadAndWritable>;
 using ReadAndWritablePtr =
     NonemptyPointer::NonemptyPtr<ReadAndWritableSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_READ_AND_WRITABLE_RESOURCE_HPP

@@ -8,6 +8,10 @@
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
 
 /**
  * @brief Models the functionality of a readable resource
@@ -42,6 +46,8 @@ private:
 
 using ReadableSharedPtr = std::shared_ptr<Readable>;
 using ReadablePtr = NonemptyPointer::NonemptyPtr<ReadableSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_READABLE_RESOURCE_HPP

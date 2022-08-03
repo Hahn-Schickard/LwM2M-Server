@@ -11,6 +11,11 @@
 #include <map>
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
+
 struct ElementNotObserved : public std::runtime_error {
   ElementNotObserved(ElementID id)
       : runtime_error("Element " + id.toString() +
@@ -148,5 +153,7 @@ private:
 using ObserverInterfaceSharedPtr = std::shared_ptr<ObserverInterface>;
 using ObserverInterfacePtr =
     NonemptyPointer::NonemptyPtr<ObserverInterfaceSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 #endif //__LWM2M_OBSERVABLE_HPP

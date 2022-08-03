@@ -9,6 +9,11 @@
 
 namespace LwM2M {
 /**
+ * @addtogroup Device_Model
+ * @{
+ */
+
+/**
  * @brief Models the functionality of executable resource
  *
  */
@@ -39,5 +44,7 @@ private:
 
 using ExecutableSharedPtr = std::shared_ptr<Executable>;
 using ExecutablePtr = NonemptyPointer::NonemptyPtr<ExecutableSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 #endif //__LWM2M_EXECUTABLE_RESOURCE_HPP

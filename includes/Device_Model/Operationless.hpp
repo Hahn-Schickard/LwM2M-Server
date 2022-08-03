@@ -6,6 +6,10 @@
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
 
 /**
  * @brief Models the functionality of operationless resource (A resource that
@@ -19,6 +23,8 @@ public:
 
 using OperationlessSharedPtr = std::shared_ptr<Operationless>;
 using OperationlessPtr = NonemptyPointer::NonemptyPtr<OperationlessSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_OPERATIONLESS_RESOURCE_HPP

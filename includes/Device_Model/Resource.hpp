@@ -11,6 +11,11 @@
 #include "Writable.hpp"
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
+
 struct ResourceInstanceDoesNotExist : public std::runtime_error {
   ResourceInstanceDoesNotExist(ElementID id)
       : runtime_error(
@@ -28,8 +33,9 @@ struct ResourceInstanceCouldNotBeResolved : public std::runtime_error {
  * @brief A heterogeneous container of various resource traits.
  *
  * To access the stored data from ResourceInstance variant; Use:
- * 1. std::get<T>(&variant) - @throws std::bad_variant_access on type mismatch
- * 2. std::get_if<T>(&variant) - @returns False on type mismatch
+ * @code {.cpp}
+ * 1. std::get<T>(&variant) - throws std::bad_variant_access on type mismatch
+ * 2. std::get_if<T>(&variant) - returns False on type mismatch
  * 3. std::visit([](auto && value){ //use value here}, &variant)
  * 4. match(
  *     [](ReadablePtr& value){//use to access ReadablePtr},
@@ -40,6 +46,7 @@ struct ResourceInstanceCouldNotBeResolved : public std::runtime_error {
  *     [](auto& value){//use if value type is not important, but the value is},
  *     [](...){//Fallback case. Similar to default keyword of switch statement},
  *     &variant) - declared in VariantVisitor project
+ * @endcode
  *
  * @warning It is recommended to parse pointer references, instead of pointer
  * values to both variant visitor (shown in 3.) and variant matcher (shown
@@ -124,6 +131,8 @@ public:
 
 using ResourceSharedPtr = std::shared_ptr<Resource>;
 using ResourcePtr = NonemptyPointer::NonemptyPtr<ResourceSharedPtr>;
+
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_MODEL_RESOURCE_HPP

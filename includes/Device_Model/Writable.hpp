@@ -8,6 +8,10 @@
 #include "ResourceDescriptor.hpp"
 
 namespace LwM2M {
+/**
+ * @addtogroup Device_Model
+ * @{
+ */
 
 /**
  * @brief Model a resource with write-only access
@@ -41,6 +45,7 @@ private:
 using WritableSharedPtr = std::shared_ptr<Writable>;
 using WritablePtr = NonemptyPointer::NonemptyPtr<WritableSharedPtr>;
 
+/** @}*/
 } // namespace LwM2M
 
 #endif //__LWM2M_WRITABLE_RESOURCE_HPP
