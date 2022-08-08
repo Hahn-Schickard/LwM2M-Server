@@ -53,7 +53,10 @@ struct ElementID {
   /**
    * @brief Creates a subelement ID by using a parent ID values as it's base.
    *
-   * @example ElementID(ElementID(2),0) will create Element with string ID 2/0
+   * For example calling @code {.cpp}
+   * ElementID(ElementID(2),0)
+   * @endcode
+   * will create a new Element ID containing string ID 2/0
    *
    * @throws std::invalid_argument when all Element IDs are already assigned
    */
@@ -121,7 +124,7 @@ struct ElementID {
    * @brief Converts the entire Element ID into a string, each sub ID separated
    * via `/` character
    *
-   * @example Resource 2 of Object instance 1 of Object 0 would equate to string
+   * Example: Resource 2 of Object instance 1 of Object 0 would equate to string
    * "0/1/2" where:
    *  | | |
    *  | |  ⁻⁻ Resource ID
