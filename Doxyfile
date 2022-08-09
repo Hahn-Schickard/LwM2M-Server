@@ -171,6 +171,7 @@ EXCLUDE_PATTERNS      += */conan/*
 EXCLUDE_PATTERNS      += */conanfile.txt
 EXCLUDE_PATTERNS      += */README.md
 EXCLUDE_PATTERNS      += */CONTRIBUTING.md
+EXCLUDE_PATTERNS      += */CHANGELOG.md
 EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
