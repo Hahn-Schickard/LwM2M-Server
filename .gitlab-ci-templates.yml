@@ -99,6 +99,8 @@ stages:
   stage: document
   tags:
     - conan
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - doxygen Doxyfile
   artifacts:
