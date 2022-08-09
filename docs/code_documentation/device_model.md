@@ -6,7 +6,7 @@
 
 ## Class Diagram
 
-@image html server_architechture/DeviceModel.png "LwM2M Device Model Class Diagram"  width=90%
+@image html server_architechture/DeviceModel_Simplified.png "LwM2M Device Model Class Diagram"  width=1200px
 
 ## Device class
 
