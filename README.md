@@ -1,4 +1,4 @@
-<img src="docs/code_documentation/images/vendor-logo.png" alt="" width="200"/>
+<img src="docs/images/vendor-logo.png" alt="" width="200"/>
 
 # C++17 Lightweight Machine to Machine (LwM2M) Server Implementation
 
