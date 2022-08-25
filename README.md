@@ -1,5 +1,5 @@
-[![pipeline status](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/opc_ua_dev_group/gateway-project/lwm2m-server/badges/master/pipeline.svg)](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/opc_ua_dev_group/gateway-project/lwm2m-server/-/commits/master)
-[![coverage report](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/opc_ua_dev_group/gateway-project/lwm2m-server/badges/master/coverage.svg)](https://git.hahn-schickard.de/hahn-schickard/software-sollutions/application-engineering/internal/opc_ua_dev_group/gateway-project/lwm2m-server/-/commits/master)
+[![pipeline status](https://git.hahn-schickard.de/%{project_path}/badges/master/pipeline.svg)](https://git.hahn-schickard.de/%{project_path}/-/commits/master)
+[![coverage report](https://git.hahn-schickard.de/%{project_path}/badges/master/coverage.svg)](https://git.hahn-schickard.de/%{project_path}/-/commits/master)
 
 <img src="docs/code_documentation/images/vendor-logo.png" alt="" width="200"/>
 
