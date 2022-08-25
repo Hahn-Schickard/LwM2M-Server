@@ -10,14 +10,21 @@
 namespace LwM2M {
 enum class RegistryEventType { REGISTERED, UPDATED, DEREGISTERED };
 
+/**
+ * @brief Returns a human readable string from a given RegistryEventType
+ *
+ * @param type
+ * @return std::string
+ */
+std::string toString(RegistryEventType type);
+
 struct RegistryEvent {
   const RegistryEventType type_;
   const std::string identifier_;
   const std::optional<DevicePtr> device_;
 
   RegistryEvent(RegistryEventType type, std::string identifier,
-      std::optional<DevicePtr> device = std::nullopt)
-      : type_(type), identifier_(identifier), device_(device) {}
+      std::optional<DevicePtr> device = std::nullopt);
 };
 
 using RegistryEventPtr = std::shared_ptr<RegistryEvent>;
