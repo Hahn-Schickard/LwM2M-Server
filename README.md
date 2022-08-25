@@ -28,9 +28,6 @@ This will generate an html like documentation at `[PROJECT_ROOT]/docs/code_docum
 * clang-tidy - to use static code analysis
 * doxygen - to generate documentation from code
 
-### Conan packages
- * [gtest/1.11.0](https://conan.io/center/gtest?version=1.11.0)
-
 ## Visual Studio Code Support
 
 ### Recommended Plugins:
