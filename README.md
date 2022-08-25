@@ -1,6 +1,3 @@
-[![pipeline status](https://git.hahn-schickard.de/%{project_path}/badges/master/pipeline.svg)](https://git.hahn-schickard.de/%{project_path}/-/commits/master)
-[![coverage report](https://git.hahn-schickard.de/%{project_path}/badges/master/coverage.svg)](https://git.hahn-schickard.de/%{project_path}/-/commits/master)
-
 <img src="docs/code_documentation/images/vendor-logo.png" alt="" width="200"/>
 
 # C++17 Lightweight Machine to Machine (LwM2M) Server Implementation
