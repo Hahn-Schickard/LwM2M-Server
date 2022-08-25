@@ -4,7 +4,6 @@
 #include "DeviceRegistry.hpp"
 #include "Event_Model/EventListenerInterface.hpp"
 #include "Observer.hpp"
-#include "RegistryEvent.hpp"
 
 #include <map>
 
