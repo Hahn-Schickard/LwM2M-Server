@@ -10,7 +10,7 @@ This is a C++17 based library for LwM2M Server implementations. Most of the serv
 If you want to have the latest documentation with your changes locally, you can generate it with [Doxygen](https://github.com/doxygen/doxygen) from sources by running the following:
 
 ```bash
-doxygen .
+doxygen Doxyfile
 ```
 
 This will generate html like documentation at `[PROJECT_ROOT]/docs/code_documentation/html`. To use it open the `[PROJECT_ROOT]/docs/code_documentation/html/index.html` file with your browser.
