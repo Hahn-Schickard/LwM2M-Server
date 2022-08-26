@@ -31,6 +31,7 @@ This will generate html like documentation at `[PROJECT_ROOT]/docs/code_document
 ## Visual Studio Code Support
 
 ### Recommended Plugins:
+
 * [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)  - provides linking to *inellisense*  and code debuggers
 * [C++ Intellisense](https://marketplace.visualstudio.com/items?itemName=austin.code-gnu-global) - provides code highlighting and quick navigation
 * [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) - provides CMake highlighting, configuring, building
@@ -76,7 +77,7 @@ ctest --verbose
 
 ## Project utility tools
 
-This project comes with integrated utility scripts written in python3 to check code coverage with **gcov** and **lcov**, check for memory leaks with **valgrind** and generate documentation with **Doxygen**. You can use these by running the following: 
+This project comes with integrated utility scripts written in python3 to check code coverage with **gcov** and **lcov**, check for memory leaks with **valgrind** and generate documentation with **Doxygen**. You can use these by running the following:
 
 * `python3 utility/run-lcov.py --help` - to learn how to use **lcov** wrapper
 * `python3 utility/run-valgrind.py --help` - to learn how to use **valgrind** wrapper
