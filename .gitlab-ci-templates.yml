@@ -33,7 +33,7 @@ stages:
       - ${CI_PROJECT_DIR}/.conan
     expire_in: 1 days
 
-.run_tests:
+.test:
   extends: .setup
   stage: test
   tags:
@@ -61,7 +61,7 @@ stages:
       - valgrind.log
     expire_in: 1 days
   only:
-    variables: 
+    variables:
       - '$RUN_VALGRIND == "true"'
   allow_failure: true
 
@@ -80,7 +80,7 @@ stages:
       - code_coverage_report/
     expire_in: 1 days
 
-.check_code_formatting:
+.lint:
   extends: .setup
   stage: check
   tags:
@@ -96,12 +96,10 @@ stages:
     expire_in: 1 days
   allow_failure: true
 
-.generate_autodoc:
+.document:
   stage: document
   tags:
     - conan
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - doxygen Doxyfile
   artifacts:
@@ -109,7 +107,6 @@ stages:
     paths:
       - docs/code_documentation/
     expire_in: 1 days
-  allow_failure: true
 
 .package:
   stage: package
