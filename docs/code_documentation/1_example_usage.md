@@ -21,9 +21,9 @@ You do not need to provide any configuration files for a test setup, however, th
 int main(int argc, const char* argv[]){
     try {
         HaSLL::LoggerRepository::initialise("loggerConfig.json");
-        // It's recommended to use the smart pointers for simpler 
-        // memory management process, but you can also use a local 
-        // instance, instance created with new operator, or a malloced 
+        // It's recommended to use the smart pointers for simpler
+        // memory management process, but you can also use a local
+        // instance, instance created with new operator, or a malloced
         // instance
         auto server = make_unique<Server>("serverConfig.json");
         server->start();
@@ -81,7 +81,7 @@ int main(int argc, const char* argv[]){
 
 ## Creating an Event Consumer
 
-To fully utilize the LwM2M Server library an Event Consumer, that implements the `Event_Model::EventListenerInterface<RegistryEvent>::handleEvent(RegistryEventPtr)` method is required. To implement it, you must first include the `DeviceRegistry.hpp` header, which defines the `LwM2M::EventSourcePtr` class, which will be used as the source of [LwM2M Client Registration Interface](https://www.openmobilealliance.org/release/LightweightM2M/V1_2-20201110-A/OMA-TS-LightweightM2M_Core-V1_2-20201110-A.pdf#__WKANCHOR_2m) Events, as well as `Event_Model/EventListenerInterface.hpp` header, which defines the `EventListenerInterface` implementation. Then declare a custom class inheriting from `Event_Model::EventListenerInterface<RegistryEvent>` structure. THis class must implement a parametrized constructor that accepts `LwM2M::EventSourcePtr` as it's sole parameter and overrides the virtual `void handleEvent(RegistryEventPtr)` method. This method should handle all of the cases, declared in `LwM2MM::RegistryEventType` enum. 
+To fully utilize the LwM2M Server library an Event Consumer, that implements the `Event_Model::EventListenerInterface<RegistryEvent>::handleEvent(RegistryEventPtr)` method is required. To implement it, you must first include the `DeviceRegistry.hpp` header, which defines the `LwM2M::EventSourcePtr` class, which will be used as the source of [LwM2M Client Registration Interface](https://www.openmobilealliance.org/release/LightweightM2M/V1_2-20201110-A/OMA-TS-LightweightM2M_Core-V1_2-20201110-A.pdf#__WKANCHOR_2m) Events, as well as `Event_Model/EventListenerInterface.hpp` header, which defines the `EventListenerInterface` implementation. Then declare a custom class inheriting from `Event_Model::EventListenerInterface<RegistryEvent>` structure. THis class must implement a parametrized constructor that accepts `LwM2M::EventSourcePtr` as it's sole parameter and overrides the virtual `void handleEvent(RegistryEventPtr)` method. This method should handle all of the cases, declared in `LwM2MM::RegistryEventType` enum.
 
 This Event Consumer is the primary way, that your code SHOULD interact with the LwM2M Server. An example implementation is provided bellow:
 
@@ -101,36 +101,36 @@ struct RegistrationListener
 
   void handleEvent(LwM2M::RegistryEventPtr event) override {
     switch (event->type_) {
-    case LwM2M::RegistryEventType::REGISTERED: { 
+    case LwM2M::RegistryEventType::REGISTERED: {
         // Obtain the device abstraction
         auto device = event->device_.value();
-        // Handle registration process (reading initial device 
+        // Handle registration process (reading initial device
         // values, building out custom representation, etc...)
-        std::cout << "New device " << device->getName() 
-            << " with id: " << device->getDeviceId() 
+        std::cout << "New device " << device->getName()
+            << " with id: " << device->getDeviceId()
             << " was registered!" << std::endl;
-        break; 
+        break;
     }
-    case LwM2M::RegistryEventType::UPDATED: { 
-        // Handle device update (check if Assigned objects/resources, 
-        // device name, device id, address, lifetime or communication 
+    case LwM2M::RegistryEventType::UPDATED: {
+        // Handle device update (check if Assigned objects/resources,
+        // device name, device id, address, lifetime or communication
         // protocol have changed, @see UpdateRequest for more info)
-        std::cout << "Device with id: " << event->identifier_ 
+        std::cout << "Device with id: " << event->identifier_
         << " has been updated!" << std::endl;
         break;
     }
-    case LwM2M::RegistryEventType::DEREGISTERED: { 
+    case LwM2M::RegistryEventType::DEREGISTERED: {
         // Handle device deregistration (deletion/removal)
-        std::cout << "Device with id: " << event->identifier_ 
+        std::cout << "Device with id: " << event->identifier_
             << " has been updated!" << std::endl;
         break;
     }
-    default: { 
-        // Handle unexpected event types (These might come from updates 
-        // to LwM2M server implementation, it is recommended to print 
-        // out or log the unhandled event type by calling the 
+    default: {
+        // Handle unexpected event types (These might come from updates
+        // to LwM2M server implementation, it is recommended to print
+        // out or log the unhandled event type by calling the
         // LwM2M::toString(LwM2M::RegistryEventType) function)
-        std::cout << "Received an unhandled event: " 
+        std::cout << "Received an unhandled event: "
             << LwM2M::toString(event->type_) << std::endl;
         break;
     }
@@ -155,7 +155,7 @@ int main(int argc, const char* argv[]){
     try {
         HaSLL::LoggerRepository::initialise("loggerConfig.json");
         auto server = make_unique<Server>("serverConfig.json");
-        // It is recommended to assign the event consumer before starting 
+        // It is recommended to assign the event consumer before starting
         // the server. This way, you will not miss any registration events.
         auto registration_listener = make_unique<RegistrationListener>(
             server->getEventSource());
