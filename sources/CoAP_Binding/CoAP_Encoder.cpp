@@ -1,14 +1,14 @@
 #include "CoAP_Encoder.hpp"
 #include "CoAP_ContentTypes.hpp"
-#include "LoggerRepository.hpp"
 
 #include "CoAPS4Cpp/MessageBuilder.hpp"
 #include "CoAPS4Cpp/OptionBuilder.hpp"
 #include "CoAPS4Cpp/PlainText.hpp"
+#include "HaSLL/LoggerManager.hpp"
 
 using namespace std;
 using namespace CoAP;
-using namespace HaSLL;
+using namespace HaSLI;
 
 namespace LwM2M {
 CodeType toCodeType(LwM2M::MessageType type) {
@@ -38,9 +38,7 @@ CodeType toCodeType(LwM2M::MessageType type) {
   case LwM2M::MessageType::DELETE: {
     return CodeType::DELETE;
   }
-  default: {
-    throw logic_error("Message is not a valid ServerRequest.");
-  }
+  default: { throw logic_error("Message is not a valid ServerRequest."); }
   }
 }
 
@@ -94,10 +92,10 @@ CoAP::PayloadPtr encodeAs_PlainText(LwM2M::PayloadPtr payload) {
 }
 
 CoAP_Encoder::CoAP_Encoder()
-    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+    : logger_(LoggerManager::registerTypedLogger(this)) {}
 
 CoAP_Encoder::~CoAP_Encoder() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+  LoggerManager::deregisterLogger(logger_->getName());
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(DeviceManagementRequestPtr message) {
@@ -209,7 +207,7 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
     return CoAP::PayloadPtr();
   }
   default: {
-    logger_->log(SeverityLevel::WARNNING,
+    logger_->log(SeverityLevel::WARNING,
         "Did not encode message {} payload for {}", message_identifier,
         toString(type));
     return CoAP::PayloadPtr();

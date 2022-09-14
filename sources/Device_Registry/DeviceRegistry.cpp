@@ -1,9 +1,10 @@
 #include "DeviceRegistry.hpp"
-#include "LoggerRepository.hpp"
 #include "XmlParser.hpp"
 
+#include "HaSLL/LoggerManager.hpp"
+
 using namespace std;
-using namespace HaSLL;
+using namespace HaSLI;
 
 namespace LwM2M {
 DeviceNotFound::DeviceNotFound(string const& identifier)
@@ -13,7 +14,7 @@ DeviceNotFound::DeviceNotFound(string const& identifier)
 DeviceRegistry::DeviceRegistry(const string& configuration_path)
     : Event_Model::EventSource<RegistryEvent>(
           bind(&DeviceRegistry::logListenerException, this, placeholders::_1)),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+      logger_(LoggerManager::registerTypedLogger(this)) {
   try {
     supported_descriptors_ = deserializeModel(configuration_path);
   } catch (exception& ex) {
@@ -21,10 +22,6 @@ DeviceRegistry::DeviceRegistry(const string& configuration_path)
         "Received an exception during descriptor deserialization: {}",
         ex.what());
   }
-}
-
-DeviceRegistry::~DeviceRegistry() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
 void DeviceRegistry::logListenerException(std::exception_ptr eptr) {
@@ -39,7 +36,7 @@ void DeviceRegistry::logListenerException(std::exception_ptr eptr) {
         ex.what());
   } catch (...) {
     logger_->log(
-        SeverityLevel::CRITICAL, "Cought an unkown unhandeled exception.");
+        SeverityLevel::CRITICAL, "Caught an unkown unhandled exception.");
     // @TODO: decide if this should rethrow to OS and crash the socket
   }
 }

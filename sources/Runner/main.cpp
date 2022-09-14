@@ -1,7 +1,9 @@
 
 #include "Example.hpp"
-#include "LoggerRepository.hpp"
 #include "Server.hpp"
+
+#include "HaSLL/LoggerManager.hpp"
+#include "HaSLL/SPD_LoggerRepository.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -13,10 +15,10 @@ using namespace std;
 
 int main(int argc, const char* argv[]) {
   try {
-    LoggerRepository::initialise("config/loggerConfig.json");
-    auto logger =
-        LoggerRepository::getInstance().registerLoger("Example_Runner");
-    LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
+    auto repo = make_shared<SPD_LoggerRepository>("config/loggerConfig.json");
+    LoggerManager::initialise(repo);
+    auto logger = LoggerManager::registerLogger("Example_Runner");
+    LoggerManager::configure(SeverityLevel::TRACE);
 
     auto server = make_unique<Server>("config/serverConfig.json");
     auto source = server->getEventSource();

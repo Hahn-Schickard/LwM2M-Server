@@ -1,18 +1,18 @@
 #include "CoAP_Decoder.hpp"
 #include "CoAP_ContentTypes.hpp"
-#include "LoggerRepository.hpp"
 #include "RegistrationInterfaceRequestsBuilder.hpp"
+#include "TLV.hpp"
 #include "Utility.hpp"
 
 #include "CoAPS4Cpp/CoRE_Link.hpp"
 #include "CoAPS4Cpp/OctetStream.hpp"
 #include "CoAPS4Cpp/OptionBuilder.hpp"
 #include "CoAPS4Cpp/PlainText.hpp"
-#include "TLV.hpp"
+#include "HaSLL/LoggerManager.hpp"
 
 using namespace std;
 using namespace CoAP;
-using namespace HaSLL;
+using namespace HaSLI;
 
 namespace LwM2M {
 ResponseCode toResponseCode(CoAP::CodeType code) {
@@ -124,10 +124,10 @@ LwM2M::PayloadPtr toPayload(OctetStream content) {
 }
 
 CoAP_Decoder::CoAP_Decoder()
-    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+    : logger_(LoggerManager::registerTypedLogger(this)) {}
 
 CoAP_Decoder::~CoAP_Decoder() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+  LoggerManager::deregisterLogger(logger_->getName());
 }
 
 LwM2M::PayloadPtr CoAP_Decoder::decode(
@@ -229,7 +229,7 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
               message->getAddressIP(), message->getAddressPort(),
               message->getToken()->hexify());
         } else {
-          logger_->log(SeverityLevel::WARNNING,
+          logger_->log(SeverityLevel::WARNING,
               "Payload of {} bytes could not be converted into a "
               "Content Type for Client Response "
               "from {}:{} CoAP "

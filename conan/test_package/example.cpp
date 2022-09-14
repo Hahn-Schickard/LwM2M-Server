@@ -1,4 +1,4 @@
-#include "LoggerRepository.hpp"
+#include "HaSLL/LoggerManager.hpp"
 #include "LwM2M_Server/Server.hpp"
 
 #include <iomanip>
@@ -13,10 +13,12 @@ int main() {
     auto config = HaSLL::Configuration(
         "./log", "logfile.log", "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$",
         HaSLL::SeverityLevel::TRACE, false, 8192, 2, 25, 100, 1);
-    LoggerRepository::initialise(config);
+    auto repo = make_shared<SPD_LoggerRepository>(config);
+    LoggerManager::initialise(repo)
+
     auto logger =
-        LoggerRepository::getInstance().registerLoger("Integration_Runner");
-    LoggerRepository::getInstance().configure(SeverityLevel::TRACE);
+        LoggerManager::registerLogger("Integration_Runner");
+    LoggerManager::configure(SeverityLevel::TRACE);
 
     unique_ptr<LwM2M::Server> server;
     try {

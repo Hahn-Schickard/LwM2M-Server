@@ -1,12 +1,13 @@
 #ifndef __LWM2M_COAP_DECODER_HPP
 #define __LWM2M_COAP_DECODER_HPP
 
-#include "CoAPS4Cpp/Message.hpp"
 #include "Deregister.hpp"
-#include "Logger.hpp"
 #include "Message.hpp"
 #include "Register.hpp"
 #include "Update.hpp"
+
+#include "CoAPS4Cpp/Message.hpp"
+#include "HaSLL/Logger.hpp"
 
 namespace LwM2M {
 struct CoAP_Decoder {
@@ -23,7 +24,7 @@ private:
   LwM2M::PayloadPtr decode(
       CoAP::ContentFormatPtr content_format, CoAP::PayloadPtr payload);
 
-  std::shared_ptr<HaSLL::Logger> logger_;
+  HaSLI::LoggerPtr logger_;
 };
 
 template <>

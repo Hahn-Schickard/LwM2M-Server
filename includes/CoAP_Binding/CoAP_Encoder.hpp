@@ -1,10 +1,11 @@
 #ifndef __LWM2M_COAP_ENCODER_HPP
 #define __LWM2M_COAP_ENCODER_HPP
 
-#include "CoAPS4Cpp/Message.hpp"
 #include "DeviceManagmentMessage.hpp"
 #include "InformationReporingMessage.hpp"
-#include "Logger.hpp"
+
+#include "CoAPS4Cpp/Message.hpp"
+#include "HaSLL/Logger.hpp"
 
 namespace LwM2M {
 struct CoAP_Encoder {
@@ -24,7 +25,7 @@ private:
   CoAP::Options makeOptions(
       LwM2M::PayloadPtr payload, std::string message_identifier);
 
-  std::shared_ptr<HaSLL::Logger> logger_;
+  HaSLI::LoggerPtr logger_;
 };
 } // namespace LwM2M
 

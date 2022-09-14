@@ -1,7 +1,8 @@
 #include "Registrator.hpp"
 #include "Discover.hpp"
-#include "LoggerRepository.hpp"
 #include "Read.hpp"
+
+#include "HaSLL/LoggerManager.hpp"
 
 #include <iomanip>
 #include <iterator>
@@ -9,7 +10,7 @@
 #include <vector>
 
 using namespace std;
-using namespace HaSLL;
+using namespace HaSLI;
 
 #define ERROR_CODES_VALUE 0x80
 #define REQUEST_TIMEOUT_MS 2000
@@ -100,15 +101,10 @@ ElementIDs handleReadResponse(
 }
 
 Registrator::Registrator(DeviceRegistryPtr registry)
-    : registry_(registry),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+    : registry_(registry), logger_(LoggerManager::registerTypedLogger(this)) {
   if (!registry_) {
     throw invalid_argument("Device Registry can not be a nullptr.");
   }
-}
-
-Registrator::~Registrator() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
 ObjectDescriptorsMap Registrator::assignAvailableDescriptors(
@@ -126,7 +122,7 @@ ObjectDescriptorsMap Registrator::assignAvailableDescriptors(
     if (descriptor != supported_object_descriptors->end()) {
       result.emplace(object, descriptor->second);
     } else {
-      logger_->log(SeverityLevel::WARNNING,
+      logger_->log(SeverityLevel::WARNING,
           "Object id {} is not supported by the server.", object.getObjectID());
     }
   }
@@ -200,7 +196,7 @@ ElementIDs Registrator::discoverAvailableDescriptors(EndpointPtr endpoint,
             (*it)->target_.toString(), (*it)->endpoint_->toString());
         requested_instances += discover(makeReadRequest(*it));
       } catch (DiscoveryTimeout& /*timeout*/) {
-        logger_->log(SeverityLevel::WARNNING,
+        logger_->log(SeverityLevel::WARNING,
             "Manual discovery for {} object {} failed due to a message "
             "timeout. Discarding it from available descriptors.",
             (*it)->endpoint_->toString(), (*it)->target_.toString());
@@ -211,7 +207,7 @@ ElementIDs Registrator::discoverAvailableDescriptors(EndpointPtr endpoint,
             (*it)->endpoint_->toString(), (*it)->target_.toString(), ex.what());
       }
     } catch (ResponseReturnedAnErrorCode& ex) {
-      logger_->log(SeverityLevel::WARNNING,
+      logger_->log(SeverityLevel::WARNING,
           "Failed to handle {} to {}, response returned an error code: {}. "
           "Discarding it from available descriptors.",
           (*it)->name(), (*it)->endpoint_->toString(), ex.what());
@@ -260,7 +256,7 @@ void Registrator::makeDevice(
   registry_->registerDevice(device);
 }
 
-RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
+RegisterResponsePtr Registrator::handleRequest(RegisterRequestPtr request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE,
         "Handling a Registration request from {}:{}",
@@ -294,7 +290,7 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
   }
 }
 
-UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
+UpdateResponsePtr Registrator::handleRequest(UpdateRequestPtr request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE, "Handling an Update request from {}:{}",
         request->endpoint_->endpoint_address_,
@@ -336,7 +332,7 @@ UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
   }
 }
 
-DeregisterResponsePtr Registrator::handleRquest(DeregisterRequestPtr request) {
+DeregisterResponsePtr Registrator::handleRequest(DeregisterRequestPtr request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE,
         "Handling a Deregistration request from {}:{}",

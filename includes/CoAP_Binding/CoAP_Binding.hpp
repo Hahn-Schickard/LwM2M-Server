@@ -2,11 +2,12 @@
 #define __LWM2M_COAP_BINDING_HPP
 
 #include "Binding.hpp"
-#include "CoAPS4Cpp/Socket.hpp"
 #include "CoAP_Decoder.hpp"
 #include "CoAP_Encoder.hpp"
-#include "Logger.hpp"
 #include "Registrator.hpp"
+
+#include "CoAPS4Cpp/Socket.hpp"
+#include "HaSLL/Logger.hpp"
 
 namespace LwM2M {
 
@@ -50,7 +51,7 @@ private:
 
   std::unique_ptr<CoAP_Encoder> encoder_;
   std::unique_ptr<CoAP_Decoder> decoder_;
-  std::shared_ptr<HaSLL::Logger> logger_;
+  HaSLI::LoggerPtr logger_;
   std::unordered_map<std::size_t, CoAP::MessagePtr> dispatched_;
   std::unordered_map<std::size_t, std::function<void(PayloadDataPtr)>>
       observed_elements_;

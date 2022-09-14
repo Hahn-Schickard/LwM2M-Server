@@ -3,10 +3,11 @@
 
 #include "Deregister.hpp"
 #include "DeviceRegistry.hpp"
-#include "Logger.hpp"
 #include "Register.hpp"
 #include "RequesterInterfaceFacade.hpp"
 #include "Update.hpp"
+
+#include "HaSLL/Logger.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -19,7 +20,7 @@ class Registrator
       public std::enable_shared_from_this<RequesterInterfaceFacade> {
 
   DeviceRegistryPtr registry_;
-  std::shared_ptr<HaSLL::Logger> logger_;
+  HaSLI::LoggerPtr logger_;
 
   void makeDevice(std::string device_id, EndpointPtr device_address,
       DeviceMetaInfo device_info);
@@ -38,8 +39,6 @@ class Registrator
 public:
   Registrator(DeviceRegistryPtr registry);
 
-  ~Registrator();
-
   /**
    * @brief Registers a new LwM2M::Device or Registers it, if it already
    * exists in the LwM2M::DeviceRegistry. Returns an appropriate
@@ -49,7 +48,7 @@ public:
    * @param request
    * @return RegisterResponsePtr
    */
-  RegisterResponsePtr handleRquest(RegisterRequestPtr request);
+  RegisterResponsePtr handleRequest(RegisterRequestPtr request);
 
   /**
    * @brief Updates an existing LwM2M::Device within the LwM2M::DeviceRegistry.
@@ -59,7 +58,7 @@ public:
    * @param request
    * @return UpdateResponsePtr
    */
-  UpdateResponsePtr handleRquest(UpdateRequestPtr request);
+  UpdateResponsePtr handleRequest(UpdateRequestPtr request);
 
   /**
    * @brief Removes a given LwM2M::Device from the LwM2M::DeviceRegistry, if
@@ -70,7 +69,7 @@ public:
    * @param request
    * @return DeregisterResponsePtr
    */
-  DeregisterResponsePtr handleRquest(DeregisterRequestPtr request);
+  DeregisterResponsePtr handleRequest(DeregisterRequestPtr request);
 
   EventSourcePtr getEventSource();
 };

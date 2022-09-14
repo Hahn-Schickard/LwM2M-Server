@@ -2,9 +2,10 @@
 #define __LWM2M_MODEL_DEVICE_REGISTRY_HPP
 
 #include "Device.hpp"
-#include "Event_Model/EventSource.hpp"
-#include "Logger.hpp"
 #include "RegistryEvent.hpp"
+
+#include "Event_Model/EventSource.hpp"
+#include "HaSLL/Logger.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -32,13 +33,12 @@ class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
 
   SupportedObjectDescriptorsMap supported_descriptors_;
   DeviceRegistryMap device_registry_;
-  std::shared_ptr<HaSLL::Logger> logger_;
+  HaSLI::LoggerPtr logger_;
 
   void logListenerException(std::exception_ptr ex);
 
 public:
   DeviceRegistry(const std::string& configuration_path);
-  ~DeviceRegistry();
 
   SupportedObjectDescriptorsMapPtr getSupportedDescriptors();
 
