@@ -86,8 +86,8 @@ using DataVariant = std::variant<bool, int64_t, uint64_t, double, std::string,
 struct DataFormat {
   const std::vector<uint8_t> data_;
 
-  DataFormat(std::vector<uint8_t> bytes);
-  DataFormat(DataVariant data);
+  DataFormat(const std::vector<uint8_t>& bytes);
+  DataFormat(const DataVariant& data);
 
   /**
    * @brief Helper method to access underling DataVariant without defining a

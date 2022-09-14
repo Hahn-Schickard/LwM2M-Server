@@ -57,14 +57,14 @@ struct ResourceDescriptor {
    *
    * @param instance
    */
-  ResourceDescriptor(const ResourceDescriptor& instance);
+  ResourceDescriptor(const ResourceDescriptor& instance) = default;
 
   /**
    * @brief Move constructor
    *
    * @param instance
    */
-  ResourceDescriptor(ResourceDescriptor&& instance);
+  ResourceDescriptor(ResourceDescriptor&& instance) noexcept;
 
   /**
    * @brief Creates a Resource descriptor without a range enumeration value

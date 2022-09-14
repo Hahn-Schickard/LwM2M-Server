@@ -24,6 +24,7 @@ target_link_libraries(${MODULE_NAME} PUBLIC
                                      ${PROJECT_NAME}_Binding_Interface
                                      CoAPS4Cpp::CoAPS4Cpp
                                      HaSLL::HaSLL
+                                     HSCUL::HSCUL
 )
 
 target_include_directories(${MODULE_NAME} INTERFACE

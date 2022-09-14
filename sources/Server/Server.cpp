@@ -9,7 +9,7 @@ using namespace HaSLI;
 
 namespace LwM2M {
 
-Server::Server(const string filepath)
+Server::Server(const string& filepath)
     : logger_(LoggerManager::registerTypedLogger(this)) {
   Configuration config;
   if (!filepath.empty()) {
@@ -31,7 +31,7 @@ Server::Server(const string filepath)
 
 void Server::start() {
   logger_->log(SeverityLevel::TRACE, "Starting bindings.");
-  for (auto binding : bindings_) {
+  for (const auto& binding : bindings_) {
     binding->start();
   }
   logger_->log(
@@ -40,7 +40,7 @@ void Server::start() {
 
 void Server::stop() {
   logger_->log(SeverityLevel::TRACE, "Stopping bindings.");
-  for (auto binding : bindings_) {
+  for (const auto& binding : bindings_) {
     binding->stop();
   }
   logger_->log(

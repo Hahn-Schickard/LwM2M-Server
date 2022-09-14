@@ -89,8 +89,7 @@ void printDevice(DevicePtr device) {
 
 string stringifyDataVariant(DataVariant variant) {
   string result;
-  match(
-      variant, [&](bool value) { result = value ? "True" : "False"; },
+  match(variant, [&](bool value) { result = value ? "True" : "False"; },
       [&](int64_t value) { result = to_string(value); },
       [&](uint64_t value) { result = to_string(value); },
       [&](double value) { result = to_string(value); },
@@ -108,8 +107,7 @@ string stringifyDataVariant(DataVariant variant) {
 
 string stringifyResourceValue(ResourcePtr resource) {
   string response;
-  match(
-      resource->getResourceInstance(),
+  match(resource->getResourceInstance(),
       [&](ReadablePtr readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
@@ -130,8 +128,7 @@ string stringifyResourceValue(ResourcePtr resource) {
 }
 
 future<void> asyncRead(DevicePtr device, ElementID id) {
-  return async(
-      std::launch::async,
+  return async(std::launch::async,
       [](DevicePtr device, ElementID element_id) {
         try {
           auto object = device->getObject(element_id);
@@ -159,7 +156,8 @@ future<void> asyncRead(DevicePtr device, ElementID id) {
       device, id);
 }
 
-RegistrationListener::RegistrationListener(EventSourcePtr registration)
+RegistrationListener::RegistrationListener(
+    EventSourcePtr registration) // NOLINT
     : EventListenerInterface(registration) {}
 
 void RegistrationListener::handleEvent(RegistryEventPtr event) {

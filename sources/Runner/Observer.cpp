@@ -13,7 +13,7 @@ using namespace std;
 namespace LwM2M_Example {
 Observer::Observer(ObservablePtr element) : ObserverInterface(element) {}
 
-void handleData(DataFormatPtr data, DataType data_type) {
+void handleData(const DataFormatPtr& data, DataType data_type) {
   switch (data_type) {
   case DataType::STRING: {
     cout << data->get<string>();
@@ -74,7 +74,7 @@ void handleTargetContent(
 }
 
 void handleTargetContentVector(TargetContentVector vector,
-    Observable::ObservedDataTypes observed_data_types) {
+    const Observable::ObservedDataTypes& observed_data_types) {
   cout << "{";
   for (auto target_data = vector.begin(); target_data != vector.end();
        ++target_data) {
@@ -119,8 +119,7 @@ void handleTargetAttributes(TargetAttributes attributes) {
 void Observer::handleEvent(PayloadDataPtr payload) {
   if (payload) {
     cout << "Received: ";
-    match(
-        *payload,
+    match(*payload,
         [&](DataFormatPtr data) {
           handleData(data, getObservedDataTypes().begin()->second);
           cout << endl;

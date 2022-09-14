@@ -5,9 +5,10 @@ using namespace std;
 
 namespace LwM2M {
 
-Executable::Executable(
-    ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id)
-    : ElementAddress(endpoint, id), requester_(requester) {}
+Executable::Executable(ExecutableInterfacePtr requester, // NOLINT
+    EndpointPtr endpoint, // NOLINT
+    ElementID id)
+    : ElementAddress(endpoint, id), requester_(requester) {} // NOLINT
 
 Executable::Result Executable::execute(string arguments) {
   auto message = make_shared<ExecuteRequest>(endpoint_, id_, arguments);

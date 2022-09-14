@@ -22,19 +22,19 @@ class Registrator
   DeviceRegistryPtr registry_;
   HaSLI::LoggerPtr logger_;
 
-  void makeDevice(std::string device_id, EndpointPtr device_address,
+  void makeDevice(const std::string& device_id, EndpointPtr device_address,
       DeviceMetaInfo device_info);
 
   ObjectDescriptorsMap assignAvailableDescriptors(
       ElementIDs requested_instances);
 
   ElementIDs discoverAvailableDescriptors(EndpointPtr endpoint,
-      const DeviceMetaInfo::ObjectInstancesMap object_instances);
+      const DeviceMetaInfo::ObjectInstancesMap& object_instances);
 
-  ElementIDs discover(ServerRequestPtr request);
+  ElementIDs discover(const ServerRequestPtr& request);
 
   void handleDeviceException(
-      std::string device_id, std::exception_ptr exception_ptr);
+      const std::string& device_id, const std::exception_ptr& exception_ptr);
 
 public:
   Registrator(DeviceRegistryPtr registry);
@@ -48,7 +48,7 @@ public:
    * @param request
    * @return RegisterResponsePtr
    */
-  RegisterResponsePtr handleRequest(RegisterRequestPtr request);
+  RegisterResponsePtr handleRequest(const RegisterRequestPtr& request);
 
   /**
    * @brief Updates an existing LwM2M::Device within the LwM2M::DeviceRegistry.
@@ -58,7 +58,7 @@ public:
    * @param request
    * @return UpdateResponsePtr
    */
-  UpdateResponsePtr handleRequest(UpdateRequestPtr request);
+  UpdateResponsePtr handleRequest(const UpdateRequestPtr& request);
 
   /**
    * @brief Removes a given LwM2M::Device from the LwM2M::DeviceRegistry, if
@@ -69,7 +69,7 @@ public:
    * @param request
    * @return DeregisterResponsePtr
    */
-  DeregisterResponsePtr handleRequest(DeregisterRequestPtr request);
+  DeregisterResponsePtr handleRequest(const DeregisterRequestPtr& request);
 
   EventSourcePtr getEventSource();
 };

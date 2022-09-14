@@ -19,9 +19,7 @@ string toString(InterfaceType type) {
   case InterfaceType::INFORMATION_REPORTING: {
     return "Information Reporting Interface";
   }
-  default: {
-    return "Unrecognized Interface";
-  }
+  default: { return "Unrecognized Interface"; }
   }
 }
 
@@ -81,9 +79,7 @@ string toString(MessageType type) {
   case MessageType::SEND: {
     return "Send";
   }
-  default: {
-    return "Unhandled";
-  };
+  default: { return "Unhandled"; };
   }
 }
 
@@ -101,9 +97,7 @@ InterfaceType getInterfaceType(MessageType message_type) {
   case 0x40: {
     return InterfaceType::BOOTSTRAP;
   }
-  default: {
-    return InterfaceType::NOT_RECOGNIZED;
-  }
+  default: { return InterfaceType::NOT_RECOGNIZED; }
   }
 }
 
@@ -176,9 +170,7 @@ string toString(ResponseCode type) {
     return "Proxying Not Supported";
   }
   case ResponseCode::UNHANDLED:
-  default: {
-    return "Unhandled Return Code";
-  }
+  default: { return "Unhandled Return Code"; }
   }
 }
 
@@ -187,7 +179,7 @@ UnsupportedResponseCode::UnsupportedResponseCode(string const& message)
 
 string makeErrorMsg(string message_type, ResponseCode unsupported_response_code,
     unordered_set<ResponseCode> supported_response_codes) {
-  string error_msg = string(message_type);
+  string error_msg = string(move(message_type));
   error_msg += " does not support the use of " +
       toString(unsupported_response_code) +
       " response code! It only supports: ";
@@ -199,15 +191,17 @@ string makeErrorMsg(string message_type, ResponseCode unsupported_response_code,
 
 UnsupportedResponseCode::UnsupportedResponseCode(string message_type,
     ResponseCode unsupported_response_code,
-    unordered_set<ResponseCode> supported_response_codes)
-    : UnsupportedResponseCode(makeErrorMsg(
-          message_type, unsupported_response_code, supported_response_codes)) {}
+    unordered_set<ResponseCode> supported_response_codes) // NOLINT
+    : UnsupportedResponseCode(makeErrorMsg(move(message_type),
+          unsupported_response_code, supported_response_codes)) {} // NOLINT
 
-Message::Message(EndpointPtr endpoint, MessageType message_type,
-    InterfaceType interface, PayloadPtr payload, bool incoming, bool response,
-    bool notification)
-    : endpoint_(endpoint), message_type_(message_type), interface_(interface),
-      payload_(payload), response_(response), incoming_(incoming),
+Message::Message(EndpointPtr endpoint, // NOLINT
+    MessageType message_type, InterfaceType interface,
+    PayloadPtr payload, // NOLINT
+    bool incoming, bool response, bool notification)
+    : endpoint_(endpoint), // NOLINT
+      message_type_(message_type), interface_(interface), // NOLINT
+      payload_(payload), response_(response), incoming_(incoming), // NOLINT
       notification_(notification) {
   if (!endpoint_) {
     throw invalid_argument("Endpoint can not be null!");
@@ -219,13 +213,15 @@ string Message::name() {
   return "Message";
 }
 
-Response::Response(EndpointPtr endpoint, MessageType message_type,
-    InterfaceType interface, bool incoming,
-    unordered_set<ResponseCode> supported_responses, ResponseCode response_code,
-    PayloadPtr payload)
-    : Message(endpoint, message_type, interface, payload, incoming, true),
-      supported_responses_(supported_responses), response_code_(response_code) {
-}
+Response::Response(EndpointPtr endpoint, // NOLINT
+    MessageType message_type, InterfaceType interface, bool incoming,
+    unordered_set<ResponseCode> supported_responses, // NOLINT
+    ResponseCode response_code, PayloadPtr payload) // NOLINT
+    : Message(endpoint, // NOLINT
+          message_type, interface, payload, // NOLINT
+          incoming, true),
+      supported_responses_(supported_responses), // NOLINT
+      response_code_(response_code) {}
 
 void Response::checkResponseCode(ResponseCode response_code) {
   if (supported_responses_.find(response_code) == supported_responses_.end()) {
@@ -233,29 +229,38 @@ void Response::checkResponseCode(ResponseCode response_code) {
   }
 }
 
-ClientRequest::ClientRequest(EndpointPtr endpoint, MessageType message_type,
-    InterfaceType interface, PayloadPtr payload)
-    : Message(endpoint, message_type, interface, payload, true) {}
+ClientRequest::ClientRequest(EndpointPtr endpoint, // NOLINT
+    MessageType message_type, InterfaceType interface,
+    PayloadPtr payload) // NOLINT
+    : Message(endpoint, // NOLINT
+          message_type, interface, payload, true) {} // NOLINT
 
-ClientResponse::ClientResponse(
-    EndpointPtr endpoint, ResponseCode response_code, PayloadPtr payload)
-    : Response(endpoint, MessageType::NOT_RECOGNIZED,
-          InterfaceType::NOT_RECOGNIZED, true, unordered_set<ResponseCode>(),
-          response_code, payload) {}
+ClientResponse::ClientResponse(EndpointPtr endpoint, // NOLINT
+    ResponseCode response_code, PayloadPtr payload) // NOLINT
+    : Response(endpoint, // NOLINT
+          MessageType::NOT_RECOGNIZED, InterfaceType::NOT_RECOGNIZED, true,
+          unordered_set<ResponseCode>(), response_code, payload) {} // NOLINT
 
-ClientNotification::ClientNotification(EndpointPtr endpoint,
-    MessageType message_type, InterfaceType interface, PayloadPtr payload)
-    : Message(endpoint, message_type, interface, payload, true, false, true) {}
+ClientNotification::ClientNotification(EndpointPtr endpoint, // NOLINT
+    MessageType message_type, InterfaceType interface,
+    PayloadPtr payload) // NOLINT
+    : Message(endpoint, // NOLINT
+          message_type, interface, payload, true, false, true) {} // NOLINT
 
-ServerRequest::ServerRequest(EndpointPtr endpoint, MessageType message_type,
-    InterfaceType interface, PayloadPtr payload)
-    : Message(endpoint, message_type, interface, payload, false) {}
+ServerRequest::ServerRequest(EndpointPtr endpoint, // NOLINT
+    MessageType message_type, InterfaceType interface,
+    PayloadPtr payload) // NOLINT
+    : Message(endpoint, // NOLINT
+          message_type, interface, payload, false) {} // NOLINT
 
-ServerResponse::ServerResponse(EndpointPtr endpoint, MessageType message_type,
-    InterfaceType interface, unordered_set<ResponseCode> supported_responses,
-    ResponseCode response_code, PayloadPtr payload)
-    : Response(endpoint, message_type, interface, false, supported_responses,
-          response_code, payload) {}
+ServerResponse::ServerResponse(EndpointPtr endpoint, // NOLINT
+    MessageType message_type, InterfaceType interface,
+    unordered_set<ResponseCode> supported_responses, ResponseCode response_code,
+    PayloadPtr payload) // NOLINT
+    : Response(endpoint, // NOLINT
+          message_type, interface, false,
+          supported_responses, // NOLINT
+          response_code, payload) {} // NOLINT
 
 } // namespace LwM2M
 
@@ -270,10 +275,10 @@ size_t std::hash<LwM2M::Message>::operator()(
   result <<= sizeof(message.interface_);
   result |= hash<LwM2M::Payload>{}(*message.payload_);
   result <<= message.payload_->size();
-  result |= message.response_;
+  result |= message.response_; // NOLINT
   result <<= 1;
-  result |= message.incoming_;
+  result |= message.incoming_; // NOLINT
   result <<= 1;
-  result |= message.notification_;
+  result |= message.notification_; // NOLINT
   return result;
 }

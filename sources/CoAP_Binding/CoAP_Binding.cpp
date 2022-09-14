@@ -14,11 +14,11 @@ using namespace HaSLI;
 #define ERROR_CODES_VALUE 0x80
 
 CoAP_Binding::CoAP_Binding(
-    DeviceRegistryPtr registry, const string& config_filepath)
+    const DeviceRegistryPtr& registry, const string& config_filepath)
     : CoAP_Binding(registry, getConfig(config_filepath)) {}
 
 CoAP_Binding::CoAP_Binding(
-    DeviceRegistryPtr registry, const CoAP::Configuration& config)
+    const DeviceRegistryPtr& registry, const CoAP::Configuration& config)
     : BindingInterface(registry), Registrator(registry), Socket(config),
       encoder_(make_unique<CoAP_Encoder>()),
       decoder_(make_unique<CoAP_Decoder>()),
@@ -123,9 +123,7 @@ future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr request) {
         auto response = decoder_->decode<ClientResponse>(coap_response);
         dispatched_.erase(std::hash<Message>{}(*request));
         return static_cast<uint8_t>(response->response_code_) <
-                ERROR_CODES_VALUE
-            ? true
-            : false;
+            ERROR_CODES_VALUE;
       },
       request);
 }
@@ -214,7 +212,7 @@ void CoAP_Binding::cancelRequest(ServerRequestPtr request) {
   }
 }
 
-void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
+void CoAP_Binding::handleNotification(const CoAP::MessagePtr& message) {
   auto observer = observed_elements_.find(message->getToken()->hash());
   if (observer != observed_elements_.end()) {
     logger_->log(SeverityLevel::TRACE,
@@ -250,7 +248,7 @@ void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
 }
 
 ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
-    CoAP::MessagePtr message) {
+    const CoAP::MessagePtr& message) {
   auto options = message->getOptions();
   auto option = options.find(CoAP::OptionNumber::URI_PATH);
   if (option != options.end()) {
@@ -263,15 +261,15 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
         if (message->getHeader()->getCodeType() == CoAP::CodeType::POST) {
           if (options.count(CoAP::OptionNumber::URI_PATH) > 1) {
             auto request = decoder_->decode<UpdateRequest>(message);
-            return Registrator::handleRequest(move(request));
+            return Registrator::handleRequest(request);
           } else {
             auto request = decoder_->decode<RegisterRequest>(message);
-            return Registrator::handleRequest(move(request));
+            return Registrator::handleRequest(request);
           }
         } else if (message->getHeader()->getCodeType() ==
             CoAP::CodeType::DELETE) {
           auto request = decoder_->decode<DeregisterRequest>(message);
-          return Registrator::handleRequest(move(request));
+          return Registrator::handleRequest(request);
         }
       } catch (RegistrationInterfaceError& ex) {
         auto endpoint = make_shared<Endpoint>(
@@ -292,7 +290,7 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
   return ServerResponsePtr();
 }
 
-ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
+ServerResponsePtr CoAP_Binding::handleRequest(const CoAP::MessagePtr& message) {
   logger_->log(SeverityLevel::TRACE,
       "Handling incoming message from {}:{} as a Request",
       message->getAddressIP(), message->getAddressPort());
@@ -322,7 +320,7 @@ void CoAP_Binding::handleReceived(CoAP::MessagePtr message) {
   }
 }
 
-CoAP::MessagePtr CoAP_Binding::encodeRequest(ServerRequestPtr request) {
+CoAP::MessagePtr CoAP_Binding::encodeRequest(const ServerRequestPtr& request) {
   auto hash = std::hash<Message>{}(*request);
   auto it = dispatched_.find(hash);
   if (it == dispatched_.end()) {

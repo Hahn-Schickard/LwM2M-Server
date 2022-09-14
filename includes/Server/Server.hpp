@@ -16,7 +16,7 @@ class Server {
   HaSLI::LoggerPtr logger_;
 
 public:
-  Server(const std::string filepath = std::string());
+  Server(const std::string& filepath = std::string());
 
   void start();
   void stop();

@@ -15,15 +15,15 @@ using namespace std;
 using namespace LwM2M;
 
 struct ResourceExpectations {
-  TestRequesterPtr requester_;
-  ResourceDescriptorPtr descriptor_;
-  DataFormat result_;
+  TestRequesterPtr requester;
+  ResourceDescriptorPtr descriptor;
+  DataFormat result;
 
   ResourceExpectations(ResourceDescriptorPtr descriptor, DataFormat result)
-      : requester_(make_shared<TestRequester>()), descriptor_(descriptor),
-        result_(result) {}
+      : requester(make_shared<TestRequester>()), descriptor(move(descriptor)),
+        result(move(result)) {}
 
-  DataVariant get() { return result_.get(descriptor_->data_type_); }
+  DataVariant get() { return result.get(descriptor->data_type_); }
 };
 
 using ResourceExpectationsPtr = shared_ptr<ResourceExpectations>;
@@ -31,16 +31,18 @@ using ResourceExpectationsPtr = shared_ptr<ResourceExpectations>;
 using ResourceTestParameter = tuple<ResourceDescriptorPtr, DataFormat>;
 
 template <typename T> struct RespondWithDelay {
-  TestRequesterPtr requester_;
-  int delay_;
-  T response_;
+  TestRequesterPtr requester;
+  int delay;
+  T response;
 
-  RespondWithDelay(TestRequesterPtr requester, int delay, T response)
-      : requester_(requester), delay_(delay), response_(response) {}
+  RespondWithDelay(
+      TestRequesterPtr requester, int delay_value, T response_value)
+      : requester(move(requester)), delay(delay_value),
+        response(move(response_value)) {}
 
   void operator()() {
-    this_thread::sleep_for(chrono::milliseconds(delay_));
-    requester_->respond(response_);
+    this_thread::sleep_for(chrono::milliseconds(delay));
+    requester->respond(response);
   }
 };
 
@@ -61,7 +63,7 @@ protected:
     expected_ = make_shared<ResourceExpectations>(
         get<0>(GetParam()), get<1>(GetParam()));
     tested_ = makeTested(
-        exception_handler_, expected_->requester_, expected_->descriptor_);
+        exception_handler_, expected_->requester, expected_->descriptor);
   }
 
   void TearDown() override {
@@ -77,8 +79,7 @@ protected:
 };
 
 void compareVariant(DataVariant tested, DataVariant expected) {
-  match(
-      tested, [&](bool value) { EXPECT_EQ(value, get<bool>(expected)); },
+  match(tested, [&](bool value) { EXPECT_EQ(value, get<bool>(expected)); },
       [&](int64_t value) { EXPECT_EQ(value, get<int64_t>(expected)); },
       [&](uint64_t value) { EXPECT_EQ(value, get<uint64_t>(expected)); },
       [&](double value) { EXPECT_EQ(value, get<double>(expected)); },
@@ -99,15 +100,15 @@ void compareVariant(DataVariant tested, DataVariant expected) {
       });
 }
 
-void processReadable(ReadablePtr readable, ResourceExpectationsPtr expected,
-    int response_delay_ms) {
+void processReadable(ReadablePtr readable,
+    const ResourceExpectationsPtr& expected, int response_delay_ms) {
   auto result = readable->read();
   auto finished = async(std::launch::async,
       RespondWithDelay<DataFormat>(
-          expected->requester_, response_delay_ms, expected->result_));
+          expected->requester, response_delay_ms, expected->result));
   if (finished.wait_for(1s) != future_status::ready) {
-    FAIL() << "Async Read of resource " << expected->descriptor_->id_ << ":"
-           << expected->descriptor_->name_ << " has timed-out" << endl;
+    FAIL() << "Async Read of resource " << expected->descriptor->id_ << ":"
+           << expected->descriptor->name_ << " has timed-out" << endl;
     std::terminate();
   }
   compareVariant(result.get(), expected->get());
@@ -117,8 +118,7 @@ void processReadable(ReadablePtr readable, ResourceExpectationsPtr expected,
 void readResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto instance = resource->getResourceInstance();
-  match(
-      instance,
+  match(instance,
       [&](ReadablePtr& value) {
         processReadable(value, expected, response_delay_ms);
       },
@@ -133,9 +133,10 @@ void readResource(ResourcePtr resource, ResourceExpectationsPtr expected,
       });
 }
 
+// NOLINTNEXTLINE
 TEST_P(ResourceTest, canReadValue) {
-  if (expected_->descriptor_->operations_ == OperationsType::READ ||
-      expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::READ ||
+      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
     EXPECT_NO_THROW(readResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW(
@@ -151,8 +152,7 @@ void cancelReadable(ReadablePtr readable) {
 
 void cancelReadResource(ResourcePtr resource) {
   auto instance = resource->getResourceInstance();
-  match(
-      instance, [&](ReadablePtr& value) { cancelReadable(value); },
+  match(instance, [&](ReadablePtr& value) { cancelReadable(value); },
       [&](ReadAndWritablePtr& value) { cancelReadable(value); },
       [&](...) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
@@ -162,23 +162,24 @@ void cancelReadResource(ResourcePtr resource) {
       });
 }
 
+// NOLINTNEXTLINE
 TEST_P(ResourceTest, canCancelRead) {
-  if (expected_->descriptor_->operations_ == OperationsType::READ ||
-      expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::READ ||
+      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
     EXPECT_NO_THROW(cancelReadResource(tested_));
   } else {
     EXPECT_THROW({ cancelReadResource(tested_); }, logic_error);
   }
 }
 
-void processWritable(WritablePtr writable, ResourceExpectationsPtr expected,
-    int response_delay_ms) {
+void processWritable(WritablePtr writable,
+    const ResourceExpectationsPtr& expected, int response_delay_ms) {
   auto result = writable->write(expected->get());
   auto finished = async(std::launch::async,
-      RespondWithDelay<bool>(expected->requester_, response_delay_ms, true));
+      RespondWithDelay<bool>(expected->requester, response_delay_ms, true));
   if (finished.wait_for(1s) != future_status::ready) {
-    FAIL() << "Async Write of resource " << expected->descriptor_->id_ << ":"
-           << expected->descriptor_->name_ << " has timed-out" << endl;
+    FAIL() << "Async Write of resource " << expected->descriptor->id_ << ":"
+           << expected->descriptor->name_ << " has timed-out" << endl;
     std::terminate();
   }
   EXPECT_TRUE(result.get());
@@ -188,8 +189,7 @@ void processWritable(WritablePtr writable, ResourceExpectationsPtr expected,
 void writeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto instance = resource->getResourceInstance();
-  match(
-      instance,
+  match(instance,
       [&](WritablePtr& value) {
         processWritable(value, expected, response_delay_ms);
       },
@@ -204,9 +204,10 @@ void writeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
       });
 }
 
+// NOLINTNEXTLINE
 TEST_P(ResourceTest, canWriteValue) {
-  if (expected_->descriptor_->operations_ == OperationsType::WRITE ||
-      expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::WRITE ||
+      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
     EXPECT_NO_THROW(writeResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW({ writeResource(tested_, expected_, response_delay_ms_); },
@@ -222,8 +223,7 @@ void cancelWritable(WritablePtr writable) {
 
 void cancelWriteResource(ResourcePtr resource) {
   auto instance = resource->getResourceInstance();
-  match(
-      instance, [&](WritablePtr& value) { cancelWritable(value); },
+  match(instance, [&](WritablePtr& value) { cancelWritable(value); },
       [&](ReadAndWritablePtr& value) { cancelWritable(value); },
       [&](...) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
@@ -233,23 +233,24 @@ void cancelWriteResource(ResourcePtr resource) {
       });
 }
 
+// NOLINTNEXTLINE
 TEST_P(ResourceTest, canCancelWrite) {
-  if (expected_->descriptor_->operations_ == OperationsType::WRITE ||
-      expected_->descriptor_->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::WRITE ||
+      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
     EXPECT_NO_THROW(cancelWriteResource(tested_));
   } else {
     EXPECT_THROW({ cancelWriteResource(tested_); }, logic_error);
   }
 }
 
-void processExecutable(ExecutablePtr resource, ResourceExpectationsPtr expected,
-    int response_delay_ms) {
+void processExecutable(ExecutablePtr resource,
+    const ResourceExpectationsPtr& expected, int response_delay_ms) {
   auto result = resource->execute("");
   auto finished = async(std::launch::async,
-      RespondWithDelay<bool>(expected->requester_, response_delay_ms, true));
+      RespondWithDelay<bool>(expected->requester, response_delay_ms, true));
   if (finished.wait_for(1s) != future_status::ready) {
-    FAIL() << "Async Execute of resource " << expected->descriptor_->id_ << ":"
-           << expected->descriptor_->name_ << " has timed-out" << endl;
+    FAIL() << "Async Execute of resource " << expected->descriptor->id_ << ":"
+           << expected->descriptor->name_ << " has timed-out" << endl;
     std::terminate();
   }
   EXPECT_TRUE(result.get());
@@ -259,8 +260,7 @@ void processExecutable(ExecutablePtr resource, ResourceExpectationsPtr expected,
 void executeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto instance = resource->getResourceInstance();
-  match(
-      instance,
+  match(instance,
       [&](ExecutablePtr& value) {
         processExecutable(value, expected, response_delay_ms);
       },
@@ -272,8 +272,9 @@ void executeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
       });
 }
 
+// NOLINTNEXTLINE
 TEST_P(ResourceTest, canExecuteAction) {
-  if (expected_->descriptor_->operations_ == OperationsType::EXECUTE) {
+  if (expected_->descriptor->operations_ == OperationsType::EXECUTE) {
     EXPECT_NO_THROW(executeResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW({ executeResource(tested_, expected_, response_delay_ms_); },
@@ -289,8 +290,7 @@ void cancelExecutable(ExecutablePtr excecutable) {
 
 void cancelExecuteResource(ResourcePtr resource) {
   auto instance = resource->getResourceInstance();
-  match(
-      instance, [&](ExecutablePtr& value) { cancelExecutable(value); },
+  match(instance, [&](ExecutablePtr& value) { cancelExecutable(value); },
       [&](...) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
             " ID " + to_string(resource->getDescriptor()->id_) +
@@ -299,8 +299,9 @@ void cancelExecuteResource(ResourcePtr resource) {
       });
 }
 
+// NOLINTNEXTLINE
 TEST_P(ResourceTest, canCancelExecutable) {
-  if (expected_->descriptor_->operations_ == OperationsType::EXECUTE) {
+  if (expected_->descriptor->operations_ == OperationsType::EXECUTE) {
     EXPECT_NO_THROW(cancelExecuteResource(tested_));
   } else {
     EXPECT_THROW({ cancelExecuteResource(tested_); }, logic_error);
@@ -310,17 +311,18 @@ TEST_P(ResourceTest, canCancelExecutable) {
 struct GenerateTestName {
   string operator()(
       const testing::TestParamInfo<ResourceTestParameter>& parameter) const {
-    auto descriptor = get<0>(parameter.param);
+    const auto& descriptor = get<0>(parameter.param);
     auto name = descriptor->name_ + toString(descriptor->data_type_) +
         toString(descriptor->operations_);
     name.erase(remove_if(name.begin(), name.end(), ::isspace), name.end());
     name.erase(remove_if(name.begin(), name.end(),
-                   [](unsigned char x) { return x == '_' ? true : false; }),
+                   [](unsigned char x) { return x == '_'; }),
         name.end());
     return name;
   }
 };
 
+// NOLINTNEXTLINE
 INSTANTIATE_TEST_SUITE_P(ResourceTests, ResourceTest,
     testing::Values(make_tuple(make_shared<ResourceDescriptor>(1, "Test",
                                    OperationsType::READ, false, true,

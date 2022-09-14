@@ -7,7 +7,7 @@ using namespace std;
 using namespace HaSLI;
 
 namespace LwM2M {
-DeviceNotFound::DeviceNotFound(string const& identifier)
+DeviceNotFound::DeviceNotFound(const string& identifier)
     : runtime_error("Device with id: " + identifier +
           " could not be found in the registry.") {}
 
@@ -24,12 +24,12 @@ DeviceRegistry::DeviceRegistry(const string& configuration_path)
   }
 }
 
-void DeviceRegistry::logListenerException(std::exception_ptr eptr) {
+void DeviceRegistry::logListenerException(const exception_ptr& eptr) {
   try {
     if (eptr) {
-      std::rethrow_exception(eptr);
+      rethrow_exception(eptr);
     }
-  } catch (const std::exception& ex) {
+  } catch (const exception& ex) {
     logger_->log(SeverityLevel::ERROR,
         "One of the listeners threw an exception, while handing an "
         "event notification. Exception: {}",
@@ -42,12 +42,12 @@ void DeviceRegistry::logListenerException(std::exception_ptr eptr) {
 }
 
 SupportedObjectDescriptorsMapPtr DeviceRegistry::getSupportedDescriptors() {
-  return make_shared<SupportedObjectDescriptorsMap>(supported_descriptors_);
+  return std::make_shared<SupportedObjectDescriptorsMap>(
+      supported_descriptors_);
 }
 
-bool DeviceRegistry::isRegistered(string identifier) {
-  return (device_registry_.find(identifier) != device_registry_.end()) ? true
-                                                                       : false;
+bool DeviceRegistry::isRegistered(const string& identifier) {
+  return (device_registry_.find(identifier) != device_registry_.end());
 }
 
 void DeviceRegistry::registerDevice(DevicePtr new_device) {
@@ -86,7 +86,7 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
   }
 }
 
-void DeviceRegistry::deregisterDevice(string identifier) {
+void DeviceRegistry::deregisterDevice(const string& identifier) {
   logger_->log(SeverityLevel::TRACE,
       "Looking for Device with id {} within the registry.", identifier);
   auto it = device_registry_.find(identifier);
@@ -94,8 +94,8 @@ void DeviceRegistry::deregisterDevice(string identifier) {
     device_registry_.erase(it);
     logger_->log(SeverityLevel::TRACE,
         "Device with id {} has been removed from the registry.", identifier);
-    auto event =
-        make_shared<RegistryEvent>(RegistryEventType::DEREGISTERED, identifier);
+    auto event = std::make_shared<RegistryEvent>(
+        RegistryEventType::DEREGISTERED, identifier);
     logger_->log(SeverityLevel::TRACE,
         "Dispatching deregistration event for device {}", identifier);
     notify(event);
@@ -104,7 +104,7 @@ void DeviceRegistry::deregisterDevice(string identifier) {
   }
 }
 
-DevicePtr DeviceRegistry::getDevice(string identifier) {
+DevicePtr DeviceRegistry::getDevice(const string& identifier) {
   auto it = device_registry_.find(identifier);
   if (it != device_registry_.end()) {
     return it->second;

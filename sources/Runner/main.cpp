@@ -27,7 +27,7 @@ int main(int argc, const char* argv[]) {
       server->start();
       logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
       if (argc > 1) {
-        int sleep_period = atoi(argv[1]);
+        int sleep_period = atoi(argv[1]); // NOLINT
         this_thread::sleep_for(chrono::seconds(sleep_period));
       } else {
         for (;;) {

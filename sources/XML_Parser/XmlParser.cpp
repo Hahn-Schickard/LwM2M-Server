@@ -21,55 +21,57 @@ string deserializeNode(xml_node node) {
   return result;
 }
 
-template <typename T> T getChildValue(xml_node parent, string child_name) {
+template <typename T>
+T getChildValue(xml_node parent, const string& child_name) {
   throw runtime_error("Unsupported data type requested");
 }
 
 template <>
-uint32_t getChildValue<uint32_t>(xml_node parent, string child_name) {
-  if (parent.child(child_name.c_str())) {
+uint32_t getChildValue<uint32_t>(xml_node parent, const string& child_name) {
+  if (parent.child(child_name.c_str()) != nullptr) {
     return (uint32_t)stol(
         string(parent.child(child_name.c_str()).child_value()));
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
         " has no child named: " + child_name;
-    throw runtime_error(move(error_msg));
+    throw runtime_error(error_msg);
   }
 }
 
-template <> double getChildValue<double>(xml_node parent, string child_name) {
-  if (parent.child(child_name.c_str())) {
-    return string(parent.child(child_name.c_str()).child_value()) == "true"
-        ? true
-        : false;
-  } else {
-    string error_msg = "Parent:" + string(parent.name()) +
-        " has no child named: " + child_name;
-    throw runtime_error(move(error_msg));
-  }
-}
-
-template <> string getChildValue<string>(xml_node parent, string child_name) {
-  if (parent.child(child_name.c_str())) {
-    return string(parent.child(child_name.c_str()).child_value());
-  } else {
-    string error_msg = "Parent:" + string(parent.name()) +
-        " has no child named: " + child_name;
-    throw runtime_error(move(error_msg));
-  }
-}
-
-template <> bool getChildValue<bool>(xml_node parent, string child_name) {
-  if (parent.child(child_name.c_str())) {
+template <>
+double getChildValue<double>(xml_node parent, const string& child_name) {
+  if (parent.child(child_name.c_str()) != nullptr) {
     return stod(string(parent.child(child_name.c_str()).child_value()));
   } else {
     string error_msg = "Parent:" + string(parent.name()) +
         " has no child named: " + child_name;
-    throw runtime_error(move(error_msg));
+    throw runtime_error(error_msg);
   }
 }
 
-OperationsType convertToOperationsType(string value) {
+template <>
+string getChildValue<string>(xml_node parent, const string& child_name) {
+  if (parent.child(child_name.c_str()) != nullptr) {
+    return string(parent.child(child_name.c_str()).child_value());
+  } else {
+    string error_msg = "Parent:" + string(parent.name()) +
+        " has no child named: " + child_name;
+    throw runtime_error(error_msg);
+  }
+}
+
+template <>
+bool getChildValue<bool>(xml_node parent, const string& child_name) {
+  if (parent.child(child_name.c_str()) != nullptr) {
+    return stod(string(parent.child(child_name.c_str()).child_value())) != 0.0;
+  } else {
+    string error_msg = "Parent:" + string(parent.name()) +
+        " has no child named: " + child_name;
+    throw runtime_error(error_msg);
+  }
+}
+
+OperationsType convertToOperationsType(const string& value) {
   OperationsType result;
   if (value == "R") {
     result = OperationsType::READ;
@@ -85,15 +87,11 @@ OperationsType convertToOperationsType(string value) {
   return result;
 }
 
-bool convertInstanceType(string value) {
-  return value == "Multiple" ? true : false;
-}
+bool convertInstanceType(const string& value) { return value == "Multiple"; }
 
-bool convertMandatoryType(string value) {
-  return value == "Mandatory" ? true : false;
-}
+bool convertMandatoryType(const string& value) { return value == "Mandatory"; }
 
-DataType converDataType(string value) {
+DataType convertDataType(const string& value) {
   DataType result;
   if (value == "String") {
     result = DataType::STRING;
@@ -121,7 +119,7 @@ DataType converDataType(string value) {
 
 optional<RangeEnumeration> getRangeEnumeration(xml_node resource_node) {
   if (!resource_node.child("RangeEnumeration").empty()) {
-    // @TODO: implement RangeEnumeration convertion
+    // @TODO: implement RangeEnumeration conversion
   }
   return nullopt;
 }
@@ -129,7 +127,7 @@ optional<RangeEnumeration> getRangeEnumeration(xml_node resource_node) {
 ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
   try {
     uint32_t resource_id;
-    if (resource_node.attribute("ID").hash_value()) {
+    if (resource_node.attribute("ID").hash_value() != 0u) {
       resource_id = resource_node.attribute("ID").as_ullong();
     } else {
       throw runtime_error("Resource does not have an Item ID.");
@@ -142,7 +140,7 @@ ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
     auto resource_mandatory =
         convertMandatoryType(getChildValue<string>(resource_node, "Mandatory"));
     auto resource_data_type =
-        converDataType(getChildValue<string>(resource_node, "Type"));
+        convertDataType(getChildValue<string>(resource_node, "Type"));
     auto resource_range_enum = getRangeEnumeration(resource_node);
     auto resource_units = getChildValue<string>(resource_node, "Units");
     auto resource_description =
@@ -162,7 +160,7 @@ ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
     string error_msg =
         "Failed to deserialize resource node: " + string(resource_node.name()) +
         " due to error: " + ex.what();
-    throw runtime_error(move(error_msg));
+    throw runtime_error(error_msg);
   }
 }
 
@@ -191,7 +189,7 @@ ObjectDescriptorPtr deserializeObject(xml_node object_node) {
     string error_msg =
         "Failed to deserialize object node: " + string(object_node.name()) +
         " due to error: " + ex.what();
-    throw runtime_error(move(error_msg));
+    throw runtime_error(error_msg);
   }
 }
 
@@ -211,18 +209,18 @@ unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> deserializeModel(
       if (object_descriptor.load_file(object_descriptor_file_path.c_str())) {
         for (auto object :
             object_descriptor.child("LWM2M").children("Object")) {
-          auto ObjectDescriptor = deserializeObject(object);
-          objects.emplace(ObjectDescriptor->id_, ObjectDescriptor);
+          auto descriptor = deserializeObject(object);
+          objects.emplace(descriptor->id_, descriptor);
         }
       } else {
         string error_msg = "Could not open object descriptor file: " +
             string(object_descriptor_file_path);
-        throw runtime_error(move(error_msg));
+        throw runtime_error(error_msg);
       }
     }
   } else {
     string error_msg = "Could not open objects parent file: " + filepath;
-    throw runtime_error(move(error_msg));
+    throw runtime_error(error_msg);
   }
   return objects;
 }

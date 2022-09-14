@@ -34,7 +34,7 @@ public:
    * @brief Creates a default RangeEnumeration, used for testing only.
    *
    */
-  RangeEnumeration();
+  RangeEnumeration() = default;
 
   /**
    * @brief Creates a range enumeration from a given list of string literals
@@ -69,7 +69,7 @@ public:
    * @return false - if string literal is outside of the declared range (also if
    * the range is integer or decimal based)
    */
-  bool inRange(std::string value);
+  bool inRange(const std::string& value);
 
   /**
    * @brief Checks if a given integer is within the RangeEnumeration declaration

@@ -16,7 +16,7 @@
 namespace LwM2M {
 
 struct DeviceNotFound : public std::runtime_error {
-  DeviceNotFound(std::string const& identifier);
+  DeviceNotFound(const std::string& identifier);
 };
 
 using SupportedObjectDescriptorsMap =
@@ -35,14 +35,14 @@ class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
   DeviceRegistryMap device_registry_;
   HaSLI::LoggerPtr logger_;
 
-  void logListenerException(std::exception_ptr ex);
+  void logListenerException(const std::exception_ptr& eptr);
 
 public:
   DeviceRegistry(const std::string& configuration_path);
 
   SupportedObjectDescriptorsMapPtr getSupportedDescriptors();
 
-  bool isRegistered(std::string identifier);
+  bool isRegistered(const std::string& identifier);
 
   /**
    * @brief Registers a given LwM2M::Device to the current registry. If a given
@@ -81,7 +81,7 @@ public:
    *
    * @param identifier
    */
-  void deregisterDevice(std::string identifier);
+  void deregisterDevice(const std::string& identifier);
 
   /**
    * @brief Check if the registry contains a LwM2M::Device with a given
@@ -93,7 +93,7 @@ public:
    * @param identifier
    * @return DevicePtr
    */
-  DevicePtr getDevice(std::string identifier);
+  DevicePtr getDevice(const std::string& identifier);
 };
 
 using DeviceRegistryPtr = std::shared_ptr<DeviceRegistry>;

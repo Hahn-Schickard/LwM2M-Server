@@ -44,14 +44,14 @@ struct ObjectDescriptor {
    *
    * @param instance
    */
-  ObjectDescriptor(const ObjectDescriptor& instance);
+  ObjectDescriptor(const ObjectDescriptor& instance) = default;
 
   /**
    * @brief Move constructor
    *
    * @param instance
    */
-  ObjectDescriptor(ObjectDescriptor&& instance);
+  ObjectDescriptor(ObjectDescriptor&& instance) noexcept;
 
   /**
    * @brief Creates a valid Object descriptor

@@ -9,7 +9,7 @@ namespace LwM2M {
 using ResourceDescriptorMap = unordered_map<uint32_t, ResourceDescriptorPtr>;
 
 ResourceDescriptorMap assignResourceDescriptors(
-    ElementIDs requrired, ResourceDescriptorMap supported) {
+    ElementIDs required, ResourceDescriptorMap supported) {
   ResourceDescriptorMap result;
   // Assign mandatory resources first
   for (auto resource : supported) {
@@ -18,7 +18,7 @@ ResourceDescriptorMap assignResourceDescriptors(
     }
   }
 
-  for (auto resource : requrired) {
+  for (auto resource : required) {
     try {
       auto it = supported.find(resource.getResourceID());
       // Check if resource is supported and not previously assigned
@@ -36,9 +36,12 @@ ResourceDescriptorMap assignResourceDescriptors(
 }
 
 Object::Object(Observable::ExceptionHandler handler,
-    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
-    RequiredObjectInstances instances, ObjectDescriptorPtr descriptor)
-    : requester_(requester), endpoint_(endpoint), descriptor_(descriptor) {
+    RequesterInterfaceFacadePtr requester, // NOLINT
+    EndpointPtr endpoint, // NOLINT
+    RequiredObjectInstances instances,
+    ObjectDescriptorPtr descriptor) // NOLINT
+    : requester_(requester), endpoint_(endpoint), // NOLINT
+      descriptor_(descriptor) { // NOLINT
   for (auto instance : instances) {
     ElementIDs resources;
     auto range = instances.equal_range(instance);

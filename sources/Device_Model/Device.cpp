@@ -5,13 +5,16 @@ using namespace std;
 
 namespace LwM2M {
 
-Device::Device(Observable::ExceptionHandler handler,
-    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
-    ObjectDescriptorsMap object_descriptors_map, string device_id,
-    size_t life_time, string name, LwM2M_Version version, BindingType binding,
-    bool queue_mode)
-    : exception_handler_(handler), requester_(requester), endpoint_(endpoint),
-      device_id_(device_id), life_time_(life_time), name_(name),
+Device::Device(Observable::ExceptionHandler handler, // NOLINT
+    RequesterInterfaceFacadePtr requester, // NOLINT
+    EndpointPtr endpoint, // NOLINT
+    ObjectDescriptorsMap object_descriptors_map, // NOLINT
+    string device_id, size_t life_time, string name, LwM2M_Version version,
+    BindingType binding, bool queue_mode)
+    : exception_handler_(handler), // NOLINT
+      requester_(requester), // NOLINT
+      endpoint_(endpoint), // NOLINT
+      device_id_(move(device_id)), life_time_(life_time), name_(move(name)),
       version_(version), binding_(binding), queue_mode_(queue_mode) {
   makeObjects(object_descriptors_map);
   if (!endpoint_) {
@@ -19,8 +22,8 @@ Device::Device(Observable::ExceptionHandler handler,
   }
 }
 
-void Device::makeObjects(ObjectDescriptorsMap object_descriptors_map) {
-  for (auto object_descriptor_pair : object_descriptors_map) {
+void Device::makeObjects(const ObjectDescriptorsMap& object_descriptors_map) {
+  for (const auto& object_descriptor_pair : object_descriptors_map) {
     auto descriptor = object_descriptor_pair.second;
     auto object_id = object_descriptor_pair.first;
 
@@ -85,7 +88,7 @@ void Device::updateBinding(BindingType binding) { binding_ = binding; }
 
 void Device::updateLifetime(size_t life_time) { life_time_ = life_time; }
 
-void Device::updateObjectsMap(ObjectDescriptorsMap object_descriptors_map) {
-  makeObjects(object_descriptors_map);
+void Device::updateObjectsMap(const ObjectDescriptorsMap& object_instances) {
+  makeObjects(object_instances);
 }
 } // namespace LwM2M

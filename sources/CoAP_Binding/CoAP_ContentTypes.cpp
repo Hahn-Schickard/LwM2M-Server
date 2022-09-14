@@ -4,6 +4,7 @@ using namespace std;
 
 namespace CoAP {
 
+// NOLINTNEXTLINE
 template <> LwM2M::TLV_Pack decode(PayloadPtr payload) {
   if (payload->getContentFormat()->getIndex() !=
       ContentFormatEncodings::LwM2M_TLV::index) {
