@@ -30,6 +30,8 @@
 using namespace std;
 using namespace LwM2M;
 
+// NOLINTBEGIN
+
 struct MessageTestExpectations {
   const EndpointPtr endpoint_; // NOLINT
   const MessageType message_type_; // NOLINT
@@ -299,3 +301,5 @@ INSTANTIATE_TEST_SUITE_P(BaseFieldTests, MessageTest,
                 .incoming_ = false,
                 .notification_ = false})),
     GenerateTestName());
+
+// NOLINTEND

@@ -91,10 +91,10 @@ enum struct ResponseCode : uint8_t {
 std::string toString(ResponseCode type);
 
 struct UnsupportedResponseCode : public std::logic_error {
-  UnsupportedResponseCode(std::string const& message);
-  UnsupportedResponseCode(std::string message_type,
+  UnsupportedResponseCode(const std::string& message);
+  UnsupportedResponseCode(const std::string& message_type,
       ResponseCode unsupported_response_code,
-      std::unordered_set<ResponseCode> supported_response_codes);
+      const std::unordered_set<ResponseCode>& supported_response_codes);
 };
 
 struct Message {

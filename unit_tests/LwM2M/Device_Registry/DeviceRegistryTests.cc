@@ -13,6 +13,7 @@
 using namespace LwM2M;
 using namespace std;
 
+// NOLINTBEGIN
 // NOLINTNEXTLINE
 TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithGoodModel) {
   try {
@@ -165,3 +166,5 @@ TEST_F(DeviceRegistryTests, updateDeviceThrowsDeviceNotFound) {
       ObjectDescriptorsMap(), "1251212214", 10, "test_device");
   EXPECT_THROW({ registry_->updateDevice(device); }, DeviceNotFound);
 }
+
+// NOLINTEND

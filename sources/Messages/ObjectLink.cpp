@@ -13,7 +13,7 @@ ObjectLink::ObjectLink()
 ObjectLink::ObjectLink(uint16_t object_id, uint16_t instance_id)
     : object_id_(object_id), instance_id_(instance_id) {}
 
-string ObjectLink::toString() {
+string ObjectLink::toString() const {
   return to_string(object_id_) + "/" + to_string(instance_id_);
 }
 

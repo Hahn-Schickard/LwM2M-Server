@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 WriteCompositeRequest::WriteCompositeRequest(EndpointPtr endpoint, // NOLINT
-    vector<TargetContent> content)
+    vector<TargetContent> content) // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
           MessageType::WRITE_COMPOSITE, make_shared<Payload>(content)) {}
 

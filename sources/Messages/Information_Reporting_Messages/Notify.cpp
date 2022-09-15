@@ -4,7 +4,7 @@ using namespace std;
 
 namespace LwM2M {
 ValueUpdated::ValueUpdated(EndpointPtr endpoint, // NOLINT
-    DataFormatPtr content)
+    DataFormatPtr content) // NOLINT
     : ClientNotification(endpoint, // NOLINT
           MessageType::NOTIFY, InterfaceType::INFORMATION_REPORTING,
           make_shared<Payload>(content)) {}

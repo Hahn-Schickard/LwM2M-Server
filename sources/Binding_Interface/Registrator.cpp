@@ -43,8 +43,8 @@ ElementIDs& operator+=(ElementIDs& lhs, const ElementIDs& rhs) {
   return lhs;
 }
 
-vector<DiscoverRequestPtr> makeDiscoverRequests(EndpointPtr endpoint,
-    const DeviceMetaInfo::ObjectInstancesMap object_instances) {
+vector<DiscoverRequestPtr> makeDiscoverRequests(const EndpointPtr& endpoint,
+    const DeviceMetaInfo::ObjectInstancesMap& object_instances) {
   vector<DiscoverRequestPtr> discover_requests;
   for (const auto& object_instance_pair : object_instances) {
     auto object_instance = ElementID(object_instance_pair.first);

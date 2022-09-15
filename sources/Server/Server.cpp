@@ -17,14 +17,16 @@ Server::Server(const string& filepath)
   }
   registry_ = make_shared<DeviceRegistry>(config.model_descriptors_);
 
-  for (auto binding : config.bindings_) {
+  for (const auto& binding : config.bindings_) {
     switch (binding.first) {
     case ServerBindingType::CoAP: {
       auto coap_binding = make_unique<CoAP_Binding>(registry_, binding.second);
       bindings_.emplace_back(move(coap_binding));
       break;
     }
-    default: { break; }
+    default: {
+      break;
+    }
     }
   }
 }

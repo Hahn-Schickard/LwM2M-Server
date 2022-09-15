@@ -11,6 +11,8 @@
 using namespace LwM2M;
 using namespace std;
 
+// NOLINTBEGIN
+
 struct MockRegistrator : public Registrator, public ExceptionHandlerInterface {
 
   MockRegistrator(const DeviceRegistryPtr& registry) : Registrator(registry) {}
@@ -64,9 +66,9 @@ protected:
 TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
   auto endpoint = make_shared<Endpoint>("0.0.0.0", 10);
   unordered_map<unsigned int, vector<unsigned int>> object_instances;
-  object_instances.emplace(3303, vector<unsigned int>{0, 1});
+  object_instances.emplace(3303, vector<unsigned int>{0, 1}); // NOLINT
   auto request = make_shared<RegisterRequest>(
-      endpoint, 20, object_instances, "TestDevice");
+      endpoint, 20, object_instances, "TestDevice"); // NOLINT
 
   try {
     auto response = registrator_->handleRequest(request);
@@ -167,3 +169,5 @@ TEST_F(RegistratorTests, throwsNullptrOnEmptyDeregisterRequest) {
   EXPECT_THROW(
       registrator_->handleRequest(DeregisterRequestPtr()), invalid_argument);
 }
+
+// NOLINTEND

@@ -19,7 +19,9 @@ string toString(InterfaceType type) {
   case InterfaceType::INFORMATION_REPORTING: {
     return "Information Reporting Interface";
   }
-  default: { return "Unrecognized Interface"; }
+  default: {
+    return "Unrecognized Interface";
+  }
   }
 }
 
@@ -79,25 +81,34 @@ string toString(MessageType type) {
   case MessageType::SEND: {
     return "Send";
   }
-  default: { return "Unhandled"; };
+  default: {
+    return "Unhandled";
+  };
   }
 }
 
+static constexpr uint8_t REGISTRATION_INTERFACE = 0x10;
+static constexpr uint8_t MANAGEMENT_INTERFACE = 0x20;
+static constexpr uint8_t REPORTING_INTERFACE = 0x30;
+static constexpr uint8_t BOOTSTRAP_INTERFACE = 0x40;
+
 InterfaceType getInterfaceType(MessageType message_type) {
   switch (static_cast<int>(message_type) & INTERFACE_MASK) {
-  case 0x10: {
+  case REGISTRATION_INTERFACE: {
     return InterfaceType::REGISTRATION;
   }
-  case 0x20: {
+  case MANAGEMENT_INTERFACE: {
     return InterfaceType::DEVICE_MANAGEMENT;
   }
-  case 0x30: {
+  case REPORTING_INTERFACE: {
     return InterfaceType::INFORMATION_REPORTING;
   }
-  case 0x40: {
+  case BOOTSTRAP_INTERFACE: {
     return InterfaceType::BOOTSTRAP;
   }
-  default: { return InterfaceType::NOT_RECOGNIZED; }
+  default: {
+    return InterfaceType::NOT_RECOGNIZED;
+  }
   }
 }
 
@@ -170,16 +181,19 @@ string toString(ResponseCode type) {
     return "Proxying Not Supported";
   }
   case ResponseCode::UNHANDLED:
-  default: { return "Unhandled Return Code"; }
+  default: {
+    return "Unhandled Return Code";
+  }
   }
 }
 
 UnsupportedResponseCode::UnsupportedResponseCode(string const& message)
     : logic_error(message) {}
 
-string makeErrorMsg(string message_type, ResponseCode unsupported_response_code,
-    unordered_set<ResponseCode> supported_response_codes) {
-  string error_msg = string(move(message_type));
+string makeErrorMsg(const string& message_type,
+    ResponseCode unsupported_response_code,
+    const unordered_set<ResponseCode>& supported_response_codes) {
+  string error_msg = message_type;
   error_msg += " does not support the use of " +
       toString(unsupported_response_code) +
       " response code! It only supports: ";
@@ -189,11 +203,11 @@ string makeErrorMsg(string message_type, ResponseCode unsupported_response_code,
   return error_msg;
 }
 
-UnsupportedResponseCode::UnsupportedResponseCode(string message_type,
+UnsupportedResponseCode::UnsupportedResponseCode(const string& message_type,
     ResponseCode unsupported_response_code,
-    unordered_set<ResponseCode> supported_response_codes) // NOLINT
-    : UnsupportedResponseCode(makeErrorMsg(move(message_type),
-          unsupported_response_code, supported_response_codes)) {} // NOLINT
+    const unordered_set<ResponseCode>& supported_response_codes)
+    : UnsupportedResponseCode(makeErrorMsg(
+          message_type, unsupported_response_code, supported_response_codes)) {}
 
 Message::Message(EndpointPtr endpoint, // NOLINT
     MessageType message_type, InterfaceType interface,

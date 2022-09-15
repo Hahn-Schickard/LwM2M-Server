@@ -14,6 +14,7 @@
 using namespace std;
 using namespace LwM2M;
 
+// NOLINTBEGIN
 struct ResourceExpectations {
   TestRequesterPtr requester;
   ResourceDescriptorPtr descriptor;
@@ -46,9 +47,10 @@ template <typename T> struct RespondWithDelay {
   }
 };
 
-ResourcePtr makeTested(MockExceptionHandlerPtr exception_handler,
-    TestRequesterPtr requester, ResourceDescriptorPtr descriptor) {
-  auto endpoint = make_shared<Endpoint>("0.0.0.0", 86544);
+ResourcePtr makeTested(const MockExceptionHandlerPtr& exception_handler,
+    const TestRequesterPtr& requester,
+    const ResourceDescriptorPtr& descriptor) {
+  auto endpoint = make_shared<Endpoint>("0.0.0.0", 86544); // NOLINT
 
   function<void(exception_ptr)> exception_handler_cb =
       bind(&ExceptionHandlerInterface::handleDeviceException, exception_handler,
@@ -74,16 +76,17 @@ protected:
   ResourcePtr tested_ = NonemptyPointer::make_shared<Resource>();
   ResourceExpectationsPtr expected_;
   MockExceptionHandlerPtr exception_handler_ =
-      std::make_shared<MockExceptionHandler>();
+      std::make_shared<MockExceptionHandler>(); // NOLINT
   int response_delay_ms_ = 1;
 };
 
-void compareVariant(DataVariant tested, DataVariant expected) {
-  match(tested, [&](bool value) { EXPECT_EQ(value, get<bool>(expected)); },
+void compareVariant(const DataVariant& tested, const DataVariant& expected) {
+  match(
+      tested, [&](bool value) { EXPECT_EQ(value, get<bool>(expected)); },
       [&](int64_t value) { EXPECT_EQ(value, get<int64_t>(expected)); },
       [&](uint64_t value) { EXPECT_EQ(value, get<uint64_t>(expected)); },
       [&](double value) { EXPECT_EQ(value, get<double>(expected)); },
-      [&](string value) { EXPECT_EQ(value, get<string>(expected)); },
+      [&](const string& value) { EXPECT_EQ(value, get<string>(expected)); },
       [&](TimeStamp tested_timestamp) {
         auto expected_timestamp = get<TimeStamp>(expected);
         EXPECT_EQ(tested_timestamp.getValue(), expected_timestamp.getValue());
@@ -95,7 +98,7 @@ void compareVariant(DataVariant tested, DataVariant expected) {
         EXPECT_EQ(tested_link.instance_id_, expected_link.instance_id_);
         EXPECT_EQ(tested_link.toString(), expected_link.toString());
       },
-      [&](vector<uint8_t> value) {
+      [&](const vector<uint8_t>& value) {
         EXPECT_EQ(value, get<vector<uint8_t>>(expected));
       });
 }
@@ -118,14 +121,15 @@ void processReadable(ReadablePtr readable,
 void readResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto instance = resource->getResourceInstance();
-  match(instance,
+  match(
+      instance,
       [&](ReadablePtr& value) {
         processReadable(value, expected, response_delay_ms);
       },
       [&](ReadAndWritablePtr& value) {
         processReadable(value, expected, response_delay_ms);
       },
-      [&](...) {
+      [&](auto) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
             " ID " + to_string(resource->getDescriptor()->id_) +
             " is not readable.";
@@ -152,9 +156,10 @@ void cancelReadable(ReadablePtr readable) {
 
 void cancelReadResource(ResourcePtr resource) {
   auto instance = resource->getResourceInstance();
-  match(instance, [&](ReadablePtr& value) { cancelReadable(value); },
+  match(
+      instance, [&](ReadablePtr& value) { cancelReadable(value); },
       [&](ReadAndWritablePtr& value) { cancelReadable(value); },
-      [&](...) {
+      [&](auto) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
             " ID " + to_string(resource->getDescriptor()->id_) +
             " is not readable.";
@@ -189,14 +194,15 @@ void processWritable(WritablePtr writable,
 void writeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto instance = resource->getResourceInstance();
-  match(instance,
+  match(
+      instance,
       [&](WritablePtr& value) {
         processWritable(value, expected, response_delay_ms);
       },
       [&](ReadAndWritablePtr& value) {
         processWritable(value, expected, response_delay_ms);
       },
-      [&](...) {
+      [&](auto) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
             " ID " + to_string(resource->getDescriptor()->id_) +
             " is not writable.";
@@ -223,9 +229,10 @@ void cancelWritable(WritablePtr writable) {
 
 void cancelWriteResource(ResourcePtr resource) {
   auto instance = resource->getResourceInstance();
-  match(instance, [&](WritablePtr& value) { cancelWritable(value); },
+  match(
+      instance, [&](WritablePtr& value) { cancelWritable(value); },
       [&](ReadAndWritablePtr& value) { cancelWritable(value); },
-      [&](...) {
+      [&](auto) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
             " ID " + to_string(resource->getDescriptor()->id_) +
             " is not writable.";
@@ -260,11 +267,12 @@ void processExecutable(ExecutablePtr resource,
 void executeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
     int response_delay_ms) {
   auto instance = resource->getResourceInstance();
-  match(instance,
+  match(
+      instance,
       [&](ExecutablePtr& value) {
         processExecutable(value, expected, response_delay_ms);
       },
-      [&](...) {
+      [&](auto) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
             " ID " + to_string(resource->getDescriptor()->id_) +
             " is not executable.";
@@ -290,8 +298,9 @@ void cancelExecutable(ExecutablePtr excecutable) {
 
 void cancelExecuteResource(ResourcePtr resource) {
   auto instance = resource->getResourceInstance();
-  match(instance, [&](ExecutablePtr& value) { cancelExecutable(value); },
-      [&](...) {
+  match(
+      instance, [&](ExecutablePtr& value) { cancelExecutable(value); },
+      [&](auto) {
         auto error_msg = "Resource " + resource->getDescriptor()->name_ +
             " ID " + to_string(resource->getDescriptor()->id_) +
             " is not executable.";
@@ -453,3 +462,5 @@ INSTANTIATE_TEST_SUITE_P(ResourceTests, ResourceTest,
                 false, true, DataType::TIME, "", ""),
             DataFormat(DataVariant((uint64_t)12850912328012)))),
     GenerateTestName());
+
+// NOLINTEND

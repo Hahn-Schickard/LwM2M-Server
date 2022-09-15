@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 ReadCompositeRequest::ReadCompositeRequest(EndpointPtr endpoint, // NOLINT
-    ElementIDs targets)
+    ElementIDs targets) // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
           MessageType::READ_COMPOSITE, make_shared<Payload>(targets)) {}
 

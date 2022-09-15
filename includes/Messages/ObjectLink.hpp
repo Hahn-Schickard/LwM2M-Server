@@ -16,7 +16,7 @@ struct ObjectLink {
   ObjectLink();
   ObjectLink(uint16_t object_id, uint16_t instance_id);
 
-  std::string toString();
+  std::string toString() const;
 
   friend bool operator==(const ObjectLink& lhs, const ObjectLink& rhs);
 };

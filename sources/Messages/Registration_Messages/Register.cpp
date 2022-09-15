@@ -46,7 +46,7 @@ RegisterResponsePtr RegisterRequest::makeResponse(ResponseCode response_code) {
   return make_shared<RegisterResponse>(endpoint_, response_code);
 }
 
-RegisterResponsePtr RegisterRequest::makeResponse(string location) {
+RegisterResponsePtr RegisterRequest::makeResponse(string location) { // NOLINT
   return make_shared<RegisterResponse>(endpoint_, location);
 }
 } // namespace LwM2M

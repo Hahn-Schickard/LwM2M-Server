@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 vector<TargetAttribute> makeTargetAtributesVector(
-    ElementIDs targets, NotifyAttributePtr attribute) {
+    ElementIDs targets, NotifyAttributePtr attribute) { // NOLINT
   vector<TargetAttribute> result;
   for (auto target : targets) {
     auto target_attribute = make_pair(target, attribute);
@@ -19,7 +19,7 @@ WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint) // NOLINT
           MessageType::WRITE_ATTRIBUTES) {}
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint, // NOLINT
-    vector<TargetAttribute> content)
+    vector<TargetAttribute> content) // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
           MessageType::WRITE_ATTRIBUTES, make_shared<Payload>(content)) {}
 

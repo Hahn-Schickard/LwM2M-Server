@@ -6,6 +6,7 @@
 using namespace std;
 using namespace LwM2M;
 
+// NOLINTBEGIN
 // NOLINTNEXTLINE
 TEST(XmlParserTests, canDeserializeModel) {
   EXPECT_NO_THROW(deserializeModel("model/passingModel1.xml"));
@@ -41,3 +42,4 @@ TEST(XmlParserTests, canDeserializeDeviceObject) {
     EXPECT_EQ(resource->id_, expected_id);
   }
 }
+// NOLINTEND

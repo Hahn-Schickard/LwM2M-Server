@@ -8,6 +8,7 @@ using namespace std;
 using json = nlohmann::json;
 
 namespace nlohmann {
+// NOLINTNEXTLINE
 NLOHMANN_JSON_SERIALIZE_ENUM(LwM2M::ServerBindingType,
     {{LwM2M::ServerBindingType::CoAP, "CoAP"},
         {LwM2M::ServerBindingType::UNKOWN, "Unknown"}})
@@ -33,7 +34,9 @@ string toString(ServerBindingType type) {
   case ServerBindingType::CoAP: {
     return "CoAP";
   }
-  default: { return "Unknown"; }
+  default: {
+    return "Unknown";
+  }
   }
 }
 

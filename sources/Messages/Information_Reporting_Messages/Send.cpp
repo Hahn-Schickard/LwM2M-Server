@@ -17,7 +17,7 @@ SendResponse::SendResponse(EndpointPtr endpoint, // NOLINT
 string SendResponse::name() { return "SendResponse"; }
 
 SendRequest::SendRequest(EndpointPtr endpoint, // NOLINT
-    TargetContent content)
+    TargetContent content) // NOLINT
     : InformationReportingDownlinkRequest(endpoint, // NOLINT
           MessageType::SEND, make_shared<Payload>(content)) {}
 

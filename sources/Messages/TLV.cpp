@@ -37,12 +37,16 @@ string toString(Length_Type type) {
   }
 }
 
+static constexpr uint8_t BYTE_LONG = 8;
+static constexpr uint8_t SHORT_LONG = 16;
+static constexpr uint8_t WORD_LONG = 24;
+
 Length_Type getLengthType(const vector<uint8_t>& value) {
-  if (value.size() < 8) {
+  if (value.size() < BYTE_LONG) {
     return Length_Type::No_Length;
-  } else if (value.size() < 16) {
+  } else if (value.size() < SHORT_LONG) {
     return Length_Type::Byte_Long;
-  } else if (value.size() < 24) {
+  } else if (value.size() < WORD_LONG) {
     return Length_Type::Short_Long;
   } else {
     return Length_Type::Full_Length;
@@ -50,16 +54,18 @@ Length_Type getLengthType(const vector<uint8_t>& value) {
 }
 
 Identifier_Type getIdentifierType(uint8_t byte) {
-  return static_cast<Identifier_Type>((byte & 0xC0) >> 6);
+  return static_cast<Identifier_Type>((byte & 0xC0) >> 6); // NOLINT
 }
 
-bool isIdentifierShortLong(uint8_t byte) { return ((byte & 0x20) >> 5) != 0; }
+bool isIdentifierShortLong(uint8_t byte) {
+  return ((byte & 0x20) >> 5) != 0; // NOLINT
+}
 
 Length_Type getLengthType(uint8_t byte) {
-  return static_cast<Length_Type>((byte & 0x18) >> 3);
+  return static_cast<Length_Type>((byte & 0x18) >> 3); // NOLINT
 }
 
-uint8_t getSmallLengthValue(uint8_t byte) { return byte & 0x7; }
+uint8_t getSmallLengthValue(uint8_t byte) { return byte & 0x7; } // NOLINT
 
 TLV_Header::TLV_Header(uint8_t byte)
     : identifier_(getIdentifierType(byte)),
@@ -76,9 +82,9 @@ TLV_Header::TLV_Header(Identifier_Type identifier,
 
 uint8_t TLV_Header::toByte() {
   uint8_t result = 0;
-  result |= (static_cast<uint8_t>(identifier_) << 6);
+  result |= (static_cast<uint8_t>(identifier_) << 6); // NOLINT
   result |= ((is_identifier_short_long_ & 0x1) << 5); // NOLINT
-  result |= (static_cast<uint8_t>(length_type_) << 3);
+  result |= (static_cast<uint8_t>(length_type_) << 3); // NOLINT
   result |= (value_length_ & 0x7);
   return result;
 }
@@ -89,7 +95,7 @@ TLV::TLV(vector<uint8_t>& bytestream) {
   ++it;
   if (header_->is_identifier_short_long_) {
     // MSB first
-    identifier_ = (*it << 8) | *(it + 1);
+    identifier_ = (*it << BYTE_LONG) | *(it + 1);
     ++it;
   } else {
     identifier_ = *it;
@@ -107,13 +113,13 @@ TLV::TLV(vector<uint8_t>& bytestream) {
     break;
   }
   case Length_Type::Short_Long: {
-    length_ = (*it << 8) | *(it + 1);
+    length_ = (*it << BYTE_LONG) | *(it + 1);
     it += 2;
     break;
   }
   case Length_Type::Full_Length:
   default: {
-    length_ = (*it << 16) | (*(it + 1) << 8) | *(it + 2);
+    length_ = (*it << BYTE_LONG) | (*(it + 1) << BYTE_LONG) | *(it + 2);
     it += 3;
     break;
   }
@@ -143,6 +149,9 @@ Identifier_Type TLV::getIdentifierType() { return header_->identifier_; }
 
 vector<uint8_t> TLV::getValue() { return value_; }
 
+static constexpr uint8_t LSB_MASK = 0xF;
+static constexpr uint8_t MSB_MASK = 0xF0;
+
 vector<uint8_t> TLV::getBytes() {
   vector<uint8_t> result;
   result.push_back(header_->toByte());
@@ -156,27 +165,27 @@ vector<uint8_t> TLV::getBytes() {
     break;
   }
   case Length_Type::Short_Long: {
-    uint8_t length_lsb = length_ & 0xF;
+    uint8_t length_lsb = length_ & LSB_MASK;
     result.push_back(length_lsb);
-    uint8_t length_msb = length_ & 0xF0 >> 8;
+    uint8_t length_msb = length_ & MSB_MASK >> BYTE_LONG;
     result.push_back(length_msb);
     break;
   }
   case Length_Type::Full_Length:
   default: {
-    uint8_t length_lsb = length_ & 0xF;
+    uint8_t length_lsb = length_ & LSB_MASK;
     result.push_back(length_lsb);
-    uint8_t length_middle = length_ & 0xF0 >> 8;
+    uint8_t length_middle = length_ & 0xF0 >> BYTE_LONG; // NOLINT
     result.push_back(length_middle);
-    uint8_t length_msb = length_ & 0xF00 >> 16;
+    uint8_t length_msb = length_ & 0xF00 >> BYTE_LONG; // NOLINT
     result.push_back(length_msb);
     break;
   }
   }
   if (header_->is_identifier_short_long_) {
-    uint8_t identifier_lsb = identifier_ & 0xF;
+    uint8_t identifier_lsb = identifier_ & LSB_MASK;
     result.push_back(identifier_lsb);
-    uint8_t identifier_msb = identifier_ & 0xF0 >> 8;
+    uint8_t identifier_msb = identifier_ & MSB_MASK >> BYTE_LONG;
     result.push_back(identifier_msb);
   } else {
     uint8_t identifier_byte = identifier_;

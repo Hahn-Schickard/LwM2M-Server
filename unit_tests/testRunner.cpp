@@ -5,7 +5,7 @@
 int main(int argc, char** argv) {
   auto config = HaSLL::SPD_Configuration("./log", "tests.log",
       "[%Y-%m-%d-%H:%M:%S:%F %z][%n]%^[%l]: %v%$", HaSLL::SeverityLevel::TRACE,
-      false, 8192, 2, 25, 100, 1);
+      false, 8192, 2, 25, 100, 1); // NOLINT
   auto repo = std::make_shared<HaSLL::SPD_LoggerRepository>(config);
   HaSLI::LoggerManager::initialise(repo);
   testing::GTEST_FLAG(throw_on_failure) = true;

@@ -5,7 +5,7 @@ using namespace std;
 namespace LwM2M {
 
 WriteRequest::WriteRequest(EndpointPtr endpoint, // NOLINT
-    ElementID target_id, DataFormatPtr content)
+    ElementID target_id, DataFormatPtr content) // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
           MessageType::WRITE,
           make_shared<Payload>(make_pair(target_id, content))) {}
