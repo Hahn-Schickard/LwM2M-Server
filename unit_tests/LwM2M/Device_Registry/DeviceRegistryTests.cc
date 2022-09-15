@@ -13,6 +13,7 @@
 using namespace LwM2M;
 using namespace std;
 
+// NOLINTNEXTLINE
 TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithGoodModel) {
   try {
     auto registry = make_shared<DeviceRegistry>("model/passingModel2.xml");
@@ -25,6 +26,7 @@ TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithGoodModel) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithNonExistantModel) {
   try {
     auto registry = make_shared<DeviceRegistry>("model/nonExistantModel.xml");
@@ -39,7 +41,7 @@ TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithNonExistantModel) {
 
 struct MockRegistryListener
     : public Event_Model::EventListenerInterface<RegistryEvent> {
-  MockRegistryListener(DeviceRegistryPtr registry)
+  MockRegistryListener(const DeviceRegistryPtr& registry)
       : EventListenerInterface(registry) {}
 
   MOCK_METHOD(void, handleEvent, (shared_ptr<RegistryEvent>), (override));
@@ -65,13 +67,12 @@ protected:
   DevicePtr initial_device_ = NonemptyPointer::make_shared<Device>();
 };
 
+// NOLINTNEXTLINE
 MATCHER_P(EventPtrIsEqual, value, "") {
-  if (arg->type_ == value->type_ && arg->identifier_ == value->identifier_)
-    return true;
-  else
-    return false;
+  return arg->type_ == value->type_ && arg->identifier_ == value->identifier_;
 }
 
+// NOLINTNEXTLINE
 TEST_F(DeviceRegistryTests, canRegisterDevice) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
       exception_handler_.get(), std::placeholders::_1);
@@ -92,6 +93,7 @@ TEST_F(DeviceRegistryTests, canRegisterDevice) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(DeviceRegistryTests, canDeregisterDevice) {
   EXPECT_CALL(*listener_,
       handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
@@ -106,11 +108,13 @@ TEST_F(DeviceRegistryTests, canDeregisterDevice) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(DeviceRegistryTests, deregisterDeviceThrowsDeviceNotFound) {
   EXPECT_THROW({ registry_->deregisterDevice("nonExistantDeviceName"); },
       DeviceNotFound);
 }
 
+// NOLINTNEXTLINE
 TEST_F(DeviceRegistryTests, canReregisterDevice) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
       exception_handler_.get(), std::placeholders::_1);
@@ -136,6 +140,7 @@ TEST_F(DeviceRegistryTests, canReregisterDevice) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(DeviceRegistryTests, canUpdateDevice) {
   initial_device_->updateLifetime(2222);
 
@@ -151,6 +156,7 @@ TEST_F(DeviceRegistryTests, canUpdateDevice) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(DeviceRegistryTests, updateDeviceThrowsDeviceNotFound) {
   auto callback = bind(&ExceptionHandlerInterface::handleDeviceException,
       exception_handler_.get(), std::placeholders::_1);

@@ -1,18 +1,18 @@
 #include "CoAP_Decoder.hpp"
 #include "CoAP_ContentTypes.hpp"
-#include "LoggerRepository.hpp"
 #include "RegistrationInterfaceRequestsBuilder.hpp"
+#include "TLV.hpp"
 #include "Utility.hpp"
 
 #include "CoAPS4Cpp/CoRE_Link.hpp"
 #include "CoAPS4Cpp/OctetStream.hpp"
 #include "CoAPS4Cpp/OptionBuilder.hpp"
 #include "CoAPS4Cpp/PlainText.hpp"
-#include "TLV.hpp"
+#include "HaSLL/LoggerManager.hpp"
 
 using namespace std;
 using namespace CoAP;
-using namespace HaSLL;
+using namespace HaSLI;
 
 namespace LwM2M {
 ResponseCode toResponseCode(CoAP::CodeType code) {
@@ -89,7 +89,7 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
       auto bytes = values[0]->getBytes();
       auto tlv_subpack = TLV_Pack(bytes);
       auto sub_values = tlv_subpack.getPackAsVector();
-      for (auto sub_value : sub_values) {
+      for (const auto& sub_value : sub_values) {
         if (sub_value->getIdentifierType() == Identifier_Type::Resource_Value) {
           // Object id is in the request, so there is no way to get it from
           // response
@@ -102,7 +102,7 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
           auto subpack_bytes = sub_value->getBytes();
           auto sub_sub_subpack = TLV_Pack(subpack_bytes);
           auto sub_sub_values = tlv_subpack.getPackAsVector();
-          for (auto sub_sub_value : sub_sub_values) {
+          for (const auto& sub_sub_value : sub_sub_values) {
             // Same as before, Object ID is a mystery, without checkin the
             // original request
             auto target = ElementID(0, values[0]->getIdentifier(),
@@ -124,14 +124,15 @@ LwM2M::PayloadPtr toPayload(OctetStream content) {
 }
 
 CoAP_Decoder::CoAP_Decoder()
-    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+    : logger_(LoggerManager::registerTypedLogger(this)) {}
 
 CoAP_Decoder::~CoAP_Decoder() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+  LoggerManager::deregisterLogger(logger_->getName());
 }
 
 LwM2M::PayloadPtr CoAP_Decoder::decode(
-    CoAP::ContentFormatPtr content_format, CoAP::PayloadPtr payload) {
+    const CoAP::ContentFormatPtr& content_format,
+    const CoAP::PayloadPtr& payload) {
   if (content_format) {
     switch (content_format->getIndex()) {
     case ContentFormatEncodings::PlainText::index: {
@@ -171,7 +172,7 @@ LwM2M::PayloadPtr CoAP_Decoder::decode(
 
 template <>
 ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
-    CoAP::MessagePtr message) {
+    const CoAP::MessagePtr& message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
   logger_->log(SeverityLevel::TRACE,
@@ -229,7 +230,7 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
               message->getAddressIP(), message->getAddressPort(),
               message->getToken()->hexify());
         } else {
-          logger_->log(SeverityLevel::WARNNING,
+          logger_->log(SeverityLevel::WARNING,
               "Payload of {} bytes could not be converted into a "
               "Content Type for Client Response "
               "from {}:{} CoAP "
@@ -253,18 +254,19 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
 
 template <>
 RegisterRequestPtr CoAP_Decoder::decode<RegisterRequest>(
-    CoAP::MessagePtr message) {
+    const CoAP::MessagePtr& message) {
   return buildRegisterRequest(message);
 }
 
 template <>
-UpdateRequestPtr CoAP_Decoder::decode<UpdateRequest>(CoAP::MessagePtr message) {
+UpdateRequestPtr CoAP_Decoder::decode<UpdateRequest>(
+    const CoAP::MessagePtr& message) {
   return buildUpdateRequest(message);
 }
 
 template <>
 DeregisterRequestPtr CoAP_Decoder::decode<DeregisterRequest>(
-    CoAP::MessagePtr message) {
+    const CoAP::MessagePtr& message) {
   return buildDeregisterRequest(message);
 }
 } // namespace LwM2M

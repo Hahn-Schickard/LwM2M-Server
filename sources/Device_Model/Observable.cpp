@@ -16,17 +16,19 @@ DataType getDataTypeFromMap(
 }
 
 Observable::Observable(Observable::ExceptionHandler handler,
-    ObservableInterfacePtr requester, EndpointPtr endpoint, ElementID id,
-    ObservedDataTypes data_types)
-    : Event_Model::EventSource<PayloadData>(handler),
-      ElementAddress(endpoint, id), requester_(requester),
-      data_types_(data_types) {}
+    ObservableInterfacePtr requester, // NOLINT
+    EndpointPtr endpoint, // NOLINT
+    ElementID id, ObservedDataTypes data_types) // NOLINT
+    : Event_Model::EventSource<PayloadData>(handler), // NOLINT
+      ElementAddress(endpoint, id), requester_(requester), // NOLINT
+      data_types_(data_types) {} // NOLINT
 
-Observable::Observable(ExceptionHandler handler,
-    ObservableInterfacePtr requester, EndpointPtr endpoint, ElementID id,
-    DataType data_type)
-    : Observable(handler, requester, endpoint, id,
-          ObservedDataTypes{{id, data_type}}) {}
+Observable::Observable(ExceptionHandler handler, // NOLINT
+    ObservableInterfacePtr requester, // NOLINT
+    EndpointPtr endpoint, // NOLINT
+    ElementID id, DataType data_type)
+    : Observable(handler, requester, endpoint, id, // NOLINT
+          ObservedDataTypes{{id, data_type}}) {} // NOLINT
 
 Observable::~Observable() {
   if (hasListeners()) {

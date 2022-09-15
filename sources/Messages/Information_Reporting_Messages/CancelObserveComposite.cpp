@@ -4,10 +4,11 @@ using namespace std;
 
 namespace LwM2M {
 CancelObserveCompositeRequest::CancelObserveCompositeRequest(
-    EndpointPtr endpoint, ElementIDs target_ids)
-    : InformationReportingRequest(endpoint,
-                                  MessageType::CANCEL_OBSERVATION_COMPOSITE,
-                                  make_shared<Payload>(target_ids)) {}
+    EndpointPtr endpoint, // NOLINT
+    ElementIDs target_ids)
+    : InformationReportingRequest(endpoint, // NOLINT
+          MessageType::CANCEL_OBSERVATION_COMPOSITE,
+          make_shared<Payload>(target_ids)) {}
 
 string CancelObserveCompositeRequest::name() {
   return "CancelObserveCompositeRequest";

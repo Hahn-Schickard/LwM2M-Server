@@ -3,10 +3,11 @@
 
 #include "Deregister.hpp"
 #include "DeviceRegistry.hpp"
-#include "Logger.hpp"
 #include "Register.hpp"
 #include "RequesterInterfaceFacade.hpp"
 #include "Update.hpp"
+
+#include "HaSLL/Logger.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -19,26 +20,24 @@ class Registrator
       public std::enable_shared_from_this<RequesterInterfaceFacade> {
 
   DeviceRegistryPtr registry_;
-  std::shared_ptr<HaSLL::Logger> logger_;
+  HaSLI::LoggerPtr logger_;
 
-  void makeDevice(std::string device_id, EndpointPtr device_address,
+  void makeDevice(const std::string& device_id, EndpointPtr device_address,
       DeviceMetaInfo device_info);
 
   ObjectDescriptorsMap assignAvailableDescriptors(
       ElementIDs requested_instances);
 
   ElementIDs discoverAvailableDescriptors(EndpointPtr endpoint,
-      const DeviceMetaInfo::ObjectInstancesMap object_instances);
+      const DeviceMetaInfo::ObjectInstancesMap& object_instances);
 
-  ElementIDs discover(ServerRequestPtr request);
+  ElementIDs discover(const ServerRequestPtr& request);
 
   void handleDeviceException(
-      std::string device_id, std::exception_ptr exception_ptr);
+      const std::string& device_id, const std::exception_ptr& exception_ptr);
 
 public:
   Registrator(DeviceRegistryPtr registry);
-
-  ~Registrator();
 
   /**
    * @brief Registers a new LwM2M::Device or Registers it, if it already
@@ -49,7 +48,7 @@ public:
    * @param request
    * @return RegisterResponsePtr
    */
-  RegisterResponsePtr handleRquest(RegisterRequestPtr request);
+  RegisterResponsePtr handleRequest(const RegisterRequestPtr& request);
 
   /**
    * @brief Updates an existing LwM2M::Device within the LwM2M::DeviceRegistry.
@@ -59,7 +58,7 @@ public:
    * @param request
    * @return UpdateResponsePtr
    */
-  UpdateResponsePtr handleRquest(UpdateRequestPtr request);
+  UpdateResponsePtr handleRequest(const UpdateRequestPtr& request);
 
   /**
    * @brief Removes a given LwM2M::Device from the LwM2M::DeviceRegistry, if
@@ -70,7 +69,7 @@ public:
    * @param request
    * @return DeregisterResponsePtr
    */
-  DeregisterResponsePtr handleRquest(DeregisterRequestPtr request);
+  DeregisterResponsePtr handleRequest(const DeregisterRequestPtr& request);
 
   EventSourcePtr getEventSource();
 };

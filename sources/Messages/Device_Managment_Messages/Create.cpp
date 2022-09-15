@@ -4,10 +4,10 @@ using namespace std;
 
 namespace LwM2M {
 
-CreateRequest::CreateRequest(EndpointPtr endpoint, ElementID target_id,
-                             DataFormatPtr content)
-    : DeviceManagementRequest(
-          endpoint, MessageType::CREATE,
+CreateRequest::CreateRequest(EndpointPtr endpoint, // NOLINT
+    ElementID target_id, DataFormatPtr content)
+    : DeviceManagementRequest(endpoint, // NOLINT
+          MessageType::CREATE,
           make_shared<Payload>(make_pair(target_id, content))) {}
 
 string CreateRequest::name() { return "CreateRequest"; }

@@ -14,12 +14,10 @@ string toString(RegistryEventType type) {
   case RegistryEventType::DEREGISTERED: {
     return "Device Deregistered";
   }
-  default: {
-    return "Unknown Device Registration Event";
-  }
+  default: { return "Unknown Device Registration Event"; }
   }
 }
 
-RegistryEvent::RegistryEvent(
-    RegistryEventType type, string identifier, optional<DevicePtr> device)
-    : type_(type), identifier_(identifier), device_(device) {}
+RegistryEvent::RegistryEvent(RegistryEventType type, string identifier,
+    optional<DevicePtr> device) // NOLINT
+    : type_(type), identifier_(move(identifier)), device_(device) {} // NOLINT

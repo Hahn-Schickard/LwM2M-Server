@@ -37,7 +37,7 @@ string toString(Length_Type type) {
   }
 }
 
-Length_Type getLengthType(vector<uint8_t> value) {
+Length_Type getLengthType(const vector<uint8_t>& value) {
   if (value.size() < 8) {
     return Length_Type::No_Length;
   } else if (value.size() < 16) {
@@ -53,7 +53,7 @@ Identifier_Type getIdentifierType(uint8_t byte) {
   return static_cast<Identifier_Type>((byte & 0xC0) >> 6);
 }
 
-bool isIdentifierShortLong(uint8_t byte) { return ((byte & 0x20) >> 5); }
+bool isIdentifierShortLong(uint8_t byte) { return ((byte & 0x20) >> 5) != 0; }
 
 Length_Type getLengthType(uint8_t byte) {
   return static_cast<Length_Type>((byte & 0x18) >> 3);
@@ -77,7 +77,7 @@ TLV_Header::TLV_Header(Identifier_Type identifier,
 uint8_t TLV_Header::toByte() {
   uint8_t result = 0;
   result |= (static_cast<uint8_t>(identifier_) << 6);
-  result |= ((is_identifier_short_long_ & 0x1) << 5);
+  result |= ((is_identifier_short_long_ & 0x1) << 5); // NOLINT
   result |= (static_cast<uint8_t>(length_type_) << 3);
   result |= (value_length_ & 0x7);
   return result;
@@ -132,10 +132,10 @@ TLV::TLV(vector<uint8_t>& bytestream) {
   }
 }
 
-TLV::TLV(shared_ptr<TLV_Header> header, uint16_t identifier, uint32_t length,
-    vector<uint8_t> value)
-    : header_(header), identifier_(identifier), length_(length), value_(value) {
-}
+TLV::TLV(TLV_HeaderPtr header, // NOLINT
+    uint16_t identifier, uint32_t length, vector<uint8_t> value) // NOLINT
+    : header_(header), // NOLINT
+      identifier_(identifier), length_(length), value_(value) {} // NOLINT
 
 uint16_t TLV::getIdentifier() { return identifier_; }
 
@@ -193,7 +193,7 @@ TLV_Pack::TLV_Pack(vector<uint8_t> bytestream) {
   } while (!bytestream.empty());
 }
 
-TLV_Pack::TLV_Pack(TLV_ValueMap values) : values_(values) {}
+TLV_Pack::TLV_Pack(TLV_ValueMap values) : values_(values) {} // NOLINT
 
 shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
   auto it = values_.find(identifier);
@@ -207,7 +207,7 @@ shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
 
 vector<uint8_t> TLV_Pack::getBytes() {
   vector<uint8_t> result;
-  for (auto value : values_) {
+  for (const auto& value : values_) {
     auto byte_pack = value.second->getBytes();
     result.insert(result.end(), byte_pack.begin(), byte_pack.end());
   }
@@ -218,7 +218,7 @@ TLV_ValueMap TLV_Pack::getPack() { return values_; }
 
 vector<TLV_ptr> TLV_Pack::getPackAsVector() {
   vector<TLV_ptr> result;
-  for (auto value : values_) {
+  for (const auto& value : values_) {
     result.push_back(value.second);
   }
   return result;

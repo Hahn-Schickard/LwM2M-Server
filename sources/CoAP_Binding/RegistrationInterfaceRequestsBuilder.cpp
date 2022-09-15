@@ -2,6 +2,7 @@
 
 #include "CoAPS4Cpp/CoRE_Link.hpp"
 #include "CoAPS4Cpp/SupportedContentFormats.hpp"
+#include "HSCUL/Integer.hpp"
 
 #include <optional>
 #include <sstream>
@@ -10,6 +11,7 @@
 
 using namespace std;
 using namespace CoAP;
+using namespace HSCUL;
 
 namespace LwM2M {
 
@@ -42,8 +44,8 @@ optional<LwM2M_Version> getLwM2M_Version(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
-    auto lwm2M_version_tag = option->getValueAsString().substr(0, 6);
-    if (lwm2M_version_tag == "lwm2m=") {
+    auto lwm2m_version_tag = option->getValueAsString().substr(0, 6);
+    if (lwm2m_version_tag == "lwm2m=") {
       auto version_string = option->getValueAsString().substr(6, 7);
       if (version_string == "1.0") {
         return LwM2M_Version::V1_0;
@@ -63,7 +65,7 @@ optional<size_t> getLifetime(Options options) {
     auto option = it->second;
     auto lifetime_tag = option->getValueAsString().substr(0, 3);
     if (lifetime_tag == "lt=") {
-      return atoll(option->getValueAsString().substr(4).c_str());
+      return toUnsignedInteger(option->getValueAsString().substr(4));
     }
   }
   return {};
@@ -108,8 +110,8 @@ optional<string> getSMS(Options options) {
 vector<string> split(const string& s, char delimiter) {
   vector<string> tokens;
   string token;
-  istringstream tokenStream(s);
-  while (getline(tokenStream, token, delimiter)) {
+  istringstream token_stream(s);
+  while (getline(token_stream, token, delimiter)) {
     tokens.push_back(token);
   }
   return tokens;
@@ -125,14 +127,15 @@ pair<unsigned int, optional<unsigned int>> makeObjectInstancePair(
   if (uri_targets.size() == 1) {
     // object without an instance (should be created)
     return make_pair<unsigned int, optional<unsigned int>>(
-        atoi(uri_targets.at(0).c_str()), nullopt);
+        toUnsignedInteger(uri_targets.at(0)), nullopt);
   } else if (uri_targets.size() == 2) {
     // object with an instance
     return make_pair<unsigned int, optional<unsigned int>>(
-        atoi(uri_targets.at(0).c_str()), atoi(uri_targets.at(1).c_str()));
+        toUnsignedInteger(uri_targets.at(0)),
+        toUnsignedInteger(uri_targets.at(1)));
   } else {
     string error_msg = "CoRE Link contains more than 2 uri targets";
-    throw logic_error(move(error_msg));
+    throw logic_error(error_msg);
   }
 }
 
@@ -151,7 +154,7 @@ void addToMap(unordered_map<unsigned int, vector<unsigned int>>& map,
 }
 
 unordered_map<unsigned int, vector<unsigned int>> getObjectList(
-    CoAP::PayloadPtr payload) {
+    const CoAP::PayloadPtr& payload) {
   unordered_map<unsigned int, vector<unsigned int>> result;
   if (payload) {
     CoRE_Links core_links;
@@ -184,23 +187,23 @@ unordered_map<unsigned int, vector<unsigned int>> getObjectList(
   return result;
 }
 
-RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message) {
+RegisterRequestPtr buildRegisterRequest(const CoAP::MessagePtr& message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
 
   try {
-    auto version_ = getLwM2M_Version(message->getOptions()).value();
+    auto version = getLwM2M_Version(message->getOptions()).value();
     try {
-      auto life_time_ = getLifetime(message->getOptions()).value();
-      auto object_instances_map_ = getObjectList(message->getPayload());
-      auto endpoint_name_ = getEndpointName(message->getOptions());
-      auto binding_ = getBindingType(message->getOptions());
-      auto queue_mode_ = getQueueMode(message->getOptions());
-      auto sms_number_ = getSMS(message->getOptions());
+      auto life_time = getLifetime(message->getOptions()).value();
+      auto object_instances_map = getObjectList(message->getPayload());
+      auto endpoint_name = getEndpointName(message->getOptions());
+      auto binding = getBindingType(message->getOptions());
+      auto queue_mode = getQueueMode(message->getOptions());
+      auto sms_number = getSMS(message->getOptions());
 
-      return make_shared<RegisterRequest>(endpoint, life_time_,
-          object_instances_map_, endpoint_name_, version_, binding_,
-          queue_mode_, sms_number_);
+      return make_shared<RegisterRequest>(endpoint, life_time,
+          object_instances_map, endpoint_name, version, binding, queue_mode,
+          sms_number);
     } catch (bad_optional_access& ex) {
       throw RegistrationInterfaceError(
           make_shared<RegisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
@@ -226,7 +229,7 @@ optional<string> getLocation(Options options) {
   return {};
 }
 
-UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message) {
+UpdateRequestPtr buildUpdateRequest(const CoAP::MessagePtr& message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
   try {
@@ -243,7 +246,7 @@ UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message) {
   }
 }
 
-DeregisterRequestPtr buildDeregisterRequest(CoAP::MessagePtr message) {
+DeregisterRequestPtr buildDeregisterRequest(const CoAP::MessagePtr& message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
   try {

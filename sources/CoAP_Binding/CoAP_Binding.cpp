@@ -1,28 +1,28 @@
 #include "CoAP_Binding.hpp"
-#include "LoggerRepository.hpp"
-
 #include "CoAP_ContentTypes.hpp"
 #include "Message.hpp"
 #include "TLV.hpp"
 #include "Utility.hpp"
 
+#include "HaSLL/LoggerManager.hpp"
+
 using namespace LwM2M;
 using namespace std;
 using namespace CoAP;
-using namespace HaSLL;
+using namespace HaSLI;
 
 #define ERROR_CODES_VALUE 0x80
 
 CoAP_Binding::CoAP_Binding(
-    DeviceRegistryPtr registry, const string& config_filepath)
+    const DeviceRegistryPtr& registry, const string& config_filepath)
     : CoAP_Binding(registry, getConfig(config_filepath)) {}
 
 CoAP_Binding::CoAP_Binding(
-    DeviceRegistryPtr registry, const CoAP::Configuration& config)
+    const DeviceRegistryPtr& registry, const CoAP::Configuration& config)
     : BindingInterface(registry), Registrator(registry), Socket(config),
       encoder_(make_unique<CoAP_Encoder>()),
       decoder_(make_unique<CoAP_Decoder>()),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+      logger_(LoggerManager::registerTypedLogger(this)) {
   logger_->log(SeverityLevel::TRACE, "Registering CoAP Server");
 
   SupportedContentFormats::addNewContentFormatType<
@@ -34,7 +34,7 @@ CoAP_Binding::CoAP_Binding(
 }
 
 CoAP_Binding::~CoAP_Binding() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+  LoggerManager::deregisterLogger(logger_->getName());
 }
 
 void CoAP_Binding::start() {
@@ -49,8 +49,7 @@ void CoAP_Binding::stop() {
 
 future<DataFormatPtr> CoAP_Binding::requestData(
     DeviceManagementRequestPtr request) {
-  return async(
-      launch::async,
+  return async(launch::async,
       [this](DeviceManagementRequestPtr request) -> DataFormatPtr {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
@@ -79,8 +78,7 @@ future<DataFormatPtr> CoAP_Binding::requestData(
 
 future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
     DeviceManagementRequestPtr request) {
-  return async(
-      launch::async,
+  return async(launch::async,
       [this](DeviceManagementRequestPtr request) -> TargetContentVector {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
@@ -110,8 +108,7 @@ future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
 }
 
 future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr request) {
-  return async(
-      launch::async,
+  return async(launch::async,
       [this](DeviceManagementRequestPtr request) -> bool {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
@@ -126,16 +123,13 @@ future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr request) {
         auto response = decoder_->decode<ClientResponse>(coap_response);
         dispatched_.erase(std::hash<Message>{}(*request));
         return static_cast<uint8_t>(response->response_code_) <
-                ERROR_CODES_VALUE
-            ? true
-            : false;
+            ERROR_CODES_VALUE;
       },
       request);
 }
 
 future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr request) {
-  return async(
-      launch::async,
+  return async(launch::async,
       [this](ServerRequestPtr request) -> ClientResponsePtr {
         auto message = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
@@ -218,7 +212,7 @@ void CoAP_Binding::cancelRequest(ServerRequestPtr request) {
   }
 }
 
-void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
+void CoAP_Binding::handleNotification(const CoAP::MessagePtr& message) {
   auto observer = observed_elements_.find(message->getToken()->hash());
   if (observer != observed_elements_.end()) {
     logger_->log(SeverityLevel::TRACE,
@@ -231,7 +225,7 @@ void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
       if (payload->hasData()) {
         observer->second(make_shared<PayloadData>(payload->data_));
       } else {
-        logger_->log(SeverityLevel::WARNNING,
+        logger_->log(SeverityLevel::WARNING,
             "Received an observe notification without data assigned "
             "to it's payload from {}:{} "
             "with token {}.",
@@ -239,14 +233,14 @@ void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
             message->getToken()->hexify());
       }
     } else {
-      logger_->log(SeverityLevel::WARNNING,
+      logger_->log(SeverityLevel::WARNING,
           "Received an observe notification without payload from "
           "{}:{} with token {}.",
           message->getAddressIP(), message->getAddressPort(),
           message->getToken()->hexify());
     }
   } else {
-    logger_->log(SeverityLevel::WARNNING,
+    logger_->log(SeverityLevel::WARNING,
         "Received an orphaned observe notification from {}:{} with token {}.",
         message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
@@ -254,7 +248,7 @@ void CoAP_Binding::handleNotification(CoAP::MessagePtr message) {
 }
 
 ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
-    CoAP::MessagePtr message) {
+    const CoAP::MessagePtr& message) {
   auto options = message->getOptions();
   auto option = options.find(CoAP::OptionNumber::URI_PATH);
   if (option != options.end()) {
@@ -267,15 +261,15 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
         if (message->getHeader()->getCodeType() == CoAP::CodeType::POST) {
           if (options.count(CoAP::OptionNumber::URI_PATH) > 1) {
             auto request = decoder_->decode<UpdateRequest>(message);
-            return Registrator::handleRquest(move(request));
+            return Registrator::handleRequest(request);
           } else {
             auto request = decoder_->decode<RegisterRequest>(message);
-            return Registrator::handleRquest(move(request));
+            return Registrator::handleRequest(request);
           }
         } else if (message->getHeader()->getCodeType() ==
             CoAP::CodeType::DELETE) {
           auto request = decoder_->decode<DeregisterRequest>(message);
-          return Registrator::handleRquest(move(request));
+          return Registrator::handleRequest(request);
         }
       } catch (RegistrationInterfaceError& ex) {
         auto endpoint = make_shared<Endpoint>(
@@ -296,7 +290,7 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
   return ServerResponsePtr();
 }
 
-ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
+ServerResponsePtr CoAP_Binding::handleRequest(const CoAP::MessagePtr& message) {
   logger_->log(SeverityLevel::TRACE,
       "Handling incoming message from {}:{} as a Request",
       message->getAddressIP(), message->getAddressPort());
@@ -310,23 +304,23 @@ ServerResponsePtr CoAP_Binding::handleRequest(CoAP::MessagePtr message) {
 void CoAP_Binding::handleReceived(CoAP::MessagePtr message) {
   logger_->log(SeverityLevel::INFO, "Handling incoming message from {}:{}",
       message->getAddressIP(), message->getAddressPort());
-  if (message->getHeader()->getMesageType() ==
+  if (message->getHeader()->getMessageType() ==
       CoAP::MessageType::ACKNOWLEDGMENT) {
-    logger_->log(SeverityLevel::WARNNING,
+    logger_->log(SeverityLevel::WARNING,
         "Received an orphan response from {}:{} with ID {}",
         message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
-  } else if (message->getHeader()->getMesageType() ==
+  } else if (message->getHeader()->getMessageType() ==
       CoAP::MessageType::NON_CONFIRMABLE) {
     handleNotification(message);
-  } else if (message->getHeader()->getMesageType() ==
+  } else if (message->getHeader()->getMessageType() ==
       CoAP::MessageType::CONFIRMABLE) {
     auto response = encoder_->encode(message, handleRequest(message));
     respond(response);
   }
 }
 
-CoAP::MessagePtr CoAP_Binding::encodeRequest(ServerRequestPtr request) {
+CoAP::MessagePtr CoAP_Binding::encodeRequest(const ServerRequestPtr& request) {
   auto hash = std::hash<Message>{}(*request);
   auto it = dispatched_.find(hash);
   if (it == dispatched_.end()) {

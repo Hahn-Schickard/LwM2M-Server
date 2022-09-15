@@ -6,18 +6,22 @@
 using namespace std;
 using namespace LwM2M;
 
+// NOLINTNEXTLINE
 TEST(XmlParserTests, canDeserializeModel) {
   EXPECT_NO_THROW(deserializeModel("model/passingModel1.xml"));
 }
 
+// NOLINTNEXTLINE
 TEST(XmlParserTests, throwsExceptionOnNonExistantConfigFile) {
   EXPECT_THROW(deserializeModel("model/doesNotExist.xml"), runtime_error);
 }
 
+// NOLINTNEXTLINE
 TEST(XmlParserTests, throwsExceptionOnNonExistantDescriptor) {
   EXPECT_THROW(deserializeModel("model/faillingModel1.xml"), runtime_error);
 }
 
+// NOLINTNEXTLINE
 TEST(XmlParserTests, canDeserializeDeviceObject) {
   unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> model;
   EXPECT_NO_THROW({ model = deserializeModel("model/passingModel2.xml"); });

@@ -62,7 +62,7 @@ class Device {
   BindingType binding_;
   bool queue_mode_;
 
-  void makeObjects(ObjectDescriptorsMap object_descriptors_map);
+  void makeObjects(const ObjectDescriptorsMap& object_descriptors_map);
 
 public:
   /**
@@ -224,7 +224,7 @@ public:
    *
    * @param object_instances
    */
-  void updateObjectsMap(ObjectDescriptorsMap object_instances);
+  void updateObjectsMap(const ObjectDescriptorsMap& object_instances);
 };
 
 using DeviceSharedPtr = std::shared_ptr<Device>;

@@ -33,13 +33,11 @@ string toString(ServerBindingType type) {
   case ServerBindingType::CoAP: {
     return "CoAP";
   }
-  default: {
-    return "Unknown";
-  }
+  default: { return "Unknown"; }
   }
 }
 
-Configuration getConfig(const string filepath) {
+Configuration getConfig(const string& filepath) {
   ifstream input_file_stream(filepath);
   if (input_file_stream) {
     json j;

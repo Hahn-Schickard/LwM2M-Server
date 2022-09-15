@@ -13,7 +13,7 @@ using namespace std;
 
 struct MockRegistrator : public Registrator, public ExceptionHandlerInterface {
 
-  MockRegistrator(DeviceRegistryPtr registry) : Registrator(registry) {}
+  MockRegistrator(const DeviceRegistryPtr& registry) : Registrator(registry) {}
 
   MOCK_METHOD(std::future<DataFormatPtr>, requestData,
       (DeviceManagementRequestPtr), (override));
@@ -34,6 +34,7 @@ struct MockRegistrator : public Registrator, public ExceptionHandlerInterface {
 
 using MockRequesterInterfaceFacadePtr = std::shared_ptr<MockRegistrator>;
 
+// NOLINTNEXTLINE
 TEST(RegistratorInstantiationTests,
     throwsInvalidArgumentForNullptrDeviceRegistry) {
   EXPECT_THROW(
@@ -59,6 +60,7 @@ protected:
   DevicePtr initial_device_ = NonemptyPointer::make_shared<Device>();
 };
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
   auto endpoint = make_shared<Endpoint>("0.0.0.0", 10);
   unordered_map<unsigned int, vector<unsigned int>> object_instances;
@@ -67,9 +69,10 @@ TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
       endpoint, 20, object_instances, "TestDevice");
 
   try {
-    auto response = registrator_->handleRquest(request);
+    auto response = registrator_->handleRequest(request);
     EXPECT_TRUE(response->payload_->hasData());
-    auto data_format = std::get<DataFormatPtr>(response->payload_->data_);
+    const auto& data_format =
+        std::get<DataFormatPtr>(response->payload_->data_);
     auto location = data_format->get<string>();
     EXPECT_EQ(response->response_code_, ResponseCode::CREATED);
   } catch (exception& ex) {
@@ -79,11 +82,13 @@ TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, throwsNullptrOnEmptyRegisterRequest) {
   EXPECT_THROW(
-      registrator_->handleRquest(RegisterRequestPtr()), invalid_argument);
+      registrator_->handleRequest(RegisterRequestPtr()), invalid_argument);
 }
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, returnsChangedOnUpdateRequest) {
   auto endpoint = make_shared<Endpoint>("0.0.0.0", 10);
   unordered_map<unsigned int, vector<unsigned int>> object_instances;
@@ -92,7 +97,7 @@ TEST_F(RegistratorTests, returnsChangedOnUpdateRequest) {
       endpoint, initial_device_->getDeviceId(), object_instances);
 
   try {
-    auto response = registrator_->handleRquest(request);
+    auto response = registrator_->handleRequest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::CHANGED);
   } catch (exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
@@ -101,13 +106,14 @@ TEST_F(RegistratorTests, returnsChangedOnUpdateRequest) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, returnsNotFoundOnUpdateRequest) {
   auto endpoint = make_shared<Endpoint>("0.0.0.0", 10);
   auto request =
       make_shared<UpdateRequest>(endpoint, "NonExistantDeviceLocation");
 
   try {
-    auto response = registrator_->handleRquest(request);
+    auto response = registrator_->handleRequest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
   } catch (exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
@@ -116,18 +122,20 @@ TEST_F(RegistratorTests, returnsNotFoundOnUpdateRequest) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, throwsNullptrOnEmptyUpdateRequest) {
   EXPECT_THROW(
-      registrator_->handleRquest(UpdateRequestPtr()), invalid_argument);
+      registrator_->handleRequest(UpdateRequestPtr()), invalid_argument);
 }
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, returnsDeletedOnDeregisterRequest) {
   auto endpoint = make_shared<Endpoint>("0.0.0.0", 10);
   auto request =
       make_shared<DeregisterRequest>(endpoint, initial_device_->getDeviceId());
 
   try {
-    auto response = registrator_->handleRquest(request);
+    auto response = registrator_->handleRequest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::DELETED)
         << "Expected ResponseCode Deleted, but received ResponseCode "
         << toString(response->response_code_);
@@ -138,13 +146,14 @@ TEST_F(RegistratorTests, returnsDeletedOnDeregisterRequest) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, returnsNotFoundOnDeregisterRequest) {
   auto endpoint = make_shared<Endpoint>("0.0.0.0", 10);
   auto request =
       make_shared<DeregisterRequest>(endpoint, "NonExistantDeviceLocation");
 
   try {
-    auto response = registrator_->handleRquest(request);
+    auto response = registrator_->handleRequest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
   } catch (exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
@@ -153,7 +162,8 @@ TEST_F(RegistratorTests, returnsNotFoundOnDeregisterRequest) {
   }
 }
 
+// NOLINTNEXTLINE
 TEST_F(RegistratorTests, throwsNullptrOnEmptyDeregisterRequest) {
   EXPECT_THROW(
-      registrator_->handleRquest(DeregisterRequestPtr()), invalid_argument);
+      registrator_->handleRequest(DeregisterRequestPtr()), invalid_argument);
 }

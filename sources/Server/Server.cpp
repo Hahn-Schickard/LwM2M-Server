@@ -1,15 +1,16 @@
 #include "Server.hpp"
 #include "CoAP_Binding.hpp"
 #include "Config.hpp"
-#include "LoggerRepository.hpp"
+
+#include "HaSLL/LoggerManager.hpp"
 
 using namespace std;
-using namespace HaSLL;
+using namespace HaSLI;
 
 namespace LwM2M {
 
-Server::Server(const string filepath)
-    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+Server::Server(const string& filepath)
+    : logger_(LoggerManager::registerTypedLogger(this)) {
   Configuration config;
   if (!filepath.empty()) {
     config = getConfig(filepath);
@@ -23,20 +24,14 @@ Server::Server(const string filepath)
       bindings_.emplace_back(move(coap_binding));
       break;
     }
-    default: {
-      break;
-    }
+    default: { break; }
     }
   }
 }
 
-Server::~Server() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
-}
-
 void Server::start() {
   logger_->log(SeverityLevel::TRACE, "Starting bindings.");
-  for (auto binding : bindings_) {
+  for (const auto& binding : bindings_) {
     binding->start();
   }
   logger_->log(
@@ -45,7 +40,7 @@ void Server::start() {
 
 void Server::stop() {
   logger_->log(SeverityLevel::TRACE, "Stopping bindings.");
-  for (auto binding : bindings_) {
+  for (const auto& binding : bindings_) {
     binding->stop();
   }
   logger_->log(

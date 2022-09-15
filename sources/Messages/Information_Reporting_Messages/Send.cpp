@@ -4,21 +4,22 @@ using namespace std;
 
 namespace LwM2M {
 
-SendResponse::SendResponse(EndpointPtr endpoint, ResponseCode response_code)
-    : InformationReportingDownlinkResponse(
-          endpoint, MessageType::SEND,
+SendResponse::SendResponse(EndpointPtr endpoint, // NOLINT
+    ResponseCode response_code)
+    : InformationReportingDownlinkResponse(endpoint, // NOLINT
+          MessageType::SEND,
           unordered_set<ResponseCode>{ResponseCode::CHANGED,
-                                      ResponseCode::BAD_REQUEST,
-                                      ResponseCode::NOT_FOUND},
+              ResponseCode::BAD_REQUEST, ResponseCode::NOT_FOUND},
           response_code) {
   checkResponseCode(response_code);
 }
 
 string SendResponse::name() { return "SendResponse"; }
 
-SendRequest::SendRequest(EndpointPtr endpoint, TargetContent content)
-    : InformationReportingDownlinkRequest(endpoint, MessageType::SEND,
-                                          make_shared<Payload>(content)) {}
+SendRequest::SendRequest(EndpointPtr endpoint, // NOLINT
+    TargetContent content)
+    : InformationReportingDownlinkRequest(endpoint, // NOLINT
+          MessageType::SEND, make_shared<Payload>(content)) {}
 
 string SendRequest::name() { return "SendRequest"; }
 

@@ -1,7 +1,8 @@
 #include "Registrator.hpp"
 #include "Discover.hpp"
-#include "LoggerRepository.hpp"
 #include "Read.hpp"
+
+#include "HaSLL/LoggerManager.hpp"
 
 #include <iomanip>
 #include <iterator>
@@ -9,7 +10,7 @@
 #include <vector>
 
 using namespace std;
-using namespace HaSLL;
+using namespace HaSLI;
 
 #define ERROR_CODES_VALUE 0x80
 #define REQUEST_TIMEOUT_MS 2000
@@ -22,7 +23,7 @@ struct DiscoveryTimeout : public exception {
   }
 };
 
-string generateDeviceID(string name, EndpointPtr endpoint) {
+string generateDeviceID(const string& name, const EndpointPtr& endpoint) {
   size_t result = 0;
   auto address = endpoint->toString();
   if (!name.empty()) {
@@ -45,7 +46,7 @@ ElementIDs& operator+=(ElementIDs& lhs, const ElementIDs& rhs) {
 vector<DiscoverRequestPtr> makeDiscoverRequests(EndpointPtr endpoint,
     const DeviceMetaInfo::ObjectInstancesMap object_instances) {
   vector<DiscoverRequestPtr> discover_requests;
-  for (auto object_instance_pair : object_instances) {
+  for (const auto& object_instance_pair : object_instances) {
     auto object_instance = ElementID(object_instance_pair.first);
     auto discover = make_shared<DiscoverRequest>(endpoint, object_instance);
     discover_requests.emplace_back(move(discover));
@@ -53,11 +54,11 @@ vector<DiscoverRequestPtr> makeDiscoverRequests(EndpointPtr endpoint,
   return discover_requests;
 }
 
-ReadRequestPtr makeReadRequest(DiscoverRequestPtr discover) {
+ReadRequestPtr makeReadRequest(const DiscoverRequestPtr& discover) {
   return make_shared<ReadRequest>(discover->endpoint_, discover->target_);
 }
 
-ElementIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
+ElementIDs handleDiscoverResponse(const ClientResponsePtr& discover_response) {
   if (discover_response->payload_->hasData()) {
     if (holds_alternative<ElementIDs>(discover_response->payload_->data_)) {
       return std::get<ElementIDs>(discover_response->payload_->data_);
@@ -73,14 +74,14 @@ ElementIDs handleDiscoverResponse(ClientResponsePtr discover_response) {
 }
 
 ElementIDs handleReadResponse(
-    ClientResponsePtr response, ReadRequestPtr request) {
+    const ClientResponsePtr& response, const ReadRequestPtr& request) {
   ElementIDs result;
   if (response->response_code_ == ResponseCode::CONTENT) {
     if (response->payload_->hasData()) {
       if (holds_alternative<TargetContentVector>(response->payload_->data_)) {
         auto targets_and_values =
             std::get<TargetContentVector>(response->payload_->data_);
-        for (auto target_value : targets_and_values) {
+        for (const auto& target_value : targets_and_values) {
           // This is a very dumb way, but response does not have a valid object
           // id, since it is set in a request. Who needs redundancy anyways?
           auto id = ElementID(request->target_.getObjectID(),
@@ -99,16 +100,12 @@ ElementIDs handleReadResponse(
   return result;
 }
 
-Registrator::Registrator(DeviceRegistryPtr registry)
-    : registry_(registry),
-      logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {
+Registrator::Registrator(DeviceRegistryPtr registry) // NOLINT
+    : registry_(registry), // NOLINT
+      logger_(LoggerManager::registerTypedLogger(this)) {
   if (!registry_) {
     throw invalid_argument("Device Registry can not be a nullptr.");
   }
-}
-
-Registrator::~Registrator() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
 }
 
 ObjectDescriptorsMap Registrator::assignAvailableDescriptors(
@@ -126,14 +123,14 @@ ObjectDescriptorsMap Registrator::assignAvailableDescriptors(
     if (descriptor != supported_object_descriptors->end()) {
       result.emplace(object, descriptor->second);
     } else {
-      logger_->log(SeverityLevel::WARNNING,
+      logger_->log(SeverityLevel::WARNING,
           "Object id {} is not supported by the server.", object.getObjectID());
     }
   }
   return result;
 }
 
-ElementIDs Registrator::discover(ServerRequestPtr request) {
+ElementIDs Registrator::discover(const ServerRequestPtr& request) {
   auto response_future = this->request(request);
   if (response_future.wait_for(chrono::milliseconds(REQUEST_TIMEOUT_MS)) !=
       future_status::timeout) {
@@ -143,12 +140,12 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
     } else {
       if (response->payload_) {
         if (request->message_type_ == MessageType::DISCOVER) {
-          return handleDiscoverResponse(move(response));
+          return handleDiscoverResponse(response);
         } else {
           // we use request in case of failure code, to create and throw an
           // exception
           return handleReadResponse(
-              move(response), static_pointer_cast<ReadRequest>(request));
+              response, static_pointer_cast<ReadRequest>(request));
         }
       } else {
         throw ResponseReturnedAnEmptyPayload(response, request);
@@ -176,9 +173,10 @@ ElementIDs Registrator::discover(ServerRequestPtr request) {
   }
 }
 
-ElementIDs Registrator::discoverAvailableDescriptors(EndpointPtr endpoint,
-    const DeviceMetaInfo::ObjectInstancesMap object_instances) {
-  auto requests = makeDiscoverRequests(endpoint, object_instances);
+ElementIDs Registrator::discoverAvailableDescriptors(
+    EndpointPtr endpoint, // NOLINT
+    const DeviceMetaInfo::ObjectInstancesMap& object_instances) {
+  auto requests = makeDiscoverRequests(endpoint, object_instances); // NOLINT
 
   ElementIDs requested_instances;
   for (auto it = requests.begin(); it != requests.end();) {
@@ -200,7 +198,7 @@ ElementIDs Registrator::discoverAvailableDescriptors(EndpointPtr endpoint,
             (*it)->target_.toString(), (*it)->endpoint_->toString());
         requested_instances += discover(makeReadRequest(*it));
       } catch (DiscoveryTimeout& /*timeout*/) {
-        logger_->log(SeverityLevel::WARNNING,
+        logger_->log(SeverityLevel::WARNING,
             "Manual discovery for {} object {} failed due to a message "
             "timeout. Discarding it from available descriptors.",
             (*it)->endpoint_->toString(), (*it)->target_.toString());
@@ -211,7 +209,7 @@ ElementIDs Registrator::discoverAvailableDescriptors(EndpointPtr endpoint,
             (*it)->endpoint_->toString(), (*it)->target_.toString(), ex.what());
       }
     } catch (ResponseReturnedAnErrorCode& ex) {
-      logger_->log(SeverityLevel::WARNNING,
+      logger_->log(SeverityLevel::WARNING,
           "Failed to handle {} to {}, response returned an error code: {}. "
           "Discarding it from available descriptors.",
           (*it)->name(), (*it)->endpoint_->toString(), ex.what());
@@ -227,22 +225,22 @@ ElementIDs Registrator::discoverAvailableDescriptors(EndpointPtr endpoint,
 }
 
 void Registrator::handleDeviceException(
-    std::string device_id, std::exception_ptr exception_ptr) {
+    const string& device_id, const exception_ptr& exception_ptr) {
   try {
     if (exception_ptr) {
-      std::rethrow_exception(exception_ptr);
+      rethrow_exception(exception_ptr);
     }
-  } catch (const std::exception& exp) {
+  } catch (const exception& exp) {
     logger_->log(SeverityLevel::ERROR, "Device {} threw an exception: {}",
         device_id, exp.what());
   } catch (...) {
     logger_->log(SeverityLevel::CRITICAL,
-        "Device {} threw an unhandeled exception", device_id);
+        "Device {} threw an unhandled exception", device_id);
   }
 }
 
-void Registrator::makeDevice(
-    string device_id, EndpointPtr device_address, DeviceMetaInfo device_info) {
+void Registrator::makeDevice(const string& device_id,
+    EndpointPtr device_address, DeviceMetaInfo device_info) {
   auto instances = discoverAvailableDescriptors(
       device_address, device_info.object_instances_map_);
   auto object_ids = assignAvailableDescriptors(instances);
@@ -260,7 +258,8 @@ void Registrator::makeDevice(
   registry_->registerDevice(device);
 }
 
-RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
+RegisterResponsePtr Registrator::handleRequest(
+    const RegisterRequestPtr& request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE,
         "Handling a Registration request from {}:{}",
@@ -294,7 +293,7 @@ RegisterResponsePtr Registrator::handleRquest(RegisterRequestPtr request) {
   }
 }
 
-UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
+UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE, "Handling an Update request from {}:{}",
         request->endpoint_->endpoint_address_,
@@ -336,7 +335,8 @@ UpdateResponsePtr Registrator::handleRquest(UpdateRequestPtr request) {
   }
 }
 
-DeregisterResponsePtr Registrator::handleRquest(DeregisterRequestPtr request) {
+DeregisterResponsePtr Registrator::handleRequest(
+    const DeregisterRequestPtr& request) {
   if (request) {
     logger_->log(SeverityLevel::TRACE,
         "Handling a Deregistration request from {}:{}",

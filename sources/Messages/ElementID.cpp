@@ -146,6 +146,7 @@ bool operator>=(const ElementID& lhs, const ElementID& rhs) {
 
 } // namespace LwM2M
 
+// NOLINTNEXTLINE
 namespace std {
 std::size_t hash<LwM2M::ElementID>::operator()(
     const LwM2M::ElementID& id) const {

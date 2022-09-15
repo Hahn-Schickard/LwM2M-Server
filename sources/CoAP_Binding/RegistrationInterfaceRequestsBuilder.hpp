@@ -9,11 +9,11 @@
 #include <stdexcept>
 
 namespace LwM2M {
-RegisterRequestPtr buildRegisterRequest(CoAP::MessagePtr message);
+RegisterRequestPtr buildRegisterRequest(const CoAP::MessagePtr& message);
 
-UpdateRequestPtr buildUpdateRequest(CoAP::MessagePtr message);
+UpdateRequestPtr buildUpdateRequest(const CoAP::MessagePtr& message);
 
-DeregisterRequestPtr buildDeregisterRequest(CoAP::MessagePtr message);
+DeregisterRequestPtr buildDeregisterRequest(const CoAP::MessagePtr& message);
 
 } // namespace LwM2M
 

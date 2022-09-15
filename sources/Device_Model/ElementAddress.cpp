@@ -2,8 +2,10 @@
 
 namespace LwM2M {
 
-ElementAddress::ElementAddress(EndpointPtr endpoint, ElementID id)
-    : endpoint_(endpoint), id_(id) {}
+ElementAddress::ElementAddress(EndpointPtr endpoint, // NOLINT
+    ElementID id)
+    : endpoint_(endpoint), // NOLINT
+      id_(id) {}
 
 EndpointPtr ElementAddress::getEndpoint() { return endpoint_; }
 

@@ -18,7 +18,7 @@ struct Configuration {
   Bindings bindings_;
 };
 
-Configuration getConfig(const std::string filepath);
+Configuration getConfig(const std::string& filepath);
 } // namespace LwM2M
 
 #endif //__LWM2M_SERVER_CONFIGURATION_HPP

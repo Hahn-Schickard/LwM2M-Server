@@ -1,14 +1,14 @@
 #include "CoAP_Encoder.hpp"
 #include "CoAP_ContentTypes.hpp"
-#include "LoggerRepository.hpp"
 
 #include "CoAPS4Cpp/MessageBuilder.hpp"
 #include "CoAPS4Cpp/OptionBuilder.hpp"
 #include "CoAPS4Cpp/PlainText.hpp"
+#include "HaSLL/LoggerManager.hpp"
 
 using namespace std;
 using namespace CoAP;
-using namespace HaSLL;
+using namespace HaSLI;
 
 namespace LwM2M {
 CodeType toCodeType(LwM2M::MessageType type) {
@@ -38,9 +38,7 @@ CodeType toCodeType(LwM2M::MessageType type) {
   case LwM2M::MessageType::DELETE: {
     return CodeType::DELETE;
   }
-  default: {
-    throw logic_error("Message is not a valid ServerRequest.");
-  }
+  default: { throw logic_error("Message is not a valid ServerRequest."); }
   }
 }
 
@@ -52,13 +50,13 @@ CoAP::CodeType toCodeType(ResponseCode code) {
 CoAP::Options makeURI_PATH(ElementID target) {
   Options options;
   auto targets = target.toStrings();
-  for (auto uri_path : targets) {
+  for (const auto& uri_path : targets) {
     options += build(OptionNumber::URI_PATH, uri_path);
   }
   return options;
 }
 
-CoAP::PayloadPtr encodeAs_TLV(LwM2M::PayloadPtr payload) {
+CoAP::PayloadPtr encodeAs_TLV(const LwM2M::PayloadPtr& payload) {
   if (payload) {
     auto data = payload->data_;
     if (holds_alternative<TargetContent>(data)) {
@@ -72,7 +70,7 @@ CoAP::PayloadPtr encodeAs_TLV(LwM2M::PayloadPtr payload) {
   return CoAP::PayloadPtr();
 }
 
-CoAP::PayloadPtr encodeAs_LwM2M_CBOR(LwM2M::PayloadPtr payload) {
+CoAP::PayloadPtr encodeAs_LwM2M_CBOR(const LwM2M::PayloadPtr& payload) {
   if (payload) {
     auto data = payload->data_;
     if (holds_alternative<vector<TargetContent>>(data)) {
@@ -82,7 +80,7 @@ CoAP::PayloadPtr encodeAs_LwM2M_CBOR(LwM2M::PayloadPtr payload) {
   return CoAP::PayloadPtr();
 }
 
-CoAP::PayloadPtr encodeAs_PlainText(LwM2M::PayloadPtr payload) {
+CoAP::PayloadPtr encodeAs_PlainText(const LwM2M::PayloadPtr& payload) {
   if (payload) {
     auto data = payload->data_;
     if (holds_alternative<DataFormatPtr>(data)) {
@@ -94,55 +92,58 @@ CoAP::PayloadPtr encodeAs_PlainText(LwM2M::PayloadPtr payload) {
 }
 
 CoAP_Encoder::CoAP_Encoder()
-    : logger_(LoggerRepository::getInstance().registerTypedLoger(this)) {}
+    : logger_(LoggerManager::registerTypedLogger(this)) {}
 
 CoAP_Encoder::~CoAP_Encoder() {
-  LoggerRepository::getInstance().deregisterLoger(logger_->getName());
+  LoggerManager::deregisterLogger(logger_->getName());
 }
 
+// NOLINTNEXTLINE
 CoAP::MessagePtr CoAP_Encoder::encode(DeviceManagementRequestPtr message) {
   // @TODO: decide if this is needed at all
   return encode(static_pointer_cast<ServerRequest>(message));
 }
 
+// NOLINTNEXTLINE
 CoAP::MessagePtr CoAP_Encoder::encode(InformationReportingRequestPtr message) {
   // @TODO: decide if this is needed at all
   return encode(static_pointer_cast<ServerRequest>(message));
 }
 
+// NOLINTNEXTLINE
 CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
-  auto mesage_builder =
+  auto message_builder =
       make_unique<MessageBuilder>(request->endpoint_->endpoint_address_,
           request->endpoint_->endpoint_port_);
-  auto token = mesage_builder->addToken();
-  mesage_builder->addHeader(
+  auto token = message_builder->addToken();
+  message_builder->addHeader(
       CoAP::MessageType::CONFIRMABLE, toCodeType(request->message_type_));
-  mesage_builder->addOptions(
+  message_builder->addOptions(
       makeOptions(request->message_type_, request->payload_, token->hexify()));
   auto payload =
       encode(request->message_type_, request->payload_, token->hexify());
   if (payload) {
-    mesage_builder->addPayload(payload);
+    message_builder->addPayload(payload);
   }
-  return mesage_builder->getResult();
+  return message_builder->getResult();
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(
-    CoAP::MessagePtr request, ServerResponsePtr response) {
-  auto mesage_builder = make_unique<MessageBuilder>(
+    CoAP::MessagePtr request, ServerResponsePtr response) { // NOLINT
+  auto message_builder = make_unique<MessageBuilder>(
       request->getAddressIP(), request->getAddressPort());
   auto token = request->getToken();
-  mesage_builder->addToken(token);
+  message_builder->addToken(token);
   if (response) {
     try {
-      mesage_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
+      message_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
           toCodeType(response->response_code_),
           request->getHeader()->getMessageID());
-      mesage_builder->addOptions(makeOptions(
+      message_builder->addOptions(makeOptions(
           response->message_type_, response->payload_, token->hexify()));
       if (auto payload = encode(
               response->message_type_, response->payload_, token->hexify())) {
-        mesage_builder->addPayload(payload);
+        message_builder->addPayload(payload);
       }
     } catch (exception& ex) {
       logger_->log(SeverityLevel::ERROR,
@@ -154,14 +155,14 @@ CoAP::MessagePtr CoAP_Encoder::encode(
     }
   } else {
     // handle empty response or exception throw
-    mesage_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
+    message_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
         CoAP::CodeType::BAD_REQUEST, request->getHeader()->getMessageID());
   }
-  return mesage_builder->getResult();
+  return message_builder->getResult();
 }
 
 CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
-    LwM2M::PayloadPtr payload, string message_identifier) {
+    const LwM2M::PayloadPtr& payload, const string& message_identifier) {
   switch (type) {
   case LwM2M::MessageType::WRITE: {
     logger_->log(SeverityLevel::TRACE,
@@ -209,7 +210,7 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
     return CoAP::PayloadPtr();
   }
   default: {
-    logger_->log(SeverityLevel::WARNNING,
+    logger_->log(SeverityLevel::WARNING,
         "Did not encode message {} payload for {}", message_identifier,
         toString(type));
     return CoAP::PayloadPtr();
@@ -218,7 +219,7 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
 }
 
 CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
-    LwM2M::PayloadPtr payload, string message_identifier) {
+    const LwM2M::PayloadPtr& payload, const string& message_identifier) {
   Options options;
 
   switch (type) {
@@ -228,7 +229,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   case LwM2M::MessageType::UPDATE: {
     if (payload) {
       if (holds_alternative<DataFormatPtr>(payload->data_)) {
-        auto data = std::get<DataFormatPtr>(payload->data_);
+        const auto& data = std::get<DataFormatPtr>(payload->data_);
         if (data) {
           options += build(OptionNumber::LOCATION_PATH, "rd");
           auto location = data->get<string>();
@@ -386,7 +387,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
 } // namespace LwM2M
 
 CoAP::Options CoAP_Encoder::makeOptions(
-    LwM2M::PayloadPtr payload, string message_identifier) {
+    const LwM2M::PayloadPtr& payload, const string& message_identifier) {
   Options options;
 
   if (payload) {
@@ -409,7 +410,7 @@ CoAP::Options CoAP_Encoder::makeOptions(
           "Creating URI Path CoAP::Options for message {} from a "
           "LwM2M::TargetContentVector",
           message_identifier);
-      for (auto target_content : target_contents) {
+      for (const auto& target_content : target_contents) {
         auto uri_path = makeURI_PATH(target_content.first);
         options.insert(uri_path.begin(), uri_path.end());
       }
@@ -444,7 +445,7 @@ CoAP::Options CoAP_Encoder::makeOptions(
           "Creating URI Path CoAP::Options for message {} from a "
           "LwM2M::TargetAttributes vector",
           message_identifier);
-      for (auto target_attribute : target_attributes) {
+      for (const auto& target_attribute : target_attributes) {
         auto uri_path = makeURI_PATH(target_attribute.first);
         options.insert(uri_path.begin(), uri_path.end());
       }
