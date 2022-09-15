@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-#@+ ======================== User PROJECT NAME configuration ============================
+#@+ ======================== User PROJECT_NAME configuration ============================
 set(THIS LwM2M_Server)
 #@- =========================== END OF USER CONFIGURATION ===============================
 
@@ -10,8 +10,8 @@ set(INCLUDES_DIR "${PROJECT_SOURCE_DIR}/includes")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(DOCS_DIR "${PROJECT_SOURCE_DIR}/docs/code_documentation")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(VERBOSE_FILE_INCLUSION ON)
 
+option(VERBOSE_FILE_INCLUSION "Prints all included header files" ON)
 option(STATIC_CODE_ANALYSIS "Enable Code Linter" ON)
 option(USE_CONAN "Enables integeated conan package manager module. (Requires conan and python3 to be installed)" ON)
 option(RUN_TESTS "Enables Unit tests runner (Requires GTest framework)" ON)
@@ -25,6 +25,14 @@ if(USE_CONAN)
         include(conan_install)
         execute_conan_install()
 endif()
+
+#@+ ====================== User CMAKE_OPTIONS configuration ========================
+# User defined options and cmake variables are set here
+#@- ===================== END OF USER CONFIGURATION ================================
+
+#@+ ==================== User CMAKE_INCLUDES configuration =======================
+# User defined cmake module includes go here
+#@- ======================== END OF USER CONFIGURATION ============================
 
 #@+ ======================== User PACKAGES configuration ===========================
 list(APPEND DEPENDENCIES_LIST
@@ -42,11 +50,14 @@ list(APPEND DEPENDENCIES_LIST
 FIND_INSTALLED_DEPENDENCIES("${DEPENDENCIES_LIST}")
 
 add_subdirectory(sources)
-
 if(RUN_TESTS)
         enable_testing()
         add_subdirectory(unit_tests)
 endif()
+
+#@+ ====================== User CMAKE configuration =========================
+# General user defined CMake configurtaions are set here
+#@- ===================== END OF USER CONFIGURATION =========================
 
 WRITE_PKG_CONFIG_IN_FILE(${PROJECT_NAME})
 

@@ -10,7 +10,7 @@
 
 ## Device class
 
-Device class is the top most layer of  **%LwM2M Client**  abstraction. This class organizes all of the %LwM2M object and resource instances and separates them from other **%LwM2M Clients**. 
+Device class is the top most layer of  **%LwM2M Client**  abstraction. This class organizes all of the %LwM2M object and resource instances and separates them from other **%LwM2M Clients**.
 
 @attention Device class only organizes **%LwM2M Client** object, object instance, resource and resource instance elements that the said **%LwM2M Client** registered during the registration process or the user of the library created within this **%LwM2M Client**. Any interaction with **%LwM2M Clients** does not change the stored %LwM2M Resource Model descriptors. To change how the descriptors work, you must modify the corresponding XML files, however said modifications will be applied to ALL **%LwM2M Clients** using the modified XML data.
 
