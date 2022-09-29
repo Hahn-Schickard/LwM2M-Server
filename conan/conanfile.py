@@ -12,13 +12,13 @@ class PackageConan(ConanFile):
     requires = [
         "nlohmann_json/3.11.1",
         "pugixml/1.11",
-        "HaSLL/0.3.0@hahn-schickard/stable",
+        "HaSLL/0.3.1@hahn-schickard/stable",
         "HSCUL/0.2.0@hahn-schickard/stable",
         "Nonempty_Pointer/0.1.2@hahn-schickard/stable",
-        "Threadsafe_Containers/0.5.0@hahn-schickard/stable",
-        "CoAPS4Cpp/0.4.1@hahn-schickard/stable",
+        "Threadsafe_Containers/0.6.0@hahn-schickard/stable",
+        "CoAPS4Cpp/0.5.0@hahn-schickard/stable",
         "Variant_Visitor/0.1.0@hahn-schickard/stable",
-        "Event_Model/0.3.3@hahn-schickard/stable"
+        "Event_Model/0.3.4@hahn-schickard/stable"
     ]
     settings = "cppstd", "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False],
