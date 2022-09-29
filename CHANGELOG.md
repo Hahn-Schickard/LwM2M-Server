@@ -1,3 +1,81 @@
+## [0.5.0] - 2022.09.29
+### Fixed
+ - `Registrator::handleRequest` typo
+
+### Added
+ - example usage documentation
+ - device model documentation stub
+ - message model documentation stub
+ - server architecture documentation stub
+ - `RequestResult` class for CancelableInterface
+ - `CancelableInterface` class
+ - `CompositeReadableInterface` class
+ - doxygen documentation to `Device` class
+ - `Device::getObjectInstance()` method
+ - `Device::getObjectInstances()` method
+ - `Device::getResource()` method
+ - `Device::getResources()` method
+ - `Device::getResourceInstance()` method
+ - `Device::getResourceInstances()` method
+ - `DevicePtr` alias
+ - `ExecutableInterface` class
+ - doxygen documentation to `Object` class
+ - `Object::getObjectInstance()` method
+ - `Object::getObjectInstances()` method
+ - `Object::getResource()` method
+ - `Object::getResources()` method
+ - `Object::getResourceInstance()` method
+ - `Object::getResourceInstances()` method
+ - `ObjectPtr` alias
+ - doxygen documentation to `ObjectInstance` class
+ - `ObjectInstance::getResource()` method
+ - `ObjectInstance::getResourceInstance()` method
+ - `ObjectInstance::getResourceInstances()` method
+ - `ObjectInstancePtr` alias
+ - doxygen documentation to `Observable` class
+ - `ResourceDescriptorDoesNotExist` exception
+ - doxygen documentation to `ObjectDescriptor` class
+ - `ObservableInterface` class
+ - `Operationless` class
+ - doxygen documentation to `RangeEnumeration` class
+ - `ReadableInterface` class
+ - `ResourceInstanceDoesNotExist` exception
+ - `ResourceInstanceCouldNotBeResolved` exception
+ - doxygen documentation to `Resource` class
+ - `Resource::getResourceInstance()` method
+ - `Resource::getResourceInstances()` method
+ - `ResourcePtr` alias
+ - Message_Model doxygen group
+ - doxygen documentation to `ElementID` class
+ - `ElementID` expanding ctor
+
+### Changed
+ - code formatting rules
+ - contributing guide
+ - readme
+ - nlohmann_json dependency to v3.11.1
+ - pugixml dependency to v1.11
+ - HaSLL dependency to v0.3.1
+ - Nonempty_Pointer dependency to v0.1.2
+ - Threadsafe_Container dependency to v0.6.0
+ - CoAPS4Cpp dependency to v0.5.0
+ - EventModel dependency to v0.3.4
+ - Logger usage to work with HaSLL v0.3.1
+ - `Device` class to use `RequesterInterfaceFacadePtr` instead of `RequesterPtr`
+ - `CallableEntity`into `ElementAddress`
+ - `Executable` class to no longer inherit from `Resource<T>`
+ - `Object` class to use `RequesterInterfaceFacade` instead of `RequesterPtr`
+ - `ObjectInstance` class to use `RequesterInterfaceFacade` instead of `RequesterPtr`
+ - `ReadAndWritable ` class to no longer inherit from `Resource<T>`
+ - `ReadAndWritable` to be a composition of `Readable` and `Writable` classes
+ - `Readable` class to no longer inherit from `Resource<T>`
+ - `Writable` class to no longer inherit from `Resource<T>`
+ - `RegistryEvent` ctor to accept `DevicePtr` as an option value 
+
+### Removed
+ - explicit `Registrator` dtor
+ - `Requester` class
+ 
 ## [0.4.0] - 2022.04.08
 ### Added
  - `DeviceMetaInfo` class to store device information from Registration Interface
