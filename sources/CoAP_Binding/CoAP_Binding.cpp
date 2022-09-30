@@ -49,7 +49,8 @@ void CoAP_Binding::stop() {
 
 future<DataFormatPtr> CoAP_Binding::requestData(
     DeviceManagementRequestPtr request) {
-  return async(launch::async,
+  return async(
+      launch::async,
       [this](DeviceManagementRequestPtr request) -> DataFormatPtr {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
@@ -78,7 +79,8 @@ future<DataFormatPtr> CoAP_Binding::requestData(
 
 future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
     DeviceManagementRequestPtr request) {
-  return async(launch::async,
+  return async(
+      launch::async,
       [this](DeviceManagementRequestPtr request) -> TargetContentVector {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
@@ -108,7 +110,8 @@ future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
 }
 
 future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr request) {
-  return async(launch::async,
+  return async(
+      launch::async,
       [this](DeviceManagementRequestPtr request) -> bool {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
@@ -129,7 +132,8 @@ future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr request) {
 }
 
 future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr request) {
-  return async(launch::async,
+  return async(
+      launch::async,
       [this](ServerRequestPtr request) -> ClientResponsePtr {
         auto message = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,

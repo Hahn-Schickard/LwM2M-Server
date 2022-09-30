@@ -38,7 +38,9 @@ CodeType toCodeType(LwM2M::MessageType type) {
   case LwM2M::MessageType::DELETE: {
     return CodeType::DELETE;
   }
-  default: { throw logic_error("Message is not a valid ServerRequest."); }
+  default: {
+    throw logic_error("Message is not a valid ServerRequest.");
+  }
   }
 }
 
