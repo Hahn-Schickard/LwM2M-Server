@@ -19,6 +19,7 @@ public:
   Server(const std::string& filepath = std::string());
 
   void start();
+  std::vector<std::string> getRegisterBindingNames();
   void stop();
 
   EventSourcePtr getEventSource();

@@ -6,14 +6,18 @@
 namespace LwM2M {
 
 class BindingInterface {
+  std::string name_;
   DeviceRegistryPtr registry_;
 
 protected:
-  BindingInterface(DeviceRegistryPtr registry) : registry_(registry) {}
+  BindingInterface(const std::string& name, DeviceRegistryPtr registry)
+      : name_(name), registry_(registry) {}
 
 public:
   virtual void start() = 0;
   virtual void stop() = 0;
+
+  std::string name() { return name_; }
 };
 
 using BindingInterfacePtr = std::shared_ptr<BindingInterface>;

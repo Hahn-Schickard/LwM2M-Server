@@ -24,9 +24,7 @@ Server::Server(const string& filepath)
       bindings_.emplace_back(move(coap_binding));
       break;
     }
-    default: {
-      break;
-    }
+    default: { break; }
     }
   }
 }
@@ -38,6 +36,14 @@ void Server::start() {
   }
   logger_->log(
       SeverityLevel::TRACE, "All registered bindings have been started.");
+}
+
+vector<string> Server::getRegisterBindingNames() {
+  vector<string> result;
+  for (const auto& binding : bindings_) {
+    result.push_back(binding->name());
+  }
+  return result;
 }
 
 void Server::stop() {
