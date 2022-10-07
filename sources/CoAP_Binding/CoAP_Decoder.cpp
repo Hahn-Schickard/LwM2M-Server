@@ -77,39 +77,58 @@ LwM2M::PayloadPtr toPayload(CoRE_Links content) {
   }
 }
 
+/**
+ * @todo: This method implementation is a cluster-fuck. MUST be refactored when
+ * TLV pack is being worked on
+ */
 LwM2M::PayloadPtr toPayload(TLV_Pack content) {
   auto values = content.getPackAsVector();
   if (values.size() == 1) {
     if (values[0]->getIdentifierType() == Identifier_Type::Resource_Value) {
       auto data = make_shared<DataFormat>(values[0]->getValue());
       return make_shared<LwM2M::Payload>(data, MediaType::TLV);
-    } else if (values[0]->getIdentifierType() ==
-        Identifier_Type::Object_Instance) {
+    } else {
       LwM2M::TargetContentVector targets_and_values;
-      auto bytes = values[0]->getBytes();
-      auto tlv_subpack = TLV_Pack(bytes);
-      auto sub_values = tlv_subpack.getPackAsVector();
-      for (const auto& sub_value : sub_values) {
-        if (sub_value->getIdentifierType() == Identifier_Type::Resource_Value) {
-          // Object id is in the request, so there is no way to get it from
-          // response
-          auto target = ElementID(
-              0, values[0]->getIdentifier(), sub_value->getIdentifier());
+      if (values[0]->getIdentifierType() == Identifier_Type::Object_Instance) {
+        auto bytes = values[0]->getValue();
+        auto tlv_subpack = TLV_Pack(bytes);
+        auto sub_values = tlv_subpack.getPackAsVector();
+        for (const auto& sub_value : sub_values) {
+          if (sub_value->getIdentifierType() ==
+              Identifier_Type::Resource_Value) {
+            // Object id is in the request, so there is no way to get it from
+            // response
+            auto target = ElementID(
+                0, values[0]->getIdentifier(), sub_value->getIdentifier());
+            auto value = make_shared<DataFormat>(sub_value->getValue());
+            targets_and_values.emplace_back(target, value);
+          } else if (sub_value->getIdentifierType() ==
+              Identifier_Type::Multiple_Resources) {
+            auto subpack_bytes = sub_value->getBytes();
+            auto sub_sub_subpack = TLV_Pack(subpack_bytes);
+            auto sub_sub_values = tlv_subpack.getPackAsVector();
+            for (const auto& sub_sub_value : sub_sub_values) {
+              // Same as before, Object ID is a mystery, without checkin the
+              // original request
+              auto target = ElementID(0, values[0]->getIdentifier(),
+                  sub_value->getIdentifier(), sub_sub_value->getIdentifier());
+              auto value = make_shared<DataFormat>(sub_sub_value->getValue());
+              targets_and_values.emplace_back(target, value);
+            }
+          }
+        }
+      } else if (values[0]->getIdentifierType() ==
+          Identifier_Type::Multiple_Resources) {
+        auto subpack_bytes = values[0]->getValue();
+        auto subpack = TLV_Pack(subpack_bytes);
+        auto subpack_values = subpack.getPackAsVector();
+        for (const auto& sub_value : subpack_values) {
+          // Same as before, Object ID is a mystery, without checkin the
+          // original request
+          auto target = ElementID(0, values[0]->getIdentifier(),
+              values[0]->getIdentifier(), sub_value->getIdentifier());
           auto value = make_shared<DataFormat>(sub_value->getValue());
           targets_and_values.emplace_back(target, value);
-        } else if (sub_value->getIdentifierType() ==
-            Identifier_Type::Multiple_Resources) {
-          auto subpack_bytes = sub_value->getBytes();
-          auto sub_sub_subpack = TLV_Pack(subpack_bytes);
-          auto sub_sub_values = tlv_subpack.getPackAsVector();
-          for (const auto& sub_sub_value : sub_sub_values) {
-            // Same as before, Object ID is a mystery, without checkin the
-            // original request
-            auto target = ElementID(0, values[0]->getIdentifier(),
-                sub_value->getIdentifier(), sub_sub_value->getIdentifier());
-            auto value = make_shared<DataFormat>(sub_sub_value->getValue());
-            targets_and_values.emplace_back(target, value);
-          }
         }
       }
       return make_shared<LwM2M::Payload>(targets_and_values, MediaType::TLV);
@@ -223,7 +242,8 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
         }
         if (content) {
           logger_->log(SeverityLevel::TRACE,
-              "Payload {} of {} bytes assigned as content for Client Response "
+              "Payload {} of {} bytes assigned as content for Client "
+              "Response "
               "from {}:{} CoAP "
               "response with Token {}",
               toString(content->media_type_), content->size(),
