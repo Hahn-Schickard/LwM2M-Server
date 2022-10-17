@@ -1,10 +1,13 @@
 #include "CoAP_Binding.hpp"
 #include "CoAP_ContentTypes.hpp"
 #include "Message.hpp"
+#include "Read.hpp"
+#include "ReadComposite.hpp"
 #include "TLV.hpp"
 #include "Utility.hpp"
 
 #include "HaSLL/LoggerManager.hpp"
+#include "Variant_Visitor.hpp"
 
 using namespace LwM2M;
 using namespace std;
@@ -65,7 +68,31 @@ future<DataFormatPtr> CoAP_Binding::requestData(
         dispatched_.erase(std::hash<Message>{}(*request));
         if (response->response_code_ == ResponseCode::CONTENT) {
           if (response->payload_) {
-            return std::get<DataFormatPtr>(response->payload_->data_);
+            DataFormatPtr result;
+            match(response->payload_->data_,
+                [&](DataFormatPtr value) { result = value; },
+                [&](TargetContentVector values) {
+                  // Some read requests, that read from Multi-instance
+                  // resources, MAY get a TargetContentVector response, instead
+                  // of DataFormatPtr, because LwM2M_TLV sucks. Yes wakaama, I
+                  // am talking about you. If this is the case, just take the
+                  // first value, the entire thing is fucked anyways, might as
+                  // well get some data out of it...
+                  result = values[0].second;
+                },
+                [&](auto) {
+                  logger_->log(SeverityLevel::ERROR,
+                      "Response {} used an unexpected payload format for {}",
+                      response->name(), request->name());
+                });
+            if (result) {
+              return result;
+            } else {
+              string error_msg = "Could not decode response " +
+                  response->name() + " payload into DataFormatPtr for " +
+                  request->name();
+              throw runtime_error(error_msg);
+            }
           } else {
             throw ResponseReturnedAnEmptyPayload(response, request);
           }

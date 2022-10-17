@@ -23,6 +23,7 @@ target_sources(${MODULE_NAME} PRIVATE
 target_link_libraries(${MODULE_NAME} PUBLIC 
                                      ${PROJECT_NAME}_Binding_Interface
                                      CoAPS4Cpp::CoAPS4Cpp
+                                     Variant_Visitor::Variant_Visitor
                                      HaSLL::HaSLL
                                      HSCUL::HSCUL
 )

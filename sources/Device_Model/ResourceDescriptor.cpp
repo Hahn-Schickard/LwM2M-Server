@@ -20,9 +20,7 @@ string toString(OperationsType operation) {
     return "Execute";
   }
   case OperationsType::NO_OPERATION:
-  default: {
-    return "No Operation";
-  }
+  default: { return "No Operation"; }
   }
 }
 

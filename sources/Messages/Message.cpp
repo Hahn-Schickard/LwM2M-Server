@@ -19,9 +19,7 @@ string toString(InterfaceType type) {
   case InterfaceType::INFORMATION_REPORTING: {
     return "Information Reporting Interface";
   }
-  default: {
-    return "Unrecognized Interface";
-  }
+  default: { return "Unrecognized Interface"; }
   }
 }
 
@@ -81,9 +79,7 @@ string toString(MessageType type) {
   case MessageType::SEND: {
     return "Send";
   }
-  default: {
-    return "Unhandled";
-  };
+  default: { return "Unhandled"; };
   }
 }
 
@@ -106,9 +102,7 @@ InterfaceType getInterfaceType(MessageType message_type) {
   case BOOTSTRAP_INTERFACE: {
     return InterfaceType::BOOTSTRAP;
   }
-  default: {
-    return InterfaceType::NOT_RECOGNIZED;
-  }
+  default: { return InterfaceType::NOT_RECOGNIZED; }
   }
 }
 
@@ -181,9 +175,7 @@ string toString(ResponseCode type) {
     return "Proxying Not Supported";
   }
   case ResponseCode::UNHANDLED:
-  default: {
-    return "Unhandled Return Code";
-  }
+  default: { return "Unhandled Return Code"; }
   }
 }
 

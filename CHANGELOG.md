@@ -1,4 +1,4 @@
-## [0.5.0] - 2022.09.29
+## [0.5.0] - 2022.10.07
 ### Fixed
  - `Registrator::handleRequest` typo
 

@@ -34,9 +34,7 @@ string toString(ServerBindingType type) {
   case ServerBindingType::CoAP: {
     return "CoAP";
   }
-  default: {
-    return "Unknown";
-  }
+  default: { return "Unknown"; }
   }
 }
 

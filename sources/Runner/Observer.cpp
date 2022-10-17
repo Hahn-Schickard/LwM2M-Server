@@ -119,8 +119,7 @@ void handleTargetAttributes(TargetAttributes attributes) {
 void Observer::handleEvent(PayloadDataPtr payload) {
   if (payload) {
     cout << "Received: ";
-    match(
-        *payload,
+    match(*payload,
         [&](DataFormatPtr data) {
           handleData(data, getObservedDataTypes().begin()->second);
           cout << endl;
