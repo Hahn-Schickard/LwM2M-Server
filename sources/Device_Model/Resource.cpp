@@ -24,7 +24,9 @@ ResourceInstance makeVariant(const ResourceDescriptorPtr& descriptor,
     return NonemptyPointer::make_shared<Executable>(requester, endpoint, id);
   }
   case OperationsType::NO_OPERATION:
-  default: { return NonemptyPointer::make_shared<Operationless>(); }
+  default: {
+    return NonemptyPointer::make_shared<Operationless>();
+  }
   }
 }
 

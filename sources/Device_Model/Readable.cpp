@@ -19,7 +19,8 @@ Readable::Result Readable::read() {
   auto message = make_shared<ReadRequest>(endpoint_, id_);
 
   auto result_future = requester_->requestData(message);
-  auto resolved_future = async(launch::async,
+  auto resolved_future = async(
+      launch::async,
       [&](std::future<DataFormatPtr>&& result) -> DataVariant {
         return result.get()->get(getDataType(id_));
       },

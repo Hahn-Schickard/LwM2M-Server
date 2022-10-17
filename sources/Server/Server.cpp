@@ -24,7 +24,9 @@ Server::Server(const string& filepath)
       bindings_.emplace_back(move(coap_binding));
       break;
     }
-    default: { break; }
+    default: {
+      break;
+    }
     }
   }
 }

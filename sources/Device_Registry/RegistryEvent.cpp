@@ -14,7 +14,9 @@ string toString(RegistryEventType type) {
   case RegistryEventType::DEREGISTERED: {
     return "Device Deregistered";
   }
-  default: { return "Unknown Device Registration Event"; }
+  default: {
+    return "Unknown Device Registration Event";
+  }
   }
 }
 
