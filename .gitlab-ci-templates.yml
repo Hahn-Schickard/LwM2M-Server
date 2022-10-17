@@ -21,7 +21,6 @@ stages:
   tags:
     - conan
   script:
-    - pip3 install --upgrade conan
     - conan remote add upload_repo ${CONAN_REMOTE}
     - mkdir build
     - cd build
