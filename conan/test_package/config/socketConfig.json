@@ -1,5 +1,0 @@
-{
-    "ipv6": false,
-    "send_timeout_ms": 2000,
-    "server_port": 5683
-}
