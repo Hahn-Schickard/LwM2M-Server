@@ -51,10 +51,10 @@ We recommend to create a directory for project makefiles and binaries:
 mkdir build && cd build
 ```
 
-Once in this new **build** directory, generate the project makefiles:
+Once in this new **build** directory, generate the project makefiles for Debug configuration (you can change `Debug` for `Release` if debugging information is not needed):
 
 ```bash
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 ```
 
 Once makefiles have been generated, build the project either in **Debug** configuration:
@@ -63,7 +63,7 @@ Once makefiles have been generated, build the project either in **Debug** config
 cmake --build . --target all --config Debug --
 ```
 
-or **Release** configuration:
+or **Release** configuration, if previous cmake configuration was set for **Release**:
 
 ```bash
 cmake --build . --target all --config Release --
