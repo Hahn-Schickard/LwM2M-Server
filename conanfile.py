@@ -8,17 +8,17 @@ import shutil
 class PackageConan(ConanFile):
     license = 'Apache 2.0'
     topics = ('lwm2m', 'server', 'coap')
-    build_requires = 'gtest/1.10.0'
+    build_requires = 'gtest/[~1.11]'
     requires = [
-        'nlohmann_json/3.11.1',
-        'pugixml/1.11',
-        'HaSLL/0.3.1@hahn-schickard/stable',
-        'HSCUL/0.2.0@hahn-schickard/stable',
-        'Nonempty_Pointer/0.1.2@hahn-schickard/stable',
-        'Threadsafe_Containers/0.6.0@hahn-schickard/stable',
-        'CoAPS4Cpp/0.5.0@hahn-schickard/stable',
-        'Variant_Visitor/0.1.0@hahn-schickard/stable',
-        'Event_Model/0.3.4@hahn-schickard/stable'
+        'nlohmann_json/[~3.11]',
+        'pugixml/[~1.11]',
+        'HaSLL/[~0.3]@hahn-schickard/stable',
+        'HSCUL/[~0.2]@hahn-schickard/stable',
+        'Nonempty_Pointer/[~0.1]@hahn-schickard/stable',
+        'Threadsafe_Containers/[~0.6]@hahn-schickard/stable',
+        'CoAPS4Cpp/[~0.5]@hahn-schickard/stable',
+        'Variant_Visitor/[~0.1]@hahn-schickard/stable',
+        'Event_Model/[~0.3]@hahn-schickard/stable'
     ]
     settings = 'os', 'compiler', 'build_type', 'arch'
     options = {'shared': [True, False],
