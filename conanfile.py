@@ -6,7 +6,7 @@ import shutil
 
 
 class PackageConan(ConanFile):
-    license = 'Apache 2.0'
+    license = "Apache 2.0"
     topics = ('lwm2m', 'server', 'coap')
     build_requires = 'gtest/[~1.11]'
     requires = [
@@ -20,24 +20,24 @@ class PackageConan(ConanFile):
         'Variant_Visitor/[~0.1]@hahn-schickard/stable',
         'Event_Model/[~0.3]@hahn-schickard/stable'
     ]
-    settings = 'os', 'compiler', 'build_type', 'arch'
-    options = {'shared': [True, False],
-               'fPIC': [True, False]}
-    default_options = {'shared': True,
-                       'fPIC': True}
-    default_user = 'Hahn-Schickard'
+    settings = "os", "compiler", "build_type", "arch"
+    options = {"shared": [True, False],
+               "fPIC": [True, False]}
+    default_options = {"shared": True,
+                       "fPIC": True}
+    default_user = "Hahn-Schickard"
     exports_sources = [
-        'cmake*',
+        "cmake*",
         'config*',
-        'includes*',
-        'sources*',
-        'unit_tests*',
-        'CMakeLists.txt',
-        'conanfile.py'
+        "includes*",
+        "sources*",
+        "unit_tests*",
+        "CMakeLists.txt",
+        "conanfile.py",
         'README.md',
-        'LICENSE',
-        'NOTICE',
-        'AUTHORS'
+        "LICENSE",
+        "NOTICE",
+        "AUTHORS"
     ]
     _cmake = None
     generators = ['cmake', 'cmake_paths', 'cmake_find_package']
@@ -61,6 +61,7 @@ class PackageConan(ConanFile):
         self._cmake = CMake(self)
         self._cmake.verbose = True
         self._cmake.definitions['STATIC_CODE_ANALYSIS'] = False
+        self._cmake.definitions['RUN_TESTS'] = False
         self._cmake.definitions['USE_CONAN'] = True
         self._cmake.configure()
         return self._cmake
