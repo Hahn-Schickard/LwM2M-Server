@@ -269,17 +269,25 @@ RegisterResponsePtr Registrator::handleRequest(
       auto location = generateDeviceID(
           request->device_info_.endpoint_name_.value_or(string()),
           request->endpoint_);
-      logger_->log(SeverityLevel::TRACE,
-          "Assigning {} as a Device id for a Registration request from {}:{}",
-          location, request->endpoint_->endpoint_address_,
-          request->endpoint_->endpoint_port_);
-      thread(
-          [this](string device_id, EndpointPtr device_address,
-              DeviceMetaInfo device_info) {
-            makeDevice(device_id, device_address, device_info);
-          },
-          location, request->endpoint_, request->device_info_)
-          .detach();
+      if (!registry_->isRegistered(location)) {
+        logger_->log(SeverityLevel::TRACE,
+            "Assigning {} as a Device id for a Registration request from {}:{}",
+            location, request->endpoint_->endpoint_address_,
+            request->endpoint_->endpoint_port_);
+        thread(
+            [this](string device_id, EndpointPtr device_address,
+                DeviceMetaInfo device_info) {
+              makeDevice(device_id, device_address, device_info);
+            },
+            location, request->endpoint_, request->device_info_)
+            .detach();
+      } else {
+        // @TODO: implement Device lifetime check
+        logger_->log(SeverityLevel::INFO,
+            "Device {} is already registered. Assuming Keep Alive Request",
+            location, request->endpoint_->endpoint_address_,
+            request->endpoint_->endpoint_port_);
+      }
       return request->makeResponse(location);
     } catch (exception& ex) {
       logger_->log(SeverityLevel::ERROR,
