@@ -1,4 +1,18 @@
 # Changelog
+## [0.5.1] - 2022.11.16
+### Changed
+ - conan packaging recipe
+ - HaSLL dependency to fuzzy v0.3
+ - HSCUL dependency to fuzzy v0.2
+ - Nonempty_Pointer dependency to fuzzy v0.1
+ - Threadsafe_Containers dependency to fuzzy v0.6
+ - CoAPS4Cpp dependency to fuzzy v0.5
+ - Variant_Visitor dependency to fuzzy v0.1
+ - Event_Model dependency to fuzzy v0.3
+ 
+### Added
+ - Keep Alive request handling stub in `Registrator::handleRequest(const RegisterRequestPtr&)` 
+
 ## [0.5.0] - 2022.10.17
 ### Fixed
  - `Registrator::handleRequest` typo
