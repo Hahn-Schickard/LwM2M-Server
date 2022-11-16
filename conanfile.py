@@ -10,8 +10,8 @@ class PackageConan(ConanFile):
     topics = ('lwm2m', 'server', 'coap')
     build_requires = 'gtest/[~1.11]'
     requires = [
-        'nlohmann_json/[~3.11]',
-        'pugixml/[~1.11]',
+        'nlohmann_json/3.11.1',
+        'pugixml/1.11',
         'HaSLL/[~0.3]@hahn-schickard/stable',
         'HSCUL/[~0.2]@hahn-schickard/stable',
         'Nonempty_Pointer/[~0.1]@hahn-schickard/stable',
