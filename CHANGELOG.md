@@ -1,4 +1,15 @@
 # Changelog
+## [0.5.2] - 2022.11.23
+### Added
+ - keep alive handler via update request
+
+### Changed
+ - `stringifyDataVariant()` to hexify Opaque values in Example
+
+### Removed
+ - redundant cases in CoAP Message encoding
+ - logger warning messages for encoding CoAP Message Payload with no value
+
 ## [0.5.1] - 2022.11.16
 ### Changed
  - conan packaging recipe
