@@ -90,9 +90,9 @@ UnsupportedDataType::UnsupportedDataType()
 TimeStamp::TimeStamp(uint64_t posix_timestamp) : value_(posix_timestamp) {}
 
 string TimeStamp::toString() {
-  tm tm = *localtime(&value_);
+  tm* tm = localtime(&value_);
   stringstream ss;
-  ss << put_time(&tm, "%F %T %Z");
+  ss << put_time(tm, "%F %T %Z");
   return ss.str();
 }
 
