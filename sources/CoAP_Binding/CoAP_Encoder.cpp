@@ -212,9 +212,6 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
     return CoAP::PayloadPtr();
   }
   default: {
-    logger_->log(SeverityLevel::WARNING,
-        "Did not encode message {} payload for {}", message_identifier,
-        toString(type));
     return CoAP::PayloadPtr();
   }
   }
