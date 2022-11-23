@@ -52,15 +52,14 @@ bool DeviceRegistry::isRegistered(const string& identifier) {
 
 void DeviceRegistry::registerDevice(DevicePtr new_device) {
   if (isRegistered(new_device->getDeviceId())) {
-    logger_->log(SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::WARNING,
         "Device {} with id {} already exists in the registry!",
         new_device->getName(), new_device->getDeviceId());
     deregisterDevice(new_device->getDeviceId());
   }
   device_registry_.emplace(new_device->getDeviceId(), new_device);
-  logger_->log(SeverityLevel::TRACE,
-      "Device {} with id {} has been registered.", new_device->getName(),
-      new_device->getDeviceId());
+  logger_->log(SeverityLevel::INFO, "Device {} with id {} has been registered.",
+      new_device->getName(), new_device->getDeviceId());
   auto event = std::make_shared<RegistryEvent>(
       RegistryEventType::REGISTERED, new_device->getDeviceId(), new_device);
   logger_->log(SeverityLevel::TRACE,
@@ -73,7 +72,7 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
   auto it = device_registry_.find(updated_device->getDeviceId());
   if (it != device_registry_.end()) {
     it->second = updated_device;
-    logger_->log(SeverityLevel::TRACE, "Device {} with id {} has been updated.",
+    logger_->log(SeverityLevel::INFO, "Device {} with id {} has been updated.",
         updated_device->getName(), updated_device->getDeviceId());
     auto event = std::make_shared<RegistryEvent>(RegistryEventType::UPDATED,
         updated_device->getDeviceId(), updated_device);
@@ -87,12 +86,12 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
 }
 
 void DeviceRegistry::deregisterDevice(const string& identifier) {
-  logger_->log(SeverityLevel::TRACE,
+  logger_->log(SeverityLevel::INFO,
       "Looking for Device with id {} within the registry.", identifier);
   auto it = device_registry_.find(identifier);
   if (it != device_registry_.end()) {
     device_registry_.erase(it);
-    logger_->log(SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::INFO,
         "Device with id {} has been removed from the registry.", identifier);
     auto event = std::make_shared<RegistryEvent>(
         RegistryEventType::DEREGISTERED, identifier);

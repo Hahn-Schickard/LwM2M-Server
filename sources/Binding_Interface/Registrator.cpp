@@ -261,7 +261,7 @@ void Registrator::makeDevice(const string& device_id,
 RegisterResponsePtr Registrator::handleRequest(
     const RegisterRequestPtr& request) {
   if (request) {
-    logger_->log(SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::INFO,
         "Handling a Registration request from {}:{}",
         request->endpoint_->endpoint_address_,
         request->endpoint_->endpoint_port_);
@@ -303,7 +303,7 @@ RegisterResponsePtr Registrator::handleRequest(
 
 UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
   if (request) {
-    logger_->log(SeverityLevel::TRACE, "Handling an Update request from {}:{}",
+    logger_->log(SeverityLevel::INFO, "Handling an Update request from {}:{}",
         request->endpoint_->endpoint_address_,
         request->endpoint_->endpoint_port_);
     try {
@@ -338,7 +338,7 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
         }
         registry_->updateDevice(device);
       } else {
-        logger_->log(SeverityLevel::TRACE,
+        logger_->log(SeverityLevel::INFO,
             "Received a Keep Alive request for {}:{} device.",
             device->getDeviceId(), device->getName());
         //@TODO: handle keep alive here
@@ -355,7 +355,7 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
 DeregisterResponsePtr Registrator::handleRequest(
     const DeregisterRequestPtr& request) {
   if (request) {
-    logger_->log(SeverityLevel::TRACE,
+    logger_->log(SeverityLevel::INFO,
         "Handling a Deregistration request from {}:{}",
         request->endpoint_->endpoint_address_,
         request->endpoint_->endpoint_port_);
