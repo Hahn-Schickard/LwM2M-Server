@@ -25,6 +25,11 @@ UpdateResponse::UpdateResponse(EndpointPtr endpoint, // NOLINT
 
 string UpdateResponse::name() { return "UpdateResponse"; }
 
+UpdateRequest::UpdateRequest(EndpointPtr endpoint, std::string location)
+    : RegistrationInterfaceRequest(endpoint, // NOLINT
+          MessageType::UPDATE),
+      location_(move(location)), device_info_(nullopt), keep_alive_(true) {}
+
 UpdateRequest::UpdateRequest(EndpointPtr endpoint, // NOLINT
     string location, DeviceMetaInfo device_info) // NOLINT
     : RegistrationInterfaceRequest(endpoint, // NOLINT
@@ -44,6 +49,8 @@ UpdateRequest::UpdateRequest(EndpointPtr endpoint, // NOLINT
 {}
 
 string UpdateRequest::name() { return "UpdateRequest"; }
+
+bool UpdateRequest::isKeepAlive() { return keep_alive_; }
 
 UpdateResponsePtr UpdateRequest::makeResponse(ResponseCode response_code) {
   if (response_code == ResponseCode::CHANGED) {

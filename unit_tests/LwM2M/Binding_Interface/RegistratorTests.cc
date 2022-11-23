@@ -111,8 +111,8 @@ TEST_F(RegistratorTests, returnsChangedOnUpdateRequest) {
 // NOLINTNEXTLINE
 TEST_F(RegistratorTests, returnsNotFoundOnUpdateRequest) {
   auto endpoint = make_shared<Endpoint>("0.0.0.0", 10);
-  auto request =
-      make_shared<UpdateRequest>(endpoint, "NonExistantDeviceLocation");
+  auto request = make_shared<UpdateRequest>(endpoint,
+      "NonExistantDeviceLocation", DeviceMetaInfo::ObjectInstancesMap());
 
   try {
     auto response = registrator_->handleRequest(request);

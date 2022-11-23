@@ -53,18 +53,21 @@ using UpdateResponsePtr = std::shared_ptr<UpdateResponse>;
  */
 struct UpdateRequest : RegistrationInterfaceRequest {
   std::string location_;
-  const DeviceMetaInfo device_info_;
+  std::optional<DeviceMetaInfo> device_info_;
+  bool keep_alive_ = false;
 
+  UpdateRequest(EndpointPtr endpoint, std::string location);
   UpdateRequest(
       EndpointPtr endpoint, std::string location, DeviceMetaInfo device_info);
   UpdateRequest(EndpointPtr endpoint, std::string location,
-      DeviceMetaInfo::ObjectInstancesMap object_instances_map =
-          DeviceMetaInfo::ObjectInstancesMap(),
+      DeviceMetaInfo::ObjectInstancesMap object_instances_map,
       std::optional<size_t> lifetime = std::nullopt,
       std::optional<BindingType> binding = std::nullopt,
       std::optional<std::string> sms_number = std::nullopt);
 
   std::string name() override final;
+
+  bool isKeepAlive();
 
   UpdateResponsePtr makeResponse(ResponseCode response_code);
 };
