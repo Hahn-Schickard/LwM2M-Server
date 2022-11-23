@@ -146,7 +146,7 @@ struct ObserverInterface
   std::string getId();
 
 private:
-  std::string oberser_id_;
+  std::string observer_id_;
   Observable::ObservedDataTypes data_types_;
 };
 
