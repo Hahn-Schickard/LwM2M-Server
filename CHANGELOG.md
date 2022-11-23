@@ -5,6 +5,11 @@
 
 ### Changed
  - `stringifyDataVariant()` to hexify Opaque values in Example
+ - some `TRACE` level messages into `INFO` for `Registrator::handleRequest()` method implementations to help track Device state changes
+ - `TRACE` level message for device removal into `WARNING` for `DeviceRegistry::registerDevice()`
+ - `TRACE` level message for device registration into `INFO` for `DeviceRegistry::registerDevice()`
+ - `TRACE` level message for device update into `INFO` for `DeviceRegistry::updateDevice()`
+ - `TRACE` level message for device deregistration into `INFO` for `DeviceRegistry::deregisterDevice()`
 
 ### Removed
  - redundant cases in CoAP Message encoding
