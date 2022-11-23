@@ -234,10 +234,10 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     cout << "Device with id: " << event->identifier_
          << " has been deregistered!" << endl;
     auto range = observers_.equal_range(event->identifier_);
-    for (auto it = range.first; it != range.second; ++it) {
+    for (auto it = range.first; it != range.second;) {
       cout << "Erasing element observer: " << it->second->getId() << endl;
       it->second.reset();
-      observers_.erase(it);
+      it = observers_.erase(it);
     }
     break;
   }
