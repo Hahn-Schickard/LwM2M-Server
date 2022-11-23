@@ -10,10 +10,14 @@
  - `TRACE` level message for device registration into `INFO` for `DeviceRegistry::registerDevice()`
  - `TRACE` level message for device update into `INFO` for `DeviceRegistry::updateDevice()`
  - `TRACE` level message for device deregistration into `INFO` for `DeviceRegistry::deregisterDevice()`
+ - `TimeStamp::toString()` implementation to reduce raw pointer usage 
 
 ### Removed
  - redundant cases in CoAP Message encoding
  - logger warning messages for encoding CoAP Message Payload with no value
+
+### Fixed
+ - double erase for Observers in Example
 
 ## [0.5.1] - 2022.11.16
 ### Changed
