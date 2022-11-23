@@ -232,17 +232,18 @@ optional<string> getLocation(Options options) {
 UpdateRequestPtr buildUpdateRequest(const CoAP::MessagePtr& message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
-  try {
-    auto location = getLocation(message->getOptions()).value();
+  auto location = getLocation(message->getOptions()).value();
+  // if there are more options than just URI_PATH for rd interface and Location,
+  // it is not a Keep Alive Request
+  if (message->getOptions().size() > 2) {
     auto object_instances_map = getObjectList(message->getPayload());
-    auto life_time = getLifetime(message->getOptions()).value();
+    auto life_time = getLifetime(message->getOptions());
     auto binding = getBindingType(message->getOptions());
     auto sms_number = getSMS(message->getOptions());
     return make_shared<UpdateRequest>(endpoint, location, object_instances_map,
         life_time, binding, sms_number);
-  } catch (bad_optional_access& ex) {
-    throw RegistrationInterfaceError(
-        make_shared<UpdateResponse>(endpoint, ResponseCode::BAD_REQUEST));
+  } else {
+    return make_shared<UpdateRequest>(endpoint, location);
   }
 }
 

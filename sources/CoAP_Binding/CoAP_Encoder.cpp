@@ -193,28 +193,7 @@ CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
         message_identifier);
     return encodeAs_LwM2M_CBOR(payload);
   }
-  case LwM2M::MessageType::REGISTER: {
-    [[fallthrough]];
-  }
-  case LwM2M::MessageType::UPDATE: {
-    [[fallthrough]];
-  }
-  case LwM2M::MessageType::DEREGISTER: {
-    [[fallthrough]];
-  }
-  case LwM2M::MessageType::OBSERVE: {
-    [[fallthrough]];
-  }
-  case LwM2M::MessageType::DISCOVER: {
-    logger_->log(SeverityLevel::TRACE,
-        "{} Message {} does not have a CoAP payload to encode.", toString(type),
-        message_identifier);
-    return CoAP::PayloadPtr();
-  }
   default: {
-    logger_->log(SeverityLevel::WARNING,
-        "Did not encode message {} payload for {}", message_identifier,
-        toString(type));
     return CoAP::PayloadPtr();
   }
   }

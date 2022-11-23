@@ -1,5 +1,6 @@
 #include "Example.hpp"
 #include "CoAP_ContentTypes.hpp"
+#include "HSCUL/String.hpp"
 #include "Observable.hpp"
 #include "Readable.hpp"
 #include "Variant_Visitor.hpp"
@@ -100,9 +101,7 @@ string stringifyDataVariant(const DataVariant& variant) {
         result = "Object link:" + to_string(value.object_id_) + ":" +
             to_string(value.instance_id_);
       },
-      [&](vector<uint8_t> value) {
-        result = string(value.begin(), value.end());
-      });
+      [&](vector<uint8_t> value) { result = HSCUL::hexify(value); });
   return result;
 }
 
