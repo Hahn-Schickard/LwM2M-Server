@@ -1,4 +1,13 @@
 # Changelog
+## [0.5.3] - 2023.06.30
+### Removed 
+ - direct nlohmann_json dependency in favor of using indirect one via CoAPS4Cpp
+ - direct HaSLL dependency in favor of using indirect one via CoAPS4Cpp
+ - direct HSCUL dependency in favor of using indirect one via CoAPS4Cpp
+ - direct HaSLL dependency in favor of using indirect one via CoAPS4Cpp 
+ - direct Nonempty_Pointer dependency in favor of using indirect one via CoAPS4Cpp 
+ - direct Threadsafe_Containers dependency in favor of using indirect one via CoAPS4Cpp 
+
 ## [0.5.2] - 2022.11.23
 ### Added
  - keep alive handler via update request
