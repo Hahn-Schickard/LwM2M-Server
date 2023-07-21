@@ -12,7 +12,7 @@ using namespace LwM2M;
 
 struct RegistrationListener
     : public Event_Model::EventListenerInterface<RegistryEvent> {
-  RegistrationListener(EventSourcePtr registration);
+  RegistrationListener(const EventSourcePtr& registration);
 
   void handleEvent(RegistryEventPtr event) override;
 

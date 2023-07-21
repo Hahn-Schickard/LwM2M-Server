@@ -16,7 +16,7 @@ namespace LwM2M {
 struct ObserveRequest : InformationReportingRequest {
   ObserveRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using ObserveRequestPtr = std::shared_ptr<ObserveRequest>;

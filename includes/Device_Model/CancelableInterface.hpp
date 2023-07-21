@@ -25,8 +25,8 @@ template <typename T> struct RequestResult {
   using RequestCancelerPtr = Threadsafe::WeakPtr<Functor>;
 
   RequestResult(size_t request_id, std::future<T>&& result_future,
-      RequestCleanerPtr cleanupRequest_callback,
-      RequestCancelerPtr cancelRequest_callback)
+      const RequestCleanerPtr& cleanupRequest_callback,
+      const RequestCancelerPtr& cancelRequest_callback)
       : id_(request_id), result_(std::move(result_future)),
         cleanupRequest_(cleanupRequest_callback),
         cancelRequest_(cancelRequest_callback) {}
@@ -113,7 +113,7 @@ struct CancelableInterface {
    * @throws std::runtime_error exception if called base virtual implementation
    *
    */
-  virtual void cancelRequest(ServerRequestPtr /*message*/) {
+  virtual void cancelRequest(const ServerRequestPtr& /*message*/) {
     throw std::runtime_error("Called base cancelRequest implementation.");
   }
 
@@ -129,7 +129,7 @@ struct CancelableInterface {
    */
   template <typename T>
   RequestResult<T> issueCancelable(
-      ServerRequestPtr request, std::future<T>&& result_future) {
+      const ServerRequestPtr& request, std::future<T>&& result_future) {
     auto id = addRequest(request);
     return RequestResult<T>(id, std::move(result_future), cleaner_, canceler_);
   }
@@ -141,7 +141,7 @@ private:
    * @param request
    * @return size_t
    */
-  size_t addRequest(ServerRequestPtr request) {
+  size_t addRequest(const ServerRequestPtr& request) {
     std::lock_guard<std::mutex> guard(request_mutex_);
     auto id = requests_.size() + 1;
     requests_.emplace(id, request);

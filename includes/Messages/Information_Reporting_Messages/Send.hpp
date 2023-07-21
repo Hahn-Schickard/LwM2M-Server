@@ -24,7 +24,7 @@ struct SendResponse : InformationReportingDownlinkResponse {
   SendResponse(EndpointPtr endpoint,
       ResponseCode response_code = ResponseCode::BAD_REQUEST);
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using SendResponsePtr = std::shared_ptr<SendResponse>;
@@ -37,7 +37,7 @@ struct SendRequest : InformationReportingDownlinkRequest {
   SendRequest(EndpointPtr endpoint,
       TargetContent content = TargetContent(ElementID(0), DataFormatPtr()));
 
-  std::string name() override final;
+  std::string name() const final;
 
   SendResponsePtr makeResponse(
       ResponseCode response_code = ResponseCode::BAD_REQUEST);

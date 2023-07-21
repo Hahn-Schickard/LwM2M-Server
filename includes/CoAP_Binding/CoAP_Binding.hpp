@@ -23,18 +23,18 @@ struct CoAP_Binding : public BindingInterface,
 
   // Requester interface implementation
   std::future<DataFormatPtr> requestData(
-      DeviceManagementRequestPtr request) override final;
+      const DeviceManagementRequestPtr& request) final;
   std::future<TargetContentVector> requestMultiTargetData(
-      DeviceManagementRequestPtr request) override final;
+      const DeviceManagementRequestPtr& request) final;
   std::future<bool> requestAction(
-      DeviceManagementRequestPtr request) override final;
-  std::future<ClientResponsePtr> request(
-      ServerRequestPtr request) override final;
-  size_t requestObservation(std::function<void(PayloadDataPtr)> notify_cb,
-      InformationReportingRequestPtr request) override final;
-  void cancelObservation(size_t observer_id,
-      InformationReportingRequestPtr request) override final;
-  void cancelRequest(ServerRequestPtr request) override final;
+      const DeviceManagementRequestPtr& request) final;
+  std::future<ClientResponsePtr> request(const ServerRequestPtr& request) final;
+  size_t requestObservation(
+      const std::function<void(PayloadDataPtr)>& notify_cb,
+      const InformationReportingRequestPtr& request) final;
+  void cancelObservation(
+      size_t observer_id, const InformationReportingRequestPtr& request) final;
+  void cancelRequest(const ServerRequestPtr& request) final;
 
   void start();
   void stop();
@@ -45,7 +45,7 @@ private:
   ServerResponsePtr handleRequest(const CoAP::MessagePtr& message);
 
   // Socket interface implementation
-  void handleReceived(CoAP::MessagePtr message) override final;
+  void handleReceived(const CoAP::MessagePtr& message) final;
 
   // only encodes the request if it was NOT dispatched before, otherwise returns
   // the dispatched encoded request

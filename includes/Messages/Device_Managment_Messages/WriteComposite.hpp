@@ -21,7 +21,7 @@ struct WriteCompositeRequest : public DeviceManagementRequest {
   WriteCompositeRequest(EndpointPtr endpoint,
       std::vector<TargetContent> content = std::vector<TargetContent>());
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using WriteCompositeRequestPtr = std::shared_ptr<WriteCompositeRequest>;

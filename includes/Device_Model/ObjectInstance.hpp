@@ -24,7 +24,7 @@ namespace LwM2M {
 using Resources = std::unordered_map<uint32_t, ResourcePtr>;
 
 struct ResourceDoesNotExist : public std::runtime_error {
-  ResourceDoesNotExist(ElementID id)
+  ResourceDoesNotExist(const ElementID& id)
       : runtime_error("Resource " + id.toString() + " does not exist.") {}
 };
 
@@ -39,16 +39,18 @@ class ObjectInstance {
   Resources resources_;
 
 public:
-  ObjectInstance(Observable::ExceptionHandler handler,
-      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
-      std::unordered_map<uint32_t, ResourceDescriptorPtr> resource_descriptors);
+  ObjectInstance(const Observable::ExceptionHandler& handler,
+      const RequesterInterfaceFacadePtr& requester, const EndpointPtr& endpoint,
+      const ElementID& id,
+      const std::unordered_map<uint32_t, ResourceDescriptorPtr>&
+          resource_descriptors);
 
   /**
    * @brief Returns the id of this object instance
    *
    * @return ElementID
    */
-  ElementID getId();
+  ElementID getId() const;
 
   /**
    * @brief Looks for a given Resource based on a given ElementID
@@ -60,14 +62,14 @@ public:
    *
    * @return ResourcePtr
    */
-  ResourcePtr getResource(ElementID id);
+  ResourcePtr getResource(const ElementID& id) const;
 
   /**
    * @brief Returns all Resources linked to the current Object Instance
    *
    * @return Resources
    */
-  Resources getResources();
+  Resources getResources() const;
 
   /**
    * @brief Looks for a given ResourceInstance based on a given ElementID
@@ -84,7 +86,7 @@ public:
    * @return ResourceInstance - @see ResourceInstance on how to obtain stored
    * information
    */
-  ResourceInstance getResourceInstance(ElementID id);
+  ResourceInstance getResourceInstance(const ElementID& id) const;
 
   /**
    * @brief  Returns all ResourceInstances linked to given Resource
@@ -97,7 +99,7 @@ public:
    *
    * @return ResourceInstances
    */
-  ResourceInstances getResourceInstances(ElementID id);
+  ResourceInstances getResourceInstances(const ElementID& id) const;
 };
 
 using ObjectInstanceSharedPtr = std::shared_ptr<ObjectInstance>;

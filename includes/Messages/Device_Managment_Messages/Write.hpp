@@ -23,7 +23,7 @@ struct WriteRequest : DeviceManagementRequest {
   WriteRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0),
       DataFormatPtr content = DataFormatPtr());
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using WriteRequestPtr = std::shared_ptr<WriteRequest>;

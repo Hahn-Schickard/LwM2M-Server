@@ -36,7 +36,7 @@ struct Executable : public ElementAddress {
    * @param arguments
    * @return Result<true> if request was successful
    */
-  Result execute(std::string arguments);
+  Result execute(const std::string& arguments);
 
 private:
   ExecutableInterfacePtr requester_;

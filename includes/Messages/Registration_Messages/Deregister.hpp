@@ -40,7 +40,7 @@ struct DeregisterResponse : RegistrationInterfaceResponse {
    */
   DeregisterResponse(EndpointPtr endpoint, std::string location);
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using DeregisterResponsePtr = std::shared_ptr<DeregisterResponse>;
@@ -55,7 +55,7 @@ struct DeregisterRequest : RegistrationInterfaceRequest {
 
   DeregisterRequest(EndpointPtr endpoint, std::string location);
 
-  std::string name() override final;
+  std::string name() const final;
 
   DeregisterResponsePtr makeResponse(ResponseCode response_code);
 };

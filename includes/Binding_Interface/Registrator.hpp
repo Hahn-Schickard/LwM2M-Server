@@ -22,13 +22,13 @@ class Registrator
   DeviceRegistryPtr registry_;
   HaSLI::LoggerPtr logger_;
 
-  void makeDevice(const std::string& device_id, EndpointPtr device_address,
-      DeviceMetaInfo device_info);
+  void makeDevice(const std::string& device_id,
+      const EndpointPtr& device_address, const DeviceMetaInfo& device_info);
 
   ObjectDescriptorsMap assignAvailableDescriptors(
-      ElementIDs requested_instances);
+      const ElementIDs& requested_instances);
 
-  ElementIDs discoverAvailableDescriptors(EndpointPtr endpoint,
+  ElementIDs discoverAvailableDescriptors(const EndpointPtr& endpoint,
       const DeviceMetaInfo::ObjectInstancesMap& object_instances);
 
   ElementIDs discover(const ServerRequestPtr& request);
@@ -37,7 +37,7 @@ class Registrator
       const std::string& device_id, const std::exception_ptr& exception_ptr);
 
 public:
-  Registrator(DeviceRegistryPtr registry);
+  Registrator(const DeviceRegistryPtr& registry);
 
   /**
    * @brief Registers a new LwM2M::Device or Registers it, if it already
@@ -71,7 +71,7 @@ public:
    */
   DeregisterResponsePtr handleRequest(const DeregisterRequestPtr& request);
 
-  EventSourcePtr getEventSource();
+  EventSourcePtr getEventSource() const;
 };
 
 using RegistratorPtr = std::shared_ptr<Registrator>;

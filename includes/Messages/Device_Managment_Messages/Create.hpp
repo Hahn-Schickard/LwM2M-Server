@@ -21,7 +21,7 @@ namespace LwM2M {
 struct CreateRequest : public DeviceManagementRequest {
   CreateRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0),
       DataFormatPtr content = DataFormatPtr());
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using CreateRequestPtr = std::shared_ptr<CreateRequest>;

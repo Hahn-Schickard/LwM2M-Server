@@ -9,16 +9,16 @@ namespace LwM2M {
 using ResourceDescriptorMap = unordered_map<uint32_t, ResourceDescriptorPtr>;
 
 ResourceDescriptorMap assignResourceDescriptors(
-    ElementIDs required, ResourceDescriptorMap supported) {
+    const ElementIDs& required, const ResourceDescriptorMap& supported) {
   ResourceDescriptorMap result;
   // Assign mandatory resources first
-  for (auto resource : supported) {
+  for (const auto& resource : supported) {
     if (resource.second->mandatory_) {
       result.emplace(resource);
     }
   }
 
-  for (auto resource : required) {
+  for (const auto& resource : required) {
     try {
       auto it = supported.find(resource.getResourceID());
       // Check if resource is supported and not previously assigned
@@ -35,14 +35,12 @@ ResourceDescriptorMap assignResourceDescriptors(
   return result;
 }
 
-Object::Object(Observable::ExceptionHandler handler,
-    RequesterInterfaceFacadePtr requester, // NOLINT
-    EndpointPtr endpoint, // NOLINT
-    RequiredObjectInstances instances,
-    ObjectDescriptorPtr descriptor) // NOLINT
-    : requester_(requester), endpoint_(endpoint), // NOLINT
-      descriptor_(descriptor) { // NOLINT
-  for (auto instance : instances) {
+Object::Object(const Observable::ExceptionHandler& handler,
+    const RequesterInterfaceFacadePtr& requester, const EndpointPtr& endpoint,
+    const RequiredObjectInstances& instances,
+    const ObjectDescriptorPtr& descriptor)
+    : requester_(requester), endpoint_(endpoint), descriptor_(descriptor) {
+  for (const auto& instance : instances) {
     ElementIDs resources;
     auto range = instances.equal_range(instance);
     for (auto resource = range.first; resource != range.second; ++resource) {
@@ -58,9 +56,9 @@ Object::Object(Observable::ExceptionHandler handler,
   }
 }
 
-ObjectDescriptorPtr Object::getDescriptor() { return descriptor_; }
+ObjectDescriptorPtr Object::getDescriptor() const { return descriptor_; }
 
-ObjectInstancePtr Object::getObjectInstance(ElementID id) {
+ObjectInstancePtr Object::getObjectInstance(const ElementID& id) const {
   auto it = instances_.find(id.getObjectInstanceID());
   if (it != instances_.end()) {
     return it->second;
@@ -69,21 +67,21 @@ ObjectInstancePtr Object::getObjectInstance(ElementID id) {
   }
 }
 
-ObjectInstances Object::getObjectInstances() { return instances_; }
+ObjectInstances Object::getObjectInstances() const { return instances_; }
 
-ResourcePtr Object::getResource(ElementID id) {
+ResourcePtr Object::getResource(const ElementID& id) const {
   return getObjectInstance(id)->getResource(id);
 }
 
-Resources Object::getResources(ElementID id) {
+Resources Object::getResources(const ElementID& id) const {
   return getObjectInstance(id)->getResources();
 }
 
-ResourceInstance Object::getResourceInstance(ElementID id) {
+ResourceInstance Object::getResourceInstance(const ElementID& id) const {
   return getResource(id)->getResourceInstance(id);
 }
 
-ResourceInstances Object::getResourceInstances(ElementID id) {
+ResourceInstances Object::getResourceInstances(const ElementID& id) const {
   return getResource(id)->getResourceInstances();
 }
 } // namespace LwM2M

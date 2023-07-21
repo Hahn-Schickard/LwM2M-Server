@@ -16,7 +16,7 @@ namespace LwM2M {
 struct DeleteRequest : public DeviceManagementRequest {
   DeleteRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using DeleteRequestPtr = std::shared_ptr<DeleteRequest>;

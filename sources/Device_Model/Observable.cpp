@@ -15,20 +15,18 @@ DataType getDataTypeFromMap(
   }
 }
 
-Observable::Observable(Observable::ExceptionHandler handler,
-    ObservableInterfacePtr requester, // NOLINT
-    EndpointPtr endpoint, // NOLINT
-    ElementID id, ObservedDataTypes data_types) // NOLINT
-    : Event_Model::EventSource<PayloadData>(handler), // NOLINT
-      ElementAddress(endpoint, id), requester_(requester), // NOLINT
-      data_types_(data_types) {} // NOLINT
+Observable::Observable(const Observable::ExceptionHandler& handler,
+    const ObservableInterfacePtr& requester, const EndpointPtr& endpoint,
+    const ElementID& id, const ObservedDataTypes& data_types)
+    : Event_Model::EventSource<PayloadData>(handler),
+      ElementAddress(endpoint, id), requester_(requester),
+      data_types_(data_types) {}
 
-Observable::Observable(ExceptionHandler handler, // NOLINT
-    ObservableInterfacePtr requester, // NOLINT
-    EndpointPtr endpoint, // NOLINT
-    ElementID id, DataType data_type)
-    : Observable(handler, requester, endpoint, id, // NOLINT
-          ObservedDataTypes{{id, data_type}}) {} // NOLINT
+Observable::Observable(const ExceptionHandler& handler,
+    const ObservableInterfacePtr& requester, const EndpointPtr& endpoint,
+    const ElementID& id, DataType data_type)
+    : Observable(handler, requester, endpoint, id,
+          ObservedDataTypes{{id, data_type}}) {}
 
 Observable::~Observable() {
   if (hasListeners()) {
@@ -41,11 +39,11 @@ Observable::~Observable() {
   }
 }
 
-Observable::ObservedDataTypes Observable::getObservedDataTypes() {
+Observable::ObservedDataTypes Observable::getObservedDataTypes() const {
   return data_types_;
 }
 
-DataType Observable::getDataType(ElementID id) {
+DataType Observable::getDataType(const ElementID& id) const {
   return getDataTypeFromMap(data_types_, id);
 }
 
@@ -78,18 +76,18 @@ void Observable::detach(size_t callback_id) {
   }
 }
 
-ObserverInterface::ObserverInterface(ObservablePtr source)
+ObserverInterface::ObserverInterface(const ObservablePtr& source)
     : EventListenerInterface(source.base()),
       observer_id_(source->getID().toString()),
       data_types_(source->getObservedDataTypes()) {}
 
-std::string ObserverInterface::getId() { return observer_id_; }
+std::string ObserverInterface::getId() const { return observer_id_; }
 
-Observable::ObservedDataTypes ObserverInterface::getObservedDataTypes() {
+Observable::ObservedDataTypes ObserverInterface::getObservedDataTypes() const {
   return data_types_;
 }
 
-DataType ObserverInterface::getDataType(ElementID id) {
+DataType ObserverInterface::getDataType(const ElementID& id) const {
   return getDataTypeFromMap(data_types_, id);
 }
 

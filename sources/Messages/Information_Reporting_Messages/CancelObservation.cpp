@@ -10,5 +10,7 @@ CancelObservationRequest::CancelObservationRequest(
     : InformationReportingRequest(endpoint, // NOLINT
           MessageType::CANCEL_OBSERVATION, make_shared<Payload>(target_id)) {}
 
-string CancelObservationRequest::name() { return "CancelObservationRequest"; }
+string CancelObservationRequest::name() const {
+  return "CancelObservationRequest";
+}
 } // namespace LwM2M

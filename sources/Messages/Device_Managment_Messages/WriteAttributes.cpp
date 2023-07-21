@@ -28,5 +28,5 @@ WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint, // NOLINT
     : WriteAttributesRequest(endpoint, // NOLINT
           makeTargetAtributesVector(targets, attribute)) {} // NOLINT
 
-string WriteAttributesRequest::name() { return "WriteAttributesRequest"; }
+string WriteAttributesRequest::name() const { return "WriteAttributesRequest"; }
 } // namespace LwM2M

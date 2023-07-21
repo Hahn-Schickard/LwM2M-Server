@@ -41,7 +41,7 @@ using RequiredObjectInstances = std::unordered_multiset<ElementID,
 using ObjectInstances = std::unordered_map<uint16_t, ObjectInstancePtr>;
 
 struct ObjectInstanceDoesNotExist : public std::runtime_error {
-  ObjectInstanceDoesNotExist(ElementID id)
+  ObjectInstanceDoesNotExist(const ElementID& id)
       : runtime_error("Object instance " + id.toString() + " does not exist") {}
 };
 
@@ -57,9 +57,10 @@ class Object {
   ObjectDescriptorPtr descriptor_;
 
 public:
-  Object(Observable::ExceptionHandler handler,
-      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
-      RequiredObjectInstances instances, ObjectDescriptorPtr descriptor);
+  Object(const Observable::ExceptionHandler& handler,
+      const RequesterInterfaceFacadePtr& requester, const EndpointPtr& endpoint,
+      const RequiredObjectInstances& instances,
+      const ObjectDescriptorPtr& descriptor);
 
   /**
    * @brief Returns static information of this object.
@@ -68,7 +69,7 @@ public:
    *
    * @return ObjectDescriptorPtr
    */
-  ObjectDescriptorPtr getDescriptor();
+  ObjectDescriptorPtr getDescriptor() const;
 
   /**
    * @brief Looks for a given Object instance based on a given ELementID
@@ -80,14 +81,14 @@ public:
    *
    * @return ObjectInstancePtr
    */
-  ObjectInstancePtr getObjectInstance(ElementID id);
+  ObjectInstancePtr getObjectInstance(const ElementID& id) const;
 
   /**
    * @brief Returns all linked Object instances of this Object
    *
    * @return ObjectInstances
    */
-  ObjectInstances getObjectInstances();
+  ObjectInstances getObjectInstances() const;
 
   /**
    * @brief Looks for a given Resource based on a given ElementID
@@ -101,7 +102,7 @@ public:
    *
    * @return ResourcePtr
    */
-  ResourcePtr getResource(ElementID id);
+  ResourcePtr getResource(const ElementID& id) const;
 
   /**
    * @brief Returns all Resources linked to the given Object Instance
@@ -113,7 +114,7 @@ public:
    *
    * @return Resources
    */
-  Resources getResources(ElementID id);
+  Resources getResources(const ElementID& id) const;
 
   /**
    * @brief Looks for a given ResourceInstance based on a given ElementID
@@ -132,7 +133,7 @@ public:
    * @return ResourceInstance - @see ResourceInstance on how to obtain stored
    * information
    */
-  ResourceInstance getResourceInstance(ElementID id);
+  ResourceInstance getResourceInstance(const ElementID& id) const;
 
   /**
    * @brief  Returns all ResourceInstances linked to given Resource
@@ -147,7 +148,7 @@ public:
    *
    * @return ResourceInstances
    */
-  ResourceInstances getResourceInstances(ElementID id);
+  ResourceInstances getResourceInstances(const ElementID& id) const;
 };
 
 using ObjectSharedPtr = std::shared_ptr<Object>;

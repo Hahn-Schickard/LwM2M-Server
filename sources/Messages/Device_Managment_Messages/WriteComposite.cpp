@@ -9,5 +9,5 @@ WriteCompositeRequest::WriteCompositeRequest(EndpointPtr endpoint, // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
           MessageType::WRITE_COMPOSITE, make_shared<Payload>(content)) {}
 
-string WriteCompositeRequest::name() { return "WriteCompositeRequest"; }
+string WriteCompositeRequest::name() const { return "WriteCompositeRequest"; }
 } // namespace LwM2M

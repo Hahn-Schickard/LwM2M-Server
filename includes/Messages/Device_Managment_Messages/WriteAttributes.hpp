@@ -23,7 +23,7 @@ struct WriteAttributesRequest : DeviceManagementRequest {
   WriteAttributesRequest(
       EndpointPtr endpoint, ElementIDs targets, NotifyAttributePtr attribute);
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using WriteAttributesRequestPtr = std::shared_ptr<WriteAttributesRequest>;

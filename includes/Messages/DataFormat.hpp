@@ -66,9 +66,9 @@ struct UnsupportedDataType : public std::logic_error {
 };
 
 struct TimeStamp {
-  TimeStamp(uint64_t posix_timestamp);
+  TimeStamp(int64_t posix_timestamp);
 
-  std::string toString();
+  std::string toString() const;
 
   time_t getValue() const;
 

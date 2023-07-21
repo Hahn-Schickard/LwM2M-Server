@@ -23,7 +23,7 @@ UpdateResponse::UpdateResponse(EndpointPtr endpoint, // NOLINT
           make_shared<Payload>(
               make_shared<DataFormat>(DataVariant(location)))) {}
 
-string UpdateResponse::name() { return "UpdateResponse"; }
+string UpdateResponse::name() const { return "UpdateResponse"; }
 
 UpdateRequest::UpdateRequest(EndpointPtr endpoint, std::string location)
     : RegistrationInterfaceRequest(endpoint, // NOLINT
@@ -48,9 +48,9 @@ UpdateRequest::UpdateRequest(EndpointPtr endpoint, // NOLINT
           nullopt, binding, nullopt, sms_number)) // NOLINT
 {}
 
-string UpdateRequest::name() { return "UpdateRequest"; }
+string UpdateRequest::name() const { return "UpdateRequest"; }
 
-bool UpdateRequest::isKeepAlive() { return keep_alive_; }
+bool UpdateRequest::isKeepAlive() const { return keep_alive_; }
 
 UpdateResponsePtr UpdateRequest::makeResponse(ResponseCode response_code) {
   if (response_code == ResponseCode::CHANGED) {

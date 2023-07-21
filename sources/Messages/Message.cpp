@@ -5,7 +5,7 @@ namespace LwM2M {
 
 static constexpr uint8_t INTERFACE_MASK = 0xF0;
 
-UnsupportedOperation::UnsupportedOperation(string const& message)
+UnsupportedOperation::UnsupportedOperation(const string& message)
     : logic_error(message) {}
 
 string toString(InterfaceType type) {
@@ -222,7 +222,7 @@ Message::Message(EndpointPtr endpoint, // NOLINT
   }
 }
 
-string Message::name() {
+string Message::name() const {
   // Provide a fallback implementation
   return "Message";
 }
@@ -237,7 +237,7 @@ Response::Response(EndpointPtr endpoint, // NOLINT
       supported_responses_(supported_responses), // NOLINT
       response_code_(response_code) {}
 
-void Response::checkResponseCode(ResponseCode response_code) {
+void Response::checkResponseCode(ResponseCode response_code) const {
   if (supported_responses_.find(response_code) == supported_responses_.end()) {
     throw UnsupportedResponseCode(name(), response_code, supported_responses_);
   }

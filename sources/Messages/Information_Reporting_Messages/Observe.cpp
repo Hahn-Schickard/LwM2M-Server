@@ -9,5 +9,5 @@ ObserveRequest::ObserveRequest(EndpointPtr endpoint, // NOLINT
     : InformationReportingRequest(endpoint, // NOLINT
           MessageType::OBSERVE, make_shared<Payload>(target_id)) {}
 
-string ObserveRequest::name() { return "ObserveRequest"; }
+string ObserveRequest::name() const { return "ObserveRequest"; }
 } // namespace LwM2M

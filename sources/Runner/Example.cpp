@@ -33,7 +33,7 @@ size_t getTerminalWidth() {
 #endif // Windows/Linux
 }
 
-void printResource(ResourcePtr resource, string prefix) {
+void printResource(const ResourcePtr& resource, string prefix) {
   cout << prefix << "_"
        << "Resource: " << resource->getDescriptor()->id_ << ": "
        << resource->getDescriptor()->name_ << endl;
@@ -46,16 +46,16 @@ void printResource(ResourcePtr resource, string prefix) {
        << endl;
 };
 
-void printResources(Resources resources, string prefix) { // NOLINT
+void printResources(const Resources& resources, string prefix) {
   prefix += string(1, ' ') + string("|");
   cout << prefix << "_"
        << "Resources: " << resources.size() << endl;
-  for (auto resource : resources) {
+  for (const auto& resource : resources) {
     printResource(resource.second, prefix);
   }
 }
 
-void printObjectInstances(ObjectInstances instances, string prefix) { // NOLINT
+void printObjectInstances(const ObjectInstances& instances, string prefix) {
   if (!instances.empty()) {
     prefix += string(1, ' ') + string("|");
     cout << prefix << "_"
@@ -69,7 +69,7 @@ void printObjectInstances(ObjectInstances instances, string prefix) { // NOLINT
   }
 }
 
-void printObjects(ObjectsMap objects) { // NOLINT
+void printObjects(const ObjectsMap& objects) {
   if (!objects.empty()) {
     cout << "With " << objects.size() << " Objects: " << endl;
     auto prefix = string("|");
@@ -82,7 +82,7 @@ void printObjects(ObjectsMap objects) { // NOLINT
   }
 }
 
-void printDevice(DevicePtr device) {
+void printDevice(const DevicePtr& device) {
   cout << device->getName() << " with id: " << device->getDeviceId() << endl;
   printObjects(device->getObjects());
   cout << string(getTerminalWidth(), '=') << endl;
@@ -95,31 +95,31 @@ string stringifyDataVariant(const DataVariant& variant) {
       [&](int64_t value) { result = to_string(value); },
       [&](uint64_t value) { result = to_string(value); },
       [&](double value) { result = to_string(value); },
-      [&](string value) { result = value; }, // NOLINT
-      [&](TimeStamp value) { result = value.toString(); },
-      [&](ObjectLink value) {
+      [&](const string& value) { result = value; },
+      [&](const TimeStamp& value) { result = value.toString(); },
+      [&](const ObjectLink& value) {
         result = "Object link:" + to_string(value.object_id_) + ":" +
             to_string(value.instance_id_);
       },
-      [&](vector<uint8_t> value) { result = HSCUL::hexify(value); });
+      [&](const vector<uint8_t>& value) { result = HSCUL::hexify(value); });
   return result;
 }
 
-string stringifyResourceValue(ResourcePtr resource) {
+string stringifyResourceValue(const ResourcePtr& resource) {
   string response;
   match(
       resource->getResourceInstance(),
-      [&](ReadablePtr readable) {
+      [&](const ReadablePtr& readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
         response = stringifyDataVariant(value);
       },
-      [&](ReadAndWritablePtr readable) {
+      [&](const ReadAndWritablePtr& readable) {
         auto resource_future = readable->read();
         auto value = resource_future.get();
         response = stringifyDataVariant(value);
       },
-      [&](auto /*value*/) {
+      [&](const auto& /*value*/) {
         auto descriptor = resource->getDescriptor();
         auto error_msg = "Resource " + descriptor->name_ + " is not readable";
         throw runtime_error(error_msg);
@@ -128,10 +128,10 @@ string stringifyResourceValue(ResourcePtr resource) {
   return string("Resource " + name + " value is: " + response);
 }
 
-future<void> asyncRead(DevicePtr device, ElementID id) {
+future<void> asyncRead(const DevicePtr& device, const ElementID& id) {
   return async(
       std::launch::async,
-      [](DevicePtr device, ElementID element_id) {
+      [](const DevicePtr& device, const ElementID& element_id) {
         try {
           auto object = device->getObject(element_id);
           auto resource_value = object->getResource(element_id);
@@ -158,8 +158,7 @@ future<void> asyncRead(DevicePtr device, ElementID id) {
       device, id);
 }
 
-RegistrationListener::RegistrationListener(
-    EventSourcePtr registration) // NOLINT
+RegistrationListener::RegistrationListener(const EventSourcePtr& registration)
     : EventListenerInterface(registration) {}
 
 void RegistrationListener::handleEvent(RegistryEventPtr event) {
@@ -170,27 +169,21 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     printDevice(device);
 
     vector<future<void>> threads;
+    // NOLINTBEGIN(readability-magic-numbers)
     threads.push_back(
-        // NOLINTNEXTLINE
         asyncRead(device, ElementID(3, 0, 4))); // try to read a not readable
     threads.push_back(
-        // NOLINTNEXTLINE
         asyncRead(device, ElementID(3, 0, 8))); // try to read optional resource
     threads.push_back(asyncRead(
-        // NOLINTNEXTLINE
         device, ElementID(3, 0, 11))); // try to read multiple instance resource
-    threads.push_back(asyncRead(device, ElementID(3, 0, 16))); // NOLINT
+    threads.push_back(asyncRead(device, ElementID(3, 0, 16)));
     threads.push_back(
-        // NOLINTNEXTLINE
         asyncRead(device, ElementID(6, 0, 0))); // try to read Latitude as float
     threads.push_back(asyncRead(
-        // NOLINTNEXTLINE
         device, ElementID(6, 0, 1))); // try to read Longitude as float
     threads.push_back(
-        // NOLINTNEXTLINE
         asyncRead(device, ElementID(6, 0, 5))); // try to read Timestamp
     threads.push_back(asyncRead(
-        // NOLINTNEXTLINE
         device, ElementID(3303, 0, 5700))); // try to read temperature value
 
     for (auto thread = threads.begin(); thread != threads.end(); ++thread) {
@@ -203,9 +196,8 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     cout << "Finished reading resources" << endl;
 
     try {
-      auto device_obj = device->getObject(ElementID(3, 0)); // NOLINT
-      auto battery_level_resource =
-          device_obj->getResource(ElementID(3, 0, 9)); // NOLINT
+      auto device_obj = device->getObject(ElementID(3, 0));
+      auto battery_level_resource = device_obj->getResource(ElementID(3, 0, 9));
       auto battery_level =
           std::get<ReadablePtr>(battery_level_resource->getResourceInstance());
       cout << "Registering a new observer for "
@@ -246,4 +238,5 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     break;
   }
   }
+  // NOLINTEND(readability-magic-numbers)
 }

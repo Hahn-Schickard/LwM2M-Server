@@ -18,20 +18,22 @@ struct MockRegistrator : public Registrator, public ExceptionHandlerInterface {
   MockRegistrator(const DeviceRegistryPtr& registry) : Registrator(registry) {}
 
   MOCK_METHOD(std::future<DataFormatPtr>, requestData,
-      (DeviceManagementRequestPtr), (override));
-  MOCK_METHOD(void, cancelRequest, (ServerRequestPtr), (override));
+      (const DeviceManagementRequestPtr&), (override));
+  MOCK_METHOD(void, cancelRequest, (const ServerRequestPtr&), (override));
   MOCK_METHOD(std::future<TargetContentVector>, requestMultiTargetData,
-      (DeviceManagementRequestPtr message), (override));
-  MOCK_METHOD(std::future<bool>, requestAction, (DeviceManagementRequestPtr),
-      (override));
+      (const DeviceManagementRequestPtr&), (override));
+  MOCK_METHOD(std::future<bool>, requestAction,
+      (const DeviceManagementRequestPtr&), (override));
   MOCK_METHOD(size_t, requestObservation,
-      (std::function<void(PayloadDataPtr)>, InformationReportingRequestPtr),
+      (const std::function<void(PayloadDataPtr)>&,
+          const InformationReportingRequestPtr&),
       (override));
-  MOCK_METHOD(void, cancelObservation, (size_t, InformationReportingRequestPtr),
-      (override));
+  MOCK_METHOD(void, cancelObservation,
+      (size_t, const InformationReportingRequestPtr&), (override));
+  MOCK_METHOD(std::future<ClientResponsePtr>, request,
+      (const ServerRequestPtr&), (override));
   MOCK_METHOD(
-      std::future<ClientResponsePtr>, request, (ServerRequestPtr), (override));
-  MOCK_METHOD(void, handleDeviceException, (std::exception_ptr), (override));
+      void, handleDeviceException, (const std::exception_ptr&), (override));
 };
 
 using MockRequesterInterfaceFacadePtr = std::shared_ptr<MockRegistrator>;

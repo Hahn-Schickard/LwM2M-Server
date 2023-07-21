@@ -53,19 +53,18 @@ Length_Type getLengthType(const vector<uint8_t>& value) {
   }
 }
 
+// NOLINTBEGIN(readability-magic-numbers)
 Identifier_Type getIdentifierType(uint8_t byte) {
-  return static_cast<Identifier_Type>((byte & 0xC0) >> 6); // NOLINT
+  return static_cast<Identifier_Type>((byte & 0xC0) >> 6);
 }
 
-bool isIdentifierShortLong(uint8_t byte) {
-  return ((byte & 0x20) >> 5) != 0; // NOLINT
-}
+bool isIdentifierShortLong(uint8_t byte) { return ((byte & 0x20) >> 5) != 0; }
 
 Length_Type getLengthType(uint8_t byte) {
-  return static_cast<Length_Type>((byte & 0x18) >> 3); // NOLINT
+  return static_cast<Length_Type>((byte & 0x18) >> 3);
 }
 
-uint8_t getSmallLengthValue(uint8_t byte) { return byte & 0x7; } // NOLINT
+uint8_t getSmallLengthValue(uint8_t byte) { return byte & 0x7; }
 
 TLV_Header::TLV_Header(uint8_t byte)
     : identifier_(getIdentifierType(byte)),
@@ -80,14 +79,16 @@ TLV_Header::TLV_Header(Identifier_Type identifier,
       is_identifier_short_long_(is_identifier_short_long),
       length_type_(length_type), value_length_(value_length) {}
 
-uint8_t TLV_Header::toByte() {
+// NOLINTBEGIN(readability-implicit-bool-conversion)
+uint8_t TLV_Header::toByte() const {
   uint8_t result = 0;
-  result |= (static_cast<uint8_t>(identifier_) << 6); // NOLINT
-  result |= ((is_identifier_short_long_ & 0x1) << 5); // NOLINT
-  result |= (static_cast<uint8_t>(length_type_) << 3); // NOLINT
+  result |= (static_cast<uint8_t>(identifier_) << 6);
+  result |= ((is_identifier_short_long_ & 0x1) << 5);
+  result |= (static_cast<uint8_t>(length_type_) << 3);
   result |= (value_length_ & 0x7);
   return result;
 }
+// NOLINTEND(readability-implicit-bool-conversion)
 
 TLV::TLV(vector<uint8_t>& bytestream) {
   auto it = bytestream.begin();
@@ -138,21 +139,21 @@ TLV::TLV(vector<uint8_t>& bytestream) {
   }
 }
 
-TLV::TLV(TLV_HeaderPtr header, // NOLINT
-    uint16_t identifier, uint32_t length, vector<uint8_t> value) // NOLINT
-    : header_(header), // NOLINT
-      identifier_(identifier), length_(length), value_(value) {} // NOLINT
+TLV::TLV(const TLV_HeaderPtr& header, uint16_t identifier, uint32_t length,
+    const vector<uint8_t>& value)
+    : header_(header), identifier_(identifier), length_(length), value_(value) {
+}
 
-uint16_t TLV::getIdentifier() { return identifier_; }
+uint16_t TLV::getIdentifier() const { return identifier_; }
 
-Identifier_Type TLV::getIdentifierType() { return header_->identifier_; }
+Identifier_Type TLV::getIdentifierType() const { return header_->identifier_; }
 
-vector<uint8_t> TLV::getValue() { return value_; }
+vector<uint8_t> TLV::getValue() const { return value_; }
 
 static constexpr uint8_t LSB_MASK = 0xF;
 static constexpr uint8_t MSB_MASK = 0xF0;
 
-vector<uint8_t> TLV::getBytes() {
+vector<uint8_t> TLV::getBytes() const {
   vector<uint8_t> result;
   result.push_back(header_->toByte());
   switch (header_->length_type_) {
@@ -175,9 +176,9 @@ vector<uint8_t> TLV::getBytes() {
   default: {
     uint8_t length_lsb = length_ & LSB_MASK;
     result.push_back(length_lsb);
-    uint8_t length_middle = length_ & 0xF0 >> BYTE_LONG; // NOLINT
+    uint8_t length_middle = length_ & 0xF0 >> BYTE_LONG;
     result.push_back(length_middle);
-    uint8_t length_msb = length_ & 0xF00 >> BYTE_LONG; // NOLINT
+    uint8_t length_msb = length_ & 0xF00 >> BYTE_LONG;
     result.push_back(length_msb);
     break;
   }
@@ -202,9 +203,9 @@ TLV_Pack::TLV_Pack(vector<uint8_t> bytestream) {
   } while (!bytestream.empty());
 }
 
-TLV_Pack::TLV_Pack(TLV_ValueMap values) : values_(values) {} // NOLINT
+TLV_Pack::TLV_Pack(const TLV_ValueMap& values) : values_(values) {}
 
-shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
+shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) const {
   auto it = values_.find(identifier);
   if (it != values_.end()) {
     return it->second;
@@ -214,7 +215,7 @@ shared_ptr<TLV> TLV_Pack::getTLV(uint16_t identifier) {
   }
 }
 
-vector<uint8_t> TLV_Pack::getBytes() {
+vector<uint8_t> TLV_Pack::getBytes() const {
   vector<uint8_t> result;
   for (const auto& value : values_) {
     auto byte_pack = value.second->getBytes();
@@ -223,9 +224,9 @@ vector<uint8_t> TLV_Pack::getBytes() {
   return result;
 }
 
-TLV_ValueMap TLV_Pack::getPack() { return values_; }
+TLV_ValueMap TLV_Pack::getPack() const { return values_; }
 
-vector<TLV_ptr> TLV_Pack::getPackAsVector() {
+vector<TLV_ptr> TLV_Pack::getPackAsVector() const {
   vector<TLV_ptr> result;
   for (const auto& value : values_) {
     result.push_back(value.second);
@@ -233,3 +234,4 @@ vector<TLV_ptr> TLV_Pack::getPackAsVector() {
   return result;
 }
 } // namespace LwM2M
+// NOLINTEND(readability-magic-numbers)

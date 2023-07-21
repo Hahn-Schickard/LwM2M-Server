@@ -1,4 +1,11 @@
 # Changelog
+## [0.5.4] - 2023.07.21
+### Changed
+ - conan recipe to use conan v2 syntax
+ - CMake requirement to 3.24
+ - conan cmake integration to use conan v2 engine
+ - various getter methods to be `const`
+
 ## [0.5.3] - 2023.06.30
 ### Removed 
  - direct nlohmann_json dependency in favor of using indirect one via CoAPS4Cpp

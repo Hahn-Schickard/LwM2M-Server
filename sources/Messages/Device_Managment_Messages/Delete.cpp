@@ -8,5 +8,5 @@ DeleteRequest::DeleteRequest(EndpointPtr endpoint, // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
           MessageType::DELETE, make_shared<Payload>(target_id)) {}
 
-string DeleteRequest::name() { return "DeleteRequest"; }
+string DeleteRequest::name() const { return "DeleteRequest"; }
 }; // namespace LwM2M

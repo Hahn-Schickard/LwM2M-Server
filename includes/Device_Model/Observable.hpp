@@ -28,7 +28,7 @@ struct ElementNotObserved : public std::runtime_error {
  */
 struct Observable : public Event_Model::EventSource<PayloadData>,
                     public ElementAddress {
-  using ExceptionHandler = std::function<void(std::exception_ptr)>;
+  using ExceptionHandler = std::function<void(const std::exception_ptr&)>;
   using ObservedDataTypes = std::map<ElementID, DataType>;
 
   /**
@@ -41,8 +41,9 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
    * @param data_types - a list of observed data types indexed by associated
    * ElementIDs
    */
-  Observable(ExceptionHandler handler, ObservableInterfacePtr requester,
-      EndpointPtr endpoint, ElementID id, ObservedDataTypes data_types);
+  Observable(const ExceptionHandler& handler,
+      const ObservableInterfacePtr& requester, const EndpointPtr& endpoint,
+      const ElementID& id, const ObservedDataTypes& data_types);
 
   /**
    * @brief Creates an observable element for a given ResourceInstance
@@ -53,8 +54,9 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
    * @param id - element id of the modeled entity
    * @param data_type - observed data type
    */
-  Observable(ExceptionHandler handler, ObservableInterfacePtr requester,
-      EndpointPtr endpoint, ElementID id, DataType data_type);
+  Observable(const ExceptionHandler& handler,
+      const ObservableInterfacePtr& requester, const EndpointPtr& endpoint,
+      const ElementID& id, DataType data_type);
 
   ~Observable();
 
@@ -63,7 +65,7 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
    *
    * @return ObservedDataTypes
    */
-  ObservedDataTypes getObservedDataTypes();
+  ObservedDataTypes getObservedDataTypes() const;
 
   /**
    * @brief Returns the DataType of a given Observable element
@@ -75,7 +77,7 @@ struct Observable : public Event_Model::EventSource<PayloadData>,
    *
    * @return DataType
    */
-  DataType getDataType(ElementID id);
+  DataType getDataType(const ElementID& id) const;
 
 private:
   /**
@@ -139,11 +141,11 @@ using ObservablePtr = NonemptyPointer::NonemptyPtr<ObservableSharedPtr>;
  */
 struct ObserverInterface
     : Event_Model::EventListenerInterface<LwM2M::PayloadData> {
-  ObserverInterface(ObservablePtr source);
+  ObserverInterface(const ObservablePtr& source);
 
-  Observable::ObservedDataTypes getObservedDataTypes();
-  DataType getDataType(ElementID id);
-  std::string getId();
+  Observable::ObservedDataTypes getObservedDataTypes() const;
+  DataType getDataType(const ElementID& id) const;
+  std::string getId() const;
 
 private:
   std::string observer_id_;

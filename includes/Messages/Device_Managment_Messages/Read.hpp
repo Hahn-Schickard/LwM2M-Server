@@ -18,7 +18,7 @@ namespace LwM2M {
 struct ReadRequest : DeviceManagementRequest {
   ReadRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
-  std::string name() override final;
+  std::string name() const final;
 
   ElementID target_;
 };

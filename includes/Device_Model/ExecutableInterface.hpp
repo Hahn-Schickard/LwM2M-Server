@@ -31,7 +31,7 @@ struct ExecutableInterface : public CancelableInterface {
    * @return std::future<bool>
    */
   virtual std::future<bool> requestAction(
-      DeviceManagementRequestPtr /*message*/) {
+      const DeviceManagementRequestPtr& /*message*/) {
     throw std::runtime_error("Called base requestAction implementation.");
   }
 };

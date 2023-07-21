@@ -32,7 +32,7 @@ struct CompositeReadableInterface : public CancelableInterface {
    * @return std::future<TargetContentVector>
    */
   virtual std::future<TargetContentVector> requestMultiTargetData(
-      DeviceManagementRequestPtr /*message*/) {
+      const DeviceManagementRequestPtr& /*message*/) {
     throw std::runtime_error(
         "Called base requestMultiTargetData implementation.");
   }

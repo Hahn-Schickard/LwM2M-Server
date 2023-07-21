@@ -22,7 +22,7 @@ RegisterResponse::RegisterResponse(EndpointPtr endpoint, // NOLINT
           make_shared<Payload>(
               make_shared<DataFormat>(DataVariant(location)))) {}
 
-string RegisterResponse::name() { return "RegisterResponse"; }
+string RegisterResponse::name() const { return "RegisterResponse"; }
 
 RegisterRequest::RegisterRequest(EndpointPtr endpoint, // NOLINT
     DeviceMetaInfo device_info) // NOLINT
@@ -40,7 +40,7 @@ RegisterRequest::RegisterRequest(EndpointPtr endpoint, // NOLINT
       device_info_(DeviceMetaInfo(life_time, object_instances_map, // NOLINT
           endpoint_name, version, binding, queue_mode, sms_number)) {} // NOLINT
 
-string RegisterRequest::name() { return "RegisterRequest"; }
+string RegisterRequest::name() const { return "RegisterRequest"; }
 
 RegisterResponsePtr RegisterRequest::makeResponse(ResponseCode response_code) {
   return make_shared<RegisterResponse>(endpoint_, response_code);

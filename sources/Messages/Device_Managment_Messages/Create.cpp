@@ -10,5 +10,5 @@ CreateRequest::CreateRequest(EndpointPtr endpoint, // NOLINT
           MessageType::CREATE,
           make_shared<Payload>(make_pair(target_id, content))) {}
 
-string CreateRequest::name() { return "CreateRequest"; }
+string CreateRequest::name() const { return "CreateRequest"; }
 } // namespace LwM2M

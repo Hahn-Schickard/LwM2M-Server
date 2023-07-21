@@ -17,13 +17,13 @@ namespace LwM2M {
  */
 
 struct ResourceInstanceDoesNotExist : public std::runtime_error {
-  ResourceInstanceDoesNotExist(ElementID id)
+  ResourceInstanceDoesNotExist(const ElementID& id)
       : runtime_error(
             "Resource instance " + id.toString() + " does not exist") {}
 };
 
 struct ResourceInstanceCouldNotBeResolved : public std::runtime_error {
-  ResourceInstanceCouldNotBeResolved(ElementID id)
+  ResourceInstanceCouldNotBeResolved(const ElementID& id)
       : runtime_error("Resource instance for resource " + id.toString() +
             " could not be automatically resolved, since resource contains "
             "multiple instances") {}
@@ -74,10 +74,10 @@ public:
    */
   Resource() = default;
 
-  Resource(Observable::ExceptionHandler handler,
-      RequesterInterfaceFacadePtr requester, EndpointPtr endpoint,
-      ResourceDescriptorPtr descriptor, ElementID id,
-      std::optional<uint16_t> instance_id = std::nullopt);
+  Resource(const Observable::ExceptionHandler& handler,
+      const RequesterInterfaceFacadePtr& requester, const EndpointPtr& endpoint,
+      const ResourceDescriptorPtr& descriptor, const ElementID& id,
+      const std::optional<uint16_t>& instance_id = std::nullopt);
 
   virtual ~Resource() = default;
 
@@ -87,7 +87,7 @@ public:
    *
    * @return ResourceDescriptorPtr
    */
-  ResourceDescriptorPtr getDescriptor();
+  ResourceDescriptorPtr getDescriptor() const;
 
   /**
    * @brief Returns dynamic information of this resource.
@@ -104,7 +104,8 @@ public:
    * @return ResourceInstance - @see ResourceInstance on how to obtain stored
    * information
    */
-  ResourceInstance getResourceInstance(bool ignore_multiple_instances = false);
+  ResourceInstance getResourceInstance(
+      bool ignore_multiple_instances = false) const;
 
   /**
    * @brief Looks for a given ResourceInstance based on a given ElementID
@@ -119,14 +120,14 @@ public:
    * @return ResourceInstance - @see ResourceInstance on how to obtain stored
    * information
    */
-  ResourceInstance getResourceInstance(ElementID id);
+  ResourceInstance getResourceInstance(const ElementID& id) const;
 
   /**
    * @brief Returns all ResourceInstances linked to this Resource
    *
    * @return ResourceInstances
    */
-  ResourceInstances getResourceInstances();
+  ResourceInstances getResourceInstances() const;
 };
 
 using ResourceSharedPtr = std::shared_ptr<Resource>;

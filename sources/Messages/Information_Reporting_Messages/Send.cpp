@@ -14,14 +14,14 @@ SendResponse::SendResponse(EndpointPtr endpoint, // NOLINT
   checkResponseCode(response_code);
 }
 
-string SendResponse::name() { return "SendResponse"; }
+string SendResponse::name() const { return "SendResponse"; }
 
 SendRequest::SendRequest(EndpointPtr endpoint, // NOLINT
     TargetContent content) // NOLINT
     : InformationReportingDownlinkRequest(endpoint, // NOLINT
           MessageType::SEND, make_shared<Payload>(content)) {}
 
-string SendRequest::name() { return "SendRequest"; }
+string SendRequest::name() const { return "SendRequest"; }
 
 SendResponsePtr SendRequest::makeResponse(ResponseCode response_code) {
   return make_shared<SendResponse>(endpoint_, response_code);

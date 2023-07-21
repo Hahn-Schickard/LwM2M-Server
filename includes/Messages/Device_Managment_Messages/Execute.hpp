@@ -24,7 +24,7 @@ struct ExecuteRequest : DeviceManagementRequest {
   ExecuteRequest(EndpointPtr endpoint, ElementID target = ElementID(0));
   ExecuteRequest(EndpointPtr endpoint, ElementID target, std::string arguments);
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using ExecuteRequestPtr = std::shared_ptr<ExecuteRequest>;

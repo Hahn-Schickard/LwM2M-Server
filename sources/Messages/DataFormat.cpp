@@ -87,9 +87,9 @@ string toString(DataType type) {
 UnsupportedDataType::UnsupportedDataType()
     : logic_error("Tried to access unhandled data type!") {}
 
-TimeStamp::TimeStamp(uint64_t posix_timestamp) : value_(posix_timestamp) {}
+TimeStamp::TimeStamp(int64_t posix_timestamp) : value_(posix_timestamp) {}
 
-string TimeStamp::toString() {
+string TimeStamp::toString() const {
   tm* tm = localtime(&value_);
   stringstream ss;
   ss << put_time(tm, "%F %T %Z");
@@ -112,17 +112,17 @@ vector<uint8_t> toBytes(const DataVariant& data) {
         result = HSCUL::toBytes(value, ByteOrder::NetworkByteOrder);
       },
       [&](const string& value) { result = HSCUL::toBytes(value); },
-      [&](TimeStamp value) {
+      [&](const TimeStamp& value) {
         uint64_t converted = value.getValue();
         result = HSCUL::toBytes(converted, ByteOrder::NetworkByteOrder);
       },
-      [&](ObjectLink value) {
+      [&](const ObjectLink& value) {
         result = HSCUL::toBytes(value.object_id_, ByteOrder::NetworkByteOrder);
         auto expansion =
             HSCUL::toBytes(value.instance_id_, ByteOrder::NetworkByteOrder);
         result.insert(result.end(), expansion.begin(), expansion.end());
       },
-      [&](vector<uint8_t> value) { result = value; });
+      [&](const vector<uint8_t>& value) { result = value; });
   return result;
 }
 
@@ -157,8 +157,8 @@ template <> uint64_t DataFormat::get<uint64_t>() const {
 }
 
 template <> TimeStamp DataFormat::get<TimeStamp>() const {
-  if (data_.size() <= sizeof(uint64_t)) {
-    auto posix_time = get<uint64_t>();
+  if (data_.size() <= sizeof(int64_t)) {
+    auto posix_time = get<int64_t>();
     return TimeStamp(posix_time);
   } else {
     throw logic_error("Could not convert to uint64_t");
@@ -177,6 +177,7 @@ template <> string DataFormat::get<string>() const {
   return string(data_.begin(), data_.end());
 }
 
+// NOLINTBEGIN(bugprone-narrowing-conversions)
 template <> ObjectLink DataFormat::get<ObjectLink>() const {
   if (data_.size() >= 2 &&
       data_.size() <= sizeof(uint16_t) + sizeof(uint16_t)) {
@@ -193,6 +194,7 @@ template <> ObjectLink DataFormat::get<ObjectLink>() const {
     throw logic_error("Could not convert to ObjectLink");
   }
 }
+// NOLINTEND(bugprone-narrowing-conversions)
 
 template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() const {
   return data_;
@@ -344,15 +346,15 @@ size_t size_of(const PayloadData& data) {
           result = value->size();
         }
       },
-      [&](TargetContent value) { result = size_of(value); },
-      [&](TargetContentVector value) { result = size_of(value); },
+      [&](const TargetContent& value) { result = size_of(value); },
+      [&](const TargetContentVector& value) { result = size_of(value); },
       [&](const ElementID& value) { result = value.size(); },
-      [&](ElementIDs value) {
+      [&](const ElementIDs& value) {
         for (auto element_id : value) {
           result += element_id.size();
         }
       },
-      [&](vector<TargetAttribute> value) {
+      [&](const vector<TargetAttribute>& value) {
         for (const auto& target_attribute : value) {
           result += size_of(target_attribute);
         }
@@ -365,12 +367,14 @@ size_t Payload::size() { return size_of(data_); }
 string Payload::dataType() {
   string result;
   match(
-      data_, [&](DataFormatPtr /*value*/) { result = "Data Variant"; },
-      [&](TargetContent /*value*/) { result = "Target Content"; },
-      [&](TargetContentVector /*value*/) { result = "Target Content Vector"; },
-      [&](ElementID /*value*/) { result = "Element ID"; },
-      [&](ElementIDs /*value*/) { result = "Element ID vector"; },
-      [&](vector<TargetAttribute> /*value*/) {
+      data_, [&](const DataFormatPtr& /*value*/) { result = "Data Variant"; },
+      [&](const TargetContent& /*value*/) { result = "Target Content"; },
+      [&](const TargetContentVector& /*value*/) {
+        result = "Target Content Vector";
+      },
+      [&](const ElementID& /*value*/) { result = "Element ID"; },
+      [&](const ElementIDs& /*value*/) { result = "Element ID vector"; },
+      [&](const vector<TargetAttribute>& /*value*/) {
         result = "Target Attribute Vector";
       });
 
@@ -380,24 +384,27 @@ string Payload::dataType() {
 bool Payload::hasData() {
   bool result = false;
   match(
-      data_, [&](DataFormatPtr value) { result = static_cast<bool>(value); },
-      [&](TargetContent value) {
+      data_,
+      [&](const DataFormatPtr& value) { result = static_cast<bool>(value); },
+      [&](const TargetContent& value) {
         result = (value.first.size() != 0) && (static_cast<bool>(value.second));
       },
-      [&](TargetContentVector value) { result = !(value.empty()); },
-      [&](ElementID value) { result = value.size() != 0; },
-      [&](ElementIDs value) { result = !(value.empty()); },
-      [&](vector<TargetAttribute> value) { result = !(value.empty()); });
+      [&](const TargetContentVector& value) { result = !(value.empty()); },
+      [&](const ElementID& value) { result = value.size() != 0; },
+      [&](const ElementIDs& value) { result = !(value.empty()); },
+      [&](const vector<TargetAttribute>& value) { result = !(value.empty()); });
 
   return result;
 }
 } // namespace LwM2M
 
+static constexpr uint8_t BYTE_OFFSET = 8;
+
 size_t std::hash<LwM2M::DataFormat>::operator()(
     const LwM2M::DataFormat& data) const {
   size_t hash_value = 0;
   for (auto byte : data.get<std::vector<uint8_t>>()) {
-    hash_value |= byte << 8;
+    hash_value |= byte << BYTE_OFFSET;
   }
   return hash_value;
 }
@@ -461,28 +468,28 @@ size_t std::hash<LwM2M::PayloadData>::operator()(
   size_t hash_value = 0;
   match(
       data,
-      [&](LwM2M::DataFormatPtr value) {
+      [&](const LwM2M::DataFormatPtr& value) {
         hash_value = hash<LwM2M::DataFormat>{}(*value);
       },
-      [&](LwM2M::TargetContent value) {
+      [&](const LwM2M::TargetContent& value) {
         hash_value = hash<LwM2M::TargetContent>{}(value);
       },
-      [&](LwM2M::TargetContentVector value) {
+      [&](const LwM2M::TargetContentVector& value) {
         for (const auto& target_value : value) {
           hash_value |= hash<LwM2M::TargetContent>{}(target_value)
               << size_of(target_value);
         }
       },
-      [&](LwM2M::ElementID value) {
+      [&](const LwM2M::ElementID& value) {
         hash_value = hash<LwM2M::ElementID>{}(value);
       },
-      [&](LwM2M::ElementIDs value) {
+      [&](const LwM2M::ElementIDs& value) {
         for (const auto& elements_id : value) {
           hash_value |= hash<LwM2M::ElementID>{}(elements_id)
               << elements_id.size();
         }
       },
-      [&](vector<LwM2M::TargetAttribute> value) {
+      [&](const vector<LwM2M::TargetAttribute>& value) {
         for (const auto& target_attribute : value) {
           hash_value |= hash<LwM2M::TargetAttribute>{}(target_attribute)
               << size_of(target_attribute);

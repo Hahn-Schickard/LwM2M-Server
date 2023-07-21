@@ -8,14 +8,16 @@
 struct ExceptionHandlerInterface {
   virtual ~ExceptionHandlerInterface() {}
 
-  virtual void handleDeviceException(std::exception_ptr /* exception_ptr */) {
+  virtual void handleDeviceException(
+      const std::exception_ptr& /* exception_ptr */) {
     throw std::runtime_error(
         "Called base ExceptionHandlerInterface implementation");
   }
 };
 
 struct MockExceptionHandler : public ExceptionHandlerInterface {
-  MOCK_METHOD(void, handleDeviceException, (std::exception_ptr), (override));
+  MOCK_METHOD(
+      void, handleDeviceException, (const std::exception_ptr&), (override));
 };
 
 using MockExceptionHandlerPtr = std::shared_ptr<MockExceptionHandler>;

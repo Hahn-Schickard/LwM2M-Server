@@ -12,10 +12,10 @@ struct CoAP_Encoder {
   CoAP_Encoder();
   ~CoAP_Encoder();
 
-  CoAP::MessagePtr encode(DeviceManagementRequestPtr message);
-  CoAP::MessagePtr encode(InformationReportingRequestPtr message);
-  CoAP::MessagePtr encode(ServerRequestPtr request);
-  CoAP::MessagePtr encode(CoAP::MessagePtr request, ServerResponsePtr response);
+  CoAP::MessagePtr encode(const DeviceManagementRequestPtr& message);
+  CoAP::MessagePtr encode(const InformationReportingRequestPtr& message);
+  CoAP::MessagePtr encode(const ServerRequestPtr& request);
+  CoAP::MessagePtr encode(const CoAP::MessagePtr& request,const ServerResponsePtr& response);
 
 private:
   CoAP::PayloadPtr encode(LwM2M::MessageType type,

@@ -13,6 +13,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(LwM2M::ServerBindingType,
     {{LwM2M::ServerBindingType::CoAP, "CoAP"},
         {LwM2M::ServerBindingType::UNKOWN, "Unknown"}})
 
+// NOLINTBEGIN(readability-identifier-naming)
 void from_json(const json& j, LwM2M::Bindings& bindings) {
   for (auto const& elem : j) {
     auto type = elem.at("type").get<LwM2M::ServerBindingType>();
@@ -39,6 +40,7 @@ string toString(ServerBindingType type) {
   }
   }
 }
+// NOLINTEND(readability-identifier-naming)
 
 Configuration getConfig(const string& filepath) {
   ifstream input_file_stream(filepath);

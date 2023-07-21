@@ -17,8 +17,8 @@ using LwM2M_CBOR = ContentFormatEncoding<11543, decltype("LwM2M CBOR"_name)>;
 using LwM2M_JSON = ContentFormatEncoding<11544, decltype("LwM2M JSON"_name)>;
 } // namespace ContentFormatEncodings
 
-template <> LwM2M::TLV_Pack decode(PayloadPtr payload);
-template <> PayloadPtr encode(LwM2M::TLV_Pack content);
+template <> LwM2M::TLV_Pack decode(const PayloadPtr& payload);
+template <> PayloadPtr encode(const LwM2M::TLV_Pack& content);
 } // namespace CoAP
 
 #endif //__LWM2M_COAP_CONTENT_FORMAT_TYPES_HPP

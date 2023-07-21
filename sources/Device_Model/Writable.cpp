@@ -4,12 +4,11 @@
 using namespace std;
 
 namespace LwM2M {
-Writable::Writable(ExecutableInterfacePtr requester, // NOLINT
-    EndpointPtr endpoint, // NOLINT
-    ElementID id)
-    : ElementAddress(endpoint, id), requester_(requester) {} // NOLINT
+Writable::Writable(const ExecutableInterfacePtr& requester,
+    const EndpointPtr& endpoint, const ElementID& id)
+    : ElementAddress(endpoint, id), requester_(requester) {}
 
-Writable::Result Writable::write(DataVariant data) {
+Writable::Result Writable::write(const DataVariant& data) {
   auto payload = make_shared<DataFormat>(data);
   auto message = make_shared<WriteRequest>(endpoint_, id_, payload);
 

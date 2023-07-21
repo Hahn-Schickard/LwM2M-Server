@@ -49,6 +49,7 @@ CoAP::CodeType toCodeType(ResponseCode code) {
   return static_cast<CoAP::CodeType>(code);
 }
 
+// NOLINTBEGIN(readability-identifier-naming)
 CoAP::Options makeURI_PATH(ElementID target) {
   Options options;
   auto targets = target.toStrings();
@@ -99,21 +100,21 @@ CoAP_Encoder::CoAP_Encoder()
 CoAP_Encoder::~CoAP_Encoder() {
   LoggerManager::deregisterLogger(logger_->getName());
 }
+// NOLINTEND(readability-identifier-naming)
 
-// NOLINTNEXTLINE
-CoAP::MessagePtr CoAP_Encoder::encode(DeviceManagementRequestPtr message) {
+CoAP::MessagePtr CoAP_Encoder::encode(
+    const DeviceManagementRequestPtr& message) {
   // @TODO: decide if this is needed at all
   return encode(static_pointer_cast<ServerRequest>(message));
 }
 
-// NOLINTNEXTLINE
-CoAP::MessagePtr CoAP_Encoder::encode(InformationReportingRequestPtr message) {
+CoAP::MessagePtr CoAP_Encoder::encode(
+    const InformationReportingRequestPtr& message) {
   // @TODO: decide if this is needed at all
   return encode(static_pointer_cast<ServerRequest>(message));
 }
 
-// NOLINTNEXTLINE
-CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
+CoAP::MessagePtr CoAP_Encoder::encode(const ServerRequestPtr& request) {
   auto message_builder =
       make_unique<MessageBuilder>(request->endpoint_->endpoint_address_,
           request->endpoint_->endpoint_port_);
@@ -131,7 +132,7 @@ CoAP::MessagePtr CoAP_Encoder::encode(ServerRequestPtr request) {
 }
 
 CoAP::MessagePtr CoAP_Encoder::encode(
-    CoAP::MessagePtr request, ServerResponsePtr response) { // NOLINT
+    const CoAP::MessagePtr& request, const ServerResponsePtr& response) {
   auto message_builder = make_unique<MessageBuilder>(
       request->getAddressIP(), request->getAddressPort());
   auto token = request->getToken();

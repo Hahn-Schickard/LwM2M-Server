@@ -11,7 +11,7 @@
 using namespace std;
 
 namespace LwM2M_Example {
-Observer::Observer(ObservablePtr element) : ObserverInterface(element) {}
+Observer::Observer(const ObservablePtr& element) : ObserverInterface(element) {}
 
 void handleData(const DataFormatPtr& data, DataType data_type) {
   switch (data_type) {
@@ -62,8 +62,8 @@ void handleData(const DataFormatPtr& data, DataType data_type) {
   }
 }
 
-void handleTargetContent(
-    TargetContent data, Observable::ObservedDataTypes observed_data_typese) {
+void handleTargetContent(const TargetContent& data,
+    const Observable::ObservedDataTypes& observed_data_typese) {
   cout << data.first.toString() << " ";
   auto data_type = observed_data_typese.find(data.first);
   if (data_type != observed_data_typese.end()) {
@@ -73,7 +73,7 @@ void handleTargetContent(
   }
 }
 
-void handleTargetContentVector(TargetContentVector vector,
+void handleTargetContentVector(const TargetContentVector& vector,
     const Observable::ObservedDataTypes& observed_data_types) {
   cout << "{";
   for (auto target_data = vector.begin(); target_data != vector.end();
@@ -86,9 +86,9 @@ void handleTargetContentVector(TargetContentVector vector,
   cout << "}";
 }
 
-void handleElementID(ElementID id) { cout << id.toString(); }
+void handleElementID(const ElementID& id) { cout << id.toString(); }
 
-void handleElementIDs(ElementIDs ids) {
+void handleElementIDs(const ElementIDs& ids) {
   cout << "{";
   for (auto id = ids.begin(); id != ids.end(); ++id) {
     handleElementID(*id);
@@ -99,12 +99,12 @@ void handleElementIDs(ElementIDs ids) {
   cout << "}";
 }
 
-void handleTargetAttribute(TargetAttribute attribute) {
+void handleTargetAttribute(const TargetAttribute& attribute) {
   handleElementID(attribute.first);
   cout << " " << attribute.second->toString();
 }
 
-void handleTargetAttributes(TargetAttributes attributes) {
+void handleTargetAttributes(const TargetAttributes& attributes) {
   cout << "{";
   for (auto attribute = attributes.begin(); attribute != attributes.end();
        ++attribute) {
@@ -121,27 +121,27 @@ void Observer::handleEvent(PayloadDataPtr payload) {
     cout << "Received: ";
     match(
         *payload,
-        [&](DataFormatPtr data) {
+        [&](const DataFormatPtr& data) {
           handleData(data, getObservedDataTypes().begin()->second);
           cout << endl;
         },
-        [&](TargetContent data) {
+        [&](const TargetContent& data) {
           handleTargetContent(data, getObservedDataTypes());
           cout << endl;
         },
-        [&](TargetContentVector data) {
+        [&](const TargetContentVector& data) {
           handleTargetContentVector(data, getObservedDataTypes());
           cout << endl;
         },
-        [&](ElementID id) {
+        [&](const ElementID& id) {
           handleElementID(id);
           cout << endl;
         },
-        [&](ElementIDs ids) {
+        [&](const ElementIDs& ids) {
           handleElementIDs(ids);
           cout << endl;
         },
-        [&](TargetAttributes attributes) {
+        [&](const TargetAttributes& attributes) {
           handleTargetAttributes(attributes);
           cout << endl;
         });

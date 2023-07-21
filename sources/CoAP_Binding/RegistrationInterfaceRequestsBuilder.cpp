@@ -40,10 +40,12 @@ optional<BindingType> getBindingType(Options options) {
   return {};
 }
 
+// NOLINTBEGIN(readability-identifier-naming)
 optional<LwM2M_Version> getLwM2M_Version(Options options) {
   auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
+    // NOLINTBEGIN(readability-magic-numbers)
     auto lwm2m_version_tag = option->getValueAsString().substr(0, 6);
     if (lwm2m_version_tag == "lwm2m=") {
       auto version_string = option->getValueAsString().substr(6, 7);
@@ -55,6 +57,7 @@ optional<LwM2M_Version> getLwM2M_Version(Options options) {
       //   return LwM2M_Version::V1_1;
       // }
     }
+    // NOLINTEND(readability-magic-numbers)
   }
   return {};
 }
@@ -118,7 +121,7 @@ vector<string> split(const string& s, char delimiter) {
 }
 
 pair<unsigned int, optional<unsigned int>> makeObjectInstancePair(
-    CoRE_Link link) {
+    const CoRE_Link& link) {
   vector<string> uri_targets = split(link.getTarget(), '/');
   // ignore empty root element
   if (uri_targets.begin()->empty()) {
@@ -176,7 +179,7 @@ unordered_map<unsigned int, vector<unsigned int>> getObjectList(
         throw runtime_error(error_msg);
       }
     }
-    for (auto core_link : core_links.getLinks()) {
+    for (const auto& core_link : core_links.getLinks()) {
       // ignore root and empty targets
       if (core_link.getTarget() != "/" && !core_link.getTarget().empty()) {
         auto object_instance = makeObjectInstancePair(core_link);
@@ -186,6 +189,7 @@ unordered_map<unsigned int, vector<unsigned int>> getObjectList(
   }
   return result;
 }
+// NOLINTEND(readability-identifier-naming)
 
 RegisterRequestPtr buildRegisterRequest(const CoAP::MessagePtr& message) {
   auto endpoint =

@@ -19,12 +19,12 @@ ResponseCode toResponseCode(CoAP::CodeType code) {
   // I will suffer, only if I f*ed up the CoAP::Socket implementation
   return static_cast<ResponseCode>(code);
 }
-LwM2M::PayloadPtr toPayload(PlainText content) {
+LwM2M::PayloadPtr toPayload(const PlainText& content) {
   return make_shared<LwM2M::Payload>(
       make_shared<DataFormat>(content.toString()), MediaType::PLAIN_TEXT);
 }
 
-ElementID toElementID(vector<string> targets) {
+ElementID toElementID(const vector<string>& targets) {
   switch (targets.size()) {
   case 1: {
     auto object_id = toUnsignedInteger(targets[0], IntegerBase::BASE_10);
@@ -58,9 +58,9 @@ ElementID toElementID(vector<string> targets) {
   }
 }
 
-LwM2M::PayloadPtr toPayload(CoRE_Links content) {
+LwM2M::PayloadPtr toPayload(const CoRE_Links& content) {
   ElementIDs result;
-  for (auto link : content.getLinks()) {
+  for (const auto& link : content.getLinks()) {
     auto target = link.splitTarget('/');
     // ignore empty root element
     if (target.begin()->empty()) {
@@ -81,7 +81,8 @@ LwM2M::PayloadPtr toPayload(CoRE_Links content) {
  * @todo: This method implementation is a cluster-fuck. MUST be refactored when
  * TLV pack is being worked on
  */
-LwM2M::PayloadPtr toPayload(TLV_Pack content) {
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+LwM2M::PayloadPtr toPayload(const TLV_Pack& content) {
   auto values = content.getPackAsVector();
   if (values.size() == 1) {
     if (values[0]->getIdentifierType() == Identifier_Type::Resource_Value) {
@@ -136,8 +137,9 @@ LwM2M::PayloadPtr toPayload(TLV_Pack content) {
   }
   return LwM2M::PayloadPtr();
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
-LwM2M::PayloadPtr toPayload(OctetStream content) {
+LwM2M::PayloadPtr toPayload(const OctetStream& content) {
   return make_shared<LwM2M::Payload>(
       make_shared<DataFormat>(content.getValue()), MediaType::OPAQUE);
 }
@@ -149,6 +151,7 @@ CoAP_Decoder::~CoAP_Decoder() {
   LoggerManager::deregisterLogger(logger_->getName());
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 LwM2M::PayloadPtr CoAP_Decoder::decode(
     const CoAP::ContentFormatPtr& content_format,
     const CoAP::PayloadPtr& payload) {

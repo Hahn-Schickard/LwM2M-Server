@@ -51,7 +51,7 @@ void CoAP_Binding::stop() {
 }
 
 future<DataFormatPtr> CoAP_Binding::requestData(
-    DeviceManagementRequestPtr request) {
+    const DeviceManagementRequestPtr& request) {
   return async(
       launch::async,
       [this](DeviceManagementRequestPtr request) -> DataFormatPtr {
@@ -72,8 +72,8 @@ future<DataFormatPtr> CoAP_Binding::requestData(
             DataFormatPtr result;
             match(
                 response->payload_->data_,
-                [&](DataFormatPtr value) { result = value; },
-                [&](TargetContentVector values) {
+                [&](const DataFormatPtr& value) { result = value; },
+                [&](const TargetContentVector& values) {
                   // Some read requests, that read from Multi-instance
                   // resources, MAY get a TargetContentVector response, instead
                   // of DataFormatPtr, because LwM2M_TLV sucks. Yes wakaama, I
@@ -82,7 +82,7 @@ future<DataFormatPtr> CoAP_Binding::requestData(
                   // well get some data out of it...
                   result = values[0].second;
                 },
-                [&](auto) {
+                [&](const auto&) {
                   logger_->log(SeverityLevel::ERROR,
                       "Response {} used an unexpected payload format for {}",
                       response->name(), request->name());
@@ -106,10 +106,10 @@ future<DataFormatPtr> CoAP_Binding::requestData(
 }
 
 future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
-    DeviceManagementRequestPtr request) {
+    const DeviceManagementRequestPtr& request) {
   return async(
       launch::async,
-      [this](DeviceManagementRequestPtr request) -> TargetContentVector {
+      [this](const DeviceManagementRequestPtr& request) -> TargetContentVector {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
             "Dispatching {}:{} as a multi target request to {}",
@@ -137,10 +137,11 @@ future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
       request);
 }
 
-future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr request) {
+future<bool> CoAP_Binding::requestAction(
+    const DeviceManagementRequestPtr& request) {
   return async(
       launch::async,
-      [this](DeviceManagementRequestPtr request) -> bool {
+      [this](const DeviceManagementRequestPtr& request) -> bool {
         auto coap_request = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
             "Dispatching {}:{} as an action to {}", request->name(),
@@ -159,10 +160,11 @@ future<bool> CoAP_Binding::requestAction(DeviceManagementRequestPtr request) {
       request);
 }
 
-future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr request) {
+future<ClientResponsePtr> CoAP_Binding::request(
+    const ServerRequestPtr& request) {
   return async(
       launch::async,
-      [this](ServerRequestPtr request) -> ClientResponsePtr {
+      [this](const ServerRequestPtr& request) -> ClientResponsePtr {
         auto message = encodeRequest(request);
         logger_->log(SeverityLevel::TRACE,
             "Dispatching {}:{} as a generic request to {}", request->name(),
@@ -181,8 +183,8 @@ future<ClientResponsePtr> CoAP_Binding::request(ServerRequestPtr request) {
 }
 
 size_t CoAP_Binding::requestObservation(
-    std::function<void(PayloadDataPtr)> notify_cb,
-    InformationReportingRequestPtr request) {
+    const std::function<void(PayloadDataPtr)>& notify_cb,
+    const InformationReportingRequestPtr& request) {
   if (request) {
     auto message = encoder_->encode(request);
     auto message_id = message->getToken()->hash();
@@ -211,7 +213,7 @@ size_t CoAP_Binding::requestObservation(
 }
 
 void CoAP_Binding::cancelObservation(
-    size_t observer_id, InformationReportingRequestPtr request) {
+    size_t observer_id, const InformationReportingRequestPtr& request) {
   auto observer = observed_elements_.find(observer_id);
   if (observer != observed_elements_.end()) {
     auto message = encoder_->encode(request);
@@ -229,7 +231,7 @@ void CoAP_Binding::cancelObservation(
   }
 }
 
-void CoAP_Binding::cancelRequest(ServerRequestPtr request) {
+void CoAP_Binding::cancelRequest(const ServerRequestPtr& request) {
   auto message = encodeRequest(request);
   if (request) {
     logger_->log(SeverityLevel::TRACE, "Canceling {}:{} for {}",
@@ -333,7 +335,7 @@ ServerResponsePtr CoAP_Binding::handleRequest(const CoAP::MessagePtr& message) {
   return ServerResponsePtr();
 }
 
-void CoAP_Binding::handleReceived(CoAP::MessagePtr message) {
+void CoAP_Binding::handleReceived(const CoAP::MessagePtr& message) {
   logger_->log(SeverityLevel::INFO, "Handling incoming message from {}:{}",
       message->getAddressIP(), message->getAddressPort());
   if (message->getHeader()->getMessageType() ==

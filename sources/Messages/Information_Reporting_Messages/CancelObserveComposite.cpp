@@ -10,7 +10,7 @@ CancelObserveCompositeRequest::CancelObserveCompositeRequest(
           MessageType::CANCEL_OBSERVATION_COMPOSITE,
           make_shared<Payload>(target_ids)) {}
 
-string CancelObserveCompositeRequest::name() {
+string CancelObserveCompositeRequest::name() const {
   return "CancelObserveCompositeRequest";
 }
 } // namespace LwM2M

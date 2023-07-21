@@ -7,7 +7,7 @@ namespace LwM2M_Example {
 using namespace LwM2M;
 
 struct Observer : public ObserverInterface {
-  Observer(ObservablePtr element);
+  Observer(const ObservablePtr& element);
 
 private:
   void handleEvent(PayloadDataPtr payload) override;

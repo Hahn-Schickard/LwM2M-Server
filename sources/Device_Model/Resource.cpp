@@ -6,8 +6,9 @@ using namespace std;
 namespace LwM2M {
 
 ResourceInstance makeVariant(const ResourceDescriptorPtr& descriptor,
-    Observable::ExceptionHandler handler, RequesterInterfaceFacadePtr requester,
-    EndpointPtr endpoint, ElementID id) {
+    const Observable::ExceptionHandler& handler,
+    const RequesterInterfaceFacadePtr& requester, const EndpointPtr& endpoint,
+    const ElementID& id) {
   switch (descriptor->operations_) {
   case OperationsType::READ: {
     return NonemptyPointer::make_shared<Readable>(
@@ -30,23 +31,24 @@ ResourceInstance makeVariant(const ResourceDescriptorPtr& descriptor,
   }
 }
 
-Resource::Resource(Observable::ExceptionHandler handler, // NOLINT
-    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, // NOLINT
-    ResourceDescriptorPtr descriptor, // NOLINT
-    ElementID id, std::optional<uint16_t> instance_id)
-    : descriptor_(descriptor), id_(id) { // NOLINT
+Resource::Resource(const Observable::ExceptionHandler& handler,
+    const RequesterInterfaceFacadePtr& requester, const EndpointPtr& endpoint,
+    const ResourceDescriptorPtr& descriptor, const ElementID& id,
+    const optional<uint16_t>& instance_id)
+    : descriptor_(descriptor), id_(id) {
   auto element_id = id;
   if (instance_id.has_value()) {
     element_id = ElementID(id, instance_id.value());
   }
-  auto variant = makeVariant(
-      descriptor, handler, requester, endpoint, element_id); // NOLINT
+  auto variant =
+      makeVariant(descriptor, handler, requester, endpoint, element_id);
   instances_.emplace(element_id, variant);
 }
 
-ResourceDescriptorPtr Resource::getDescriptor() { return descriptor_; }
+ResourceDescriptorPtr Resource::getDescriptor() const { return descriptor_; }
 
-ResourceInstance Resource::getResourceInstance(bool ignore_multiple_instances) {
+ResourceInstance Resource::getResourceInstance(
+    bool ignore_multiple_instances) const {
   if (instances_.size() > 1 && !ignore_multiple_instances) {
     throw ResourceInstanceCouldNotBeResolved(id_);
   } else {
@@ -54,7 +56,7 @@ ResourceInstance Resource::getResourceInstance(bool ignore_multiple_instances) {
   }
 }
 
-ResourceInstance Resource::getResourceInstance(ElementID id) {
+ResourceInstance Resource::getResourceInstance(const ElementID& id) const {
   auto it = instances_.find(id);
   if (it != instances_.end()) {
     return it->second;
@@ -63,5 +65,5 @@ ResourceInstance Resource::getResourceInstance(ElementID id) {
   }
 }
 
-ResourceInstances Resource::getResourceInstances() { return instances_; }
+ResourceInstances Resource::getResourceInstances() const { return instances_; }
 } // namespace LwM2M

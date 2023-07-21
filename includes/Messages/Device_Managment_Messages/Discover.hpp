@@ -18,7 +18,7 @@ namespace LwM2M {
 struct DiscoverRequest : DeviceManagementRequest {
   DiscoverRequest(EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
-  std::string name() override final;
+  std::string name() const final;
 
   ElementID target_;
 };

@@ -10,7 +10,7 @@ Executable::Executable(ExecutableInterfacePtr requester, // NOLINT
     ElementID id)
     : ElementAddress(endpoint, id), requester_(requester) {} // NOLINT
 
-Executable::Result Executable::execute(string arguments) {
+Executable::Result Executable::execute(const string& arguments) {
   auto message = make_shared<ExecuteRequest>(endpoint_, id_, arguments);
 
   auto result_future = requester_->requestAction(message);

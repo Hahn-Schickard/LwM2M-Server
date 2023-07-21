@@ -9,5 +9,5 @@ ReadCompositeRequest::ReadCompositeRequest(EndpointPtr endpoint, // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
           MessageType::READ_COMPOSITE, make_shared<Payload>(targets)) {}
 
-string ReadCompositeRequest::name() { return "ReadCompositeRequest"; }
+string ReadCompositeRequest::name() const { return "ReadCompositeRequest"; }
 } // namespace LwM2M

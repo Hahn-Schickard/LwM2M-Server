@@ -27,7 +27,7 @@ struct ReadCompositeRequest : DeviceManagementRequest {
    */
   ReadCompositeRequest(EndpointPtr endpoint, ElementIDs targets = ElementIDs());
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using ReadCompositeRequestPtr = std::shared_ptr<ReadCompositeRequest>;

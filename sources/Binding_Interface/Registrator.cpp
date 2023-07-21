@@ -100,16 +100,15 @@ ElementIDs handleReadResponse(
   return result;
 }
 
-Registrator::Registrator(DeviceRegistryPtr registry) // NOLINT
-    : registry_(registry), // NOLINT
-      logger_(LoggerManager::registerTypedLogger(this)) {
+Registrator::Registrator(const DeviceRegistryPtr& registry)
+    : registry_(registry), logger_(LoggerManager::registerTypedLogger(this)) {
   if (!registry_) {
     throw invalid_argument("Device Registry can not be a nullptr.");
   }
 }
 
 ObjectDescriptorsMap Registrator::assignAvailableDescriptors(
-    ElementIDs requested_instances) {
+    const ElementIDs& requested_instances) {
   logger_->log(SeverityLevel::TRACE, "Assigning Available Descriptors");
   auto supported_object_descriptors = registry_->getSupportedDescriptors();
   ObjectDescriptorsMap result;
@@ -174,9 +173,9 @@ ElementIDs Registrator::discover(const ServerRequestPtr& request) {
 }
 
 ElementIDs Registrator::discoverAvailableDescriptors(
-    EndpointPtr endpoint, // NOLINT
+    const EndpointPtr& endpoint,
     const DeviceMetaInfo::ObjectInstancesMap& object_instances) {
-  auto requests = makeDiscoverRequests(endpoint, object_instances); // NOLINT
+  auto requests = makeDiscoverRequests(endpoint, object_instances);
 
   ElementIDs requested_instances;
   for (auto it = requests.begin(); it != requests.end();) {
@@ -240,7 +239,7 @@ void Registrator::handleDeviceException(
 }
 
 void Registrator::makeDevice(const string& device_id,
-    EndpointPtr device_address, DeviceMetaInfo device_info) {
+    const EndpointPtr& device_address, const DeviceMetaInfo& device_info) {
   auto instances = discoverAvailableDescriptors(
       device_address, device_info.object_instances_map_);
   auto object_ids = assignAvailableDescriptors(instances);
@@ -249,7 +248,7 @@ void Registrator::makeDevice(const string& device_id,
       bind(&Registrator::handleDeviceException, this, device_id,
           placeholders::_1),
       requester, device_address, object_ids, device_id,
-      device_info.life_time_.value_or(300),
+      device_info.life_time_.value_or(300), // NOLINT(readability-magic-numbers)
       device_info.endpoint_name_.value_or(string()),
       device_info.version_.value_or(LwM2M_Version::V1_0),
       device_info.binding_.value_or(BindingType::UDP),
@@ -275,8 +274,8 @@ RegisterResponsePtr Registrator::handleRequest(
             location, request->endpoint_->endpoint_address_,
             request->endpoint_->endpoint_port_);
         thread(
-            [this](string device_id, EndpointPtr device_address,
-                DeviceMetaInfo device_info) {
+            [this](const string& device_id, const EndpointPtr& device_address,
+                const DeviceMetaInfo& device_info) {
               makeDevice(device_id, device_address, device_info);
             },
             location, request->endpoint_, request->device_info_)
@@ -378,5 +377,5 @@ DeregisterResponsePtr Registrator::handleRequest(
   }
 }
 
-EventSourcePtr Registrator::getEventSource() { return registry_; }
+EventSourcePtr Registrator::getEventSource() const { return registry_; }
 } // namespace LwM2M

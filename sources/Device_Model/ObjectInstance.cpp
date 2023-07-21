@@ -9,11 +9,12 @@ using namespace std;
 
 namespace LwM2M {
 
-ObjectInstance::ObjectInstance(Observable::ExceptionHandler handler,
-    RequesterInterfaceFacadePtr requester, EndpointPtr endpoint, ElementID id,
-    unordered_map<uint32_t, ResourceDescriptorPtr> resource_descriptors)
+ObjectInstance::ObjectInstance(const Observable::ExceptionHandler& handler,
+    const RequesterInterfaceFacadePtr& requester, const EndpointPtr& endpoint,
+    const ElementID& id,
+    const unordered_map<uint32_t, ResourceDescriptorPtr>& resource_descriptors)
     : requester_(requester), endpoint_(endpoint), id_(id) {
-  for (auto resource_pair : resource_descriptors) {
+  for (const auto& resource_pair : resource_descriptors) {
     resources_.emplace(resource_pair.first,
         make_shared<Resource>(handler, requester, endpoint,
             resource_pair.second,
@@ -22,9 +23,9 @@ ObjectInstance::ObjectInstance(Observable::ExceptionHandler handler,
   }
 }
 
-ElementID ObjectInstance::getId() { return id_; }
+ElementID ObjectInstance::getId() const { return id_; }
 
-ResourcePtr ObjectInstance::getResource(ElementID id) {
+ResourcePtr ObjectInstance::getResource(const ElementID& id) const {
   auto it = resources_.find(id.getResourceID());
   if (it != resources_.end()) {
     return it->second;
@@ -33,13 +34,15 @@ ResourcePtr ObjectInstance::getResource(ElementID id) {
   }
 }
 
-Resources ObjectInstance::getResources() { return resources_; }
+Resources ObjectInstance::getResources() const { return resources_; }
 
-ResourceInstance ObjectInstance::getResourceInstance(ElementID id) {
+ResourceInstance ObjectInstance::getResourceInstance(
+    const ElementID& id) const {
   return getResource(id)->getResourceInstance(id);
 }
 
-ResourceInstances ObjectInstance::getResourceInstances(ElementID id) {
+ResourceInstances ObjectInstance::getResourceInstances(
+    const ElementID& id) const {
   return getResource(id)->getResourceInstances();
 }
 

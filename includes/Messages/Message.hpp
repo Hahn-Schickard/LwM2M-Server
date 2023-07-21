@@ -20,7 +20,7 @@ namespace LwM2M {
  */
 
 struct UnsupportedOperation : public std::logic_error {
-  UnsupportedOperation(std::string const& message);
+  UnsupportedOperation(const std::string& message);
 };
 
 enum struct InterfaceType : uint8_t {
@@ -112,7 +112,7 @@ struct Message {
    *
    * @return std::string
    */
-  virtual std::string name();
+  virtual std::string name() const;
 
 protected:
   /**
@@ -168,7 +168,7 @@ protected:
    *
    * @param response_code LwM2M::ResponseCode
    */
-  void checkResponseCode(ResponseCode response_code);
+  void checkResponseCode(ResponseCode response_code) const;
 };
 
 using ResponsePtr = std::shared_ptr<Response>;

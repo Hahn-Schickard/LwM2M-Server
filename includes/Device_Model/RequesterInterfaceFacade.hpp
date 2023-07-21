@@ -48,7 +48,8 @@ struct RequesterInterfaceFacade : public ReadableInterface,
    * @param message
    * @return std::future<ClientResponse>
    */
-  virtual std::future<ClientResponsePtr> request(ServerRequestPtr /*message*/) {
+  virtual std::future<ClientResponsePtr> request(
+      const ServerRequestPtr& /*message*/) {
     throw std::runtime_error("Called base request implementation.");
   }
 
@@ -58,7 +59,7 @@ struct RequesterInterfaceFacade : public ReadableInterface,
    *
    * MUST be implemented by the Binding_Interface inheritor
    */
-  virtual void cancelRequest(ServerRequestPtr /*message*/) override {
+  virtual void cancelRequest(const ServerRequestPtr& /*message*/) override {
     throw std::runtime_error("Called base cancelRequest implementation within "
                              "RequesterInterfaceFacade.");
   }

@@ -17,7 +17,7 @@ struct CancelObserveCompositeRequest : InformationReportingRequest {
   CancelObserveCompositeRequest(
       EndpointPtr endpoint, ElementIDs target_ids = ElementIDs());
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using CancelObserveCompositeRequestPtr =

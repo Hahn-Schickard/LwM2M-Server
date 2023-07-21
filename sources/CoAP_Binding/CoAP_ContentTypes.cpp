@@ -5,7 +5,7 @@ using namespace std;
 namespace CoAP {
 
 // NOLINTNEXTLINE
-template <> LwM2M::TLV_Pack decode(PayloadPtr payload) {
+template <> LwM2M::TLV_Pack decode(const PayloadPtr& payload) {
   if (payload->getContentFormat()->getIndex() !=
       ContentFormatEncodings::LwM2M_TLV::index) {
     throw WrongContentFormatTypeDecoder(
@@ -17,7 +17,7 @@ template <> LwM2M::TLV_Pack decode(PayloadPtr payload) {
   return LwM2M::TLV_Pack(buffer);
 }
 
-template <> PayloadPtr encode(LwM2M::TLV_Pack content) {
+template <> PayloadPtr encode(const LwM2M::TLV_Pack& content) {
   auto index = ContentFormatEncodings::LwM2M_TLV::index;
   return make_shared<Payload>(index, content.getBytes());
 }

@@ -26,8 +26,8 @@ struct Writable : public ElementAddress {
    */
   using Result = RequestResult<bool>;
 
-  Writable(
-      ExecutableInterfacePtr requester, EndpointPtr endpoint, ElementID id);
+  Writable(const ExecutableInterfacePtr& requester, const EndpointPtr& endpoint,
+      const ElementID& id);
 
   /**
    * @brief creates a write request to the LwM2M Client with a given DataVariant
@@ -36,7 +36,7 @@ struct Writable : public ElementAddress {
    * @param data
    * @return Result<true> if request was successful
    */
-  Result write(DataVariant data);
+  Result write(const DataVariant& data);
 
 private:
   ExecutableInterfacePtr requester_;

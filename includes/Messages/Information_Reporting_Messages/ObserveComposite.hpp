@@ -19,7 +19,7 @@ struct ObserveCompositeRequest : InformationReportingRequest {
   ObserveCompositeRequest(
       EndpointPtr endpoint, ElementIDs target_ids = ElementIDs());
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using ObserveCompositeRequestPtr = std::shared_ptr<ObserveCompositeRequest>;

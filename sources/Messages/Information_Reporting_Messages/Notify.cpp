@@ -9,5 +9,5 @@ ValueUpdated::ValueUpdated(EndpointPtr endpoint, // NOLINT
           MessageType::NOTIFY, InterfaceType::INFORMATION_REPORTING,
           make_shared<Payload>(content)) {}
 
-string ValueUpdated::name() { return "ValueUpdated"; }
+string ValueUpdated::name() const { return "ValueUpdated"; }
 } // namespace LwM2M

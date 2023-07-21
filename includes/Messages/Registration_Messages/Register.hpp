@@ -46,7 +46,7 @@ struct RegisterResponse : RegistrationInterfaceResponse {
 
   RegisterResponse(EndpointPtr endpoint);
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using RegisterResponsePtr = std::shared_ptr<RegisterResponse>;
@@ -68,7 +68,7 @@ struct RegisterRequest : RegistrationInterfaceRequest {
       std::optional<bool> queue_mode = std::nullopt,
       std::optional<std::string> sms_number = std::nullopt);
 
-  std::string name() override final;
+  std::string name() const final;
 
   /**
    * @brief Creates a response that indicates failure.

@@ -17,7 +17,7 @@ struct CancelObservationRequest : InformationReportingRequest {
   CancelObservationRequest(
       EndpointPtr endpoint, ElementID target_id = ElementID(0));
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using CancelObservationRequestPtr = std::shared_ptr<CancelObservationRequest>;

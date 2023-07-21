@@ -22,7 +22,7 @@ class TestRequester : public RequesterInterfaceFacade {
 
 public:
   std::future<DataFormatPtr> requestData(
-      DeviceManagementRequestPtr /*message*/) override final {
+      const DeviceManagementRequestPtr& /*message*/) final {
     if (!data_promise_) {
       DataPromise data_promise;
       auto result = data_promise.get_future();
@@ -37,7 +37,7 @@ public:
   }
 
   std::future<TargetContentVector> requestMultiTargetData(
-      DeviceManagementRequestPtr /*message*/) override final {
+      const DeviceManagementRequestPtr& /*message*/) final {
     if (!multi_data_promise_) {
       MultiDataPromise multi_data_promise;
       auto result = multi_data_promise.get_future();
@@ -52,7 +52,7 @@ public:
   }
 
   std::future<bool> requestAction(
-      DeviceManagementRequestPtr /*message*/) override final {
+      const DeviceManagementRequestPtr& /*message*/) final {
     if (!action_promise_) {
       ActionPromise action_promise;
       auto result = action_promise.get_future();
@@ -66,7 +66,7 @@ public:
     }
   }
 
-  void cancelRequest(ServerRequestPtr /*message*/) override final {
+  void cancelRequest(const ServerRequestPtr& /*message*/) final {
     if (data_promise_) {
       auto data_promise = std::move(data_promise_.value());
       data_promise_ = std::nullopt;
@@ -87,15 +87,16 @@ public:
     }
   }
 
-  size_t requestObservation(std::function<void(PayloadDataPtr)> notify_cb,
-      InformationReportingRequestPtr /*message*/) override final {
+  size_t requestObservation(
+      const std::function<void(PayloadDataPtr)>& notify_cb,
+      const InformationReportingRequestPtr& /*message*/) final {
     auto id = observed_elements_.size();
     observed_elements_.emplace(id, notify_cb);
     return id;
   }
 
   void cancelObservation(size_t observer_id,
-      InformationReportingRequestPtr /*message*/) override final {
+      const InformationReportingRequestPtr& /*message*/) final {
     auto observer = observed_elements_.find(observer_id);
     if (observer != observed_elements_.end()) {
       observed_elements_.erase(observer);
@@ -117,7 +118,7 @@ public:
     return success;
   }
 
-  bool respond(TargetContentVector result) {
+  bool respond(const TargetContentVector& result) {
     bool success = false;
     if (multi_data_promise_) {
       try {
@@ -147,7 +148,7 @@ public:
     return success;
   }
 
-  bool notify(size_t observer_id, PayloadDataPtr value) {
+  bool notify(size_t observer_id, const PayloadDataPtr& value) {
     bool success = false;
     auto callback = observed_elements_.find(observer_id);
     if (callback != observed_elements_.end()) {

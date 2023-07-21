@@ -10,5 +10,5 @@ WriteRequest::WriteRequest(EndpointPtr endpoint, // NOLINT
           MessageType::WRITE,
           make_shared<Payload>(make_pair(target_id, content))) {}
 
-string WriteRequest::name() { return "WriteRequest"; }
+string WriteRequest::name() const { return "WriteRequest"; }
 } // namespace LwM2M

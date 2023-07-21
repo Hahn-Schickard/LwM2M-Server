@@ -34,8 +34,8 @@ struct ObservableInterface : public CancelableInterface {
    * @return size_t - observer notification callback identifier, can not be 0
    */
   virtual size_t requestObservation(
-      std::function<void(PayloadDataPtr)> /* notify_cb */,
-      InformationReportingRequestPtr /*message*/) {
+      const std::function<void(PayloadDataPtr)>& /* notify_cb */,
+      const InformationReportingRequestPtr& /*message*/) {
     throw std::runtime_error("Called base requestObservation implementation.");
   }
 
@@ -53,8 +53,8 @@ struct ObservableInterface : public CancelableInterface {
    * @param message - appropriate cancel observation request for the appropriate
    * device
    */
-  virtual void cancelObservation(
-      size_t /* observer_id */, InformationReportingRequestPtr /*message*/) {
+  virtual void cancelObservation(size_t /* observer_id */,
+      const InformationReportingRequestPtr& /*message*/) {
     throw std::runtime_error("Called base requestObservation implementation.");
   }
 };

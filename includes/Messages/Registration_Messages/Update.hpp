@@ -42,7 +42,7 @@ struct UpdateResponse : RegistrationInterfaceResponse {
 
   UpdateResponse(EndpointPtr endpoint);
 
-  std::string name() override final;
+  std::string name() const final;
 };
 
 using UpdateResponsePtr = std::shared_ptr<UpdateResponse>;
@@ -65,9 +65,9 @@ struct UpdateRequest : RegistrationInterfaceRequest {
       std::optional<BindingType> binding = std::nullopt,
       std::optional<std::string> sms_number = std::nullopt);
 
-  std::string name() override final;
+  std::string name() const final;
 
-  bool isKeepAlive();
+  bool isKeepAlive() const;
 
   UpdateResponsePtr makeResponse(ResponseCode response_code);
 };

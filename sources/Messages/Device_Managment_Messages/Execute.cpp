@@ -17,5 +17,5 @@ ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, // NOLINT
           make_shared<Payload>(make_pair(
               target, make_shared<DataFormat>(DataVariant(arguments))))) {}
 
-string ExecuteRequest::name() { return "ExecuteRequest"; }
+string ExecuteRequest::name() const { return "ExecuteRequest"; }
 } // namespace LwM2M

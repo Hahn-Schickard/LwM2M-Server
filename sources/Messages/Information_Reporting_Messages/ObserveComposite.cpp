@@ -8,5 +8,7 @@ ObserveCompositeRequest::ObserveCompositeRequest(EndpointPtr endpoint, // NOLINT
     : InformationReportingRequest(endpoint, // NOLINT
           MessageType::OBSERVE_COMPOSITE, make_shared<Payload>(target_ids)) {}
 
-string ObserveCompositeRequest::name() { return "ObserveCompositeRequest"; }
+string ObserveCompositeRequest::name() const {
+  return "ObserveCompositeRequest";
+}
 } // namespace LwM2M

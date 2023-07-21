@@ -22,7 +22,7 @@ DeregisterResponse::DeregisterResponse(EndpointPtr endpoint, // NOLINT
           make_shared<Payload>(
               make_shared<DataFormat>(DataVariant(location)))) {}
 
-string DeregisterResponse::name() { return "DeregisterResponse"; }
+string DeregisterResponse::name() const { return "DeregisterResponse"; }
 
 DeregisterRequest::DeregisterRequest(EndpointPtr endpoint, // NOLINT
     string location)
@@ -30,7 +30,7 @@ DeregisterRequest::DeregisterRequest(EndpointPtr endpoint, // NOLINT
           MessageType::DEREGISTER),
       location_(move(location)) {}
 
-string DeregisterRequest::name() { return "DeregisterRequest"; }
+string DeregisterRequest::name() const { return "DeregisterRequest"; }
 
 DeregisterResponsePtr DeregisterRequest::makeResponse(
     ResponseCode response_code) {

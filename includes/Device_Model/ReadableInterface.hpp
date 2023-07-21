@@ -35,7 +35,7 @@ struct ReadableInterface : public CancelableInterface {
    * @return std::future<DataFormat>
    */
   virtual std::future<DataFormatPtr> requestData(
-      DeviceManagementRequestPtr /*message*/) {
+      const DeviceManagementRequestPtr& /*message*/) {
     throw std::runtime_error("Called base requestData implementation.");
   }
 };
