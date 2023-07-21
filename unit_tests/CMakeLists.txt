@@ -23,7 +23,8 @@ target_sources(${THIS} PRIVATE
 )
 
 target_link_libraries(${THIS} PUBLIC
-                              GTest::GTest
+                              GTest::gtest
+                              GTest::gmock
                               Variant_Visitor::Variant_Visitor
                               ${PROJECT_NAME}_Messages
                               ${PROJECT_NAME}_Device_Model
