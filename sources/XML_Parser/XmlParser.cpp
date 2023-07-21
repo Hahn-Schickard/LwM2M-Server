@@ -93,22 +93,22 @@ bool convertMandatoryType(const string& value) { return value == "Mandatory"; }
 
 DataType convertDataType(const string& value) {
   DataType result;
-  if (value == "String") {
-    result = DataType::STRING;
+  if (value == "Boolean") {
+    result = DataType::BOOLEAN;
   } else if (value == "Integer") {
     result = DataType::SIGNED_INTEGER;
+  } else if (value == "Unsigned Integer") {
+    result = DataType::UNSIGNED_INTEGER;
   } else if (value == "Float") {
     result = DataType::FLOAT;
-  } else if (value == "Boolean") {
-    result = DataType::BOOLEAN;
+  } else if (value == "String") {
+    result = DataType::STRING;
   } else if (value == "Opaque") {
     result = DataType::OPAQUE;
   } else if (value == "Time") {
     result = DataType::TIME;
-  } else if (value == "Time") {
-    result = DataType::TIME;
-  } else if (value == "Unsigned Integer") {
-    result = DataType::UNSIGNED_INTEGER;
+  } else if (value == "Objlnk") {
+    result = DataType::OBJECT_LINK;
   } else if (value == "Corelnk") {
     result = DataType::CORE_LINK;
   } else {
