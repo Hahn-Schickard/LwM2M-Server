@@ -6,7 +6,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "LwM2M Server"
 PROJECT_NUMBER         =
-PROJECT_BRIEF          = "C++17 based multithreaded Lightweight Machine to Machine Server implementation."
+PROJECT_BRIEF          = ""
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = docs/code_documentation
 CREATE_SUBDIRS         = YES
