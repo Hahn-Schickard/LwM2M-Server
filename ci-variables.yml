@@ -2,4 +2,4 @@ variables:
  RUN_EXE_COVERAGE: "True"
  EXE_TARGET: "build/sources/Runner/LwM2M_Server_Runner"
  EXE_TARGET_ARGS: "5"
- TEST_RUNNER_TARGET: "build/unit_tests/Unit_Tests_Runner"
+ TEST_RUNNER_TARGET: ""
