@@ -196,6 +196,7 @@ RegisterRequestPtr buildRegisterRequest(const CoAP::MessagePtr& message) {
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
 
   try {
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     auto version = getLwM2M_Version(message->getOptions()).value();
     try {
       auto life_time = getLifetime(message->getOptions()).value();
@@ -255,6 +256,7 @@ DeregisterRequestPtr buildDeregisterRequest(const CoAP::MessagePtr& message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
   try {
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     auto location = getLocation(message->getOptions()).value();
     return make_shared<DeregisterRequest>(endpoint, location);
   } catch (bad_optional_access& ex) {
