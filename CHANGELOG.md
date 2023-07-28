@@ -1,4 +1,8 @@
 # Changelog
+## [0.5.5] - 2023.07.28
+### Removed 
+ - code coverage hooks from conan package 
+
 ## [0.5.4] - 2023.07.21
 ### Changed
  - conan recipe to use conan v2 syntax
