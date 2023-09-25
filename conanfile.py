@@ -53,10 +53,14 @@ class PackageConan(ConanFile):
         # @+ START USER REQUIREMENTS
         self.requires('nlohmann_json/3.11.1')
         self.requires('pugixml/1.11')
-        self.requires('variant_visitor/[~0.1]@hahn-schickard/stable')
-        self.requires("hscul/[~0.3]@hahn-schickard/stable")
-        self.requires('event_model/[~0.3]@hahn-schickard/stable', headers=True, transitive_headers=True)
-        self.requires('coaps4cpp/[~0.5]@hahn-schickard/stable', headers=True, libs=True, transitive_headers=True, transitive_libs=True)
+        self.requires(
+            'variant_visitor/[~0.1]@hahn-schickard/stable', headers=True, transitive_headers=True)
+        self.requires('event_model/[~0.3]@hahn-schickard/stable',
+                      headers=True, transitive_headers=True)
+        self.requires("hscul/[~0.3]@hahn-schickard/stable", headers=True,
+                      libs=True, transitive_headers=True, transitive_libs=True)
+        self.requires('coaps4cpp/[~0.5]@hahn-schickard/stable', headers=True,
+                      libs=True, transitive_headers=True, transitive_libs=True)
         self.test_requires("gtest/[~1.11]")
         # @- END USER REQUIREMENTS
 
