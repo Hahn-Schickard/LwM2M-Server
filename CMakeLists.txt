@@ -39,19 +39,15 @@ include(compiler_settings)
 #@- ======================== END OF USER CONFIGURATION ============================
 
 #@+ ======================== User PACKAGES configuration ===========================
-list(APPEND DEPENDENCIES_LIST
-            HaSLL
-            CoAPS4Cpp
-            Variant_Visitor
-            Event_Model
-            HSCUL
-            pugixml
-            nlohmann_json
-            Threads
-)
+find_package(HaSLL REQUIRED)
+find_package(CoAPS4Cpp REQUIRED)
+find_package(Variant_Visitor REQUIRED)
+find_package(Event_Model REQUIRED)
+find_package(HSCUL REQUIRED)
+find_package(pugixml REQUIRED)
+find_package(nlohmann_json REQUIRED)
+find_package(Threads REQUIRED)
 #@- ========================= END OF USER CONFIGURATION ============================
-
-FIND_INSTALLED_DEPENDENCIES("${DEPENDENCIES_LIST}")
 
 add_subdirectory(sources)
 if(RUN_TESTS)
@@ -59,27 +55,3 @@ if(RUN_TESTS)
         add_subdirectory(unit_tests)
 endif()
 
-#@+ ====================== User CMAKE configuration =========================
-# General user defined CMake configurtaions are set here
-#@- ===================== END OF USER CONFIGURATION =========================
-
-WRITE_PKG_CONFIG_IN_FILE(${PROJECT_NAME})
-
-include(CMakePackageConfigHelpers)
-
-configure_package_config_file(
-  "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in"
-  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  INSTALL_DESTINATION ${THIS_PACKAGE_NAME}/
-)
-
-install(EXPORT ${PROJECT_NAME}Targets
-        FILE ${PROJECT_NAME}Targets.cmake
-        NAMESPACE ${PROJECT_NAME}::
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-)
-
-install(FILES
-        ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-)
