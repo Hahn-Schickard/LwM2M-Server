@@ -1,4 +1,26 @@
 # Changelog
+## [0.5.6] - 2023.10.16 
+### Changed
+ - `getConfig()` to check if absolute or relative paths are used  
+ - gtest test dependency to be used as a build requirement
+ - `ElementID::getObjectInstanceID()` to throw `std::logic_error`
+ - `ElementID::getResourceID()` to throw `std::logic_error`
+ - `ElementID::getResourceInstanceID()` to throw `std::logic_error`
+ - `Configuration::descriptors_`  to be const
+ - `Configuration::bindings_`  to be const
+ - `getConfig()` to throw `std::runtime_error` instead of `std::system_error`
+ - `Registrator::handleRequest(const UpdateRequestPtr&)` to return an `UpdateResponsePtr` with `ResponseCode::BAD_REQUEST` when `request->device_info_` has no value
+ - `buildUpdateRequest(const CoAP::MessagePtr&)` to throw `RegistrationInterfaceError` when device location is not set in message options
+ - `RegistrationListener::handleEvent()` to use `handleRegistration/handleUpdate/handleDeregistration` methods
+ - `Server::getRegisterBindingNames()` to reserve `result` vector with `bindings_.size()`
+
+### Added 
+ - `Configuration(const std::string&, Bindings&&)` ctor
+ - extra logging for `DeviceRegistry()` ctor when loading model descriptors
+ - `RegistrationListener::handleRegistration(const DevicePtr&)`
+ - `RegistrationListener::handleUpdate(const string&)`
+ - `RegistrationListener::handleDeregistration(const string&)`
+
 ## [0.5.5] - 2023.07.28
 ### Removed 
  - code coverage hooks from conan package 
