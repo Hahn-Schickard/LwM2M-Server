@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
-#include <system_error>
+#include <stdexcept>
 
 using namespace std;
 using json = nlohmann::json;
@@ -45,7 +45,7 @@ Configuration getConfig(const string& filepath) {
 
     return Configuration(descriptors, move(bindings));
   } else {
-    throw system_error(make_error_code(errc::no_such_file_or_directory));
+    throw runtime_error(filepath + " does not exist");
   }
 }
 } // namespace LwM2M
