@@ -39,6 +39,7 @@ void Server::start() {
 
 vector<string> Server::getRegisterBindingNames() {
   vector<string> result;
+  result.reserve(bindings_.size());
   for (const auto& binding : bindings_) {
     result.push_back(binding->name());
   }

@@ -12,8 +12,8 @@
 using namespace std;
 using namespace HaSLI;
 
-#define ERROR_CODES_VALUE 0x80
-#define REQUEST_TIMEOUT_MS 2000
+static constexpr uint8_t ERROR_CODES_VALUE = 0x80;
+static constexpr uint16_t REQUEST_TIMEOUT_MS = 2000;
 
 namespace LwM2M {
 
@@ -300,6 +300,7 @@ RegisterResponsePtr Registrator::handleRequest(
   }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
   if (request) {
     logger_->log(SeverityLevel::INFO, "Handling an Update request from {}:{}",
@@ -308,41 +309,47 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
     try {
       auto device = registry_->getDevice(request->location_);
       if (!request->isKeepAlive()) {
-        auto device_info = request->device_info_.value();
-        if (!device_info.object_instances_map_.empty()) {
-          auto instances = discoverAvailableDescriptors(
-              request->endpoint_, device_info.object_instances_map_);
-          auto object_instances = assignAvailableDescriptors(instances);
-          logger_->log(SeverityLevel::TRACE,
-              "Assigning new Object Instance map to {}:{} device.",
+        if (request->device_info_.has_value()) {
+          // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+          auto device_info = request->device_info_.value();
+          if (!device_info.object_instances_map_.empty()) {
+            auto instances = discoverAvailableDescriptors(
+                request->endpoint_, device_info.object_instances_map_);
+            auto object_instances = assignAvailableDescriptors(instances);
+            logger_->log(SeverityLevel::TRACE,
+                "Assigning new Object Instance map to {}:{} device.",
+                device->getDeviceId(), device->getName());
+            device->updateObjectsMap(object_instances);
+          }
+          if (device_info.life_time_.has_value()) {
+            logger_->log(SeverityLevel::TRACE,
+                "Updating lifetime of {}:{} device.", device->getDeviceId(),
+                device->getName());
+            device->updateLifetime(device_info.life_time_.value());
+          }
+          if (device_info.binding_.has_value()) {
+            logger_->log(SeverityLevel::TRACE,
+                "Changing {}:{} device binding type to {}.",
+                device->getDeviceId(), device->getName(),
+                toString(device_info.binding_.value()));
+            device->updateBinding(device_info.binding_.value());
+          }
+          if (device_info.sms_number_.has_value()) {
+            logger_->log(
+                SeverityLevel::ERROR, "SMS numbers are not supported!");
+            return request->makeResponse(ResponseCode::BAD_REQUEST);
+          }
+          registry_->updateDevice(device);
+        } else {
+          logger_->log(SeverityLevel::INFO,
+              "Received a Keep Alive request for {}:{} device.",
               device->getDeviceId(), device->getName());
-          device->updateObjectsMap(object_instances);
+          //@TODO: handle keep alive here
         }
-        if (device_info.life_time_.has_value()) {
-          logger_->log(SeverityLevel::TRACE,
-              "Updating lifetime of {}:{} device.", device->getDeviceId(),
-              device->getName());
-          device->updateLifetime(device_info.life_time_.value());
-        }
-        if (device_info.binding_.has_value()) {
-          logger_->log(SeverityLevel::TRACE,
-              "Changing {}:{} device binding type to {}.",
-              device->getDeviceId(), device->getName(),
-              toString(device_info.binding_.value()));
-          device->updateBinding(device_info.binding_.value());
-        }
-        if (device_info.sms_number_.has_value()) {
-          logger_->log(SeverityLevel::ERROR, "SMS numbers are not supported!");
-          return request->makeResponse(ResponseCode::BAD_REQUEST);
-        }
-        registry_->updateDevice(device);
+        return request->makeResponse(ResponseCode::CHANGED);
       } else {
-        logger_->log(SeverityLevel::INFO,
-            "Received a Keep Alive request for {}:{} device.",
-            device->getDeviceId(), device->getName());
-        //@TODO: handle keep alive here
+        return request->makeResponse(ResponseCode::BAD_REQUEST);
       }
-      return request->makeResponse(ResponseCode::CHANGED);
     } catch (DeviceNotFound& ex) {
       return request->makeResponse(ResponseCode::NOT_FOUND);
     }

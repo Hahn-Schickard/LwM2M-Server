@@ -161,76 +161,92 @@ future<void> asyncRead(const DevicePtr& device, const ElementID& id) {
 RegistrationListener::RegistrationListener(const EventSourcePtr& registration)
     : EventListenerInterface(registration) {}
 
+void RegistrationListener::handleRegistration(const DevicePtr& device) {
+  cout << "New device has been registered: ";
+  printDevice(device);
+
+  vector<future<void>> threads;
+  // NOLINTBEGIN(readability-magic-numbers)
+  threads.push_back(
+      asyncRead(device, ElementID(3, 0, 4))); // try to read a not readable
+  threads.push_back(
+      asyncRead(device, ElementID(3, 0, 8))); // try to read optional resource
+  threads.push_back(asyncRead(
+      device, ElementID(3, 0, 11))); // try to read multiple instance resource
+  threads.push_back(asyncRead(device, ElementID(3, 0, 16)));
+  threads.push_back(
+      asyncRead(device, ElementID(6, 0, 0))); // try to read Latitude as float
+  threads.push_back(
+      asyncRead(device, ElementID(6, 0, 1))); // try to read Longitude as float
+  threads.push_back(
+      asyncRead(device, ElementID(6, 0, 5))); // try to read Timestamp
+  threads.push_back(asyncRead(
+      device, ElementID(3303, 0, 5700))); // try to read temperature value
+
+  for (auto thread = threads.begin(); thread != threads.end(); ++thread) {
+    auto status = thread->wait_for(1s);
+    if (status == future_status::ready) {
+      thread = threads.erase(thread);
+    }
+  }
+  cout << string(getTerminalWidth(), '=') << endl;
+  cout << "Finished reading resources" << endl;
+
+  try {
+    auto device_obj = device->getObject(ElementID(3, 0));
+    auto battery_level_resource = device_obj->getResource(ElementID(3, 0, 9));
+    auto battery_level =
+        std::get<ReadablePtr>(battery_level_resource->getResourceInstance());
+    cout << "Registering a new observer for "
+         << battery_level->getID().toString() << endl;
+    auto observer = std::make_shared<Observer>(battery_level);
+    cout << "Observer for element " << observer->getId()
+         << " built. Saving it in the map of observers." << endl;
+    observers_.emplace(device->getDeviceId(), observer);
+  } catch (ObjectInstanceDoesNotExist& ex) {
+    cout << "Could not register battery level observer for device "
+         << device->getDeviceId() << ex.what() << endl;
+  } catch (exception& ex) {
+    cout << "Caught unhandled exception while trying to register a new "
+            "observer for device "
+         << device->getDeviceId() << endl
+         << "Exception: " << ex.what() << endl;
+  }
+}
+
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void RegistrationListener::handleUpdate(const string& identifier) {
+  cout << "Device with id: " << identifier << " has been updated!" << endl;
+}
+
+void RegistrationListener::handleDeregistration(const string& identifier) {
+  cout << "Device with id: " << identifier << " has been deregistered!" << endl;
+  auto range = observers_.equal_range(identifier);
+  for (auto it = range.first; it != range.second;) {
+    cout << "Erasing element observer: " << it->second->getId() << endl;
+    it->second.reset();
+    it = observers_.erase(it);
+  }
+}
+
 void RegistrationListener::handleEvent(RegistryEventPtr event) {
   switch (event->type_) {
   case RegistryEventType::REGISTERED: {
-    auto device = event->device_.value();
-    cout << "New device has been registered: ";
-    printDevice(device);
-
-    vector<future<void>> threads;
-    // NOLINTBEGIN(readability-magic-numbers)
-    threads.push_back(
-        asyncRead(device, ElementID(3, 0, 4))); // try to read a not readable
-    threads.push_back(
-        asyncRead(device, ElementID(3, 0, 8))); // try to read optional resource
-    threads.push_back(asyncRead(
-        device, ElementID(3, 0, 11))); // try to read multiple instance resource
-    threads.push_back(asyncRead(device, ElementID(3, 0, 16)));
-    threads.push_back(
-        asyncRead(device, ElementID(6, 0, 0))); // try to read Latitude as float
-    threads.push_back(asyncRead(
-        device, ElementID(6, 0, 1))); // try to read Longitude as float
-    threads.push_back(
-        asyncRead(device, ElementID(6, 0, 5))); // try to read Timestamp
-    threads.push_back(asyncRead(
-        device, ElementID(3303, 0, 5700))); // try to read temperature value
-
-    for (auto thread = threads.begin(); thread != threads.end(); ++thread) {
-      auto status = thread->wait_for(1s);
-      if (status == future_status::ready) {
-        thread = threads.erase(thread);
-      }
-    }
-    cout << string(getTerminalWidth(), '=') << endl;
-    cout << "Finished reading resources" << endl;
-
-    try {
-      auto device_obj = device->getObject(ElementID(3, 0));
-      auto battery_level_resource = device_obj->getResource(ElementID(3, 0, 9));
-      auto battery_level =
-          std::get<ReadablePtr>(battery_level_resource->getResourceInstance());
-      cout << "Registering a new observer for "
-           << battery_level->getID().toString() << endl;
-      auto observer = std::make_shared<Observer>(battery_level);
-      cout << "Observer for element " << observer->getId()
-           << " built. Saving it in the map of observers." << endl;
-      observers_.emplace(device->getDeviceId(), observer);
-    } catch (ObjectInstanceDoesNotExist& ex) {
-      cout << "Could not register battery level observer for device "
-           << device->getDeviceId() << ex.what() << endl;
-    } catch (exception& ex) {
-      cout << "Caught unhandled exception while trying to register a new "
-              "observer for device "
-           << device->getDeviceId() << endl
-           << "Exception: " << ex.what() << endl;
+    if (event->device_.has_value()) {
+      // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+      auto device = event->device_.value();
+      handleRegistration(device);
+    } else {
+      cout << "Received registration event without any device" << endl;
     }
     break;
   }
   case RegistryEventType::UPDATED: {
-    cout << "Device with id: " << event->identifier_ << " has been updated!"
-         << endl;
+    handleUpdate(event->identifier_);
     break;
   }
   case RegistryEventType::DEREGISTERED: {
-    cout << "Device with id: " << event->identifier_
-         << " has been deregistered!" << endl;
-    auto range = observers_.equal_range(event->identifier_);
-    for (auto it = range.first; it != range.second;) {
-      cout << "Erasing element observer: " << it->second->getId() << endl;
-      it->second.reset();
-      it = observers_.erase(it);
-    }
+    handleDeregistration(event->identifier_);
     break;
   }
   default: {

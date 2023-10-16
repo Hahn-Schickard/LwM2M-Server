@@ -72,7 +72,7 @@ struct ElementID {
   /**
    * @brief Get the Object Instance ID
    *
-   * @throws std::bad_optional_access when there is no value
+   * @throws std::logic_error when there is no value
    *
    * @return uint16_t
    */
@@ -89,7 +89,7 @@ struct ElementID {
   /**
    * @brief Get the Resource ID
    *
-   * @throws std::bad_optional_access when there is no value
+   * @throws std::logic_error when there is no value
    *
    * @return uint16_t
    */
@@ -106,7 +106,7 @@ struct ElementID {
   /**
    * @brief Get the Resource Instance ID
    *
-   * @throws std::bad_optional_access when there is no value
+   * @throws std::logic_error when there is no value
    *
    * @return uint16_t
    */

@@ -44,19 +44,37 @@ ElementID::ElementID(const ElementID& id, uint16_t sub_id)
 uint16_t ElementID::getObjectID() const { return object_; }
 
 uint16_t ElementID::getObjectInstanceID() const {
-  return object_instance_.value();
+  if (hasObjectInstanceID()) {
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+    return object_instance_.value();
+  } else {
+    throw logic_error("ElementID " + toString() + " has no Object Instance ID");
+  }
 }
 
 bool ElementID::hasObjectInstanceID() const {
   return object_instance_.has_value();
 }
 
-uint16_t ElementID::getResourceID() const { return resource_.value(); }
+uint16_t ElementID::getResourceID() const {
+  if (hasResourceID()) {
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+    return resource_.value();
+  } else {
+    throw logic_error("ElementID " + toString() + " has no Resource ID");
+  }
+}
 
 bool ElementID::hasResourceID() const { return resource_.has_value(); }
 
 uint16_t ElementID::getResourceInstanceID() const {
-  return resource_instance_.value();
+  if (hasResourceInstanceID()) {
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
+    return resource_instance_.value();
+  } else {
+    throw logic_error(
+        "ElementID " + toString() + " has no Resource Instance ID");
+  }
 }
 
 bool ElementID::hasResourceInstanceID() const {

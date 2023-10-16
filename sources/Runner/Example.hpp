@@ -17,6 +17,10 @@ struct RegistrationListener
   void handleEvent(RegistryEventPtr event) override;
 
 private:
+  void handleRegistration(const DevicePtr& device);
+  void handleUpdate(const std::string& identifier);
+  void handleDeregistration(const std::string& identifier);
+
   std::multimap<std::string, ObserverPtr> observers_;
 };
 

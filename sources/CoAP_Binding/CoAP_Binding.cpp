@@ -14,7 +14,7 @@ using namespace std;
 using namespace CoAP;
 using namespace HaSLI;
 
-#define ERROR_CODES_VALUE 0x80
+static constexpr uint8_t ERROR_CODES_VALUE = 0x80;
 
 CoAP_Binding::CoAP_Binding(
     const DeviceRegistryPtr& registry, const string& config_filepath)
