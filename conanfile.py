@@ -61,8 +61,10 @@ class PackageConan(ConanFile):
                       libs=True, transitive_headers=True, transitive_libs=True)
         self.requires('coaps4cpp/[~0.5]@hahn-schickard/stable', headers=True,
                       libs=True, transitive_headers=True, transitive_libs=True)
-        self.test_requires("gtest/[~1.11]")
         # @- END USER REQUIREMENTS
+
+    def build_requirements(self):
+        self.test_requires("gtest/[~1.11]")
 
     def configure(self):
         # @+ START USER REQUIREMENTS OPTION CONFIGURATION
