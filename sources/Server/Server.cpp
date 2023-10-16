@@ -11,11 +11,8 @@ namespace LwM2M {
 
 Server::Server(const string& filepath)
     : logger_(LoggerManager::registerTypedLogger(this)) {
-  Configuration config;
-  if (!filepath.empty()) {
-    config = getConfig(filepath);
-  }
-  registry_ = make_shared<DeviceRegistry>(config.model_descriptors_);
+  auto config = getConfig(filepath);
+  registry_ = make_shared<DeviceRegistry>(config.descriptors_);
 
   for (const auto& binding : config.bindings_) {
     switch (binding.first) {

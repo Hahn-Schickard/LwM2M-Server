@@ -14,8 +14,11 @@ std::string toString(ServerBindingType type);
 using Bindings = std::unordered_multimap<ServerBindingType, std::string>;
 
 struct Configuration {
-  std::string model_descriptors_;
-  Bindings bindings_;
+  Configuration(const std::string& descriptors, Bindings&& bindings)
+      : descriptors_(descriptors), bindings_(std::move(bindings)) {}
+
+  const std::string descriptors_;
+  const Bindings bindings_;
 };
 
 Configuration getConfig(const std::string& filepath);
