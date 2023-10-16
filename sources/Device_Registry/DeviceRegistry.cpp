@@ -16,6 +16,8 @@ DeviceRegistry::DeviceRegistry(const string& configuration_path)
           bind(&DeviceRegistry::logListenerException, this, placeholders::_1)),
       logger_(LoggerManager::registerTypedLogger(this)) {
   try {
+    logger_->log(SeverityLevel::INFO, "Loading model descriptors from {}",
+        configuration_path);
     supported_descriptors_ = deserializeModel(configuration_path);
   } catch (exception& ex) {
     logger_->log(SeverityLevel::ERROR,
