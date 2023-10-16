@@ -21,6 +21,12 @@ struct Configuration {
   const Bindings bindings_;
 };
 
+/**
+ * @brief Deserialize Configuration from a given file
+ *
+ * @throws std::runtime_error - if filepath does not point to a valid descriptor
+ * @return Configuration
+ */
 Configuration getConfig(const std::string& filepath);
 } // namespace LwM2M
 
