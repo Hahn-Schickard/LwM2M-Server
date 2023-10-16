@@ -35,12 +35,12 @@ int main(int argc, const char* argv[]) {
       }
     } catch (exception& e) {
       logger->log(SeverityLevel::ERROR, "Received an exception: {}", e.what());
-      cerr << e.what();
+      cerr << e.what() << endl;
     }
 
     server->stop();
   } catch (const exception& ex) {
-    cerr << ex.what();
+    cerr << ex.what() << endl;
     exit(EXIT_FAILURE);
   }
   exit(EXIT_SUCCESS);
