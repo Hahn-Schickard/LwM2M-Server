@@ -240,21 +240,28 @@ void Registrator::handleDeviceException(
 
 void Registrator::makeDevice(const string& device_id,
     const EndpointPtr& device_address, const DeviceMetaInfo& device_info) {
-  auto instances = discoverAvailableDescriptors(
-      device_address, device_info.object_instances_map_);
-  auto object_ids = assignAvailableDescriptors(instances);
-  RequesterInterfaceFacadePtr requester = shared_from_this();
-  auto device = NonemptyPointer::make_shared<Device>(
-      bind(&Registrator::handleDeviceException, this, device_id,
-          placeholders::_1),
-      requester, device_address, object_ids, device_id,
-      device_info.life_time_.value_or(300), // NOLINT(readability-magic-numbers)
-      device_info.endpoint_name_.value_or(string()),
-      device_info.version_.value_or(LwM2M_Version::V1_0),
-      device_info.binding_.value_or(BindingType::UDP),
-      device_info.queue_mode_.value_or(false));
+  try {
+    auto instances = discoverAvailableDescriptors(
+        device_address, device_info.object_instances_map_);
+    auto object_ids = assignAvailableDescriptors(instances);
+    RequesterInterfaceFacadePtr requester = shared_from_this();
+    auto device = NonemptyPointer::make_shared<Device>(
+        bind(&Registrator::handleDeviceException, this, device_id,
+            placeholders::_1),
+        requester, device_address, object_ids, device_id,
+         // NOLINTNEXTLINE(readability-magic-numbers)
+        device_info.life_time_.value_or(300),
+        device_info.endpoint_name_.value_or(string()),
+        device_info.version_.value_or(LwM2M_Version::V1_0),
+        device_info.binding_.value_or(BindingType::UDP),
+        device_info.queue_mode_.value_or(false));
 
-  registry_->registerDevice(device);
+    registry_->registerDevice(device);
+  } catch (const exception& ex) {
+    logger_->error("Failed to register device {} with ID {} from {} due to exception {}",
+        device_info.endpoint_name_.value_or("UNKNOWN"), device_id, device_address->toString(),
+        ex.what());
+  }
 }
 
 RegisterResponsePtr Registrator::handleRequest(
