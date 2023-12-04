@@ -5,12 +5,18 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 namespace LwM2M {
 /**
  * @addtogroup Device_Model
  * @{
  */
+
+struct MissingOptionalID : public std::logic_error {
+  MissingOptionalID(const std::string& full_id, const std::string id_type)
+      : logic_error("ElementID " + full_id + " has no " + id_type + " ID") {}
+};
 
 /**
  * @brief Contains an identification number for a given Device Model element

@@ -48,7 +48,7 @@ uint16_t ElementID::getObjectInstanceID() const {
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     return object_instance_.value();
   } else {
-    throw logic_error("ElementID " + toString() + " has no Object Instance ID");
+    throw MissingOptionalID(toString(), "Object Instance");
   }
 }
 
@@ -61,7 +61,7 @@ uint16_t ElementID::getResourceID() const {
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     return resource_.value();
   } else {
-    throw logic_error("ElementID " + toString() + " has no Resource ID");
+    throw MissingOptionalID(toString(), "Resource");
   }
 }
 
@@ -72,8 +72,7 @@ uint16_t ElementID::getResourceInstanceID() const {
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     return resource_instance_.value();
   } else {
-    throw logic_error(
-        "ElementID " + toString() + " has no Resource Instance ID");
+    throw MissingOptionalID(toString(),"Resource Instance");
   }
 }
 
