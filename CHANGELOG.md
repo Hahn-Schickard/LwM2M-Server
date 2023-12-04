@@ -1,4 +1,17 @@
 # Changelog
+## [0.5.7] - 2023.12.04 
+### Fixed 
+- missing `cstdint` header in Config.h
+- missing `try-catch` bock in `Registrator::makeDevice()`
+
+### Changed
+ - `MissingOptionalID` exception
+ - `ElementID::getObjectInstanceID` to throw `MissingOptionalID` instead of `std::logic_error`
+ - `ElementID::getResourceID` to throw `MissingOptionalID` instead of `std::logic_error`
+ - `ElementID::getResourceInstanceID` to throw `MissingOptionalID` instead of `std::logic_error`
+ - `Device` ctor to catch `MissingOptionalID` instead of `std::bad_optional_access`
+ - `Object` ctor to catch `MissingOptionalID` instead of `std::bad_optional_access`
+
 ## [0.5.6] - 2023.10.16 
 ### Changed
  - `getConfig()` to check if absolute or relative paths are used  
