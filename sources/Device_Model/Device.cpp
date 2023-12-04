@@ -32,7 +32,7 @@ void Device::makeObjects(const ObjectDescriptorsMap& object_descriptors_map) {
     for (auto instance = range.first; instance != range.second; ++instance) {
       try {
         object_instances.emplace(instance->first);
-      } catch (bad_optional_access& ex) {
+      } catch (const MissingOptionalID& ex) {
         // silently ignore element ids without an object instance
       }
     }
