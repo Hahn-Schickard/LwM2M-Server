@@ -72,7 +72,7 @@ uint16_t ElementID::getResourceInstanceID() const {
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     return resource_instance_.value();
   } else {
-    throw MissingOptionalID(toString(),"Resource Instance");
+    throw MissingOptionalID(toString(), "Resource Instance");
   }
 }
 

@@ -1,10 +1,10 @@
 #ifndef __LWM2M_SERVER_CONFIGURATION_HPP
 #define __LWM2M_SERVER_CONFIGURATION_HPP
 
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <cstdint>
 
 namespace LwM2M {
 

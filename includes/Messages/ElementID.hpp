@@ -3,9 +3,9 @@
 
 #include <cstdint>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 namespace LwM2M {
 /**

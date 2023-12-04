@@ -249,7 +249,7 @@ void Registrator::makeDevice(const string& device_id,
         bind(&Registrator::handleDeviceException, this, device_id,
             placeholders::_1),
         requester, device_address, object_ids, device_id,
-         // NOLINTNEXTLINE(readability-magic-numbers)
+        // NOLINTNEXTLINE(readability-magic-numbers)
         device_info.life_time_.value_or(300),
         device_info.endpoint_name_.value_or(string()),
         device_info.version_.value_or(LwM2M_Version::V1_0),
@@ -258,9 +258,10 @@ void Registrator::makeDevice(const string& device_id,
 
     registry_->registerDevice(device);
   } catch (const exception& ex) {
-    logger_->error("Failed to register device {} with ID {} from {} due to exception {}",
-        device_info.endpoint_name_.value_or("UNKNOWN"), device_id, device_address->toString(),
-        ex.what());
+    logger_->error(
+        "Failed to register device {} with ID {} from {} due to exception {}",
+        device_info.endpoint_name_.value_or("UNKNOWN"), device_id,
+        device_address->toString(), ex.what());
   }
 }
 
