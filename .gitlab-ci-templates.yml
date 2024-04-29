@@ -15,7 +15,7 @@ variables:
   tags:
     - conan
   before_script:
-    - conan remote add --insecure hahn-schickard ${CONAN_REMOTE}
+    - conan remote add hahn-schickard ${CONAN_REMOTE}
     - conan profile detect --force
     - sed -i 's/^compiler.cppstd=.*/compiler.cppstd=17/' $(conan profile path default)
   script:
@@ -26,7 +26,7 @@ variables:
     paths:
       - build/
       - ${CI_PROJECT_DIR}/.conan2
-    expire_in: 1 days
+    expire_in: 1 day
 
 .test:
   stage: test
@@ -40,11 +40,10 @@ variables:
   artifacts:
     paths:
       - build/
-    expire_in: 1 days
+    expire_in: 1 day
 
 .analyze_exe_memory:
   stage: analyze
-  needs: ["build"]
   tags:
     - conan
   script:
@@ -53,16 +52,15 @@ variables:
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Executable_Valgrind_Results"
     paths:
       - valgrind.log
-    expire_in: 1 days
+    expire_in: 1 day
   rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
     - if: $EXE_TARGET != ""
       allow_failure: true
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
 
 .analyze_test_runner_memory:
   stage: analyze
-  needs: ["build"]
   tags:
     - conan
   script:
@@ -71,13 +69,12 @@ variables:
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Test_Runner_Valgrind_Results"
     paths:
       - valgrind.log
-    expire_in: 1 days
+    expire_in: 1 day
   rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
     - if: $TEST_RUNNER_TARGET != ""
       allow_failure: true
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-
 
 .test_coverage:
   stage: check
@@ -90,7 +87,7 @@ variables:
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Code_Coverage_Results"
     paths:
       - code_coverage_report/
-    expire_in: 1 days
+    expire_in: 1 day
 
 .lint:
   stage: check
@@ -103,7 +100,7 @@ variables:
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Linter_Fixes"
     paths:
       - clang-tidy-fixes/
-    expire_in: 1 days
+    expire_in: 1 day
   allow_failure: true
 
 .format:
@@ -111,13 +108,13 @@ variables:
   tags:
     - conan
   script:
-    - python3 utility/run-clang-format.py --dirs includes/ sources/ unit_tests/ --list-files --recursive
+    - python3 utility/run-clang-format.py --dirs includes/ sources/ unit_tests/ --list-files
   artifacts:
     when: on_failure
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Formatter_Fixes"
     paths:
       - clang-format-fixes/
-    expire_in: 1 days
+    expire_in: 1 day
   allow_failure: true
 
 .document:
@@ -131,7 +128,7 @@ variables:
     name: "Commit:${CI_COMMIT_SHORT_SHA}_Code_Documentation"
     paths:
       - docs/code_documentation/html/
-    expire_in: 1 days
+    expire_in: 1 day
 
 .package:
   stage: package
@@ -142,7 +139,7 @@ variables:
     - conan remote add --insecure upload_repo ${CONAN_REMOTE}
     - PROJECT_NAME=$(python3 ./utility/.getProjectName.py)
   script:
-    - VERSION=$(python3 ./utility/.getVersionFromTag.py)
+    - VERSION=${CI_COMMIT_TAG##*v}
     - conan profile detect --force
     - conan create . --version=${VERSION} --user=hahn-schickard --channel=stable --build=missing -s:h compiler.cppstd=17 -s:b compiler.cppstd=17
     - conan upload -r upload_repo --confirm ${PROJECT_NAME}/${VERSION}@hahn-schickard/stable

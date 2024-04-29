@@ -15,7 +15,7 @@ class PIPE_Value:
         self.stderr = stderr
 
 
-def run_process(executable: str, arguments: [str] = [], encoding='utf-8', throw_on_failure=False, live_print=True, live_print_errors=False):
+def run_process(executable: str, arguments: [str] = [], encoding='utf-8', throw_on_failure=True, live_print=True, live_print_errors=False):
     command = [executable]
     if arguments:
         command.extend(arguments)
@@ -109,7 +109,7 @@ if __name__ == "__main__":
                         help="add an argument to the list of arguments, that are used by the target binary")
     args = parser.parse_args()
     try:
-        run_memory_analysis("valgrind", ["--leak-check=full", "--show-leak-kinds=all", "--trace-children=yes", "--track-origins=yes", "--verbose", "--log-file=valgrind.log"],
+        run_memory_analysis("valgrind", ["--leak-check=full", "--show-leak-kinds=all", "--trace-children=yes", "--track-origins=yes", "--verbose", "--log-file=valgrind.log", "--num-callers=500"],
                             "ERROR SUMMARY: ", "errors", args.target, args.arguments, output_file="valgrind.log")
     except Exception as exception:
         exception_type = "{} exception occurred while trying to run memory analysis.".format(
