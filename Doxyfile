@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = "LwM2M Server"
+PROJECT_NAME           = "C++17 Lightweight Machine to Machine (LwM2M) Server Implementation"
 PROJECT_NUMBER         =
 PROJECT_BRIEF          = ""
 PROJECT_LOGO           =
@@ -177,7 +177,6 @@ EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = "docs/images"
-IMAGE_PATH             += "docs/server_architechture"
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = YES
@@ -210,8 +209,6 @@ HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = docs/code_documentation/header.html
 HTML_FOOTER            =
 HTML_STYLESHEET        =
-HTML_EXTRA_STYLESHEET  = docs/code_documentation/stylesheet.css
-HTML_EXTRA_FILES       = docs/images/vendor-logo.png
 HTML_EXTRA_STYLESHEET  = docs/doxygen-awesome-css/doxygen-awesome.css
 HTML_EXTRA_STYLESHEET += docs/doxygen-awesome-css/doxygen-awesome-sidebar-only.css
 HTML_EXTRA_STYLESHEET += docs/doxygen-awesome-css/doxygen-awesome-sidebar-only-darkmode-toggle.css
