@@ -3,7 +3,7 @@
 
 #include "Event_Model/EventListenerInterface.hpp"
 #include "Event_Model/EventSource.hpp"
-#include "Nonempty_Pointer/NonemptyPtr.hpp"
+#include "Nonempty/Pointer.hpp"
 
 #include "ElementAddress.hpp"
 #include "ObservableInterface.hpp"
@@ -129,7 +129,7 @@ private:
 };
 
 using ObservableSharedPtr = std::shared_ptr<Observable>;
-using ObservablePtr = NonemptyPointer::NonemptyPtr<ObservableSharedPtr>;
+using ObservablePtr = Nonempty::Pointer<ObservableSharedPtr>;
 
 /**
  * @brief A helper class, used to create observers for a given Observable data
@@ -153,8 +153,7 @@ private:
 };
 
 using ObserverInterfaceSharedPtr = std::shared_ptr<ObserverInterface>;
-using ObserverInterfacePtr =
-    NonemptyPointer::NonemptyPtr<ObserverInterfaceSharedPtr>;
+using ObserverInterfacePtr = Nonempty::Pointer<ObserverInterfaceSharedPtr>;
 
 /** @}*/
 } // namespace LwM2M

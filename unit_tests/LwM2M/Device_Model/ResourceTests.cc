@@ -55,7 +55,7 @@ ResourcePtr makeTested(const MockExceptionHandlerPtr& exception_handler,
   function<void(exception_ptr)> exception_handler_cb =
       bind(&ExceptionHandlerInterface::handleDeviceException, exception_handler,
           placeholders::_1);
-  return NonemptyPointer::make_shared<Resource>(exception_handler_cb, requester,
+  return Nonempty::make_shared<Resource>(exception_handler_cb, requester,
       endpoint, descriptor, ElementID(0, 0, 0));
 }
 
@@ -73,7 +73,7 @@ protected:
     exception_handler_.reset();
   }
 
-  ResourcePtr tested_ = NonemptyPointer::make_shared<Resource>();
+  ResourcePtr tested_ = Nonempty::make_shared<Resource>();
   ResourceExpectationsPtr expected_;
   MockExceptionHandlerPtr exception_handler_ =
       std::make_shared<MockExceptionHandler>(); // NOLINT

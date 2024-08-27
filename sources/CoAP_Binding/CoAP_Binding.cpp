@@ -12,7 +12,7 @@
 using namespace LwM2M;
 using namespace std;
 using namespace CoAP;
-using namespace HaSLI;
+using namespace HaSLL;
 
 static constexpr uint8_t ERROR_CODES_VALUE = 0x80;
 
@@ -26,7 +26,7 @@ CoAP_Binding::CoAP_Binding(
       encoder_(make_unique<CoAP_Encoder>()),
       decoder_(make_unique<CoAP_Decoder>()),
       logger_(LoggerManager::registerTypedLogger(this)) {
-  logger_->log(SeverityLevel::TRACE, "Registering CoAP Server");
+  logger_->trace("Registering CoAP Server");
 
   SupportedContentFormats::addNewContentFormatType<
       ContentFormatEncodings::LwM2M_TLV>();
@@ -42,12 +42,12 @@ CoAP_Binding::~CoAP_Binding() {
 
 void CoAP_Binding::start() {
   Socket::start();
-  logger_->log(SeverityLevel::INFO, "CoAP Server started!");
+  logger_->info("CoAP Server started!");
 }
 
 void CoAP_Binding::stop() {
   Socket::stop();
-  logger_->log(SeverityLevel::INFO, "CoAP Server stoped!");
+  logger_->info("CoAP Server stoped!");
 }
 
 future<DataFormatPtr> CoAP_Binding::requestData(
@@ -56,12 +56,12 @@ future<DataFormatPtr> CoAP_Binding::requestData(
       launch::async,
       [this](DeviceManagementRequestPtr request) -> DataFormatPtr {
         auto coap_request = encodeRequest(request);
-        logger_->log(SeverityLevel::TRACE,
-            "Dispatching {}:{} as a data request to {}", request->name(),
-            coap_request->getToken()->hexify(), request->endpoint_->toString());
+        logger_->trace("Dispatching {}:{} as a data request to {}",
+            request->name(), coap_request->getToken()->hexify(),
+            request->endpoint_->toString());
         auto response_future = CoAP::Socket::request(coap_request);
         auto coap_response = response_future.get();
-        logger_->log(SeverityLevel::TRACE,
+        logger_->trace(
             "Received a response with token {} to data request {} from {}",
             coap_response->getToken()->hexify(), request->name(),
             request->endpoint_->toString());
@@ -83,7 +83,7 @@ future<DataFormatPtr> CoAP_Binding::requestData(
                   result = values[0].second;
                 },
                 [&](const auto&) {
-                  logger_->log(SeverityLevel::ERROR,
+                  logger_->error(
                       "Response {} used an unexpected payload format for {}",
                       response->name(), request->name());
                 });
@@ -111,15 +111,13 @@ future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
       launch::async,
       [this](const DeviceManagementRequestPtr& request) -> TargetContentVector {
         auto coap_request = encodeRequest(request);
-        logger_->log(SeverityLevel::TRACE,
-            "Dispatching {}:{} as a multi target request to {}",
+        logger_->trace("Dispatching {}:{} as a multi target request to {}",
             request->name(), coap_request->getToken()->hexify(),
             request->endpoint_->toString());
         auto response_future = CoAP::Socket::request(coap_request);
         auto coap_response = response_future.get();
-        logger_->log(SeverityLevel::TRACE,
-            "Received a response with token {} to multi target "
-            "request {} from {}",
+        logger_->trace("Received a response with token {} to multi target "
+                       "request {} from {}",
             coap_response->getToken()->hexify(), request->name(),
             request->endpoint_->toString());
         auto response = decoder_->decode<ClientResponse>(coap_response);
@@ -143,12 +141,11 @@ future<bool> CoAP_Binding::requestAction(
       launch::async,
       [this](const DeviceManagementRequestPtr& request) -> bool {
         auto coap_request = encodeRequest(request);
-        logger_->log(SeverityLevel::TRACE,
-            "Dispatching {}:{} as an action to {}", request->name(),
+        logger_->trace("Dispatching {}:{} as an action to {}", request->name(),
             coap_request->getToken()->hexify(), request->endpoint_->toString());
         auto response_future = CoAP::Socket::request(coap_request);
         auto coap_response = response_future.get();
-        logger_->log(SeverityLevel::TRACE,
+        logger_->trace(
             "Received a response with token {} to an action {} from {}",
             coap_response->getToken()->hexify(), request->name(),
             request->endpoint_->toString());
@@ -166,12 +163,12 @@ future<ClientResponsePtr> CoAP_Binding::request(
       launch::async,
       [this](const ServerRequestPtr& request) -> ClientResponsePtr {
         auto message = encodeRequest(request);
-        logger_->log(SeverityLevel::TRACE,
-            "Dispatching {}:{} as a generic request to {}", request->name(),
-            message->getToken()->hexify(), request->endpoint_->toString());
+        logger_->trace("Dispatching {}:{} as a generic request to {}",
+            request->name(), message->getToken()->hexify(),
+            request->endpoint_->toString());
         auto response_future = CoAP::Socket::request(message);
         auto coap_response = response_future.get();
-        logger_->log(SeverityLevel::TRACE,
+        logger_->trace(
             "Received a response with token {} to generic request {} from {}",
             coap_response->getToken()->hexify(), request->name(),
             request->endpoint_->toString());
@@ -234,24 +231,21 @@ void CoAP_Binding::cancelObservation(
 void CoAP_Binding::cancelRequest(const ServerRequestPtr& request) {
   auto message = encodeRequest(request);
   if (request) {
-    logger_->log(SeverityLevel::TRACE, "Canceling {}:{} for {}",
-        request->name(), message->getToken()->hexify(),
-        request->endpoint_->toString());
+    logger_->trace("Canceling {}:{} for {}", request->name(),
+        message->getToken()->hexify(), request->endpoint_->toString());
     CoAP::Socket::cancelRequest(message);
-    logger_->log(SeverityLevel::TRACE, "{}:{} for {} canceled!",
-        request->name(), message->getToken()->hexify(),
-        request->endpoint_->toString());
+    logger_->trace("{}:{} for {} canceled!", request->name(),
+        message->getToken()->hexify(), request->endpoint_->toString());
   } else {
-    logger_->log(SeverityLevel::ERROR, "Can not cancel an empty request!");
+    logger_->error("Can not cancel an empty request!");
   }
 }
 
 void CoAP_Binding::handleNotification(const CoAP::MessagePtr& message) {
   auto observer = observed_elements_.find(message->getToken()->hash());
   if (observer != observed_elements_.end()) {
-    logger_->log(SeverityLevel::TRACE,
-        "Received an observe notification from {}:{} with token {}. "
-        "Dispatching it to the Observer",
+    logger_->trace("Received an observe notification from {}:{} with token {}. "
+                   "Dispatching it to the Observer",
         message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
     auto notification = decoder_->decode<ClientResponse>(message);
@@ -259,7 +253,7 @@ void CoAP_Binding::handleNotification(const CoAP::MessagePtr& message) {
       if (payload->hasData()) {
         observer->second(make_shared<PayloadData>(payload->data_));
       } else {
-        logger_->log(SeverityLevel::WARNING,
+        logger_->warning(
             "Received an observe notification without data assigned "
             "to it's payload from {}:{} "
             "with token {}.",
@@ -267,14 +261,13 @@ void CoAP_Binding::handleNotification(const CoAP::MessagePtr& message) {
             message->getToken()->hexify());
       }
     } else {
-      logger_->log(SeverityLevel::WARNING,
-          "Received an observe notification without payload from "
-          "{}:{} with token {}.",
+      logger_->warning("Received an observe notification without payload from "
+                       "{}:{} with token {}.",
           message->getAddressIP(), message->getAddressPort(),
           message->getToken()->hexify());
     }
   } else {
-    logger_->log(SeverityLevel::WARNING,
+    logger_->warning(
         "Received an orphaned observe notification from {}:{} with token {}.",
         message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
@@ -287,9 +280,8 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
   auto option = options.find(CoAP::OptionNumber::URI_PATH);
   if (option != options.end()) {
     if (option->second->getValueAsString() == "rd") {
-      logger_->log(SeverityLevel::TRACE,
-          "Handling incoming message from {}:{} as a Registration "
-          "Interface message.",
+      logger_->trace("Handling incoming message from {}:{} as a Registration "
+                     "Interface message.",
           message->getAddressIP(), message->getAddressPort());
       try {
         if (message->getHeader()->getCodeType() == CoAP::CodeType::POST) {
@@ -310,9 +302,8 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
             message->getAddressIP(), message->getAddressPort());
         return ex.response_;
       } catch (exception& ex) {
-        logger_->log(SeverityLevel::CRITICAL,
-            "Received an unhandled exception while decoding a "
-            "registration request. Exception: {};",
+        logger_->critical("Received an unhandled exception while decoding a "
+                          "registration request. Exception: {};",
             ex.what());
         auto endpoint = make_shared<Endpoint>(
             message->getAddressIP(), message->getAddressPort());
@@ -325,8 +316,7 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
 }
 
 ServerResponsePtr CoAP_Binding::handleRequest(const CoAP::MessagePtr& message) {
-  logger_->log(SeverityLevel::TRACE,
-      "Handling incoming message from {}:{} as a Request",
+  logger_->trace("Handling incoming message from {}:{} as a Request",
       message->getAddressIP(), message->getAddressPort());
   auto response = handleRegistrationRequest(message);
   if (response) {
@@ -336,12 +326,11 @@ ServerResponsePtr CoAP_Binding::handleRequest(const CoAP::MessagePtr& message) {
 }
 
 void CoAP_Binding::handleReceived(const CoAP::MessagePtr& message) {
-  logger_->log(SeverityLevel::INFO, "Handling incoming message from {}:{}",
-      message->getAddressIP(), message->getAddressPort());
+  logger_->info("Handling incoming message from {}:{}", message->getAddressIP(),
+      message->getAddressPort());
   if (message->getHeader()->getMessageType() ==
       CoAP::MessageType::ACKNOWLEDGMENT) {
-    logger_->log(SeverityLevel::WARNING,
-        "Received an orphan response from {}:{} with ID {}",
+    logger_->warning("Received an orphan response from {}:{} with ID {}",
         message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
   } else if (message->getHeader()->getMessageType() ==

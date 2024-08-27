@@ -3,7 +3,6 @@
 #include "Server.hpp"
 
 #include "HaSLL/LoggerManager.hpp"
-#include "HaSLL/SPD_LoggerRepository.hpp"
 
 #include <chrono>
 #include <iostream>
@@ -15,17 +14,17 @@ using namespace std;
 
 int main(int argc, const char* argv[]) {
   try {
-    auto repo = make_shared<SPD_LoggerRepository>("config/loggerConfig.json");
-    LoggerManager::initialise(repo);
+    LoggerManager::initialise(
+        makeDefaultRepository("config/loggerConfig.json"));
     auto logger = LoggerManager::registerLogger("Example_Runner");
-    LoggerManager::configure(SeverityLevel::TRACE);
+    LoggerManager::configure(SeverityLevel::Trace);
 
     auto server = make_unique<Server>("config/serverConfig.json");
     auto source = server->getEventSource();
     auto registration_listener = make_unique<RegistrationListener>(source);
     try {
       server->start();
-      logger->log(SeverityLevel::INFO, "Started LwM2M Server!");
+      logger->info("Started LwM2M Server!");
       if (argc > 1) {
         int sleep_period = atoi(argv[1]); // NOLINT
         this_thread::sleep_for(chrono::seconds(sleep_period));
@@ -34,7 +33,7 @@ int main(int argc, const char* argv[]) {
         }
       }
     } catch (exception& e) {
-      logger->log(SeverityLevel::ERROR, "Received an exception: {}", e.what());
+      logger->error("Received an exception: {}", e.what());
       cerr << e.what() << endl;
     }
 

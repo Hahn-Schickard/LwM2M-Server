@@ -13,10 +13,10 @@ namespace LwM2M {
 class Server {
   DeviceRegistryPtr registry_;
   std::vector<BindingInterfacePtr> bindings_;
-  HaSLI::LoggerPtr logger_;
+  HaSLL::LoggerPtr logger_;
 
 public:
-  Server(const std::string& filepath = std::string());
+  Server(const std::string& filepath);
 
   void start();
   std::vector<std::string> getRegisterBindingNames();

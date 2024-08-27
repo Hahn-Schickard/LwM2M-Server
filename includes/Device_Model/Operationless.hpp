@@ -1,7 +1,7 @@
 #ifndef __LWM2M_OPERATIONLESS_RESOURCE_HPP
 #define __LWM2M_OPERATIONLESS_RESOURCE_HPP
 
-#include "Nonempty_Pointer/NonemptyPtr.hpp"
+#include "Nonempty/Pointer.hpp"
 
 #include "ResourceDescriptor.hpp"
 
@@ -22,7 +22,7 @@ public:
 };
 
 using OperationlessSharedPtr = std::shared_ptr<Operationless>;
-using OperationlessPtr = NonemptyPointer::NonemptyPtr<OperationlessSharedPtr>;
+using OperationlessPtr = Nonempty::Pointer<OperationlessSharedPtr>;
 
 /** @}*/
 } // namespace LwM2M

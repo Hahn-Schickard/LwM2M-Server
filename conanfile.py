@@ -55,11 +55,13 @@ class PackageConan(ConanFile):
         self.requires('pugixml/1.11')
         self.requires(
             'variant_visitor/[~0.1]@hahn-schickard/stable', headers=True, transitive_headers=True)
-        self.requires('event_model/[~0.3]@hahn-schickard/stable',
+        self.requires('event_model/[~0.4]@hahn-schickard/stable',
                       headers=True, transitive_headers=True)
         self.requires("hscul/[~0.3]@hahn-schickard/stable", headers=True,
                       libs=True, transitive_headers=True, transitive_libs=True)
-        self.requires('coaps4cpp/[~0.5]@hahn-schickard/stable', headers=True,
+        self.requires("hasll/[~0.4]@hahn-schickard/stable", headers=True,
+                      libs=True, transitive_headers=True, transitive_libs=True)
+        self.requires('coaps4cpp/[~0.6]@hahn-schickard/stable', headers=True,
                       libs=True, transitive_headers=True, transitive_libs=True)
         # @- END USER REQUIREMENTS
 

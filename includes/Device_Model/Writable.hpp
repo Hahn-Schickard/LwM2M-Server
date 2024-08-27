@@ -1,7 +1,7 @@
 #ifndef __LWM2M_WRITABLE_RESOURCE_HPP
 #define __LWM2M_WRITABLE_RESOURCE_HPP
 
-#include "Nonempty_Pointer/NonemptyPtr.hpp"
+#include "Nonempty/Pointer.hpp"
 
 #include "ElementAddress.hpp"
 #include "ExecutableInterface.hpp"
@@ -43,7 +43,7 @@ private:
 };
 
 using WritableSharedPtr = std::shared_ptr<Writable>;
-using WritablePtr = NonemptyPointer::NonemptyPtr<WritableSharedPtr>;
+using WritablePtr = Nonempty::Pointer<WritableSharedPtr>;
 
 /** @}*/
 } // namespace LwM2M

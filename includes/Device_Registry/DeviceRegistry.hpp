@@ -33,7 +33,7 @@ class DeviceRegistry : public Event_Model::EventSource<RegistryEvent> {
 
   SupportedObjectDescriptorsMap supported_descriptors_;
   DeviceRegistryMap device_registry_;
-  HaSLI::LoggerPtr logger_;
+  HaSLL::LoggerPtr logger_;
 
   void logListenerException(const std::exception_ptr& eptr);
 

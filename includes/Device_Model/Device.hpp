@@ -1,7 +1,7 @@
 #ifndef __LWM2M_DEVICE_HPP
 #define __LWM2M_DEVICE_HPP
 
-#include "Nonempty_Pointer/NonemptyPtr.hpp"
+#include "Nonempty/Pointer.hpp"
 
 #include "Endpoint.hpp"
 #include "ModelType.hpp"
@@ -228,7 +228,7 @@ public:
 };
 
 using DeviceSharedPtr = std::shared_ptr<Device>;
-using DevicePtr = NonemptyPointer::NonemptyPtr<DeviceSharedPtr>;
+using DevicePtr = Nonempty::Pointer<DeviceSharedPtr>;
 
 /** @}*/
 }; // namespace LwM2M

@@ -1,6 +1,6 @@
 variables:
  RUN_EXE_COVERAGE: "True"
- EXE_DIR: "build/sources/Runner"
+ EXE_DIR: "build/sources/Example"
  EXE_TARGET: "${EXE_DIR}/LwM2M_Server_Runner"
  EXE_TARGET_ARGS: "5"
  TEST_RUNNER_TARGET: ""

@@ -5,7 +5,7 @@
 #include "HaSLL/LoggerManager.hpp"
 
 using namespace std;
-using namespace HaSLI;
+using namespace HaSLL;
 
 namespace LwM2M {
 
@@ -29,12 +29,11 @@ Server::Server(const string& filepath)
 }
 
 void Server::start() {
-  logger_->log(SeverityLevel::TRACE, "Starting bindings.");
+  logger_->trace("Starting bindings.");
   for (const auto& binding : bindings_) {
     binding->start();
   }
-  logger_->log(
-      SeverityLevel::TRACE, "All registered bindings have been started.");
+  logger_->trace("All registered bindings have been started.");
 }
 
 vector<string> Server::getRegisterBindingNames() {
@@ -47,12 +46,11 @@ vector<string> Server::getRegisterBindingNames() {
 }
 
 void Server::stop() {
-  logger_->log(SeverityLevel::TRACE, "Stopping bindings.");
+  logger_->trace("Stopping bindings.");
   for (const auto& binding : bindings_) {
     binding->stop();
   }
-  logger_->log(
-      SeverityLevel::TRACE, "All registered bindings have been stopped.");
+  logger_->trace("All registered bindings have been stopped.");
 }
 
 EventSourcePtr Server::getEventSource() { return registry_; }

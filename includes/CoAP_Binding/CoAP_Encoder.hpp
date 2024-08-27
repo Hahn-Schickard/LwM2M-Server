@@ -26,7 +26,7 @@ private:
   CoAP::Options makeOptions(
       const LwM2M::PayloadPtr& payload, const std::string& message_identifier);
 
-  HaSLI::LoggerPtr logger_;
+  HaSLL::LoggerPtr logger_;
 };
 } // namespace LwM2M
 

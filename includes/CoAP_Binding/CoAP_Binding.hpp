@@ -53,7 +53,7 @@ private:
 
   std::unique_ptr<CoAP_Encoder> encoder_;
   std::unique_ptr<CoAP_Decoder> decoder_;
-  HaSLI::LoggerPtr logger_;
+  HaSLL::LoggerPtr logger_;
   std::unordered_map<std::size_t, CoAP::MessagePtr> dispatched_;
   std::unordered_map<std::size_t, std::function<void(PayloadDataPtr)>>
       observed_elements_;

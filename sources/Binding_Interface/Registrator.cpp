@@ -10,7 +10,7 @@
 #include <vector>
 
 using namespace std;
-using namespace HaSLI;
+using namespace HaSLL;
 
 static constexpr uint8_t ERROR_CODES_VALUE = 0x80;
 static constexpr uint16_t REQUEST_TIMEOUT_MS = 2000;
@@ -109,20 +109,18 @@ Registrator::Registrator(const DeviceRegistryPtr& registry)
 
 ObjectDescriptorsMap Registrator::assignAvailableDescriptors(
     const ElementIDs& requested_instances) {
-  logger_->log(SeverityLevel::TRACE, "Assigning Available Descriptors");
+  logger_->trace("Assigning Available Descriptors");
   auto supported_object_descriptors = registry_->getSupportedDescriptors();
   ObjectDescriptorsMap result;
-  logger_->log(SeverityLevel::TRACE,
-      "Trying to assing descriptors for {} elements.",
+  logger_->trace("Trying to assing descriptors for {} elements.",
       requested_instances.size());
   for (auto object : requested_instances) {
-    logger_->log(
-        SeverityLevel::TRACE, "Looking for {} descriptor.", object.toString());
+    logger_->trace("Looking for {} descriptor.", object.toString());
     auto descriptor = supported_object_descriptors->find(object.getObjectID());
     if (descriptor != supported_object_descriptors->end()) {
       result.emplace(object, descriptor->second);
     } else {
-      logger_->log(SeverityLevel::WARNING,
+      logger_->warning(
           "Object id {} is not supported by the server.", object.getObjectID());
     }
   }
@@ -152,8 +150,7 @@ ElementIDs Registrator::discover(const ServerRequestPtr& request) {
     }
   } else {
     try {
-      logger_->log(SeverityLevel::INFO,
-          "{} for element {} to {} has timed out. Cancelling it.",
+      logger_->info("{} for element {} to {} has timed out. Cancelling it.",
           request->name(),
           std::get<ElementID>(request->payload_->data_).toString(),
           request->endpoint_->toString());
@@ -164,7 +161,7 @@ ElementIDs Registrator::discover(const ServerRequestPtr& request) {
         // safe to ignore, since canceled response, must throw an exception
       }
     } catch (exception& ex) {
-      logger_->log(SeverityLevel::CRITICAL,
+      logger_->critical(
           "Could not cancel a discover request to {}, due to an exception: {}",
           request->endpoint_->toString(), ex.what());
     }
@@ -180,42 +177,40 @@ ElementIDs Registrator::discoverAvailableDescriptors(
   ElementIDs requested_instances;
   for (auto it = requests.begin(); it != requests.end();) {
     try {
-      logger_->log(SeverityLevel::INFO, "Discovering object {} from {}",
-          (*it)->target_.toString(), (*it)->endpoint_->toString());
+      logger_->info("Discovering object {} from {}", (*it)->target_.toString(),
+          (*it)->endpoint_->toString());
       auto pre_discover_size = requested_instances.size();
       requested_instances += discover(*it);
-      logger_->log(SeverityLevel::TRACE, "Discovered {} elements for target {}",
+      logger_->trace("Discovered {} elements for target {}",
           requested_instances.size() - pre_discover_size,
           (*it)->target_.toString());
     }
     // @TODO: handle method not allowed and similar exceptions
     catch (DiscoveryTimeout& /*timeout*/) {
       try {
-        logger_->log(SeverityLevel::INFO,
-            "Discovery for object {} from {} has timedout. Doing a "
-            "manual read.",
+        logger_->info("Discovery for object {} from {} has timedout. Doing a "
+                      "manual read.",
             (*it)->target_.toString(), (*it)->endpoint_->toString());
         requested_instances += discover(makeReadRequest(*it));
       } catch (DiscoveryTimeout& /*timeout*/) {
-        logger_->log(SeverityLevel::WARNING,
+        logger_->warning(
             "Manual discovery for {} object {} failed due to a message "
             "timeout. Discarding it from available descriptors.",
             (*it)->endpoint_->toString(), (*it)->target_.toString());
       } catch (exception& ex) {
-        logger_->log(SeverityLevel::ERROR,
+        logger_->error(
             "Manual discovery for {} object {} failed due to an exception: {}. "
             "Discarding it from available descriptors.",
             (*it)->endpoint_->toString(), (*it)->target_.toString(), ex.what());
       }
     } catch (ResponseReturnedAnErrorCode& ex) {
-      logger_->log(SeverityLevel::WARNING,
+      logger_->warning(
           "Failed to handle {} to {}, response returned an error code: {}. "
           "Discarding it from available descriptors.",
           (*it)->name(), (*it)->endpoint_->toString(), ex.what());
     } catch (exception& ex) {
-      logger_->log(SeverityLevel::ERROR,
-          "Failed to handle {} to {}, due to an exception: {}. "
-          "Discarding it from available descriptors.",
+      logger_->error("Failed to handle {} to {}, due to an exception: {}. "
+                     "Discarding it from available descriptors.",
           (*it)->name(), (*it)->endpoint_->toString(), ex.what());
     }
     ++it;
@@ -230,11 +225,9 @@ void Registrator::handleDeviceException(
       rethrow_exception(exception_ptr);
     }
   } catch (const exception& exp) {
-    logger_->log(SeverityLevel::ERROR, "Device {} threw an exception: {}",
-        device_id, exp.what());
+    logger_->error("Device {} threw an exception: {}", device_id, exp.what());
   } catch (...) {
-    logger_->log(SeverityLevel::CRITICAL,
-        "Device {} threw an unhandled exception", device_id);
+    logger_->critical("Device {} threw an unhandled exception", device_id);
   }
 }
 
@@ -245,16 +238,16 @@ void Registrator::makeDevice(const string& device_id,
         device_address, device_info.object_instances_map_);
     auto object_ids = assignAvailableDescriptors(instances);
     RequesterInterfaceFacadePtr requester = shared_from_this();
-    auto device = NonemptyPointer::make_shared<Device>(
-        bind(&Registrator::handleDeviceException, this, device_id,
-            placeholders::_1),
-        requester, device_address, object_ids, device_id,
-        // NOLINTNEXTLINE(readability-magic-numbers)
-        device_info.life_time_.value_or(300),
-        device_info.endpoint_name_.value_or(string()),
-        device_info.version_.value_or(LwM2M_Version::V1_0),
-        device_info.binding_.value_or(BindingType::UDP),
-        device_info.queue_mode_.value_or(false));
+    auto device =
+        Nonempty::make_shared<Device>(bind(&Registrator::handleDeviceException,
+                                          this, device_id, placeholders::_1),
+            requester, device_address, object_ids, device_id,
+            // NOLINTNEXTLINE(readability-magic-numbers)
+            device_info.life_time_.value_or(300),
+            device_info.endpoint_name_.value_or(string()),
+            device_info.version_.value_or(LwM2M_Version::V1_0),
+            device_info.binding_.value_or(BindingType::UDP),
+            device_info.queue_mode_.value_or(false));
 
     registry_->registerDevice(device);
   } catch (const exception& ex) {
@@ -268,8 +261,7 @@ void Registrator::makeDevice(const string& device_id,
 RegisterResponsePtr Registrator::handleRequest(
     const RegisterRequestPtr& request) {
   if (request) {
-    logger_->log(SeverityLevel::INFO,
-        "Handling a Registration request from {}:{}",
+    logger_->info("Handling a Registration request from {}:{}",
         request->endpoint_->endpoint_address_,
         request->endpoint_->endpoint_port_);
     try {
@@ -277,7 +269,7 @@ RegisterResponsePtr Registrator::handleRequest(
           request->device_info_.endpoint_name_.value_or(string()),
           request->endpoint_);
       if (!registry_->isRegistered(location)) {
-        logger_->log(SeverityLevel::TRACE,
+        logger_->trace(
             "Assigning {} as a Device id for a Registration request from {}:{}",
             location, request->endpoint_->endpoint_address_,
             request->endpoint_->endpoint_port_);
@@ -290,16 +282,15 @@ RegisterResponsePtr Registrator::handleRequest(
             .detach();
       } else {
         // @TODO: implement Device lifetime check
-        logger_->log(SeverityLevel::INFO,
+        logger_->info(
             "Device {} is already registered. Assuming Keep Alive Request",
             location, request->endpoint_->endpoint_address_,
             request->endpoint_->endpoint_port_);
       }
       return request->makeResponse(location);
     } catch (exception& ex) {
-      logger_->log(SeverityLevel::ERROR,
-          "An unhandled exception occurred while handling "
-          "registration request. Exception: {}",
+      logger_->error("An unhandled exception occurred while handling "
+                     "registration request. Exception: {}",
           ex.what());
       return request->makeResponse(ResponseCode::BAD_REQUEST);
     }
@@ -311,7 +302,7 @@ RegisterResponsePtr Registrator::handleRequest(
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
   if (request) {
-    logger_->log(SeverityLevel::INFO, "Handling an Update request from {}:{}",
+    logger_->info("Handling an Update request from {}:{}",
         request->endpoint_->endpoint_address_,
         request->endpoint_->endpoint_port_);
     try {
@@ -324,33 +315,28 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
             auto instances = discoverAvailableDescriptors(
                 request->endpoint_, device_info.object_instances_map_);
             auto object_instances = assignAvailableDescriptors(instances);
-            logger_->log(SeverityLevel::TRACE,
-                "Assigning new Object Instance map to {}:{} device.",
+            logger_->trace("Assigning new Object Instance map to {}:{} device.",
                 device->getDeviceId(), device->getName());
             device->updateObjectsMap(object_instances);
           }
           if (device_info.life_time_.has_value()) {
-            logger_->log(SeverityLevel::TRACE,
-                "Updating lifetime of {}:{} device.", device->getDeviceId(),
-                device->getName());
+            logger_->trace("Updating lifetime of {}:{} device.",
+                device->getDeviceId(), device->getName());
             device->updateLifetime(device_info.life_time_.value());
           }
           if (device_info.binding_.has_value()) {
-            logger_->log(SeverityLevel::TRACE,
-                "Changing {}:{} device binding type to {}.",
+            logger_->trace("Changing {}:{} device binding type to {}.",
                 device->getDeviceId(), device->getName(),
                 toString(device_info.binding_.value()));
             device->updateBinding(device_info.binding_.value());
           }
           if (device_info.sms_number_.has_value()) {
-            logger_->log(
-                SeverityLevel::ERROR, "SMS numbers are not supported!");
+            logger_->error("SMS numbers are not supported!");
             return request->makeResponse(ResponseCode::BAD_REQUEST);
           }
           registry_->updateDevice(device);
         } else {
-          logger_->log(SeverityLevel::INFO,
-              "Received a Keep Alive request for {}:{} device.",
+          logger_->info("Received a Keep Alive request for {}:{} device.",
               device->getDeviceId(), device->getName());
           //@TODO: handle keep alive here
         }
@@ -369,21 +355,18 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
 DeregisterResponsePtr Registrator::handleRequest(
     const DeregisterRequestPtr& request) {
   if (request) {
-    logger_->log(SeverityLevel::INFO,
-        "Handling a Deregistration request from {}:{}",
+    logger_->info("Handling a Deregistration request from {}:{}",
         request->endpoint_->endpoint_address_,
         request->endpoint_->endpoint_port_);
     try {
       registry_->deregisterDevice(request->location_);
       return request->makeResponse(ResponseCode::DELETED);
     } catch (DeviceNotFound& ex) {
-      logger_->log(
-          SeverityLevel::ERROR, "Failed to deregister device. {}", ex.what());
+      logger_->error("Failed to deregister device. {}", ex.what());
       return request->makeResponse(ResponseCode::NOT_FOUND);
     } catch (exception& ex) {
-      logger_->log(SeverityLevel::ERROR,
-          "An unhandled exception occurred while handling "
-          "deregistration request. Exception: {}",
+      logger_->error("An unhandled exception occurred while handling "
+                     "deregistration request. Exception: {}",
           ex.what());
       return request->makeResponse(ResponseCode::BAD_REQUEST);
     }

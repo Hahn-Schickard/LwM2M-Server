@@ -1,39 +1,34 @@
 #include "HaSLL/LoggerManager.hpp"
-#include "HaSLL/SPD_LoggerRepository.hpp"
 #include "LwM2M_Server/Server.hpp"
 
 #include <iostream>
 
-using namespace HaSLL;
 using namespace std;
+using namespace HaSLL;
+using namespace LwM2M;
 
 int main() {
-  {
-    auto repo = make_shared<SPD_LoggerRepository>();
-    LoggerManager::initialise(repo);
-    LoggerManager::configure(SeverityLevel::TRACE);
-    auto logger = LoggerManager::registerLogger("Integration_Runner");
-
-    unique_ptr<LwM2M::Server> server;
+  try {
+    LoggerManager::initialise(makeDefaultRepository());
     try {
-      server = make_unique<LwM2M::Server>("config/serverConfig.json");
-      cout << "LwM2M Server uses the following bindings:" << endl;
-      for (const auto& name : server->getRegisterBindingNames()) {
-        cout << name << endl;
-      }
-      server->start();
-      cout << "Started LwM2M Server!" << endl;
-      this_thread::sleep_for(1s);
-    } catch (exception& e) {
-      logger->log(SeverityLevel::ERROR, "Received an exception: {}", e.what());
-      cerr << e.what();
-    }
 
-    if (server) {
-      server->stop();
-      cout << "Stopped LwM2M Server!" << endl;
+      auto server = make_unique<Server>("config/serverConfig.json");
+
+      for (const auto& binding : server->getRegisterBindingNames()) {
+        cout << binding << endl;
+      }
+
+    } catch (const exception& ex) {
+      cerr << ex.what() << endl;
+      LoggerManager::terminate();
+      exit(EXIT_FAILURE);
     }
+    LoggerManager::terminate();
+  } catch (const exception& ex) {
+    cerr << ex.what() << endl;
+    exit(EXIT_FAILURE);
   }
 
+  cout << "Integration test successful" << endl;
   exit(EXIT_SUCCESS);
 }

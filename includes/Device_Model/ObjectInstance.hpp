@@ -1,7 +1,7 @@
 #ifndef __LWM2M_MODEL_OBJECT_INSTANCE_HPP
 #define __LWM2M_MODEL_OBJECT_INSTANCE_HPP
 
-#include "Nonempty_Pointer/NonemptyPtr.hpp"
+#include "Nonempty/Pointer.hpp"
 
 #include "DataFormat.hpp"
 #include "ElementID.hpp"
@@ -103,7 +103,7 @@ public:
 };
 
 using ObjectInstanceSharedPtr = std::shared_ptr<ObjectInstance>;
-using ObjectInstancePtr = NonemptyPointer::NonemptyPtr<ObjectInstanceSharedPtr>;
+using ObjectInstancePtr = Nonempty::Pointer<ObjectInstanceSharedPtr>;
 
 /** @}*/
 } // namespace LwM2M

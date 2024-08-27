@@ -24,7 +24,7 @@ private:
   LwM2M::PayloadPtr decode(const CoAP::ContentFormatPtr& content_format,
       const CoAP::PayloadPtr& payload);
 
-  HaSLI::LoggerPtr logger_;
+  HaSLL::LoggerPtr logger_;
 };
 
 template <>

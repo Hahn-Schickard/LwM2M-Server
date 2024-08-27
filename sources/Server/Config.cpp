@@ -25,6 +25,11 @@ string getCanonicalPath(const filesystem::path& base, const string& file_loc) {
 }
 
 Configuration getConfig(const string& filepath) {
+  if (filepath.empty()) {
+    throw invalid_argument("Configuration filepath can not be empty when "
+                           "calling getConfig(const std::string&)");
+  }
+
   ifstream input_file_stream(filepath);
   if (input_file_stream) {
     json j;

@@ -12,7 +12,7 @@
 
 using namespace std;
 using namespace CoAP;
-using namespace HaSLI;
+using namespace HaSLL;
 
 namespace LwM2M {
 ResponseCode toResponseCode(CoAP::CodeType code) {
@@ -197,44 +197,41 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
     const CoAP::MessagePtr& message) {
   auto endpoint =
       make_shared<Endpoint>(message->getAddressIP(), message->getAddressPort());
-  logger_->log(SeverityLevel::TRACE,
+  logger_->trace(
       "Creating a Client Response from {}:{} CoAP response with Token {}",
       message->getAddressIP(), message->getAddressPort(),
       message->getToken()->hexify());
   try {
     auto code = toResponseCode(message->getHeader()->getCodeType());
-    logger_->log(SeverityLevel::TRACE,
+    logger_->trace(
         "Assigning {} Response Code to Client Response from {}:{} CoAP "
         "response with Token {}",
         toString(code), message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
     if (auto payload = message->getPayload()) {
-      logger_->log(SeverityLevel::TRACE,
+      logger_->trace(
           "Assigning payload of {} bytes to Client Response from {}:{} CoAP "
           "response with Token {}",
           payload->getBytes().size(), message->getAddressIP(),
           message->getAddressPort(), message->getToken()->hexify());
       LwM2M::PayloadPtr content;
       auto options = message->getOptions();
-      logger_->log(SeverityLevel::TRACE,
-          "Looking for CONTENT_FORMAT Option in {}:{} CoAP "
-          "response with Token {} Payload.",
+      logger_->trace("Looking for CONTENT_FORMAT Option in {}:{} CoAP "
+                     "response with Token {} Payload.",
           message->getAddressIP(), message->getAddressPort(),
           message->getToken()->hexify());
       auto it = options.find(OptionNumber::CONTENT_FORMAT);
       if (it != options.end()) {
-        logger_->log(SeverityLevel::TRACE,
-            "CONTENT_FORMAT Option found in {}:{} CoAP "
-            "response with Token {} Payload. Casting it as "
-            "CoAP::ContentFormat Class",
+        logger_->trace("CONTENT_FORMAT Option found in {}:{} CoAP "
+                       "response with Token {} Payload. Casting it as "
+                       "CoAP::ContentFormat Class",
             message->getAddressIP(), message->getAddressPort(),
             message->getToken()->hexify());
         if (auto content_format_option = it->second) {
           auto content_format =
               dynamic_pointer_cast<CoAP::ContentFormat>(content_format_option);
-          logger_->log(SeverityLevel::TRACE,
-              "Trying to decode CoAP response from {}:{} with Token "
-              "{} Payload as {} ",
+          logger_->trace("Trying to decode CoAP response from {}:{} with Token "
+                         "{} Payload as {} ",
               message->getAddressIP(), message->getAddressPort(),
               message->getToken()->hexify(),
               content_format->getValueAsString());
@@ -244,7 +241,7 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
               "Content Format option value can not be a nullptr.");
         }
         if (content) {
-          logger_->log(SeverityLevel::TRACE,
+          logger_->trace(
               "Payload {} of {} bytes assigned as content for Client "
               "Response "
               "from {}:{} CoAP "
@@ -253,11 +250,10 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
               message->getAddressIP(), message->getAddressPort(),
               message->getToken()->hexify());
         } else {
-          logger_->log(SeverityLevel::WARNING,
-              "Payload of {} bytes could not be converted into a "
-              "Content Type for Client Response "
-              "from {}:{} CoAP "
-              "response with Token {}",
+          logger_->warning("Payload of {} bytes could not be converted into a "
+                           "Content Type for Client Response "
+                           "from {}:{} CoAP "
+                           "response with Token {}",
               payload->getBytes().size(), message->getAddressIP(),
               message->getAddressPort(), message->getToken()->hexify());
         }
@@ -266,7 +262,7 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
     }
     return make_shared<ClientResponse>(endpoint, code);
   } catch (exception& ex) {
-    logger_->log(SeverityLevel::CRITICAL,
+    logger_->critical(
         "Caught an unhandled exception, while building a "
         "ClientResponse from message {} from {}:{}. Exception: {}",
         message->getToken()->hexify(), message->getAddressIP(),

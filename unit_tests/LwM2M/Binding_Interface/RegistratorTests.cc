@@ -54,14 +54,14 @@ protected:
         bind(&ExceptionHandlerInterface::handleDeviceException,
             dynamic_pointer_cast<ExceptionHandlerInterface>(registrator_),
             std::placeholders::_1);
-    initial_device_ = NonemptyPointer::make_shared<Device>(callback,
-        registrator_, make_shared<Endpoint>("0.0.0.0", 10),
-        ObjectDescriptorsMap(), "123456", 10, "initial_device");
+    initial_device_ = Nonempty::make_shared<Device>(callback, registrator_,
+        make_shared<Endpoint>("0.0.0.0", 10), ObjectDescriptorsMap(), "123456",
+        10, "initial_device");
     registry_->registerDevice(initial_device_);
   }
   DeviceRegistryPtr registry_;
   RegistratorPtr registrator_;
-  DevicePtr initial_device_ = NonemptyPointer::make_shared<Device>();
+  DevicePtr initial_device_ = Nonempty::make_shared<Device>();
 };
 
 // NOLINTNEXTLINE

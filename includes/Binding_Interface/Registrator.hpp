@@ -20,7 +20,7 @@ class Registrator
       public std::enable_shared_from_this<RequesterInterfaceFacade> {
 
   DeviceRegistryPtr registry_;
-  HaSLI::LoggerPtr logger_;
+  HaSLL::LoggerPtr logger_;
 
   void makeDevice(const std::string& device_id,
       const EndpointPtr& device_address, const DeviceMetaInfo& device_info);

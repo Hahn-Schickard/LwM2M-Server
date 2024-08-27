@@ -1,7 +1,7 @@
 #ifndef __LWM2M_MODEL_OBJECT_HPP
 #define __LWM2M_MODEL_OBJECT_HPP
 
-#include "Nonempty_Pointer/NonemptyPtr.hpp"
+#include "Nonempty/Pointer.hpp"
 
 #include "Endpoint.hpp"
 #include "ObjectDescriptor.hpp"
@@ -152,7 +152,7 @@ public:
 };
 
 using ObjectSharedPtr = std::shared_ptr<Object>;
-using ObjectPtr = NonemptyPointer::NonemptyPtr<ObjectSharedPtr>;
+using ObjectPtr = Nonempty::Pointer<ObjectSharedPtr>;
 
 /** @}*/
 } // namespace LwM2M

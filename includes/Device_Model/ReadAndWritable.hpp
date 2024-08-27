@@ -1,7 +1,7 @@
 #ifndef __LWM2M_READ_AND_WRITABLE_RESOURCE_HPP
 #define __LWM2M_READ_AND_WRITABLE_RESOURCE_HPP
 
-#include "Nonempty_Pointer/NonemptyPtr.hpp"
+#include "Nonempty/Pointer.hpp"
 
 #include "Readable.hpp"
 #include "Writable.hpp"
@@ -32,8 +32,7 @@ public:
 };
 
 using ReadAndWritableSharedPtr = std::shared_ptr<ReadAndWritable>;
-using ReadAndWritablePtr =
-    NonemptyPointer::NonemptyPtr<ReadAndWritableSharedPtr>;
+using ReadAndWritablePtr = Nonempty::Pointer<ReadAndWritableSharedPtr>;
 
 /** @}*/
 } // namespace LwM2M
