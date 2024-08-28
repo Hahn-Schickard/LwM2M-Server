@@ -5,7 +5,6 @@ logs
 !/.vscode/cmake-variants.yaml
 logs/*
 !/.vscode/launch.json
-json.hpp
 valgrind_results/
 code_coverage_report/
 code_coverage.info
@@ -19,3 +18,5 @@ utility/__pycache__
 clang-format-fixes
 clang-tidy-fixes
 CMakeUserPresets.json
+sonarqube_coverage.xml
+valgrind.*
