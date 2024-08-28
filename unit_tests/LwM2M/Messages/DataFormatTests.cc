@@ -2,6 +2,8 @@
 
 #include "gtest/gtest.h"
 
+#include <algorithm>
+
 using namespace std;
 using namespace LwM2M;
 
