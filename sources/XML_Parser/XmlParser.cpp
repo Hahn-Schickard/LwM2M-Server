@@ -214,7 +214,7 @@ unordered_map<uint32_t, shared_ptr<ObjectDescriptor>> deserializeModel(
         }
       } else {
         string error_msg = "Could not open object descriptor file: " +
-            string(object_descriptor_file_path);
+            object_descriptor_file_path.string();
         throw runtime_error(error_msg);
       }
     }
