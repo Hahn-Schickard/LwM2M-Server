@@ -19,6 +19,7 @@ variables:
   before_script:
     - conan remote add hahn-schickard ${CONAN_REMOTE}
     - conan profile detect --force
+    - conan lock create conanfile.py
     - sed -i 's/^compiler.cppstd=.*/compiler.cppstd=17/' $(conan profile path default)
   script:
     - mkdir build
@@ -30,6 +31,7 @@ variables:
     paths:
       - build/
       - ${CONAN_HOME}
+      - conan.lock
     expire_in: 1 day
 
 .test:
@@ -115,6 +117,25 @@ variables:
       - sonarqube_coverage.xml
     expire_in: 1 day
   allow_failure: true
+
+.trivy_scan:
+  stage: check
+  image: 
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --scan-cache
+    # update vulnerabilities db
+    - trivy image --download-db-only --no-progress --cache-dir .trivycache/
+    # print UNKNOWN,LOW,MEDIUM severity
+    - trivy fs --exit-code 0 --cache-dir .trivycache/ --no-progress --scanners vuln,misconfig,license --license-full --skip-dirs ".conan2/" --severity UNKNOWN,LOW,MEDIUM .
+    # print and fail on HIGH,CRITICAL severity
+    - trivy fs --exit-code 1 --cache-dir .trivycache/ --no-progress --scanners vuln,misconfig,license --license-full --skip-dirs ".conan2/" --severity HIGH,CRITICAL .
+  cache:
+    paths:
+      - .trivycache/
 
 .lint:
   stage: check
