@@ -1,4 +1,16 @@
 # Changelog
+## [0.6.0] - 2025.03.03
+### Added 
+ - windows 10 support
+ - check for empty config filepath in `getConfig()` 
+
+### Changed
+ - `Event_Model` dependency to v0.4
+ - `HaSLL` dependency to v0.4
+ - `CoAPPS4Cpp` dependency to v0.6
+ - `NonemptyPointer` usage to `Nonempty::Pointer`
+ - `logger_->log(SeverityLevel::[LEVEL], ...)` into `logger_->[LEVEL](...)` calls
+
 ## [0.5.7] - 2023.12.04 
 ### Fixed 
 - missing `cstdint` header in Config.h
