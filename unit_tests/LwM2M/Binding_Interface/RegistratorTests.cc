@@ -79,7 +79,7 @@ TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
         std::get<DataFormatPtr>(response->payload_->data_);
     auto location = data_format->get<string>();
     EXPECT_EQ(response->response_code_, ResponseCode::CREATED);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
@@ -103,7 +103,7 @@ TEST_F(RegistratorTests, returnsChangedOnUpdateRequest) {
   try {
     auto response = registrator_->handleRequest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::CHANGED);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
@@ -119,7 +119,7 @@ TEST_F(RegistratorTests, returnsNotFoundOnUpdateRequest) {
   try {
     auto response = registrator_->handleRequest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
@@ -143,7 +143,7 @@ TEST_F(RegistratorTests, returnsDeletedOnDeregisterRequest) {
     EXPECT_EQ(response->response_code_, ResponseCode::DELETED)
         << "Expected ResponseCode Deleted, but received ResponseCode "
         << toString(response->response_code_);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;
@@ -159,7 +159,7 @@ TEST_F(RegistratorTests, returnsNotFoundOnDeregisterRequest) {
   try {
     auto response = registrator_->handleRequest(request);
     EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
            << ex.what() << endl;

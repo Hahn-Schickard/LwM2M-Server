@@ -139,17 +139,17 @@ future<void> asyncRead(const DevicePtr& device, const ElementID& id) {
           cout << "Device: " << device->getDeviceId() << " "
                << object->getDescriptor()->name_ << " " << value << endl;
 
-        } catch (ResponseReturnedAnErrorCode& ex) {
+        } catch (const ResponseReturnedAnErrorCode& ex) {
           cout << "Read request for device " << device->getName() << " "
                << " element " << element_id.toString()
                << " failed! Received an error "
                   "code: "
                << toString(ex.response_code_) << endl;
-        } catch (runtime_error& ex) {
+        } catch (const runtime_error& ex) {
           cout << "Encountered a runtime error while processing device "
                << device->getName() << " element " << element_id.toString()
                << ". Exception is: " << ex.what() << endl;
-        } catch (exception& ex) {
+        } catch (const exception& ex) {
           cerr << "Caught an unhandled exception while processing device "
                << device->getName() << " element " << element_id.toString()
                << ". Exception is: " << ex.what() << endl;
@@ -203,10 +203,10 @@ void RegistrationListener::handleRegistration(const DevicePtr& device) {
     cout << "Observer for element " << observer->getId()
          << " built. Saving it in the map of observers." << endl;
     observers_.emplace(device->getDeviceId(), observer);
-  } catch (ObjectInstanceDoesNotExist& ex) {
+  } catch (const ObjectInstanceDoesNotExist& ex) {
     cout << "Could not register battery level observer for device "
          << device->getDeviceId() << ex.what() << endl;
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     cout << "Caught unhandled exception while trying to register a new "
             "observer for device "
          << device->getDeviceId() << endl

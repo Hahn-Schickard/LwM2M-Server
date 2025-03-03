@@ -157,10 +157,10 @@ ElementIDs Registrator::discover(const ServerRequestPtr& request) {
       this->cancelRequest(request);
       try {
         response_future.get(); // this must throw;
-      } catch (exception& /*ex*/) {
+      } catch (const exception& /*ex*/) { // NOLINT(bugprone-empty-catch)
         // safe to ignore, since canceled response, must throw an exception
       }
-    } catch (exception& ex) {
+    } catch (const exception& ex) {
       logger_->critical(
           "Could not cancel a discover request to {}, due to an exception: {}",
           request->endpoint_->toString(), ex.what());
@@ -186,29 +186,29 @@ ElementIDs Registrator::discoverAvailableDescriptors(
           (*it)->target_.toString());
     }
     // @TODO: handle method not allowed and similar exceptions
-    catch (DiscoveryTimeout& /*timeout*/) {
+    catch (const DiscoveryTimeout& /*timeout*/) {
       try {
         logger_->info("Discovery for object {} from {} has timedout. Doing a "
                       "manual read.",
             (*it)->target_.toString(), (*it)->endpoint_->toString());
         requested_instances += discover(makeReadRequest(*it));
-      } catch (DiscoveryTimeout& /*timeout*/) {
+      } catch (const DiscoveryTimeout& /*timeout*/) {
         logger_->warning(
             "Manual discovery for {} object {} failed due to a message "
             "timeout. Discarding it from available descriptors.",
             (*it)->endpoint_->toString(), (*it)->target_.toString());
-      } catch (exception& ex) {
+      } catch (const exception& ex) {
         logger_->error(
             "Manual discovery for {} object {} failed due to an exception: {}. "
             "Discarding it from available descriptors.",
             (*it)->endpoint_->toString(), (*it)->target_.toString(), ex.what());
       }
-    } catch (ResponseReturnedAnErrorCode& ex) {
+    } catch (const ResponseReturnedAnErrorCode& ex) {
       logger_->warning(
           "Failed to handle {} to {}, response returned an error code: {}. "
           "Discarding it from available descriptors.",
           (*it)->name(), (*it)->endpoint_->toString(), ex.what());
-    } catch (exception& ex) {
+    } catch (const exception& ex) {
       logger_->error("Failed to handle {} to {}, due to an exception: {}. "
                      "Discarding it from available descriptors.",
           (*it)->name(), (*it)->endpoint_->toString(), ex.what());
@@ -288,7 +288,7 @@ RegisterResponsePtr Registrator::handleRequest(
             request->endpoint_->endpoint_port_);
       }
       return request->makeResponse(location);
-    } catch (exception& ex) {
+    } catch (const exception& ex) {
       logger_->error("An unhandled exception occurred while handling "
                      "registration request. Exception: {}",
           ex.what());
@@ -344,7 +344,7 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
       } else {
         return request->makeResponse(ResponseCode::BAD_REQUEST);
       }
-    } catch (DeviceNotFound& ex) {
+    } catch (const DeviceNotFound& ex) {
       return request->makeResponse(ResponseCode::NOT_FOUND);
     }
   } else {
@@ -361,10 +361,10 @@ DeregisterResponsePtr Registrator::handleRequest(
     try {
       registry_->deregisterDevice(request->location_);
       return request->makeResponse(ResponseCode::DELETED);
-    } catch (DeviceNotFound& ex) {
+    } catch (const DeviceNotFound& ex) {
       logger_->error("Failed to deregister device. {}", ex.what());
       return request->makeResponse(ResponseCode::NOT_FOUND);
-    } catch (exception& ex) {
+    } catch (const exception& ex) {
       logger_->error("An unhandled exception occurred while handling "
                      "deregistration request. Exception: {}",
           ex.what());

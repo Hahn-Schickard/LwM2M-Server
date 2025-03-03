@@ -32,7 +32,7 @@ int main(int argc, const char* argv[]) {
         for (;;) {
         }
       }
-    } catch (exception& e) {
+    } catch (const exception& e) {
       logger->error("Received an exception: {}", e.what());
       cerr << e.what() << endl;
     }

@@ -20,7 +20,7 @@ TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithGoodModel) {
     auto registry = make_shared<DeviceRegistry>("model/passingModel2.xml");
     EXPECT_NE(registry, nullptr);
     EXPECT_GT(registry->getSupportedDescriptors()->size(), 0);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while building the Device Registry. "
               "Exception: "
            << ex.what() << endl;
@@ -33,7 +33,7 @@ TEST(throwsExceptionOnNonExistantConfigFile, canBuildWithNonExistantModel) {
     auto registry = make_shared<DeviceRegistry>("model/nonExistantModel.xml");
     EXPECT_NE(registry, nullptr);
     EXPECT_EQ(registry->getSupportedDescriptors()->size(), 0);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while building the Device Registry. "
               "Exception: "
            << ex.what() << endl;
@@ -88,7 +88,7 @@ TEST_F(DeviceRegistryTests, canRegisterDevice) {
   try {
     registry_->registerDevice(device);
     EXPECT_TRUE(registry_->isRegistered(device->getDeviceId()));
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
@@ -103,7 +103,7 @@ TEST_F(DeviceRegistryTests, canDeregisterDevice) {
 
   try {
     registry_->deregisterDevice(initial_device_->getDeviceId());
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
@@ -135,7 +135,7 @@ TEST_F(DeviceRegistryTests, canReregisterDevice) {
     registry_->registerDevice(device);
     registry_->registerDevice(device);
     EXPECT_TRUE(registry_->isRegistered(device->getDeviceId()));
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }
@@ -151,7 +151,7 @@ TEST_F(DeviceRegistryTests, canUpdateDevice) {
 
   try {
     registry_->updateDevice(initial_device_);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught an exception while registering test device. Exception: "
            << ex.what();
   }

@@ -297,11 +297,11 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
           auto request = decoder_->decode<DeregisterRequest>(message);
           return Registrator::handleRequest(request);
         }
-      } catch (RegistrationInterfaceError& ex) {
+      } catch (const RegistrationInterfaceError& ex) {
         auto endpoint = make_shared<Endpoint>(
             message->getAddressIP(), message->getAddressPort());
         return ex.response_;
-      } catch (exception& ex) {
+      } catch (const exception& ex) {
         logger_->critical("Received an unhandled exception while decoding a "
                           "registration request. Exception: {};",
             ex.what());

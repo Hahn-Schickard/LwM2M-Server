@@ -81,7 +81,7 @@ TEST_P(DataFormatTest, canGetCorrectValue) {
       break;
     }
     }
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     FAIL() << "Caught exception: " << ex.what() << endl;
   }
 }

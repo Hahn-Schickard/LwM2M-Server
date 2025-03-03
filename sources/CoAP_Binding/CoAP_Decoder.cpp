@@ -261,7 +261,7 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
       }
     }
     return make_shared<ClientResponse>(endpoint, code);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     logger_->critical(
         "Caught an unhandled exception, while building a "
         "ClientResponse from message {} from {}:{}. Exception: {}",

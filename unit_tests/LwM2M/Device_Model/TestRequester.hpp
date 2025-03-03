@@ -111,7 +111,7 @@ public:
         data_promise_ = std::nullopt;
         data_promise.set_value(std::make_shared<DataFormat>(result));
         success = true;
-      } catch (std::exception& ex) {
+      } catch (const std::exception& ex) {
         success = false;
       }
     }
@@ -126,7 +126,7 @@ public:
         multi_data_promise_ = std::nullopt;
         multi_data_promise.set_value(result);
         success = true;
-      } catch (std::exception& ex) {
+      } catch (const std::exception& ex) {
         success = false;
       }
     }
@@ -141,7 +141,7 @@ public:
         action_promise_ = std::nullopt;
         action_promise.set_value(enacted);
         success = true;
-      } catch (std::exception& ex) {
+      } catch (const std::exception& ex) {
         success = false;
       }
     }
@@ -155,7 +155,7 @@ public:
       try {
         (callback->second)(value);
         success = true;
-      } catch (std::exception& ex) {
+      } catch (const std::exception& ex) {
         success = false;
       }
     }

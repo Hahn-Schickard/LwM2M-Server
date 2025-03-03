@@ -163,7 +163,7 @@ unordered_map<unsigned int, vector<unsigned int>> getObjectList(
     CoRE_Links core_links;
     try {
       core_links = decode<CoRE_Links>(payload);
-    } catch (CoAP::WrongContentFormatTypeDecoder& ex) {
+    } catch (const CoAP::WrongContentFormatTypeDecoder& ex) {
       auto content_format = ex.format_type_;
       uint16_t octect_stream_index =
           CoAP::ContentFormatEncodings::Octet_Stream::index;
@@ -210,11 +210,11 @@ RegisterRequestPtr buildRegisterRequest(const CoAP::MessagePtr& message) {
       return make_shared<RegisterRequest>(endpoint, life_time,
           object_instances_map, endpoint_name, version, binding, queue_mode,
           sms_number);
-    } catch (bad_optional_access& ex) {
+    } catch (const bad_optional_access& ex) {
       throw RegistrationInterfaceError(
           make_shared<RegisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
     }
-  } catch (bad_optional_access& ex) {
+  } catch (const bad_optional_access& ex) {
     throw RegistrationInterfaceError(make_shared<RegisterResponse>(
         endpoint, ResponseCode::PRECOGNITION_FAILED));
   }
@@ -253,7 +253,7 @@ UpdateRequestPtr buildUpdateRequest(const CoAP::MessagePtr& message) {
     } else {
       return make_shared<UpdateRequest>(endpoint, location);
     }
-  } catch (bad_optional_access& ex) {
+  } catch (const bad_optional_access& ex) {
     throw RegistrationInterfaceError(
         make_shared<UpdateResponse>(endpoint, ResponseCode::BAD_REQUEST));
   }
@@ -266,7 +266,7 @@ DeregisterRequestPtr buildDeregisterRequest(const CoAP::MessagePtr& message) {
     // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
     auto location = getLocation(message->getOptions()).value();
     return make_shared<DeregisterRequest>(endpoint, location);
-  } catch (bad_optional_access& ex) {
+  } catch (const bad_optional_access& ex) {
     throw RegistrationInterfaceError(
         make_shared<DeregisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
   }

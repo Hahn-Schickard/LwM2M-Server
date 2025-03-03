@@ -156,7 +156,7 @@ ResourceDescriptorPtr deserializeResource(xml_node resource_node) {
           resource_operations, resource_multiple_instances, resource_mandatory,
           resource_data_type, resource_units, resource_description);
     }
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     string error_msg =
         "Failed to deserialize resource node: " + string(resource_node.name()) +
         " due to error: " + ex.what();
@@ -185,7 +185,7 @@ ObjectDescriptorPtr deserializeObject(xml_node object_node) {
     return make_shared<ObjectDescriptor>(object_name, object_description,
         object_id, object_multiple_instances, object_mandatory, object_urn,
         resources);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     string error_msg =
         "Failed to deserialize object node: " + string(object_node.name()) +
         " due to error: " + ex.what();

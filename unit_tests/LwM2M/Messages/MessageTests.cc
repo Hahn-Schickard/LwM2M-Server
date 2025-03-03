@@ -129,7 +129,7 @@ MessageTestParameter makeTestParameter(
   shared_ptr<T> message;
   try {
     message = makeDefaultMessage<T>(tested_endpoint);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     cerr << "Caught an unhandled exception while building "
          << toString(valid_expectations.message_type_)
          << " message test. Exception was: " << ex.what() << endl;

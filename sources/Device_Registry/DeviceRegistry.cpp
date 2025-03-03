@@ -18,7 +18,7 @@ DeviceRegistry::DeviceRegistry(const string& configuration_path)
   try {
     logger_->info("Loading model descriptors from {}", configuration_path);
     supported_descriptors_ = deserializeModel(configuration_path);
-  } catch (exception& ex) {
+  } catch (const exception& ex) {
     logger_->error(
         "Received an exception during descriptor deserialization: {}",
         ex.what());

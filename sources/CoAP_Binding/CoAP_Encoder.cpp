@@ -148,7 +148,7 @@ CoAP::MessagePtr CoAP_Encoder::encode(
               response->message_type_, response->payload_, token->hexify())) {
         message_builder->addPayload(payload);
       }
-    } catch (exception& ex) {
+    } catch (const exception& ex) {
       logger_->error("Caught an unhandled exception while encoding {} for CoAP "
                      "request {} from {}:{}. Exception: {}",
           response->name(), request->getToken()->hexify(),
