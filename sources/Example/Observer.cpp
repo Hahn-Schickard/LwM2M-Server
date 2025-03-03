@@ -117,8 +117,8 @@ void handleTargetAttributes(const TargetAttributes& attributes) {
 }
 
 void Observer::handleEvent(PayloadDataPtr payload) {
+  cout << "Received: ";
   if (payload) {
-    cout << "Received: ";
     match(
         *payload,
         [&](const DataFormatPtr& data) {
@@ -146,7 +146,7 @@ void Observer::handleEvent(PayloadDataPtr payload) {
           cout << endl;
         });
   } else {
-    string error = " received a notification with an empty data payload";
+    cout << " a notification with an empty data payload" << endl;
   }
 }
 } // namespace LwM2M_Example
