@@ -28,7 +28,7 @@ ResourceDescriptorMap assignResourceDescriptors(
           result.emplace(*it);
         }
       }
-    } catch (const MissingOptionalID& ex) {
+    } catch (const MissingOptionalID& ex) { // NOLINT(bugprone-empty-catch)
       // silently ignore element ids without any resources
     }
   }
