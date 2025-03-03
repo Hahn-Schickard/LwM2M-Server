@@ -20,3 +20,5 @@ clang-tidy-fixes
 CMakeUserPresets.json
 sonarqube_coverage.xml
 valgrind.*
+.trivycache
+conan.lock

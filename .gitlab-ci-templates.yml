@@ -18,9 +18,9 @@ variables:
     - conan
   before_script:
     - conan remote add hahn-schickard ${CONAN_REMOTE}
-    - conan profile detect --force
-    - conan lock create conanfile.py
-    - sed -i 's/^compiler.cppstd=.*/compiler.cppstd=17/' $(conan profile path default)
+    - mkdir -p ${CONAN_HOME}/profiles
+    - cp ~/.conan2/profiles/default ${CONAN_HOME}/profiles/default # move original default profile into project scope
+    - conan lock create . # used by trivy for dependency license scanning
   script:
     - mkdir build
     - cd build
@@ -120,7 +120,7 @@ variables:
 
 .trivy_scan:
   stage: check
-  image: 
+  image:
     name: aquasec/trivy:latest
     entrypoint: [""]
   script:
@@ -188,7 +188,8 @@ variables:
     - PROJECT_NAME=$(python3 ./utility/.getProjectName.py)
   script:
     - conan remote add upload_repo ${CONAN_REMOTE}
-    - conan profile detect --force
+    - mkdir -p ${CONAN_HOME}/profiles
+    - cp ~/.conan2/profiles/default ${CONAN_HOME}/profiles/default # move original default profile into project scope
     - conan create . --version=${VERSION} --user=hahn-schickard --channel=stable --build=missing -s:h compiler.cppstd=17 -s:b compiler.cppstd=17
     - conan upload -r upload_repo --confirm ${PROJECT_NAME}/${VERSION}@hahn-schickard/stable
   rules:

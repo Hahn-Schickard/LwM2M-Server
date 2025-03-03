@@ -11,6 +11,7 @@ Checks: >
   -modernize-return-braced-init-list,
   -modernize-pass-by-value,
   performance-*,
+  -performance-avoid-endl,
   portability-*,
   readability-*,
   -readability-else-after-return,

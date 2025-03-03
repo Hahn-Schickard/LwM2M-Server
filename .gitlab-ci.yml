@@ -3,7 +3,7 @@ include:
  - local: ".gitlab-ci-templates.yml"
 
 variables:
-  IMAGE_VER: "6.4.0"
+  IMAGE_VER: "6.5.0"
 
 build:debian-bullseye:
   extends: .build
@@ -33,19 +33,19 @@ build:windows-ltsc2019:
 test:debian-bullseye:
   extends: .test
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bullseye
 
 test:debian-bookworm:
   extends: .test
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bookworm
 
 test:ubuntu-20.04:
   extends: .test
   image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:ubuntu-20.04
 
 test:fedora-latest:
@@ -53,7 +53,7 @@ test:fedora-latest:
   image:
     name: ${DOCKER_REGISTRY}/hs-conan-fedora-latest:${IMAGE_VER}
     entrypoint: ["/bin/sh", "-c"]
-  dependencies:
+  needs:
     - build:fedora-latest
 
 test:windows-ltsc2019:
@@ -62,25 +62,25 @@ test:windows-ltsc2019:
     - windows-docker
   image:
     name: ${DOCKER_REGISTRY}/hs-conan-windows-ltsc2019:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:windows-ltsc2019
 
 analyze_exe_memory:debian-bullseye:
   extends: .analyze_exe_memory
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bullseye
 
 analyze_exe_memory:debian-bookworm:
   extends: .analyze_exe_memory
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bookworm
 
 analyze_exe_memory:ubuntu-20.04:
   extends: .analyze_exe_memory
   image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:ubuntu-20.04
 
 analyze_exe_memory:fedora-latest:
@@ -88,24 +88,25 @@ analyze_exe_memory:fedora-latest:
   image:
     name: ${DOCKER_REGISTRY}/hs-conan-fedora-latest:${IMAGE_VER}
     entrypoint: ["/bin/sh", "-c"]
-  dependencies: ["build:fedora-latest"]
+  needs:
+    - build:fedora-latest
 
 analyze_test_runner_memory:debian-bullseye:
   extends: .analyze_test_runner_memory
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bullseye-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bullseye
 
 analyze_test_runner_memory:debian-bookworm:
   extends: .analyze_test_runner_memory
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bookworm
 
 analyze_test_runner_memory:ubuntu-20.04:
   extends: .analyze_test_runner_memory
   image: ${DOCKER_REGISTRY}/hs-conan-ubuntu-20.04:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:ubuntu-20.04
 
 analyze_test_runner_memory:fedora-latest:
@@ -113,20 +114,20 @@ analyze_test_runner_memory:fedora-latest:
   image:
     name: ${DOCKER_REGISTRY}/hs-conan-fedora-latest:${IMAGE_VER}
     entrypoint: ["/bin/sh", "-c"]
-  dependencies:
+  needs:
     - build:fedora-latest
 
 test_coverage:
   extends: .test_coverage
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bookworm
     - test:debian-bookworm
 
 static_analysis:
   extends: .static_analysis
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bookworm
     - test:debian-bookworm
     - analyze_exe_memory:debian-bookworm
@@ -134,19 +135,19 @@ static_analysis:
 
 trivy_scan:
   extends: .trivy_scan
-  dependencies:
+  needs:
     - build:debian-bookworm
 
 format:
   extends: .format
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bookworm
 
 lint:
   extends: .lint
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - build:debian-bookworm
 
 document:
@@ -184,6 +185,6 @@ package:windows-ltsc2019:
 pages:
   extends: .pages
   image: ${DOCKER_REGISTRY}/hs-conan-debian-bookworm-slim:${IMAGE_VER}
-  dependencies:
+  needs:
     - test_coverage
     - document
