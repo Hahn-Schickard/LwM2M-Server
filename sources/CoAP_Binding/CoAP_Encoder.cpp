@@ -14,8 +14,11 @@ namespace LwM2M {
 CodeType toCodeType(LwM2M::MessageType type) {
   switch (type) {
   case LwM2M::MessageType::Observe:
+    [[fallthrough]];
   case LwM2M::MessageType::Cancel_Observation:
+    [[fallthrough]];
   case LwM2M::MessageType::Discover:
+    [[fallthrough]];
   case LwM2M::MessageType::Read: {
     return CodeType::Get;
   }
