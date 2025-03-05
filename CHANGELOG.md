@@ -1,5 +1,5 @@
 # Changelog
-## [0.6.0] - 2025.03.03
+## [0.6.0] - 2025.03.05
 ### Added 
  - windows 10 support
  - check for empty config filepath in `getConfig()` 
@@ -10,6 +10,15 @@
  - `CoAPPS4Cpp` dependency to v0.6
  - `NonemptyPointer` usage to `Nonempty::Pointer`
  - `logger_->log(SeverityLevel::[LEVEL], ...)` into `logger_->[LEVEL](...)` calls
+ - `OperationsType` enum values into Camel_Case
+ - `MediaType` enum values into Camel_Case
+ - `DataType` enum values into Camel_Case
+ - `InterfaceType` enum values into Camel_Case
+ - `MessageType` enum values into Camel_Case
+ - `ResponseCode` enum values into Camel_Case
+ - `LwM2M_Version` enum values into Camel_Case
+ - `BindingType` enum values into Camel_Case
+ - `ServerBindingType` enum values into Camel_Case
 
 ## [0.5.7] - 2023.12.04 
 ### Fixed 
