@@ -7,7 +7,7 @@ namespace LwM2M {
 WriteCompositeRequest::WriteCompositeRequest(EndpointPtr endpoint, // NOLINT
     vector<TargetContent> content) // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
-          MessageType::WRITE_COMPOSITE, make_shared<Payload>(content)) {}
+          MessageType::Write_Composite, make_shared<Payload>(content)) {}
 
 string WriteCompositeRequest::name() const { return "WriteCompositeRequest"; }
 } // namespace LwM2M

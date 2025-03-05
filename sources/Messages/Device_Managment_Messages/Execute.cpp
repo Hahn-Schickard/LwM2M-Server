@@ -8,12 +8,12 @@ namespace LwM2M {
 ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, // NOLINT
     ElementID target)
     : DeviceManagementRequest(endpoint, // NOLINT
-          MessageType::EXECUTE, make_shared<Payload>(target)) {}
+          MessageType::Execute, make_shared<Payload>(target)) {}
 
 ExecuteRequest::ExecuteRequest(EndpointPtr endpoint, // NOLINT
     ElementID target, string arguments)
     : DeviceManagementRequest(endpoint, // NOLINT
-          MessageType::EXECUTE,
+          MessageType::Execute,
           make_shared<Payload>(make_pair(
               target, make_shared<DataFormat>(DataVariant(arguments))))) {}
 

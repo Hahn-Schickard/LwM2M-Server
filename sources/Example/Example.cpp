@@ -231,7 +231,7 @@ void RegistrationListener::handleDeregistration(const string& identifier) {
 
 void RegistrationListener::handleEvent(RegistryEventPtr event) {
   switch (event->type_) {
-  case RegistryEventType::REGISTERED: {
+  case RegistryEventType::Registered: {
     if (event->device_.has_value()) {
       // NOLINTNEXTLINE(bugprone-unchecked-optional-access)
       auto device = event->device_.value();
@@ -241,11 +241,11 @@ void RegistrationListener::handleEvent(RegistryEventPtr event) {
     }
     break;
   }
-  case RegistryEventType::UPDATED: {
+  case RegistryEventType::Updated: {
     handleUpdate(event->identifier_);
     break;
   }
-  case RegistryEventType::DEREGISTERED: {
+  case RegistryEventType::Deregistered: {
     handleDeregistration(event->identifier_);
     break;
   }

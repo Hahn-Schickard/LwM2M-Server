@@ -15,43 +15,43 @@ Observer::Observer(const ObservablePtr& element) : ObserverInterface(element) {}
 
 void handleData(const DataFormatPtr& data, DataType data_type) {
   switch (data_type) {
-  case DataType::STRING: {
+  case DataType::String: {
     cout << data->get<string>();
     break;
   }
-  case DataType::SIGNED_INTEGER: {
+  case DataType::Signed_Integer: {
     cout << data->get<int64_t>();
     break;
   }
-  case DataType::UNSIGNED_INTEGER: {
+  case DataType::Unsigned_Integer: {
     cout << data->get<uint64_t>();
     break;
   }
-  case DataType::FLOAT: {
+  case DataType::Float: {
     cout << data->get<double>();
     break;
   }
-  case DataType::BOOLEAN: {
+  case DataType::Boolean: {
     cout << std::boolalpha << data->get<bool>();
     break;
   }
-  case DataType::OPAQUE: {
+  case DataType::Opaque: {
     cout << HSCUL::hexify(data->get<std::vector<uint8_t>>());
     break;
   }
-  case DataType::TIME: {
+  case DataType::Time: {
     cout << data->get<TimeStamp>().toString();
     break;
   }
-  case DataType::OBJECT_LINK: {
+  case DataType::Object_Link: {
     cout << data->get<ObjectLink>().toString();
     break;
   }
-  case DataType::CORE_LINK: {
+  case DataType::Core_Link: {
     cout << "CoRE Link format is not supported";
     break;
   }
-  case DataType::NONE: {
+  case DataType::None: {
     cout << "void";
     break;
   }

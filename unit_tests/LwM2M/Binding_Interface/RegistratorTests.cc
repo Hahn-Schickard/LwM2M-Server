@@ -78,7 +78,7 @@ TEST_F(RegistratorTests, returnsCreatedOnRegisterRequest) {
     const auto& data_format =
         std::get<DataFormatPtr>(response->payload_->data_);
     auto location = data_format->get<string>();
-    EXPECT_EQ(response->response_code_, ResponseCode::CREATED);
+    EXPECT_EQ(response->response_code_, ResponseCode::Created);
   } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
@@ -102,7 +102,7 @@ TEST_F(RegistratorTests, returnsChangedOnUpdateRequest) {
 
   try {
     auto response = registrator_->handleRequest(request);
-    EXPECT_EQ(response->response_code_, ResponseCode::CHANGED);
+    EXPECT_EQ(response->response_code_, ResponseCode::Changed);
   } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
@@ -118,7 +118,7 @@ TEST_F(RegistratorTests, returnsNotFoundOnUpdateRequest) {
 
   try {
     auto response = registrator_->handleRequest(request);
-    EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
+    EXPECT_EQ(response->response_code_, ResponseCode::Not_Found);
   } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "
@@ -140,7 +140,7 @@ TEST_F(RegistratorTests, returnsDeletedOnDeregisterRequest) {
 
   try {
     auto response = registrator_->handleRequest(request);
-    EXPECT_EQ(response->response_code_, ResponseCode::DELETED)
+    EXPECT_EQ(response->response_code_, ResponseCode::Deleted)
         << "Expected ResponseCode Deleted, but received ResponseCode "
         << toString(response->response_code_);
   } catch (const exception& ex) {
@@ -158,7 +158,7 @@ TEST_F(RegistratorTests, returnsNotFoundOnDeregisterRequest) {
 
   try {
     auto response = registrator_->handleRequest(request);
-    EXPECT_EQ(response->response_code_, ResponseCode::NOT_FOUND);
+    EXPECT_EQ(response->response_code_, ResponseCode::Not_Found);
   } catch (const exception& ex) {
     FAIL() << "Caught an exception while handling registration request. "
               "Exception: "

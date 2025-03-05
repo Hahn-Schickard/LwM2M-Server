@@ -67,7 +67,7 @@ future<DataFormatPtr> CoAP_Binding::requestData(
             request->endpoint_->toString());
         auto response = decoder_->decode<ClientResponse>(coap_response);
         dispatched_.erase(std::hash<Message>{}(*request));
-        if (response->response_code_ == ResponseCode::CONTENT) {
+        if (response->response_code_ == ResponseCode::Content) {
           if (response->payload_) {
             DataFormatPtr result;
             match(
@@ -122,7 +122,7 @@ future<TargetContentVector> CoAP_Binding::requestMultiTargetData(
             request->endpoint_->toString());
         auto response = decoder_->decode<ClientResponse>(coap_response);
         dispatched_.erase(std::hash<Message>{}(*request));
-        if (response->response_code_ == ResponseCode::CONTENT) {
+        if (response->response_code_ == ResponseCode::Content) {
           if (response->payload_) {
             return std::get<TargetContentVector>(response->payload_->data_);
           } else {
@@ -308,7 +308,7 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
         auto endpoint = make_shared<Endpoint>(
             message->getAddressIP(), message->getAddressPort());
         return make_shared<RegisterResponse>(
-            endpoint, ResponseCode::BAD_REQUEST);
+            endpoint, ResponseCode::Bad_Request);
       }
     }
   }

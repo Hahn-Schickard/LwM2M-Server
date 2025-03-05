@@ -101,7 +101,7 @@ struct RegistrationListener
 
   void handleEvent(LwM2M::RegistryEventPtr event) override {
     switch (event->type_) {
-    case LwM2M::RegistryEventType::REGISTERED: {
+    case LwM2M::RegistryEventType::Registered: {
         // Obtain the device abstraction
         auto device = event->device_.value();
         // Handle registration process (reading initial device
@@ -111,7 +111,7 @@ struct RegistrationListener
             << " was registered!" << std::endl;
         break;
     }
-    case LwM2M::RegistryEventType::UPDATED: {
+    case LwM2M::RegistryEventType::Updated: {
         // Handle device update (check if Assigned objects/resources,
         // device name, device id, address, lifetime or communication
         // protocol have changed, @see UpdateRequest for more info)
@@ -119,7 +119,7 @@ struct RegistrationListener
         << " has been updated!" << std::endl;
         break;
     }
-    case LwM2M::RegistryEventType::DEREGISTERED: {
+    case LwM2M::RegistryEventType::Deregistered: {
         // Handle device deregistration (deletion/removal)
         std::cout << "Device with id: " << event->identifier_
             << " has been updated!" << std::endl;

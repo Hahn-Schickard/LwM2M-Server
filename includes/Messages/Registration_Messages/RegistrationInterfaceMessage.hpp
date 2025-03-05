@@ -38,7 +38,7 @@ protected:
   RegistrationInterfaceResponse(EndpointPtr endpoint, MessageType message_type,
       std::unordered_set<ResponseCode> supported_responses,
       ResponseCode response_code, PayloadPtr payload = PayloadPtr())
-      : ServerResponse(endpoint, message_type, InterfaceType::REGISTRATION,
+      : ServerResponse(endpoint, message_type, InterfaceType::Registration,
             supported_responses, response_code, payload) {}
 };
 
@@ -61,7 +61,7 @@ protected:
   RegistrationInterfaceRequest(EndpointPtr endpoint, MessageType message_type,
       PayloadPtr payload = PayloadPtr())
       : ClientRequest(
-            endpoint, message_type, InterfaceType::REGISTRATION, payload) {}
+            endpoint, message_type, InterfaceType::Registration, payload) {}
 };
 
 using RegistrationInterfaceRequestPtr =

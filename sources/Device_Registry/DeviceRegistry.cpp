@@ -59,7 +59,7 @@ void DeviceRegistry::registerDevice(DevicePtr new_device) {
   logger_->info("Device {} with id {} has been registered.",
       new_device->getName(), new_device->getDeviceId());
   auto event = std::make_shared<RegistryEvent>(
-      RegistryEventType::REGISTERED, new_device->getDeviceId(), new_device);
+      RegistryEventType::Registered, new_device->getDeviceId(), new_device);
   logger_->trace("Dispatching registration event for device {}:{}",
       new_device->getName(), new_device->getDeviceId());
   notify(event);
@@ -71,7 +71,7 @@ void DeviceRegistry::updateDevice(DevicePtr updated_device) {
     it->second = updated_device;
     logger_->info("Device {} with id {} has been updated.",
         updated_device->getName(), updated_device->getDeviceId());
-    auto event = std::make_shared<RegistryEvent>(RegistryEventType::UPDATED,
+    auto event = std::make_shared<RegistryEvent>(RegistryEventType::Updated,
         updated_device->getDeviceId(), updated_device);
     logger_->trace("Dispatching update event for device {}:{}",
         updated_device->getName(), updated_device->getDeviceId());
@@ -90,7 +90,7 @@ void DeviceRegistry::deregisterDevice(const string& identifier) {
     logger_->info(
         "Device with id {} has been removed from the registry.", identifier);
     auto event = std::make_shared<RegistryEvent>(
-        RegistryEventType::DEREGISTERED, identifier);
+        RegistryEventType::Deregistered, identifier);
     logger_->trace(
         "Dispatching deregistration event for device {}", identifier);
     notify(event);

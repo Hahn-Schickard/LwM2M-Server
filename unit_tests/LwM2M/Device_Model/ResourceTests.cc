@@ -139,8 +139,8 @@ void readResource(ResourcePtr resource, ResourceExpectationsPtr expected,
 
 // NOLINTNEXTLINE
 TEST_P(ResourceTest, canReadValue) {
-  if (expected_->descriptor->operations_ == OperationsType::READ ||
-      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::Read ||
+      expected_->descriptor->operations_ == OperationsType::Read_And_Write) {
     EXPECT_NO_THROW(readResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW(
@@ -169,8 +169,8 @@ void cancelReadResource(ResourcePtr resource) {
 
 // NOLINTNEXTLINE
 TEST_P(ResourceTest, canCancelRead) {
-  if (expected_->descriptor->operations_ == OperationsType::READ ||
-      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::Read ||
+      expected_->descriptor->operations_ == OperationsType::Read_And_Write) {
     EXPECT_NO_THROW(cancelReadResource(tested_));
   } else {
     EXPECT_THROW({ cancelReadResource(tested_); }, logic_error);
@@ -212,8 +212,8 @@ void writeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
 
 // NOLINTNEXTLINE
 TEST_P(ResourceTest, canWriteValue) {
-  if (expected_->descriptor->operations_ == OperationsType::WRITE ||
-      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::Write ||
+      expected_->descriptor->operations_ == OperationsType::Read_And_Write) {
     EXPECT_NO_THROW(writeResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW({ writeResource(tested_, expected_, response_delay_ms_); },
@@ -242,8 +242,8 @@ void cancelWriteResource(ResourcePtr resource) {
 
 // NOLINTNEXTLINE
 TEST_P(ResourceTest, canCancelWrite) {
-  if (expected_->descriptor->operations_ == OperationsType::WRITE ||
-      expected_->descriptor->operations_ == OperationsType::READ_AND_WRITE) {
+  if (expected_->descriptor->operations_ == OperationsType::Write ||
+      expected_->descriptor->operations_ == OperationsType::Read_And_Write) {
     EXPECT_NO_THROW(cancelWriteResource(tested_));
   } else {
     EXPECT_THROW({ cancelWriteResource(tested_); }, logic_error);
@@ -282,7 +282,7 @@ void executeResource(ResourcePtr resource, ResourceExpectationsPtr expected,
 
 // NOLINTNEXTLINE
 TEST_P(ResourceTest, canExecuteAction) {
-  if (expected_->descriptor->operations_ == OperationsType::EXECUTE) {
+  if (expected_->descriptor->operations_ == OperationsType::Execute) {
     EXPECT_NO_THROW(executeResource(tested_, expected_, response_delay_ms_));
   } else {
     EXPECT_THROW({ executeResource(tested_, expected_, response_delay_ms_); },
@@ -310,7 +310,7 @@ void cancelExecuteResource(ResourcePtr resource) {
 
 // NOLINTNEXTLINE
 TEST_P(ResourceTest, canCancelExecutable) {
-  if (expected_->descriptor->operations_ == OperationsType::EXECUTE) {
+  if (expected_->descriptor->operations_ == OperationsType::Execute) {
     EXPECT_NO_THROW(cancelExecuteResource(tested_));
   } else {
     EXPECT_THROW({ cancelExecuteResource(tested_); }, logic_error);
@@ -334,132 +334,132 @@ struct GenerateTestName {
 // NOLINTNEXTLINE
 INSTANTIATE_TEST_SUITE_P(ResourceTests, ResourceTest,
     testing::Values(make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                                   OperationsType::READ, false, true,
-                                   DataType::BOOLEAN, "", ""),
+                                   OperationsType::Read, false, true,
+                                   DataType::Boolean, "", ""),
                         DataFormat(DataVariant((bool)true))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::BOOLEAN, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::Boolean, "", ""),
             DataFormat(DataVariant((bool)true))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::BOOLEAN, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::Boolean, "", ""),
             DataFormat(DataVariant((bool)true))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::BOOLEAN, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::Boolean, "", ""),
             DataFormat(DataVariant((bool)true))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                false, true, DataType::FLOAT, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Read,
+                false, true, DataType::Float, "", ""),
             DataFormat(DataVariant((double)52.4))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::FLOAT, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::Float, "", ""),
             DataFormat(DataVariant((double)20.2))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::FLOAT, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::Float, "", ""),
             DataFormat(DataVariant((double)20.2))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::FLOAT, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::Float, "", ""),
             DataFormat(DataVariant((double)20.2))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                false, true, DataType::OBJECT_LINK, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Read,
+                false, true, DataType::Object_Link, "", ""),
             DataFormat(DataVariant(ObjectLink(0, 0)))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::OBJECT_LINK, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::Object_Link, "", ""),
             DataFormat(DataVariant(ObjectLink(0, 0)))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::OBJECT_LINK, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::Object_Link, "", ""),
             DataFormat(DataVariant(ObjectLink(0, 0)))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::OBJECT_LINK, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::Object_Link, "", ""),
             DataFormat(DataVariant(ObjectLink(0, 0)))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                false, true, DataType::OPAQUE, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Read,
+                false, true, DataType::Opaque, "", ""),
             DataFormat(DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::OPAQUE, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::Opaque, "", ""),
             DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::OPAQUE, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::Opaque, "", ""),
             DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::OPAQUE, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::Opaque, "", ""),
             DataFormat(DataVariant(vector<uint8_t>{2, 3, 6}))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                false, true, DataType::SIGNED_INTEGER, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Read,
+                false, true, DataType::Signed_Integer, "", ""),
             DataFormat(DataVariant((int64_t)-100))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::SIGNED_INTEGER, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::Signed_Integer, "", ""),
             DataFormat(DataVariant((int64_t)-100))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::SIGNED_INTEGER, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::Signed_Integer, "", ""),
             DataFormat(DataVariant((int64_t)-100))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::SIGNED_INTEGER, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::Signed_Integer, "", ""),
             DataFormat(DataVariant((int64_t)-100))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                false, true, DataType::STRING, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Read,
+                false, true, DataType::String, "", ""),
             DataFormat(DataVariant((string) "Hello"))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::STRING, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::String, "", ""),
             DataFormat(DataVariant(string("hello")))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::STRING, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::String, "", ""),
             DataFormat(DataVariant(string("hello")))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::STRING, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::String, "", ""),
             DataFormat(DataVariant(string("hello")))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                false, true, DataType::UNSIGNED_INTEGER, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Read,
+                false, true, DataType::Unsigned_Integer, "", ""),
             DataFormat(DataVariant((uint64_t)26))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::UNSIGNED_INTEGER, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::Unsigned_Integer, "", ""),
             DataFormat(DataVariant((uint64_t)26))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::UNSIGNED_INTEGER, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::Unsigned_Integer, "", ""),
             DataFormat(DataVariant((uint64_t)26))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::UNSIGNED_INTEGER, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::Unsigned_Integer, "", ""),
             DataFormat(DataVariant((uint64_t)26))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::READ,
-                false, true, DataType::TIME, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Read,
+                false, true, DataType::Time, "", ""),
             DataFormat(DataVariant((uint64_t)12850912328012))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::WRITE,
-                false, true, DataType::TIME, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Write,
+                false, true, DataType::Time, "", ""),
             DataFormat(DataVariant((uint64_t)12850912328012))),
         make_tuple(make_shared<ResourceDescriptor>(1, "Test",
-                       OperationsType::READ_AND_WRITE, false, true,
-                       DataType::TIME, "", ""),
+                       OperationsType::Read_And_Write, false, true,
+                       DataType::Time, "", ""),
             DataFormat(DataVariant((uint64_t)12850912328012))),
         make_tuple(
-            make_shared<ResourceDescriptor>(1, "Test", OperationsType::EXECUTE,
-                false, true, DataType::TIME, "", ""),
+            make_shared<ResourceDescriptor>(1, "Test", OperationsType::Execute,
+                false, true, DataType::Time, "", ""),
             DataFormat(DataVariant((uint64_t)12850912328012)))),
     GenerateTestName());
 

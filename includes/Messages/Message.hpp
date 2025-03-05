@@ -24,38 +24,38 @@ struct UnsupportedOperation : public std::logic_error {
 };
 
 enum struct InterfaceType : uint8_t {
-  NOT_RECOGNIZED,
-  REGISTRATION = 0x10,
-  DEVICE_MANAGEMENT = 0x20,
-  INFORMATION_REPORTING = 0x30,
-  BOOTSTRAP = 0x40
+  Not_Recognized,
+  Registration = 0x10,
+  Device_Management = 0x20,
+  Information_Reporting = 0x30,
+  Bootstrap = 0x40
 };
 
 std::string toString(InterfaceType type);
 
 enum struct MessageType : uint8_t {
-  NOT_RECOGNIZED,
+  Not_Recognized,
   // Registration messages
-  REGISTER = 0x11,
-  DEREGISTER = 0x12,
-  UPDATE = 0x13,
+  Register = 0x11,
+  Deregister = 0x12,
+  Update = 0x13,
   // Device management messages
-  READ = 0x21,
-  WRITE = 0x22,
-  EXECUTE = 0x23,
-  CREATE = 0x24,
-  DELETE = 0x25,
-  WRITE_ATTRIBUTES = 0x26,
-  DISCOVER = 0x27,
-  READ_COMPOSITE = 0x28,
-  WRITE_COMPOSITE = 0x29,
+  Read = 0x21,
+  Write = 0x22,
+  Execute = 0x23,
+  Create = 0x24,
+  Delete = 0x25,
+  Write_Attributes = 0x26,
+  Discover = 0x27,
+  Read_Composite = 0x28,
+  Write_Composite = 0x29,
   // Information reporting messages
-  OBSERVE = 0x30,
-  OBSERVE_COMPOSITE = 0x31,
-  CANCEL_OBSERVATION = 0x32,
-  CANCEL_OBSERVATION_COMPOSITE = 0x33,
-  NOTIFY = 0x34,
-  SEND = 0x35
+  Observe = 0x30,
+  Observe_Composite = 0x31,
+  Cancel_Observation = 0x32,
+  Cancel_Observation_Composite = 0x33,
+  Notify = 0x34,
+  Send = 0x35
 };
 
 std::string toString(MessageType type);
@@ -63,29 +63,29 @@ std::string toString(MessageType type);
 InterfaceType getInterfaceType(MessageType message_type);
 
 enum struct ResponseCode : uint8_t {
-  OK = 0x40,
-  CREATED = 0x41,
-  DELETED = 0x42,
-  CHANGED = 0x44,
-  CONTENT = 0x45,
-  CONTINUE = 0x5F,
-  BAD_REQUEST = 0x80,
-  UNAUTHORIZED = 0x81,
-  FORBIDDEN = 0x83,
-  NOT_FOUND = 0x84,
-  METHOD_NOT_ALLOWED = 0x85,
-  NOT_ACCEPTABLE = 0x86,
-  REQUEST_ENTITY_INCOMPLETE = 0x88,
-  PRECOGNITION_FAILED = 0x8C,
-  REQUEST_ENTITY_TOO_LARGE = 0x8D,
-  UNSUPPORTED_CONTENT_FORMAT = 0x8F,
-  INTERNAL_SERVER_ERROR = 0xA0,
-  NOT_IMPLEMENTED = 0xA1,
-  BAD_GATEWAY = 0xA2,
-  SERVICE_UNAVAILABLE = 0xA3,
-  GATEWAY_TIMEOUT = 0xA4,
-  PROXYING_NOT_SUPPORTED = 0xA5,
-  UNHANDLED
+  Ok = 0x40,
+  Created = 0x41,
+  Deleted = 0x42,
+  Changed = 0x44,
+  Content = 0x45,
+  Continue = 0x5F,
+  Bad_Request = 0x80,
+  Unauthorized = 0x81,
+  Forbidden = 0x83,
+  Not_Found = 0x84,
+  Method_Not_Allowed = 0x85,
+  Not_Acceptable = 0x86,
+  Request_Entity_Incomplete = 0x88,
+  Precognition_Failed = 0x8C,
+  Request_Entity_Too_Large = 0x8D,
+  Unsupported_Content_Format = 0x8F,
+  Internal_Server_Error = 0xA0,
+  Not_Implemented = 0xA1,
+  Bad_Gateway = 0xA2,
+  Service_Unavailable = 0xA3,
+  Gateway_Timeout = 0xA4,
+  Proxying_Not_Supported = 0xA5,
+  Unhandled
 };
 
 std::string toString(ResponseCode type);
@@ -183,7 +183,7 @@ using ClientRequestPtr = std::shared_ptr<ClientRequest>;
 
 struct ClientResponse : Response {
   ClientResponse(EndpointPtr endpoint,
-      ResponseCode response_code = ResponseCode::BAD_REQUEST,
+      ResponseCode response_code = ResponseCode::Bad_Request,
       PayloadPtr payload = PayloadPtr());
 };
 

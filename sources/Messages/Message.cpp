@@ -10,13 +10,13 @@ UnsupportedOperation::UnsupportedOperation(const string& message)
 
 string toString(InterfaceType type) {
   switch (type) {
-  case InterfaceType::REGISTRATION: {
+  case InterfaceType::Registration: {
     return "Registration Interface";
   }
-  case InterfaceType::DEVICE_MANAGEMENT: {
+  case InterfaceType::Device_Management: {
     return "Device Management Interface";
   }
-  case InterfaceType::INFORMATION_REPORTING: {
+  case InterfaceType::Information_Reporting: {
     return "Information Reporting Interface";
   }
   default: {
@@ -27,58 +27,58 @@ string toString(InterfaceType type) {
 
 string toString(MessageType type) {
   switch (type) {
-  case MessageType::REGISTER: {
+  case MessageType::Register: {
     return "Registration";
   }
-  case MessageType::DEREGISTER: {
+  case MessageType::Deregister: {
     return "De-Registration";
   }
-  case MessageType::UPDATE: {
+  case MessageType::Update: {
     return "Update";
   }
-  case MessageType::READ: {
+  case MessageType::Read: {
     return "Read";
   }
-  case MessageType::WRITE: {
+  case MessageType::Write: {
     return "Write";
   }
-  case MessageType::EXECUTE: {
+  case MessageType::Execute: {
     return "Execute";
   }
-  case MessageType::CREATE: {
+  case MessageType::Create: {
     return "Create";
   }
-  case MessageType::DELETE: {
+  case MessageType::Delete: {
     return "Delete";
   }
-  case MessageType::WRITE_ATTRIBUTES: {
+  case MessageType::Write_Attributes: {
     return "Write Attributes";
   }
-  case MessageType::DISCOVER: {
+  case MessageType::Discover: {
     return "Discover";
   }
-  case MessageType::READ_COMPOSITE: {
+  case MessageType::Read_Composite: {
     return "Read Composite";
   }
-  case MessageType::WRITE_COMPOSITE: {
+  case MessageType::Write_Composite: {
     return "Write Composite";
   }
-  case MessageType::OBSERVE: {
+  case MessageType::Observe: {
     return "Observe";
   }
-  case MessageType::OBSERVE_COMPOSITE: {
+  case MessageType::Observe_Composite: {
     return "Observe Composite";
   }
-  case MessageType::CANCEL_OBSERVATION: {
+  case MessageType::Cancel_Observation: {
     return "Cancel Observation";
   }
-  case MessageType::CANCEL_OBSERVATION_COMPOSITE: {
+  case MessageType::Cancel_Observation_Composite: {
     return "Cancel Observation Composite";
   }
-  case MessageType::NOTIFY: {
+  case MessageType::Notify: {
     return "Notify";
   }
-  case MessageType::SEND: {
+  case MessageType::Send: {
     return "Send";
   }
   default: {
@@ -95,92 +95,92 @@ static constexpr uint8_t BOOTSTRAP_INTERFACE = 0x40;
 InterfaceType getInterfaceType(MessageType message_type) {
   switch (static_cast<int>(message_type) & INTERFACE_MASK) {
   case REGISTRATION_INTERFACE: {
-    return InterfaceType::REGISTRATION;
+    return InterfaceType::Registration;
   }
   case MANAGEMENT_INTERFACE: {
-    return InterfaceType::DEVICE_MANAGEMENT;
+    return InterfaceType::Device_Management;
   }
   case REPORTING_INTERFACE: {
-    return InterfaceType::INFORMATION_REPORTING;
+    return InterfaceType::Information_Reporting;
   }
   case BOOTSTRAP_INTERFACE: {
-    return InterfaceType::BOOTSTRAP;
+    return InterfaceType::Bootstrap;
   }
   default: {
-    return InterfaceType::NOT_RECOGNIZED;
+    return InterfaceType::Not_Recognized;
   }
   }
 }
 
 string toString(ResponseCode type) {
   switch (type) {
-  case ResponseCode::OK: {
+  case ResponseCode::Ok: {
     return "Ok";
   }
-  case ResponseCode::CREATED: {
+  case ResponseCode::Created: {
     return "Created";
   }
-  case ResponseCode::DELETED: {
+  case ResponseCode::Deleted: {
     return "Deleted";
   }
-  case ResponseCode::CHANGED: {
+  case ResponseCode::Changed: {
     return "Changed";
   }
-  case ResponseCode::CONTENT: {
+  case ResponseCode::Content: {
     return "Content";
   }
-  case ResponseCode::CONTINUE: {
+  case ResponseCode::Continue: {
     return "Continue";
   }
-  case ResponseCode::BAD_REQUEST: {
+  case ResponseCode::Bad_Request: {
     return "Bad Request";
   }
-  case ResponseCode::UNAUTHORIZED: {
+  case ResponseCode::Unauthorized: {
     return "Unauthorized";
   }
-  case ResponseCode::FORBIDDEN: {
+  case ResponseCode::Forbidden: {
     return "Forbidden";
   }
-  case ResponseCode::NOT_FOUND: {
+  case ResponseCode::Not_Found: {
     return "Not Found";
   }
-  case ResponseCode::METHOD_NOT_ALLOWED: {
+  case ResponseCode::Method_Not_Allowed: {
     return "Methond Not Allowed";
   }
-  case ResponseCode::NOT_ACCEPTABLE: {
+  case ResponseCode::Not_Acceptable: {
     return "Not Acceptable";
   }
-  case ResponseCode::REQUEST_ENTITY_INCOMPLETE: {
+  case ResponseCode::Request_Entity_Incomplete: {
     return "Request Entity Incomplete";
   }
-  case ResponseCode::PRECOGNITION_FAILED: {
+  case ResponseCode::Precognition_Failed: {
     return "Precognition Failed";
   }
-  case ResponseCode::REQUEST_ENTITY_TOO_LARGE: {
+  case ResponseCode::Request_Entity_Too_Large: {
     return "Request Entity Too Large";
   }
-  case ResponseCode::UNSUPPORTED_CONTENT_FORMAT: {
+  case ResponseCode::Unsupported_Content_Format: {
     return "Unsupported Content Format";
   }
-  case ResponseCode::INTERNAL_SERVER_ERROR: {
+  case ResponseCode::Internal_Server_Error: {
     return "Internal Server Error";
   }
-  case ResponseCode::NOT_IMPLEMENTED: {
+  case ResponseCode::Not_Implemented: {
     return "Not Implemented";
   }
-  case ResponseCode::BAD_GATEWAY: {
+  case ResponseCode::Bad_Gateway: {
     return "Bad Gateway";
   }
-  case ResponseCode::SERVICE_UNAVAILABLE: {
+  case ResponseCode::Service_Unavailable: {
     return "Service Unavailable";
   }
-  case ResponseCode::GATEWAY_TIMEOUT: {
+  case ResponseCode::Gateway_Timeout: {
     return "Gateway Timeout";
   }
-  case ResponseCode::PROXYING_NOT_SUPPORTED: {
+  case ResponseCode::Proxying_Not_Supported: {
     return "Proxying Not Supported";
   }
-  case ResponseCode::UNHANDLED:
+  case ResponseCode::Unhandled:
   default: {
     return "Unhandled Return Code";
   }
@@ -252,7 +252,7 @@ ClientRequest::ClientRequest(EndpointPtr endpoint, // NOLINT
 ClientResponse::ClientResponse(EndpointPtr endpoint, // NOLINT
     ResponseCode response_code, PayloadPtr payload) // NOLINT
     : Response(endpoint, // NOLINT
-          MessageType::NOT_RECOGNIZED, InterfaceType::NOT_RECOGNIZED, true,
+          MessageType::Not_Recognized, InterfaceType::Not_Recognized, true,
           unordered_set<ResponseCode>(), response_code, payload) {} // NOLINT
 
 ClientNotification::ClientNotification(EndpointPtr endpoint, // NOLINT

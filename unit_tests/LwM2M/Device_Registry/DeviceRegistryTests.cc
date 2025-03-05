@@ -82,7 +82,7 @@ TEST_F(DeviceRegistryTests, canRegisterDevice) {
       ObjectDescriptorsMap(), "1243135", 10, "test_device");
 
   auto event = std::make_shared<RegistryEvent>(
-      RegistryEventType::REGISTERED, device->getDeviceId(), device);
+      RegistryEventType::Registered, device->getDeviceId(), device);
   EXPECT_CALL(*listener_, handleEvent(EventPtrIsEqual(event))).Times(1);
 
   try {
@@ -98,7 +98,7 @@ TEST_F(DeviceRegistryTests, canRegisterDevice) {
 TEST_F(DeviceRegistryTests, canDeregisterDevice) {
   EXPECT_CALL(*listener_,
       handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
-          RegistryEventType::DEREGISTERED, initial_device_->getDeviceId()))))
+          RegistryEventType::Deregistered, initial_device_->getDeviceId()))))
       .Times(1);
 
   try {
@@ -124,11 +124,11 @@ TEST_F(DeviceRegistryTests, canReregisterDevice) {
       ObjectDescriptorsMap(), "12412325", 10, "test_device");
 
   auto event = std::make_shared<RegistryEvent>(
-      RegistryEventType::REGISTERED, device->getDeviceId(), device);
+      RegistryEventType::Registered, device->getDeviceId(), device);
   EXPECT_CALL(*listener_, handleEvent(EventPtrIsEqual(event))).Times(2);
   EXPECT_CALL(*listener_,
       handleEvent(EventPtrIsEqual(make_shared<RegistryEvent>(
-          RegistryEventType::DEREGISTERED, device->getDeviceId()))))
+          RegistryEventType::Deregistered, device->getDeviceId()))))
       .Times(1);
 
   try {
@@ -145,7 +145,7 @@ TEST_F(DeviceRegistryTests, canReregisterDevice) {
 TEST_F(DeviceRegistryTests, canUpdateDevice) {
   initial_device_->updateLifetime(2222);
 
-  auto event = std::make_shared<RegistryEvent>(RegistryEventType::UPDATED,
+  auto event = std::make_shared<RegistryEvent>(RegistryEventType::Updated,
       initial_device_->getDeviceId(), initial_device_);
   EXPECT_CALL(*listener_, handleEvent(EventPtrIsEqual(event))).Times(1);
 

@@ -28,7 +28,7 @@ string toString(BindingType binding) {
   case BindingType::SMS: {
     return "SMS";
   }
-  case BindingType::NON_IP: {
+  case BindingType::Non_IP: {
     return "Non IP";
   }
   default: {

@@ -76,7 +76,7 @@ ElementIDs handleDiscoverResponse(const ClientResponsePtr& discover_response) {
 ElementIDs handleReadResponse(
     const ClientResponsePtr& response, const ReadRequestPtr& request) {
   ElementIDs result;
-  if (response->response_code_ == ResponseCode::CONTENT) {
+  if (response->response_code_ == ResponseCode::Content) {
     if (response->payload_->hasData()) {
       if (holds_alternative<TargetContentVector>(response->payload_->data_)) {
         auto targets_and_values =
@@ -136,7 +136,7 @@ ElementIDs Registrator::discover(const ServerRequestPtr& request) {
       throw ResponseReturnedAnErrorCode(response, request);
     } else {
       if (response->payload_) {
-        if (request->message_type_ == MessageType::DISCOVER) {
+        if (request->message_type_ == MessageType::Discover) {
           return handleDiscoverResponse(response);
         } else {
           // we use request in case of failure code, to create and throw an
@@ -292,7 +292,7 @@ RegisterResponsePtr Registrator::handleRequest(
       logger_->error("An unhandled exception occurred while handling "
                      "registration request. Exception: {}",
           ex.what());
-      return request->makeResponse(ResponseCode::BAD_REQUEST);
+      return request->makeResponse(ResponseCode::Bad_Request);
     }
   } else {
     throw invalid_argument("Register Request can not be a nullptr");
@@ -332,7 +332,7 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
           }
           if (device_info.sms_number_.has_value()) {
             logger_->error("SMS numbers are not supported!");
-            return request->makeResponse(ResponseCode::BAD_REQUEST);
+            return request->makeResponse(ResponseCode::Bad_Request);
           }
           registry_->updateDevice(device);
         } else {
@@ -340,12 +340,12 @@ UpdateResponsePtr Registrator::handleRequest(const UpdateRequestPtr& request) {
               device->getDeviceId(), device->getName());
           //@TODO: handle keep alive here
         }
-        return request->makeResponse(ResponseCode::CHANGED);
+        return request->makeResponse(ResponseCode::Changed);
       } else {
-        return request->makeResponse(ResponseCode::BAD_REQUEST);
+        return request->makeResponse(ResponseCode::Bad_Request);
       }
     } catch (const DeviceNotFound& ex) {
-      return request->makeResponse(ResponseCode::NOT_FOUND);
+      return request->makeResponse(ResponseCode::Not_Found);
     }
   } else {
     throw invalid_argument("Update Request can not be a nullptr");
@@ -360,15 +360,15 @@ DeregisterResponsePtr Registrator::handleRequest(
         request->endpoint_->endpoint_port_);
     try {
       registry_->deregisterDevice(request->location_);
-      return request->makeResponse(ResponseCode::DELETED);
+      return request->makeResponse(ResponseCode::Deleted);
     } catch (const DeviceNotFound& ex) {
       logger_->error("Failed to deregister device. {}", ex.what());
-      return request->makeResponse(ResponseCode::NOT_FOUND);
+      return request->makeResponse(ResponseCode::Not_Found);
     } catch (const exception& ex) {
       logger_->error("An unhandled exception occurred while handling "
                      "deregistration request. Exception: {}",
           ex.what());
-      return request->makeResponse(ResponseCode::BAD_REQUEST);
+      return request->makeResponse(ResponseCode::Bad_Request);
     }
   } else {
     throw invalid_argument("Deregister Request can not be a nullptr");

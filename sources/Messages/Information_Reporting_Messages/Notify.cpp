@@ -6,7 +6,7 @@ namespace LwM2M {
 ValueUpdated::ValueUpdated(EndpointPtr endpoint, // NOLINT
     DataFormatPtr content) // NOLINT
     : ClientNotification(endpoint, // NOLINT
-          MessageType::NOTIFY, InterfaceType::INFORMATION_REPORTING,
+          MessageType::Notify, InterfaceType::Information_Reporting,
           make_shared<Payload>(content)) {}
 
 string ValueUpdated::name() const { return "ValueUpdated"; }

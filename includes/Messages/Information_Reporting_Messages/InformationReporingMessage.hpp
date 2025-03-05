@@ -29,7 +29,7 @@ protected:
   InformationReportingRequest(EndpointPtr endpoint, MessageType message_type,
       PayloadPtr payload = PayloadPtr())
       : ServerRequest(endpoint, message_type,
-            InterfaceType::INFORMATION_REPORTING, payload) {}
+            InterfaceType::Information_Reporting, payload) {}
 };
 
 /**
@@ -51,7 +51,7 @@ protected:
       std::unordered_set<ResponseCode> supported_responses,
       ResponseCode response_code, PayloadPtr payload = PayloadPtr())
       : ServerResponse(endpoint, message_type,
-            InterfaceType::INFORMATION_REPORTING, supported_responses,
+            InterfaceType::Information_Reporting, supported_responses,
             response_code, payload) {}
 };
 
@@ -72,7 +72,7 @@ protected:
   InformationReportingDownlinkRequest(EndpointPtr endpoint,
       MessageType message_type, PayloadPtr payload = PayloadPtr())
       : ClientRequest(endpoint, message_type,
-            InterfaceType::INFORMATION_REPORTING, payload) {}
+            InterfaceType::Information_Reporting, payload) {}
 };
 
 using InformationReportingRequestPtr =

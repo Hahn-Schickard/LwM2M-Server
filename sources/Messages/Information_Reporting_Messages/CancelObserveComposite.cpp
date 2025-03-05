@@ -7,7 +7,7 @@ CancelObserveCompositeRequest::CancelObserveCompositeRequest(
     EndpointPtr endpoint, // NOLINT
     ElementIDs target_ids) // NOLINT
     : InformationReportingRequest(endpoint, // NOLINT
-          MessageType::CANCEL_OBSERVATION_COMPOSITE,
+          MessageType::Cancel_Observation_Composite,
           make_shared<Payload>(target_ids)) {}
 
 string CancelObserveCompositeRequest::name() const {

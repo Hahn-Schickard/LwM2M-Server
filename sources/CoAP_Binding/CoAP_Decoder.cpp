@@ -21,7 +21,7 @@ ResponseCode toResponseCode(CoAP::CodeType code) {
 }
 LwM2M::PayloadPtr toPayload(const PlainText& content) {
   return make_shared<LwM2M::Payload>(
-      make_shared<DataFormat>(content.toString()), MediaType::PLAIN_TEXT);
+      make_shared<DataFormat>(content.toString()), MediaType::Plain_Text);
 }
 
 ElementID toElementID(const vector<string>& targets) {
@@ -71,7 +71,7 @@ LwM2M::PayloadPtr toPayload(const CoRE_Links& content) {
     result.emplace_back(toElementID(target));
   }
   if (!result.empty()) {
-    return make_shared<LwM2M::Payload>(result, MediaType::CORE_LINK);
+    return make_shared<LwM2M::Payload>(result, MediaType::Core_Link);
   } else {
     return LwM2M::PayloadPtr();
   }
@@ -141,7 +141,7 @@ LwM2M::PayloadPtr toPayload(const TLV_Pack& content) {
 
 LwM2M::PayloadPtr toPayload(const OctetStream& content) {
   return make_shared<LwM2M::Payload>(
-      make_shared<DataFormat>(content.getValue()), MediaType::OPAQUE);
+      make_shared<DataFormat>(content.getValue()), MediaType::Opaque);
 }
 
 CoAP_Decoder::CoAP_Decoder()
@@ -267,7 +267,7 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
         "ClientResponse from message {} from {}:{}. Exception: {}",
         message->getToken()->hexify(), message->getAddressIP(),
         message->getAddressPort(), ex.what());
-    return make_shared<ClientResponse>(endpoint, ResponseCode::BAD_REQUEST);
+    return make_shared<ClientResponse>(endpoint, ResponseCode::Bad_Request);
   }
 }
 

@@ -7,7 +7,7 @@ namespace LwM2M {
 DiscoverRequest::DiscoverRequest(EndpointPtr endpoint, // NOLINT
     ElementID target_id)
     : DeviceManagementRequest(endpoint, // NOLINT
-          MessageType::DISCOVER, make_shared<Payload>(target_id)),
+          MessageType::Discover, make_shared<Payload>(target_id)),
       target_(target_id) {}
 
 string DiscoverRequest::name() const { return "DiscoverRequest"; }

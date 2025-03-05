@@ -6,9 +6,9 @@ namespace LwM2M {
 RegisterResponse::RegisterResponse(EndpointPtr endpoint, // NOLINT
     ResponseCode response_code)
     : RegistrationInterfaceResponse(endpoint, // NOLINT
-          MessageType::REGISTER,
-          unordered_set<ResponseCode>{ResponseCode::BAD_REQUEST,
-              ResponseCode::FORBIDDEN, ResponseCode::PRECOGNITION_FAILED},
+          MessageType::Register,
+          unordered_set<ResponseCode>{ResponseCode::Bad_Request,
+              ResponseCode::Forbidden, ResponseCode::Precognition_Failed},
           response_code) {
   checkResponseCode(response_code);
 }
@@ -16,9 +16,9 @@ RegisterResponse::RegisterResponse(EndpointPtr endpoint, // NOLINT
 RegisterResponse::RegisterResponse(EndpointPtr endpoint, // NOLINT
     string location)
     : RegistrationInterfaceResponse(endpoint, // NOLINT
-          MessageType::REGISTER,
-          unordered_set<ResponseCode>{ResponseCode::CREATED},
-          ResponseCode::CREATED,
+          MessageType::Register,
+          unordered_set<ResponseCode>{ResponseCode::Created},
+          ResponseCode::Created,
           make_shared<Payload>(
               make_shared<DataFormat>(DataVariant(location)))) {}
 
@@ -27,7 +27,7 @@ string RegisterResponse::name() const { return "RegisterResponse"; }
 RegisterRequest::RegisterRequest(EndpointPtr endpoint, // NOLINT
     DeviceMetaInfo device_info) // NOLINT
     : RegistrationInterfaceRequest(endpoint, // NOLINT
-          MessageType::REGISTER),
+          MessageType::Register),
       device_info_(device_info) {} // NOLINT
 
 RegisterRequest::RegisterRequest(EndpointPtr endpoint, // NOLINT
@@ -36,7 +36,7 @@ RegisterRequest::RegisterRequest(EndpointPtr endpoint, // NOLINT
     optional<BindingType> binding, optional<bool> queue_mode,
     optional<string> sms_number)
     : RegistrationInterfaceRequest(endpoint, // NOLINT
-          MessageType::REGISTER),
+          MessageType::Register),
       device_info_(DeviceMetaInfo(life_time, object_instances_map, // NOLINT
           endpoint_name, version, binding, queue_mode, sms_number)) {} // NOLINT
 

@@ -74,15 +74,15 @@ bool getChildValue<bool>(xml_node parent, const string& child_name) {
 OperationsType convertToOperationsType(const string& value) {
   OperationsType result;
   if (value == "R") {
-    result = OperationsType::READ;
+    result = OperationsType::Read;
   } else if (value == "W") {
-    result = OperationsType::WRITE;
+    result = OperationsType::Write;
   } else if (value == "RW") {
-    result = OperationsType::READ_AND_WRITE;
+    result = OperationsType::Read_And_Write;
   } else if (value == "E") {
-    result = OperationsType::EXECUTE;
+    result = OperationsType::Execute;
   } else {
-    result = OperationsType::NO_OPERATION;
+    result = OperationsType::No_Operation;
   }
   return result;
 }
@@ -94,25 +94,25 @@ bool convertMandatoryType(const string& value) { return value == "Mandatory"; }
 DataType convertDataType(const string& value) {
   DataType result;
   if (value == "Boolean") {
-    result = DataType::BOOLEAN;
+    result = DataType::Boolean;
   } else if (value == "Integer") {
-    result = DataType::SIGNED_INTEGER;
+    result = DataType::Signed_Integer;
   } else if (value == "Unsigned Integer") {
-    result = DataType::UNSIGNED_INTEGER;
+    result = DataType::Unsigned_Integer;
   } else if (value == "Float") {
-    result = DataType::FLOAT;
+    result = DataType::Float;
   } else if (value == "String") {
-    result = DataType::STRING;
+    result = DataType::String;
   } else if (value == "Opaque") {
-    result = DataType::OPAQUE;
+    result = DataType::Opaque;
   } else if (value == "Time") {
-    result = DataType::TIME;
+    result = DataType::Time;
   } else if (value == "Objlnk") {
-    result = DataType::OBJECT_LINK;
+    result = DataType::Object_Link;
   } else if (value == "Corelnk") {
-    result = DataType::CORE_LINK;
+    result = DataType::Core_Link;
   } else {
-    result = DataType::NONE;
+    result = DataType::None;
   }
   return result;
 }

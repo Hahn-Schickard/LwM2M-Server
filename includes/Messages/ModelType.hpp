@@ -4,11 +4,11 @@
 #include <string>
 
 namespace LwM2M {
-enum class LwM2M_Version { V1_0, V1_1, UNRECOGNIZED };
+enum class LwM2M_Version { V1_0, V1_1, Unrecognized };
 
 std::string toString(LwM2M_Version version);
 
-enum class BindingType { UDP, TCP, SMS, NON_IP, MALFORMED };
+enum class BindingType { UDP, TCP, SMS, Non_IP, Malformed };
 
 std::string toString(BindingType binding);
 

@@ -8,7 +8,7 @@
 #include <string>
 
 namespace LwM2M {
-enum class RegistryEventType { REGISTERED, UPDATED, DEREGISTERED };
+enum class RegistryEventType { Registered, Updated, Deregistered };
 
 /**
  * @brief Returns a human readable string from a given RegistryEventType

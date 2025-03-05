@@ -17,13 +17,13 @@ namespace LwM2M {
 
 string toString(MediaType type) {
   switch (type) {
-  case MediaType::PLAIN_TEXT: {
+  case MediaType::Plain_Text: {
     return "Plain Text";
   }
-  case MediaType::CORE_LINK: {
+  case MediaType::Core_Link: {
     return "CoRE Link";
   }
-  case MediaType::OPAQUE: {
+  case MediaType::Opaque: {
     return "Opaque";
   }
   case MediaType::CBOR: {
@@ -41,7 +41,7 @@ string toString(MediaType type) {
   case MediaType::JSON: {
     return "LwM2M JSON";
   }
-  case MediaType::NOT_SPECIFIED:
+  case MediaType::Not_Specified:
   default: {
     return "Not specified";
   }
@@ -50,34 +50,34 @@ string toString(MediaType type) {
 
 string toString(DataType type) {
   switch (type) {
-  case DataType::STRING: {
+  case DataType::String: {
     return "String";
   }
-  case DataType::SIGNED_INTEGER: {
+  case DataType::Signed_Integer: {
     return "Signed Integer";
   }
-  case DataType::UNSIGNED_INTEGER: {
+  case DataType::Unsigned_Integer: {
     return "Unsigned Integer";
   }
-  case DataType::FLOAT: {
+  case DataType::Float: {
     return "Float";
   }
-  case DataType::BOOLEAN: {
+  case DataType::Boolean: {
     return "Boolean";
   }
-  case DataType::OPAQUE: {
+  case DataType::Opaque: {
     return "Opaque";
   }
-  case DataType::TIME: {
+  case DataType::Time: {
     return "POSIX Tine";
   }
-  case DataType::OBJECT_LINK: {
+  case DataType::Object_Link: {
     return "Object Link";
   }
-  case DataType::CORE_LINK: {
+  case DataType::Core_Link: {
     return "Core Link";
   }
-  case DataType::NONE:
+  case DataType::None:
   default: {
     return "None";
   }
@@ -202,28 +202,28 @@ template <> vector<uint8_t> DataFormat::get<vector<uint8_t>>() const {
 
 DataVariant DataFormat::get(const DataType type) const {
   switch (type) {
-  case DataType::BOOLEAN: {
+  case DataType::Boolean: {
     return DataVariant(get<bool>());
   }
-  case DataType::SIGNED_INTEGER: {
+  case DataType::Signed_Integer: {
     return DataVariant(get<int64_t>());
   }
-  case DataType::UNSIGNED_INTEGER: {
+  case DataType::Unsigned_Integer: {
     return DataVariant(get<uint64_t>());
   }
-  case DataType::FLOAT: {
+  case DataType::Float: {
     return DataVariant(get<double>());
   }
-  case DataType::STRING: {
+  case DataType::String: {
     return DataVariant(get<string>());
   }
-  case DataType::TIME: {
+  case DataType::Time: {
     return DataVariant(get<TimeStamp>());
   }
-  case DataType::OBJECT_LINK: {
+  case DataType::Object_Link: {
     return DataVariant(get<ObjectLink>());
   }
-  case DataType::OPAQUE: {
+  case DataType::Opaque: {
     return DataVariant(get<vector<uint8_t>>());
   }
   default: {

@@ -13,29 +13,29 @@ using namespace HaSLL;
 namespace LwM2M {
 CodeType toCodeType(LwM2M::MessageType type) {
   switch (type) {
-  case LwM2M::MessageType::OBSERVE:
-  case LwM2M::MessageType::CANCEL_OBSERVATION:
-  case LwM2M::MessageType::DISCOVER:
-  case LwM2M::MessageType::READ: {
+  case LwM2M::MessageType::Observe:
+  case LwM2M::MessageType::Cancel_Observation:
+  case LwM2M::MessageType::Discover:
+  case LwM2M::MessageType::Read: {
     return CodeType::GET;
   }
-  case LwM2M::MessageType::OBSERVE_COMPOSITE:
-  case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE:
-  case LwM2M::MessageType::READ_COMPOSITE: {
+  case LwM2M::MessageType::Observe_Composite:
+  case LwM2M::MessageType::Cancel_Observation_Composite:
+  case LwM2M::MessageType::Read_Composite: {
     return CodeType::FETCH;
   }
-  case LwM2M::MessageType::WRITE:
-  case LwM2M::MessageType::WRITE_ATTRIBUTES: {
+  case LwM2M::MessageType::Write:
+  case LwM2M::MessageType::Write_Attributes: {
     return CodeType::PUT;
   }
-  case LwM2M::MessageType::WRITE_COMPOSITE: {
+  case LwM2M::MessageType::Write_Composite: {
     return CodeType::iPATCH;
   }
-  case LwM2M::MessageType::CREATE:
-  case LwM2M::MessageType::EXECUTE: {
+  case LwM2M::MessageType::Create:
+  case LwM2M::MessageType::Execute: {
     return CodeType::POST;
   }
-  case LwM2M::MessageType::DELETE: {
+  case LwM2M::MessageType::Delete: {
     return CodeType::DELETE;
   }
   default: {
@@ -166,25 +166,25 @@ CoAP::MessagePtr CoAP_Encoder::encode(
 CoAP::PayloadPtr CoAP_Encoder::encode(LwM2M::MessageType type,
     const LwM2M::PayloadPtr& payload, const string& message_identifier) {
   switch (type) {
-  case LwM2M::MessageType::WRITE: {
+  case LwM2M::MessageType::Write: {
     logger_->trace("Encoding {} message {} payload as a LwM2M TLV",
         toString(type), message_identifier);
     return encodeAs_TLV(payload);
   }
-  case LwM2M::MessageType::WRITE_COMPOSITE: {
+  case LwM2M::MessageType::Write_Composite: {
     logger_->trace("Encoding {} message {} payload as a LwM2M CBOR",
         toString(type), message_identifier);
     return encodeAs_LwM2M_CBOR(payload);
   }
-  case LwM2M::MessageType::EXECUTE: {
+  case LwM2M::MessageType::Execute: {
     logger_->trace("Encoding {} message {} payload as PlainText",
         toString(type), message_identifier);
     return encodeAs_PlainText(payload);
   }
-  case LwM2M::MessageType::OBSERVE_COMPOSITE: {
+  case LwM2M::MessageType::Observe_Composite: {
     [[fallthrough]];
   }
-  case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE: {
+  case LwM2M::MessageType::Cancel_Observation_Composite: {
     logger_->trace("Encoding {} message {} payload as a LwM2M CBOR",
         toString(type), message_identifier);
     return encodeAs_LwM2M_CBOR(payload);
@@ -200,10 +200,10 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   Options options;
 
   switch (type) {
-  case LwM2M::MessageType::REGISTER: {
+  case LwM2M::MessageType::Register: {
     [[fallthrough]];
   }
-  case LwM2M::MessageType::UPDATE: {
+  case LwM2M::MessageType::Update: {
     if (payload) {
       if (holds_alternative<DataFormatPtr>(payload->data_)) {
         const auto& data = std::get<DataFormatPtr>(payload->data_);
@@ -225,7 +225,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     }
     break;
   }
-  case LwM2M::MessageType::READ: {
+  case LwM2M::MessageType::Read: {
     options = makeOptions(payload, message_identifier);
     auto acceptable_format_index = ContentFormatEncodings::LwM2M_TLV::index;
     auto accept = build(OptionNumber::ACCEPT, acceptable_format_index);
@@ -234,7 +234,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         toString(type), accept->getValueAsString(), message_identifier);
     break;
   }
-  case LwM2M::MessageType::READ_COMPOSITE: {
+  case LwM2M::MessageType::Read_Composite: {
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     auto content_format =
@@ -245,7 +245,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
   }
-  case LwM2M::MessageType::WRITE: {
+  case LwM2M::MessageType::Write: {
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_TLV::index;
     auto content_format =
@@ -256,7 +256,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
   }
-  case LwM2M::MessageType::WRITE_COMPOSITE: {
+  case LwM2M::MessageType::Write_Composite: {
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     auto content_format =
@@ -267,7 +267,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
   }
-  case LwM2M::MessageType::EXECUTE: {
+  case LwM2M::MessageType::Execute: {
     // @TODO: check if there is some arguments first!
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::PlainText::index;
@@ -279,7 +279,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
   }
-  case LwM2M::MessageType::CREATE: {
+  case LwM2M::MessageType::Create: {
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     auto content_format =
@@ -290,7 +290,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
   }
-  case LwM2M::MessageType::DISCOVER: {
+  case LwM2M::MessageType::Discover: {
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
     auto content_format = build(OptionNumber::ACCEPT, content_format_index);
@@ -300,7 +300,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         toString(type), content_format->getValueAsString(), message_identifier);
     break;
   }
-  case LwM2M::MessageType::OBSERVE_COMPOSITE: {
+  case LwM2M::MessageType::Observe_Composite: {
     auto content_format_index = ContentFormatEncodings::LwM2M_JSON::index;
     auto json_content_format =
         build(OptionNumber::CONTENT_FORMAT, content_format_index);
@@ -325,20 +325,20 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     // CoAP_Encoder::encode(LwM2M::MessageType,LwM2M::PayloadPtr,string) method
     break;
   }
-  case LwM2M::MessageType::OBSERVE: {
+  case LwM2M::MessageType::Observe: {
     options = makeOptions(payload, message_identifier);
     options += build(OptionNumber::OBSERVE, 0);
     logger_->trace("Assiging Observe CoAP::Option value as 0 for {} message {}",
         toString(type), message_identifier);
     break;
   }
-  case LwM2M::MessageType::CANCEL_OBSERVATION: {
+  case LwM2M::MessageType::Cancel_Observation: {
     options += build(OptionNumber::OBSERVE, 1);
     logger_->trace("Assiging Observe CoAP::Option value as 1 for {} message {}",
         toString(type), message_identifier);
     break;
   }
-  case LwM2M::MessageType::CANCEL_OBSERVATION_COMPOSITE: {
+  case LwM2M::MessageType::Cancel_Observation_Composite: {
     options = makeOptions(payload, message_identifier);
     options += build(OptionNumber::OBSERVE, 1);
     logger_->trace("Assiging Observe CoAP::Option value as 1 for {} message {}",

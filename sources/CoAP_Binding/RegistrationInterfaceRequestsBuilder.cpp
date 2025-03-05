@@ -32,7 +32,7 @@ optional<BindingType> getBindingType(Options options) {
         return BindingType::SMS;
       }
       case 'N': {
-        return BindingType::NON_IP;
+        return BindingType::Non_IP;
       }
       }
     }
@@ -212,11 +212,11 @@ RegisterRequestPtr buildRegisterRequest(const CoAP::MessagePtr& message) {
           sms_number);
     } catch (const bad_optional_access& ex) {
       throw RegistrationInterfaceError(
-          make_shared<RegisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
+          make_shared<RegisterResponse>(endpoint, ResponseCode::Bad_Request));
     }
   } catch (const bad_optional_access& ex) {
     throw RegistrationInterfaceError(make_shared<RegisterResponse>(
-        endpoint, ResponseCode::PRECOGNITION_FAILED));
+        endpoint, ResponseCode::Precognition_Failed));
   }
 }
 
@@ -255,7 +255,7 @@ UpdateRequestPtr buildUpdateRequest(const CoAP::MessagePtr& message) {
     }
   } catch (const bad_optional_access& ex) {
     throw RegistrationInterfaceError(
-        make_shared<UpdateResponse>(endpoint, ResponseCode::BAD_REQUEST));
+        make_shared<UpdateResponse>(endpoint, ResponseCode::Bad_Request));
   }
 }
 
@@ -268,7 +268,7 @@ DeregisterRequestPtr buildDeregisterRequest(const CoAP::MessagePtr& message) {
     return make_shared<DeregisterRequest>(endpoint, location);
   } catch (const bad_optional_access& ex) {
     throw RegistrationInterfaceError(
-        make_shared<DeregisterResponse>(endpoint, ResponseCode::BAD_REQUEST));
+        make_shared<DeregisterResponse>(endpoint, ResponseCode::Bad_Request));
   }
 }
 

@@ -22,11 +22,11 @@ struct RegisterResponse : RegistrationInterfaceResponse {
    * Used to indicate failure.
    *
    * Supported response codes:
-   * - ResponseCode::BAD_REQUEST - One of the mandatory parameters were not
+   * - ResponseCode::Bad_Request - One of the mandatory parameters were not
    * specified, endpoint name does not match with CN field of X.509 Certificates
-   * - ResponseCode::FORBIDDEN - A given endpoint name is not allowed within the
+   * - ResponseCode::Forbidden - A given endpoint name is not allowed within the
    * server.
-   * - ResponseCode::PRECOGNITION_FAILED - Given LwM2M version is not supported
+   * - ResponseCode::Precognition_Failed - Given LwM2M version is not supported
    * by the server.
    *
    * @param endpoint

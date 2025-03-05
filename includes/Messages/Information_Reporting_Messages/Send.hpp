@@ -14,15 +14,15 @@ namespace LwM2M {
  * the request was unsuccessful, requires more data or failed
  *
  * Supported response codes:
- * - ResponseCode::CHANGED - Operation was a success.
- * - ResponseCode::BAD_REQUEST - Given LwM2M::DataFormatPtr could not be
+ * - ResponseCode::Changed - Operation was a success.
+ * - ResponseCode::Bad_Request - Given LwM2M::DataFormatPtr could not be
  * interpreted, or Server encountered an undetermined error.
- * - ResponseCode::NOT_FOUND - Target LwM2M::ElmentIdVariant does not point to a
+ * - ResponseCode::Not_Found - Target LwM2M::ElmentIdVariant does not point to a
  * valid element within the client.
  */
 struct SendResponse : InformationReportingDownlinkResponse {
   SendResponse(EndpointPtr endpoint,
-      ResponseCode response_code = ResponseCode::BAD_REQUEST);
+      ResponseCode response_code = ResponseCode::Bad_Request);
 
   std::string name() const final;
 };
@@ -40,7 +40,7 @@ struct SendRequest : InformationReportingDownlinkRequest {
   std::string name() const final;
 
   SendResponsePtr makeResponse(
-      ResponseCode response_code = ResponseCode::BAD_REQUEST);
+      ResponseCode response_code = ResponseCode::Bad_Request);
 };
 
 using SendRequestPtr = std::shared_ptr<SendRequest>;

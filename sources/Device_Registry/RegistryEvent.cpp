@@ -5,13 +5,13 @@ using namespace LwM2M;
 
 string toString(RegistryEventType type) {
   switch (type) {
-  case RegistryEventType::REGISTERED: {
+  case RegistryEventType::Registered: {
     return "Device Registered";
   }
-  case RegistryEventType::UPDATED: {
+  case RegistryEventType::Updated: {
     return "Device Updated";
   }
-  case RegistryEventType::DEREGISTERED: {
+  case RegistryEventType::Deregistered: {
     return "Device Deregistered";
   }
   default: {

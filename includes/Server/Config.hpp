@@ -8,7 +8,7 @@
 
 namespace LwM2M {
 
-enum class ServerBindingType : uint8_t { CoAP = 0, UNKOWN };
+enum class ServerBindingType : uint8_t { CoAP = 0, Unkown };
 
 std::string toString(ServerBindingType type);
 

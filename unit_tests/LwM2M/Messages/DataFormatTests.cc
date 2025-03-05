@@ -41,42 +41,42 @@ public:
 TEST_P(DataFormatTest, canGetCorrectValue) {
   try {
     switch (expected->data_type) {
-    case DataType::STRING: {
+    case DataType::String: {
       tested->get<string>();
       break;
     }
-    case DataType::SIGNED_INTEGER: {
+    case DataType::Signed_Integer: {
       tested->get<int64_t>();
       break;
     }
-    case DataType::UNSIGNED_INTEGER: {
+    case DataType::Unsigned_Integer: {
       tested->get<uint64_t>();
       break;
     }
-    case DataType::FLOAT: {
+    case DataType::Float: {
       tested->get<double>();
       break;
     }
-    case DataType::BOOLEAN: {
+    case DataType::Boolean: {
       tested->get<bool>();
       break;
     }
-    case DataType::OPAQUE: {
+    case DataType::Opaque: {
       tested->get<vector<uint8_t>>();
       break;
     }
-    case DataType::TIME: {
+    case DataType::Time: {
       tested->get<uint64_t>();
       break;
     }
-    case DataType::OBJECT_LINK: {
+    case DataType::Object_Link: {
       tested->get<ObjectLink>();
       break;
     }
-    case DataType::CORE_LINK: {
+    case DataType::Core_Link: {
       FAIL() << "CoRE Link format is not implemented" << endl;
     }
-    case DataType::NONE: {
+    case DataType::None: {
       tested->get<void>();
       break;
     }
@@ -112,21 +112,21 @@ DataFormatTestParameter makeTestParameter(
 // NOLINTNEXTLINE
 INSTANTIATE_TEST_SUITE_P(DataFormatTests, DataFormatTest,
     testing::Values(makeTestParameter(DataFormatTestExpectations(
-                        DataVariant(), DataType::NONE)),
+                        DataVariant(), DataType::None)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant(string("Hello")), DataType::STRING)),
+            DataVariant(string("Hello")), DataType::String)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant((int64_t)-10), DataType::SIGNED_INTEGER)),
+            DataVariant((int64_t)-10), DataType::Signed_Integer)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant((uint64_t)20), DataType::UNSIGNED_INTEGER)),
+            DataVariant((uint64_t)20), DataType::Unsigned_Integer)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant((double)30.2), DataType::FLOAT)),
+            DataVariant((double)30.2), DataType::Float)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant((bool)true), DataType::BOOLEAN)),
+            DataVariant((bool)true), DataType::Boolean)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}), DataType::OPAQUE)),
+            DataVariant(vector<uint8_t>{1, 2, 3, 4, 5}), DataType::Opaque)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant((uint64_t)2), DataType::TIME)),
+            DataVariant((uint64_t)2), DataType::Time)),
         makeTestParameter(DataFormatTestExpectations(
-            DataVariant(ObjectLink(0, 0)), DataType::OBJECT_LINK))),
+            DataVariant(ObjectLink(0, 0)), DataType::Object_Link))),
     GenerateTestName());

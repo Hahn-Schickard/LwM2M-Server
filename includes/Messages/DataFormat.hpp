@@ -20,15 +20,15 @@ namespace LwM2M {
  *
  */
 enum class MediaType : uint16_t {
-  PLAIN_TEXT = 0, /*!< text/plain */
-  CORE_LINK = 40, /*!< application//link-format */
-  OPAQUE = 42, /*!< application/octet-stream */
+  Plain_Text = 0, /*!< text/plain */
+  Core_Link = 40, /*!< application//link-format */
+  Opaque = 42, /*!< application/octet-stream */
   CBOR = 60, /*!< application/cbor */
   SENML_JSON = 110, /*!< application/senml+json */
   SENML_CBOR = 112, /*!< application/senml+cbor */
   TLV = 11542, /*!< application/vnd.oma.lwm2m+tlv */
   JSON = 11543, /*!< application/vnd.oma.lwm2m+json */
-  NOT_SPECIFIED
+  Not_Specified
 };
 
 std::string toString(MediaType type);
@@ -40,22 +40,22 @@ std::string toString(MediaType type);
  *
  */
 enum class DataType : uint8_t {
-  NONE, /*!< No specific data type is applicable to this resource (Only for
+  None, /*!< No specific data type is applicable to this resource (Only for
            Executable or Malformated Resources) */
-  STRING, /*!< UTF-8 String */
-  SIGNED_INTEGER, /*!< 64 bit signed integer value, represented as int64_t */
-  UNSIGNED_INTEGER, /*!< 64 bit unsigned integer value*/
-  FLOAT, /*!< 64 bit floating point value represented as double precision
+  String, /*!< UTF-8 String */
+  Signed_Integer, /*!< 64 bit signed integer value, represented as int64_t */
+  Unsigned_Integer, /*!< 64 bit unsigned integer value*/
+  Float, /*!< 64 bit floating point value represented as double precision
             floating point (double) */
-  BOOLEAN, /*!< 8 bit unsigned integer value containing 0 for FALSE or 1 for
+  Boolean, /*!< 8 bit unsigned integer value containing 0 for FALSE or 1 for
               TRUE */
-  OPAQUE, /*!< A sequence of binary octets represented as a vector of uint8_t
+  Opaque, /*!< A sequence of binary octets represented as a vector of uint8_t
              values */
-  TIME, /*!< A signed integer containing Unix time represented as uint64_t value
+  Time, /*!< A signed integer containing Unix time represented as uint64_t value
          */
-  OBJECT_LINK, /*!< Refers to an Instance of a given Object, represented as
+  Object_Link, /*!< Refers to an Instance of a given Object, represented as
                   LwM2M::ObjectLink class */
-  CORE_LINK /*!< Used to refer to Resources and their attributs as specified in
+  Core_Link /*!< Used to refer to Resources and their attributs as specified in
                RFC6690 */
 };
 
@@ -165,7 +165,7 @@ struct Payload {
   Payload(ElementID data);
   Payload(ElementIDs data);
   Payload(std::vector<TargetAttribute> data);
-  Payload(PayloadData data, MediaType format = MediaType::NOT_SPECIFIED);
+  Payload(PayloadData data, MediaType format = MediaType::Not_Specified);
 
   size_t size();
   std::string dataType();

@@ -33,7 +33,7 @@ struct DeviceManagementRequest : ServerRequest {
 protected:
   DeviceManagementRequest(EndpointPtr endpoint, MessageType message_type,
       PayloadPtr payload = PayloadPtr())
-      : ServerRequest(endpoint, message_type, InterfaceType::DEVICE_MANAGEMENT,
+      : ServerRequest(endpoint, message_type, InterfaceType::Device_Management,
             payload) {}
 };
 

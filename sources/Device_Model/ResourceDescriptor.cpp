@@ -7,19 +7,19 @@ namespace LwM2M {
 
 string toString(OperationsType operation) {
   switch (operation) {
-  case OperationsType::READ: {
+  case OperationsType::Read: {
     return "Read";
   }
-  case OperationsType::WRITE: {
+  case OperationsType::Write: {
     return "Write";
   }
-  case OperationsType::READ_AND_WRITE: {
+  case OperationsType::Read_And_Write: {
     return "Read and Write";
   }
-  case OperationsType::EXECUTE: {
+  case OperationsType::Execute: {
     return "Execute";
   }
-  case OperationsType::NO_OPERATION:
+  case OperationsType::No_Operation:
   default: {
     return "No Operation";
   }
@@ -35,8 +35,8 @@ ResourceDescriptor::ResourceDescriptor(ResourceDescriptor&& instance) noexcept
       description_(instance.description_) {}
 
 ResourceDescriptor::ResourceDescriptor()
-    : id_(0), name_(string()), operations_(OperationsType::NO_OPERATION),
-      multiple_instances_(false), mandatory_(false), data_type_(DataType::NONE),
+    : id_(0), name_(string()), operations_(OperationsType::No_Operation),
+      multiple_instances_(false), mandatory_(false), data_type_(DataType::None),
       range_enumeration_(nullopt), units_(string()), description_(string()) {}
 
 ResourceDescriptor::ResourceDescriptor(uint32_t id, string name,

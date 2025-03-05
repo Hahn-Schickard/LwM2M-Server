@@ -8,7 +8,7 @@ CancelObservationRequest::CancelObservationRequest(
     EndpointPtr endpoint, // NOLINT
     ElementID target_id)
     : InformationReportingRequest(endpoint, // NOLINT
-          MessageType::CANCEL_OBSERVATION, make_shared<Payload>(target_id)) {}
+          MessageType::Cancel_Observation, make_shared<Payload>(target_id)) {}
 
 string CancelObservationRequest::name() const {
   return "CancelObservationRequest";

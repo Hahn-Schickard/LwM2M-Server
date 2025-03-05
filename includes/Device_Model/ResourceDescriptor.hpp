@@ -19,11 +19,11 @@ namespace LwM2M {
  *
  */
 enum class OperationsType {
-  NO_OPERATION, /*!< @see Operationless */
-  READ, /*!< @see Readable */
-  WRITE, /*!< @see Writable */
-  READ_AND_WRITE, /*!< @see ReadAndWritable */
-  EXECUTE /*!< @see Executable */
+  No_Operation, /*!< @see Operationless */
+  Read, /*!< @see Readable */
+  Write, /*!< @see Writable */
+  Read_And_Write, /*!< @see ReadAndWritable */
+  Execute /*!< @see Executable */
 };
 
 std::string toString(OperationsType operation);

@@ -16,12 +16,12 @@ vector<TargetAttribute> makeTargetAtributesVector(
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint) // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
-          MessageType::WRITE_ATTRIBUTES) {}
+          MessageType::Write_Attributes) {}
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint, // NOLINT
     vector<TargetAttribute> content) // NOLINT
     : DeviceManagementRequest(endpoint, // NOLINT
-          MessageType::WRITE_ATTRIBUTES, make_shared<Payload>(content)) {}
+          MessageType::Write_Attributes, make_shared<Payload>(content)) {}
 
 WriteAttributesRequest::WriteAttributesRequest(EndpointPtr endpoint, // NOLINT
     ElementIDs targets, NotifyAttributePtr attribute) // NOLINT

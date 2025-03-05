@@ -22,8 +22,8 @@ struct DeregisterResponse : RegistrationInterfaceResponse {
    * Used to indicate failure.
    *
    * Supported response codes:
-   * - ResponseCode::BAD_REQUEST - No location was given in the request.
-   * - ResponseCode::NOT_FOUND - Given location could not be found in the server
+   * - ResponseCode::Bad_Request - No location was given in the request.
+   * - ResponseCode::Not_Found - Given location could not be found in the server
    *
    * @param endpoint
    * @param response_code

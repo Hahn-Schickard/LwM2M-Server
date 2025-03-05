@@ -11,7 +11,7 @@ using json = nlohmann::json;
 namespace nlohmann {
 NLOHMANN_JSON_SERIALIZE_ENUM(LwM2M::ServerBindingType,
     {{LwM2M::ServerBindingType::CoAP, "CoAP"},
-        {LwM2M::ServerBindingType::UNKOWN, "Unknown"}})
+        {LwM2M::ServerBindingType::Unkown, "Unknown"}})
 } // namespace nlohmann
 
 namespace LwM2M {

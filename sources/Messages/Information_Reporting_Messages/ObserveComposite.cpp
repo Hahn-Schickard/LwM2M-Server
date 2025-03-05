@@ -6,7 +6,7 @@ namespace LwM2M {
 ObserveCompositeRequest::ObserveCompositeRequest(EndpointPtr endpoint, // NOLINT
     ElementIDs target_ids) // NOLINT
     : InformationReportingRequest(endpoint, // NOLINT
-          MessageType::OBSERVE_COMPOSITE, make_shared<Payload>(target_ids)) {}
+          MessageType::Observe_Composite, make_shared<Payload>(target_ids)) {}
 
 string ObserveCompositeRequest::name() const {
   return "ObserveCompositeRequest";
