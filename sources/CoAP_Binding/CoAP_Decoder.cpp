@@ -220,7 +220,7 @@ ClientResponsePtr CoAP_Decoder::decode<ClientResponse>(
                      "response with Token {} Payload.",
           message->getAddressIP(), message->getAddressPort(),
           message->getToken()->hexify());
-      auto it = options.find(OptionNumber::CONTENT_FORMAT);
+      auto it = options.find(OptionNumber::Content_Format);
       if (it != options.end()) {
         logger_->trace("CONTENT_FORMAT Option found in {}:{} CoAP "
                        "response with Token {} Payload. Casting it as "

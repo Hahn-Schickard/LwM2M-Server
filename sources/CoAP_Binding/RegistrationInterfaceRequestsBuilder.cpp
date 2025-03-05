@@ -16,7 +16,7 @@ using namespace HSCUL;
 namespace LwM2M {
 
 optional<BindingType> getBindingType(Options options) {
-  auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
+  auto uri_queries = options.equal_range(OptionNumber::URI_Query);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option_value = it->second->getValueAsString();
     if (option_value.substr(0, 2) == "b=") {
@@ -42,7 +42,7 @@ optional<BindingType> getBindingType(Options options) {
 
 // NOLINTBEGIN(readability-identifier-naming)
 optional<LwM2M_Version> getLwM2M_Version(Options options) {
-  auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
+  auto uri_queries = options.equal_range(OptionNumber::URI_Query);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
     // NOLINTBEGIN(readability-magic-numbers)
@@ -63,7 +63,7 @@ optional<LwM2M_Version> getLwM2M_Version(Options options) {
 }
 
 optional<size_t> getLifetime(Options options) {
-  auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
+  auto uri_queries = options.equal_range(OptionNumber::URI_Query);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
     auto lifetime_tag = option->getValueAsString().substr(0, 3);
@@ -75,7 +75,7 @@ optional<size_t> getLifetime(Options options) {
 }
 
 optional<string> getEndpointName(Options options) {
-  auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
+  auto uri_queries = options.equal_range(OptionNumber::URI_Query);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
     auto endpoint_tag = option->getValueAsString().substr(0, 3);
@@ -87,7 +87,7 @@ optional<string> getEndpointName(Options options) {
 }
 
 optional<bool> getQueueMode(Options options) {
-  auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
+  auto uri_queries = options.equal_range(OptionNumber::URI_Query);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
     auto queue_tag = option->getValueAsString().substr(0, 1);
@@ -99,7 +99,7 @@ optional<bool> getQueueMode(Options options) {
 }
 
 optional<string> getSMS(Options options) {
-  auto uri_queries = options.equal_range(OptionNumber::URI_QUERY);
+  auto uri_queries = options.equal_range(OptionNumber::URI_Query);
   for (auto it = uri_queries.first; it != uri_queries.second; it++) {
     auto option = it->second;
     auto sms_tag = option->getValueAsString().substr(0, 4);
@@ -221,7 +221,7 @@ RegisterRequestPtr buildRegisterRequest(const CoAP::MessagePtr& message) {
 }
 
 optional<string> getLocation(Options options) {
-  auto uri_paths = options.equal_range(OptionNumber::URI_PATH);
+  auto uri_paths = options.equal_range(OptionNumber::URI_Path);
   for (auto it = uri_paths.first; it != uri_paths.second; it++) {
     auto option = it->second;
     if (option->getValueAsString() == "rd") {

@@ -277,15 +277,15 @@ void CoAP_Binding::handleNotification(const CoAP::MessagePtr& message) {
 ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
     const CoAP::MessagePtr& message) {
   auto options = message->getOptions();
-  auto option = options.find(CoAP::OptionNumber::URI_PATH);
+  auto option = options.find(CoAP::OptionNumber::URI_Path);
   if (option != options.end()) {
     if (option->second->getValueAsString() == "rd") {
       logger_->trace("Handling incoming message from {}:{} as a Registration "
                      "Interface message.",
           message->getAddressIP(), message->getAddressPort());
       try {
-        if (message->getHeader()->getCodeType() == CoAP::CodeType::POST) {
-          if (options.count(CoAP::OptionNumber::URI_PATH) > 1) {
+        if (message->getHeader()->getCodeType() == CoAP::CodeType::Post) {
+          if (options.count(CoAP::OptionNumber::URI_Path) > 1) {
             auto request = decoder_->decode<UpdateRequest>(message);
             return Registrator::handleRequest(request);
           } else {
@@ -293,7 +293,7 @@ ServerResponsePtr CoAP_Binding::handleRegistrationRequest(
             return Registrator::handleRequest(request);
           }
         } else if (message->getHeader()->getCodeType() ==
-            CoAP::CodeType::DELETE) {
+            CoAP::CodeType::Delete) {
           auto request = decoder_->decode<DeregisterRequest>(message);
           return Registrator::handleRequest(request);
         }
@@ -329,15 +329,15 @@ void CoAP_Binding::handleReceived(const CoAP::MessagePtr& message) {
   logger_->info("Handling incoming message from {}:{}", message->getAddressIP(),
       message->getAddressPort());
   if (message->getHeader()->getMessageType() ==
-      CoAP::MessageType::ACKNOWLEDGMENT) {
+      CoAP::MessageType::Acknowledgment) {
     logger_->warning("Received an orphan response from {}:{} with ID {}",
         message->getAddressIP(), message->getAddressPort(),
         message->getToken()->hexify());
   } else if (message->getHeader()->getMessageType() ==
-      CoAP::MessageType::NON_CONFIRMABLE) {
+      CoAP::MessageType::Non_Confirmable) {
     handleNotification(message);
   } else if (message->getHeader()->getMessageType() ==
-      CoAP::MessageType::CONFIRMABLE) {
+      CoAP::MessageType::Confirmable) {
     auto response = encoder_->encode(message, handleRequest(message));
     respond(response);
   }

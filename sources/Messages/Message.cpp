@@ -187,7 +187,7 @@ string toString(ResponseCode type) {
   }
 }
 
-UnsupportedResponseCode::UnsupportedResponseCode(string const& message)
+UnsupportedResponseCode::UnsupportedResponseCode(const string& message)
     : logic_error(message) {}
 
 string makeErrorMsg(const string& message_type,

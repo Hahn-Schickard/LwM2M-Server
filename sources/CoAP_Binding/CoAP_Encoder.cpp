@@ -17,26 +17,26 @@ CodeType toCodeType(LwM2M::MessageType type) {
   case LwM2M::MessageType::Cancel_Observation:
   case LwM2M::MessageType::Discover:
   case LwM2M::MessageType::Read: {
-    return CodeType::GET;
+    return CodeType::Get;
   }
   case LwM2M::MessageType::Observe_Composite:
   case LwM2M::MessageType::Cancel_Observation_Composite:
   case LwM2M::MessageType::Read_Composite: {
-    return CodeType::FETCH;
+    return CodeType::Fetch;
   }
   case LwM2M::MessageType::Write:
   case LwM2M::MessageType::Write_Attributes: {
-    return CodeType::PUT;
+    return CodeType::Put;
   }
   case LwM2M::MessageType::Write_Composite: {
-    return CodeType::iPATCH;
+    return CodeType::iPatch;
   }
   case LwM2M::MessageType::Create:
   case LwM2M::MessageType::Execute: {
-    return CodeType::POST;
+    return CodeType::Post;
   }
   case LwM2M::MessageType::Delete: {
-    return CodeType::DELETE;
+    return CodeType::Delete;
   }
   default: {
     throw logic_error("Message is not a valid ServerRequest.");
@@ -54,7 +54,7 @@ CoAP::Options makeURI_PATH(ElementID target) {
   Options options;
   auto targets = target.toStrings();
   for (const auto& uri_path : targets) {
-    options += build(OptionNumber::URI_PATH, uri_path);
+    options += build(OptionNumber::URI_Path, uri_path);
   }
   return options;
 }
@@ -120,7 +120,7 @@ CoAP::MessagePtr CoAP_Encoder::encode(const ServerRequestPtr& request) {
           request->endpoint_->endpoint_port_);
   auto token = message_builder->addToken();
   message_builder->addHeader(
-      CoAP::MessageType::CONFIRMABLE, toCodeType(request->message_type_));
+      CoAP::MessageType::Confirmable, toCodeType(request->message_type_));
   message_builder->addOptions(
       makeOptions(request->message_type_, request->payload_, token->hexify()));
   auto payload =
@@ -139,7 +139,7 @@ CoAP::MessagePtr CoAP_Encoder::encode(
   message_builder->addToken(token);
   if (response) {
     try {
-      message_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
+      message_builder->addHeader(CoAP::MessageType::Acknowledgment,
           toCodeType(response->response_code_),
           request->getHeader()->getMessageID());
       message_builder->addOptions(makeOptions(
@@ -157,8 +157,8 @@ CoAP::MessagePtr CoAP_Encoder::encode(
     }
   } else {
     // handle empty response or exception throw
-    message_builder->addHeader(CoAP::MessageType::ACKNOWLEDGMENT,
-        CoAP::CodeType::BAD_REQUEST, request->getHeader()->getMessageID());
+    message_builder->addHeader(CoAP::MessageType::Acknowledgment,
+        CoAP::CodeType::Bad_Request, request->getHeader()->getMessageID());
   }
   return message_builder->getResult();
 }
@@ -208,13 +208,13 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
       if (holds_alternative<DataFormatPtr>(payload->data_)) {
         const auto& data = std::get<DataFormatPtr>(payload->data_);
         if (data) {
-          options += build(OptionNumber::LOCATION_PATH, "rd");
+          options += build(OptionNumber::Location_Path, "rd");
           auto location = data->get<string>();
           logger_->trace(
               "Assiging Location Path CoAP::Option value as rd/{} for "
               "{} message {}",
               toString(type), location, message_identifier);
-          options += build(OptionNumber::LOCATION_PATH, location);
+          options += build(OptionNumber::Location_Path, location);
         } else {
           throw logic_error("LOCATION_PATH option value can not be an empty");
         }
@@ -228,7 +228,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   case LwM2M::MessageType::Read: {
     options = makeOptions(payload, message_identifier);
     auto acceptable_format_index = ContentFormatEncodings::LwM2M_TLV::index;
-    auto accept = build(OptionNumber::ACCEPT, acceptable_format_index);
+    auto accept = build(OptionNumber::Accept, acceptable_format_index);
     options += accept;
     logger_->trace("Assiging Accept CoAP::Option value as {} for {} message {}",
         toString(type), accept->getValueAsString(), message_identifier);
@@ -238,7 +238,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     auto content_format =
-        build(OptionNumber::CONTENT_FORMAT, content_format_index);
+        build(OptionNumber::Content_Format, content_format_index);
     options += content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
@@ -249,7 +249,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_TLV::index;
     auto content_format =
-        build(OptionNumber::CONTENT_FORMAT, content_format_index);
+        build(OptionNumber::Content_Format, content_format_index);
     options += content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
@@ -260,7 +260,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     auto content_format =
-        build(OptionNumber::CONTENT_FORMAT, content_format_index);
+        build(OptionNumber::Content_Format, content_format_index);
     options += content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
@@ -272,7 +272,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::PlainText::index;
     auto content_format =
-        build(OptionNumber::CONTENT_FORMAT, content_format_index);
+        build(OptionNumber::Content_Format, content_format_index);
     options += content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
@@ -283,7 +283,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     auto content_format =
-        build(OptionNumber::CONTENT_FORMAT, content_format_index);
+        build(OptionNumber::Content_Format, content_format_index);
     options += content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
@@ -293,7 +293,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   case LwM2M::MessageType::Discover: {
     options = makeOptions(payload, message_identifier);
     auto content_format_index = ContentFormatEncodings::CoRE_Link::index;
-    auto content_format = build(OptionNumber::ACCEPT, content_format_index);
+    auto content_format = build(OptionNumber::Accept, content_format_index);
     options += content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
@@ -303,7 +303,7 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   case LwM2M::MessageType::Observe_Composite: {
     auto content_format_index = ContentFormatEncodings::LwM2M_JSON::index;
     auto json_content_format =
-        build(OptionNumber::CONTENT_FORMAT, content_format_index);
+        build(OptionNumber::Content_Format, content_format_index);
     options += json_content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
@@ -311,13 +311,13 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
         message_identifier);
     auto acceptable_format_index = ContentFormatEncodings::LwM2M_CBOR::index;
     auto cbor_content_format =
-        build(OptionNumber::CONTENT_FORMAT, acceptable_format_index);
+        build(OptionNumber::Content_Format, acceptable_format_index);
     options += cbor_content_format;
     logger_->trace(
         "Assiging Content Format CoAP::Option value as {} for {} message {}",
         toString(type), cbor_content_format->getValueAsString(),
         message_identifier);
-    options += build(OptionNumber::OBSERVE, 0);
+    options += build(OptionNumber::Observe, 0);
     logger_->trace("Assiging Observe CoAP::Option value as 0 for {} message {}",
         toString(type), message_identifier);
     // @Attention URI paths for resources to be observed MUST be provided in
@@ -327,20 +327,20 @@ CoAP::Options CoAP_Encoder::makeOptions(LwM2M::MessageType type,
   }
   case LwM2M::MessageType::Observe: {
     options = makeOptions(payload, message_identifier);
-    options += build(OptionNumber::OBSERVE, 0);
+    options += build(OptionNumber::Observe, 0);
     logger_->trace("Assiging Observe CoAP::Option value as 0 for {} message {}",
         toString(type), message_identifier);
     break;
   }
   case LwM2M::MessageType::Cancel_Observation: {
-    options += build(OptionNumber::OBSERVE, 1);
+    options += build(OptionNumber::Observe, 1);
     logger_->trace("Assiging Observe CoAP::Option value as 1 for {} message {}",
         toString(type), message_identifier);
     break;
   }
   case LwM2M::MessageType::Cancel_Observation_Composite: {
     options = makeOptions(payload, message_identifier);
-    options += build(OptionNumber::OBSERVE, 1);
+    options += build(OptionNumber::Observe, 1);
     logger_->trace("Assiging Observe CoAP::Option value as 1 for {} message {}",
         toString(type), message_identifier);
     // @Attention URI paths for resources to be observed MUST be provided in
