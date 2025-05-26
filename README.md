@@ -3,15 +3,22 @@
 ## Description
 This is a module for C++17 based LwM2M Server implementation. It uses [ASIO](https://think-async.com/Asio/) to manage the network communications, [HaSLL](https://git.hahn-schickard.de/software-sollutions/application-engineering/internal/hasll) as the main logging interface, [PugiXML](https://pugixml.org/) as the XML parser library and provides all of the required dependency management through [Conan Dependency Management System](https://conan.io/).
 
-## Documentation
+## Fresh setup
 
+This project uses git submodules, please initialize them when creating a fresh repository clone. To initialize all of the submodule run the following command:
+
+```
+git submodule update --init --recursive
+```
+
+## Documentation
 If you want to have the latest documentation with your changes locally, you can generate it with [Doxygen](https://github.com/doxygen/doxygen) from sources by running the following:
 
 ```bash
 doxygen Doxyfile
 ```
 
-This will generate html like documentation at `[PROJECT_ROOT]/docs/code_documentation/html`. To use it open the `[PROJECT_ROOT]/docs/code_documentation/html/index.html` file with your browser.
+This will generate html like documentation at `[PROJECT_ROOT]/docs/html`. To read the generated files, open the `[PROJECT_ROOT]/docs/html/index.html` with your browser.
 
 ## Dependencies
 ### Required
