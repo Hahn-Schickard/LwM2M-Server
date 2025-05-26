@@ -52,7 +52,7 @@ class PackageConan(ConanFile):
     def requirements(self):
         # @+ START USER REQUIREMENTS
         self.requires('nlohmann_json/3.11.1')
-        self.requires('pugixml/1.11')
+        self.requires('pugixml/1.15")
         self.requires('variant_visitor/[~0.1]@hahn-schickard/stable', 
                       headers=True,
                       transitive_headers=True
