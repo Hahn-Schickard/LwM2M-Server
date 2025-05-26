@@ -1,3 +1,6 @@
 [submodule "docs/server_architechture"]
 	path = docs/server_architechture
 	url = ../documentation.git
+[submodule "docs/style"]
+	path = docs/style
+	url = git@git.hahn-schickard.de:hahn-schickard/software-sollutions/application-engineering/internal/devops/doxygen-awesome-css.git
