@@ -1,4 +1,8 @@
 # Changelog
+## [0.6.1] - 2025.05.28
+### Changed
+ - pugixml dependency to v1.15
+
 ## [0.6.0] - 2025.03.05
 ### Added 
  - windows 10 support
